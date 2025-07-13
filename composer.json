@@ -1,15 +1,13 @@
 {
-    "name": "robsontenorio/mary",
-    "description": "Gorgeous UI components for Livewire powered by daisyUI and Tailwind",
+    "name": "artisanpack-ui/livewire-ui-components",
+    "description": "A Livewire UI component library for the TALL stack, forked from MaryUI and adapted for the ArtisanPack UI ecosystem.",
     "license": "MIT",
     "authors": [
         {
-            "name": "Robson Tenório",
-            "email": "rrtenorio@gmail.com",
-            "homepage": "https://github.com/robsontenorio"
+            "name": "Jacob Martella",
+            "email": "me@jacobmartella.com"
         }
     ],
-    "homepage": "https://mary-ui.com",
     "keywords": [
         "laravel",
         "livewire",
@@ -44,21 +42,21 @@
     },
     "autoload": {
         "psr-4": {
-            "Mary\\": "src/"
+            "ArtisanPackUi\\LivewireUiComponents\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Mary\\Tests\\": "tests"
+            "ArtisanPackUi\\LivewireUiComponents\\Tests\\": "tests"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Mary\\MaryServiceProvider"
+                "ArtisanPackUi\\LivewireUiComponents\\LivewireUiComponentsServiceProvider"
             ],
             "aliases": {
-                "Mary": "Mary\\Facades\\Mary"
+                "LivewireUiComponents": "ArtisanPackUi\\LivewireUiComponents\\Facades\\LivewireUiComponents"
             }
         }
     }
