@@ -1,11 +1,32 @@
 <?php
+/**
+ * ToastException
+ *
+ * This file contains the ToastException class for the ArtisanPack UI Livewire UI Components package.
+ *
+ * @package    ArtisanPack\LivewireUiComponents\Exceptions
+ * @author     Jacob Martella
+ * @copyright  2023 Jacob Martella
+ * @license    MIT
+ * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
+ * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
+ * @since      1.0.0
+ */
 
-namespace Mary\Exceptions;
+
+namespace ArtisanPack\LivewireUiComponents\Exceptions;
 
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Blade;
+/**
+ * ToastException Class
+ *
+ * Provides functionality for the ToastException component.
+ *
+ * @since 1.0.0
+ */
 
 class ToastException extends Exception
 {

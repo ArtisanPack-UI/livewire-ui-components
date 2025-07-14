@@ -1,11 +1,33 @@
 <?php
+/**
+ * LivewireUiComponentsBootcampCommand
+ *
+ * This file contains the LivewireUiComponentsBootcampCommand class for the ArtisanPack UI Livewire UI Components package.
+ *
+ * @package    ArtisanPack\LivewireUiComponents
+ * @subpackage Console\Commands
+ * @author     Jacob Martella
+ * @copyright  2023 Jacob Martella
+ * @license    MIT
+ * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
+ * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
+ * @since      1.0.0
+ */
 
-namespace ArtisanPackUi\LivewireUiComponents\Console\Commands;
+
+namespace ArtisanPack\LivewireUiComponents\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Process;
 use RuntimeException;
+/**
+ * LivewireUiComponentsBootcampCommand Class
+ *
+ * Provides functionality for the LivewireUiComponentsBootcampCommand component.
+ *
+ * @since 1.0.0
+ */
 
 class LivewireUiComponentsBootcampCommand extends Command
 {

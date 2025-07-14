@@ -1,87 +1,114 @@
 <?php
+/**
+ * LivewireUiComponents Service Provider
+ *
+ * This service provider registers all the components, directives, and services
+ * provided by the ArtisanPack UI Livewire UI Components package.
+ *
+ * @package    ArtisanPack\LivewireUiComponents
+ * @author     Jacob Martella
+ * @copyright  2023 Jacob Martella
+ * @license    MIT
+ * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
+ * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
+ * @since      1.0.0
+ */
 
-namespace ArtisanPackUi\LivewireUiComponents;
+namespace ArtisanPack\LivewireUiComponents;
 
 use Arr;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
-use ArtisanPackUi\LivewireUiComponents\Console\Commands\LivewireUiComponentsBootcampCommand;
-use ArtisanPackUi\LivewireUiComponents\Console\Commands\LivewireUiComponentsInstallCommand;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Accordion;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Alert;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Avatar;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Badge;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Breadcrumbs;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Button;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Calendar;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Card;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Carousel;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Chart;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Checkbox;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Choices;
-use ArtisanPackUi\LivewireUiComponents\View\Components\ChoicesOffline;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Code;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Collapse;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Colorpicker;
-use ArtisanPackUi\LivewireUiComponents\View\Components\DatePicker;
-use ArtisanPackUi\LivewireUiComponents\View\Components\DateTime;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Diff;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Drawer;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Dropdown;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Editor;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Errors;
-use ArtisanPackUi\LivewireUiComponents\View\Components\File;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Form;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Group;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Header;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Hr;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Icon;
-use ArtisanPackUi\LivewireUiComponents\View\Components\ImageGallery;
-use ArtisanPackUi\LivewireUiComponents\View\Components\ImageLibrary;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Input;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Kbd;
-use ArtisanPackUi\LivewireUiComponents\View\Components\ListItem;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Loading;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Main;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Markdown;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Menu;
-use ArtisanPackUi\LivewireUiComponents\View\Components\MenuItem;
-use ArtisanPackUi\LivewireUiComponents\View\Components\MenuSeparator;
-use ArtisanPackUi\LivewireUiComponents\View\Components\MenuSub;
-use ArtisanPackUi\LivewireUiComponents\View\Components\MenuTitle;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Modal;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Nav;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Pagination;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Password;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Pin;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Popover;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Progress;
-use ArtisanPackUi\LivewireUiComponents\View\Components\ProgressRadial;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Radio;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Range;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Rating;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Select;
-use ArtisanPackUi\LivewireUiComponents\View\Components\SelectGroup;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Signature;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Spotlight;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Stat;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Step;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Steps;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Swap;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Tab;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Table;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Tabs;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Tags;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Textarea;
-use ArtisanPackUi\LivewireUiComponents\View\Components\ThemeToggle;
-use ArtisanPackUi\LivewireUiComponents\View\Components\TimelineItem;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Toast;
-use ArtisanPackUi\LivewireUiComponents\View\Components\Toggle;
+use ArtisanPack\LivewireUiComponents\Console\Commands\LivewireUiComponentsBootcampCommand;
+use ArtisanPack\LivewireUiComponents\Console\Commands\LivewireUiComponentsInstallCommand;
+use ArtisanPack\LivewireUiComponents\View\Components\Accordion;
+use ArtisanPack\LivewireUiComponents\View\Components\Alert;
+use ArtisanPack\LivewireUiComponents\View\Components\Avatar;
+use ArtisanPack\LivewireUiComponents\View\Components\Badge;
+use ArtisanPack\LivewireUiComponents\View\Components\Breadcrumbs;
+use ArtisanPack\LivewireUiComponents\View\Components\Button;
+use ArtisanPack\LivewireUiComponents\View\Components\Calendar;
+use ArtisanPack\LivewireUiComponents\View\Components\Card;
+use ArtisanPack\LivewireUiComponents\View\Components\Carousel;
+use ArtisanPack\LivewireUiComponents\View\Components\Chart;
+use ArtisanPack\LivewireUiComponents\View\Components\Checkbox;
+use ArtisanPack\LivewireUiComponents\View\Components\Choices;
+use ArtisanPack\LivewireUiComponents\View\Components\ChoicesOffline;
+use ArtisanPack\LivewireUiComponents\View\Components\Code;
+use ArtisanPack\LivewireUiComponents\View\Components\Collapse;
+use ArtisanPack\LivewireUiComponents\View\Components\Colorpicker;
+use ArtisanPack\LivewireUiComponents\View\Components\DatePicker;
+use ArtisanPack\LivewireUiComponents\View\Components\DateTime;
+use ArtisanPack\LivewireUiComponents\View\Components\Diff;
+use ArtisanPack\LivewireUiComponents\View\Components\Drawer;
+use ArtisanPack\LivewireUiComponents\View\Components\Dropdown;
+use ArtisanPack\LivewireUiComponents\View\Components\Editor;
+use ArtisanPack\LivewireUiComponents\View\Components\Errors;
+use ArtisanPack\LivewireUiComponents\View\Components\File;
+use ArtisanPack\LivewireUiComponents\View\Components\Form;
+use ArtisanPack\LivewireUiComponents\View\Components\Group;
+use ArtisanPack\LivewireUiComponents\View\Components\Header;
+use ArtisanPack\LivewireUiComponents\View\Components\Hr;
+use ArtisanPack\LivewireUiComponents\View\Components\Icon;
+use ArtisanPack\LivewireUiComponents\View\Components\ImageGallery;
+use ArtisanPack\LivewireUiComponents\View\Components\ImageLibrary;
+use ArtisanPack\LivewireUiComponents\View\Components\Input;
+use ArtisanPack\LivewireUiComponents\View\Components\Kbd;
+use ArtisanPack\LivewireUiComponents\View\Components\ListItem;
+use ArtisanPack\LivewireUiComponents\View\Components\Loading;
+use ArtisanPack\LivewireUiComponents\View\Components\Main;
+use ArtisanPack\LivewireUiComponents\View\Components\Markdown;
+use ArtisanPack\LivewireUiComponents\View\Components\Menu;
+use ArtisanPack\LivewireUiComponents\View\Components\MenuItem;
+use ArtisanPack\LivewireUiComponents\View\Components\MenuSeparator;
+use ArtisanPack\LivewireUiComponents\View\Components\MenuSub;
+use ArtisanPack\LivewireUiComponents\View\Components\MenuTitle;
+use ArtisanPack\LivewireUiComponents\View\Components\Modal;
+use ArtisanPack\LivewireUiComponents\View\Components\Nav;
+use ArtisanPack\LivewireUiComponents\View\Components\Pagination;
+use ArtisanPack\LivewireUiComponents\View\Components\Password;
+use ArtisanPack\LivewireUiComponents\View\Components\Pin;
+use ArtisanPack\LivewireUiComponents\View\Components\Popover;
+use ArtisanPack\LivewireUiComponents\View\Components\Progress;
+use ArtisanPack\LivewireUiComponents\View\Components\ProgressRadial;
+use ArtisanPack\LivewireUiComponents\View\Components\Radio;
+use ArtisanPack\LivewireUiComponents\View\Components\Range;
+use ArtisanPack\LivewireUiComponents\View\Components\Rating;
+use ArtisanPack\LivewireUiComponents\View\Components\Select;
+use ArtisanPack\LivewireUiComponents\View\Components\SelectGroup;
+use ArtisanPack\LivewireUiComponents\View\Components\Signature;
+use ArtisanPack\LivewireUiComponents\View\Components\Spotlight;
+use ArtisanPack\LivewireUiComponents\View\Components\Stat;
+use ArtisanPack\LivewireUiComponents\View\Components\Step;
+use ArtisanPack\LivewireUiComponents\View\Components\Steps;
+use ArtisanPack\LivewireUiComponents\View\Components\Swap;
+use ArtisanPack\LivewireUiComponents\View\Components\Tab;
+use ArtisanPack\LivewireUiComponents\View\Components\Table;
+use ArtisanPack\LivewireUiComponents\View\Components\Tabs;
+use ArtisanPack\LivewireUiComponents\View\Components\Tags;
+use ArtisanPack\LivewireUiComponents\View\Components\Textarea;
+use ArtisanPack\LivewireUiComponents\View\Components\ThemeToggle;
+use ArtisanPack\LivewireUiComponents\View\Components\TimelineItem;
+use ArtisanPack\LivewireUiComponents\View\Components\Toast;
+use ArtisanPack\LivewireUiComponents\View\Components\Toggle;
 
+/**
+ * LivewireUiComponents Service Provider Class
+ *
+ * Registers all components, directives, and services for the package.
+ *
+ * @since 1.0.0
+ */
 class LivewireUiComponentsServiceProvider extends ServiceProvider
 {
     /**
      * Perform post-registration booting of services.
+     *
+     * This method is called after all other service providers have been registered,
+     * meaning you have access to all other services that have been registered by the framework.
+     *
+     * @return void
+     * @since 1.0.0
      */
     public function boot(): void
     {
@@ -96,6 +123,15 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         }
     }
 
+    /**
+     * Register all Blade components provided by the package.
+     *
+     * This method registers both aliased components and prefixed components
+     * based on the package configuration.
+     *
+     * @return void
+     * @since 1.0.0
+     */
     public function registerComponents()
     {
         // Just rename <x-icon> provided by BladeUI Icons to <x-svg> to not collide with ours
@@ -190,11 +226,23 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         Blade::component($prefix . 'carousel', Carousel::class);
     }
 
+    /**
+     * Register all Blade directives provided by the package.
+     *
+     * @return void
+     * @since 1.0.0
+     */
     public function registerBladeDirectives(): void
     {
         $this->registerScopeDirective();
     }
 
+    /**
+     * Register the @scope Blade directive for scoped slots.
+     *
+     * @return void
+     * @since 1.0.0
+     */
     public function registerScopeDirective(): void
     {
         /**
@@ -235,6 +283,12 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
 
     /**
      * Register any package services.
+     *
+     * This method is called before the boot method and registers
+     * the package's services in the service container.
+     *
+     * @return void
+     * @since 1.0.0
      */
     public function register(): void
     {
@@ -249,7 +303,8 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
     /**
      * Get the services provided by the provider.
      *
-     * @return array
+     * @return array The array of provided services.
+     * @since 1.0.0
      */
     public function provides()
     {
@@ -258,6 +313,12 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
 
     /**
      * Console-specific booting.
+     *
+     * This method is called when the application is running in the console
+     * and handles publishing assets and registering commands.
+     *
+     * @return void
+     * @since 1.0.0
      */
     protected function bootForConsole(): void
     {

@@ -1,6 +1,21 @@
 <?php
+/**
+ * LivewireUiComponents Install Command
+ *
+ * This command installs and configures all the necessary dependencies for the
+ * ArtisanPack UI Livewire UI Components package.
+ *
+ * @package    ArtisanPack\LivewireUiComponents
+ * @subpackage Console\Commands
+ * @author     Jacob Martella
+ * @copyright  2023 Jacob Martella
+ * @license    MIT
+ * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
+ * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
+ * @since      1.0.0
+ */
 
-namespace ArtisanPackUi\LivewireUiComponents\Console\Commands;
+namespace ArtisanPack\LivewireUiComponents\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
@@ -10,14 +25,47 @@ use Illuminate\Support\Str;
 use RuntimeException;
 use function Laravel\Prompts\select;
 
+/**
+ * LivewireUiComponentsInstallCommand Class
+ *
+ * Artisan command to install and configure all necessary dependencies for the package.
+ *
+ * @since 1.0.0
+ */
 class LivewireUiComponentsInstallCommand extends Command
 {
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     * @since 1.0.0
+     */
     protected $signature = 'livewire-ui-components:install';
 
-    protected $description = 'Command description';
+    /**
+     * The console command description.
+     *
+     * @var string
+     * @since 1.0.0
+     */
+    protected $description = 'Install and configure ArtisanPack UI Livewire UI Components';
 
+    /**
+     * Directory separator shorthand.
+     *
+     * @var string
+     * @since 1.0.0
+     */
     protected $ds = DIRECTORY_SEPARATOR;
 
+    /**
+     * Execute the console command.
+     *
+     * This is the main method that orchestrates the installation process.
+     *
+     * @return void
+     * @since 1.0.0
+     */
     public function handle()
     {
         $this->info("❤️  Livewire UI Components installer");
@@ -52,6 +100,13 @@ class LivewireUiComponentsInstallCommand extends Command
         $this->info("\n");
     }
 
+    /**
+     * Install Livewire and optionally Volt.
+     *
+     * @param string $shouldInstallVolt Whether to install Volt ('Yes' or 'No').
+     * @return void
+     * @since 1.0.0
+     */
     public function installLivewire(string $shouldInstallVolt)
     {
         $this->info("\nInstalling Livewire...\n");
@@ -65,6 +120,15 @@ class LivewireUiComponentsInstallCommand extends Command
         })->throw();
     }
 
+    /**
+     * Setup Tailwind CSS and daisyUI.
+     *
+     * Installs the necessary npm packages and configures the CSS file.
+     *
+     * @param string $packageManagerCommand The package manager command to use (npm, yarn, etc.).
+     * @return void
+     * @since 1.0.0
+     */
     public function setupTailwindDaisy(string $packageManagerCommand)
     {
         /**
@@ -120,8 +184,13 @@ class LivewireUiComponentsInstallCommand extends Command
     }
 
     /**
-     * If Jetstream or Breeze are detected we publish config file and add a global prefix to Livewire UI Components components,
-     * in order to avoid name collision with existing components.
+     * Rename components to avoid name collisions with existing components.
+     *
+     * If Jetstream or Breeze are detected, we publish config file and add a global prefix
+     * to Livewire UI Components components, in order to avoid name collision with existing components.
+     *
+     * @return void
+     * @since 1.0.0
      */
     public function renameComponents()
     {
@@ -148,7 +217,14 @@ class LivewireUiComponentsInstallCommand extends Command
     }
 
     /**
-     * Copy example demo stub if it is a brand-new project.
+     * Copy example demo stubs if it is a brand-new project.
+     *
+     * This method copies various stub files to set up a demo application
+     * if no starter kit is detected.
+     *
+     * @param string $shouldInstallVolt Whether Volt should be installed ('Yes' or 'No').
+     * @return void
+     * @since 1.0.0
      */
     public function copyStubs(string $shouldInstallVolt): void
     {
@@ -195,6 +271,15 @@ class LivewireUiComponentsInstallCommand extends Command
         }
     }
 
+    /**
+     * Ask the user which package manager to use.
+     *
+     * Detects available package managers (yarn, npm, bun, pnpm) and prompts
+     * the user to select one.
+     *
+     * @return string The selected package manager command.
+     * @since 1.0.0
+     */
     public function askForPackageInstaller(): string
     {
         $os = PHP_OS;
@@ -236,7 +321,12 @@ class LivewireUiComponentsInstallCommand extends Command
     }
 
     /**
-     * Also install Volt?
+     * Ask the user if they want to install Volt.
+     *
+     * Prompts the user to decide whether to install Livewire/Volt alongside Livewire.
+     *
+     * @return string The user's choice ('Yes' or 'No').
+     * @since 1.0.0
      */
     public function askForVolt(): string
     {
@@ -247,6 +337,14 @@ class LivewireUiComponentsInstallCommand extends Command
         );
     }
 
+    /**
+     * Check if the Laravel version is compatible.
+     *
+     * Ensures that the application is running on Laravel 12 or above.
+     *
+     * @return void
+     * @since 1.0.0
+     */
     public function checkForLaravelVersion(): void
     {
         if (version_compare(app()->version(), '12.0', '<')) {
@@ -256,6 +354,13 @@ class LivewireUiComponentsInstallCommand extends Command
         }
     }
 
+    /**
+     * Create a directory if it doesn't exist.
+     *
+     * @param string $path The directory path to create.
+     * @return void
+     * @since 1.0.0
+     */
     private function createDirectoryIfNotExists(string $path): void
     {
         if (! file_exists($path)) {
@@ -263,6 +368,15 @@ class LivewireUiComponentsInstallCommand extends Command
         }
     }
 
+    /**
+     * Copy a file from source to destination.
+     *
+     * @param string $source      The source file path.
+     * @param string $destination The destination file path.
+     * @return void
+     * @throws RuntimeException If the file copy fails.
+     * @since 1.0.0
+     */
     private function copyFile(string $source, string $destination): void
     {
         $source = str_replace('/', DIRECTORY_SEPARATOR, $source);

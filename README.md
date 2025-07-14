@@ -1,79 +1,53 @@
-<p align="center"><img width="200" src="https://github.com/robsontenorio/mary-ui.com/blob/main/public/mary.png?raw=true"></p>
+# ArtisanPack UI Livewire UI Components
 
-<p align="center">
-    <a href="https://packagist.org/packages/robsontenorio/mary">
-        <img src="https://img.shields.io/packagist/dt/robsontenorio/mary?cacheSeconds=60">
-    </a>
-    <a href="https://packagist.org/packages/robsontenorio/mary">
-        <img src="https://img.shields.io/packagist/v/robsontenorio/mary?label=stable&color=blue&cacheSeconds=60">
-    </a>
-    <a href="https://packagist.org/packages/robsontenorio/mary">
-        <img src="https://poser.pugx.org/robsontenorio/mary/license.svg">
-    </a>
-</p>
+ArtisanPack UI Livewire UI Components is a comprehensive set of UI components for Livewire powered by daisyUI and Tailwind CSS. This package provides a collection of beautiful, responsive, and customizable components to accelerate your Laravel application development.
 
-## Introduction
+## Features
 
-The maryUI package is a set of Gorgeous UI components for Livewire powered by daisyUI and Tailwind.
+- **TALL Stack Integration**: Built specifically for the TALL stack (Tailwind CSS, Alpine.js, Laravel, Livewire)
+- **daisyUI Powered**: Leverages the beautiful daisyUI component library
+- **Livewire 3 Compatible**: Fully compatible with Livewire 3
+- **Customizable**: Easily adapt components to match your application's design
+- **Comprehensive**: Includes a wide range of UI components for various use cases
 
-## Official Documentation
+## Installation
 
-You can read the official documentation on the [maryUI website](https://mary-ui.com).
+You can install the package via composer:
 
-## Sponsor
+```bash
+composer require artisanpack-ui/livewire-ui-components
+```
 
-Let's keep pushing it, [sponsor me](https://github.com/sponsors/robsontenorio) ❤️
+## Usage
 
-## Discord
+After installation, you can use the components in your Livewire views:
 
-Come to say hello on [maryUI Discord](https://discord.gg/c2Dv8T2X2s)
+```blade
+<x-artisanpack-button>Click Me</x-artisanpack-button>
+```
 
-## Follow me
+## Documentation
 
-[@robsontenorio](https://twitter.com/robsontenorio)
+Comprehensive documentation is coming soon. In the meantime, you can explore the components in the `src/View/Components` directory.
+
+## Acknowledgements
+
+ArtisanPack UI Livewire UI Components is a fork of the excellent [MaryUI](https://github.com/robsontenorio/mary) library, created by Robson Tenorio and contributors.
+
+We extend our sincere gratitude to the MaryUI team for their incredible work and for making it available to the open-source community. This fork aims to adapt MaryUI to the specific coding standards and architectural patterns of the ArtisanPack UI ecosystem while adding new features.
 
 ## Contributing
 
-Clone the repository into some folder **inside your app**.
+Contributions are welcome! To contribute:
 
-```bash
-git clone git@github.com:robsontenorio/mary.git
-```
-
-Change `composer.json` from **your app**
-
-<!-- @formatter:off -->
-```json
-"minimum-stability": "dev", // <- change to "dev"
-
-// Add this
-"repositories": {
-    "robsontenorio/mary": {
-        "type": "path",
-        "url": "/path/to/mary", // <- change the path
-        "options": {
-          "symlink": true
-        }
-    }
-}
-```
-<!-- @formatter:on -->
-
-
-Require the package again for local symlink.
-
-```bash
-composer require robsontenorio/mary
-```
-
-Start the dev server.
-
-```bash
-yarn dev
-```
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 
 <a name="license"></a>
 
-MaryUI is open-sourced software licensed under the [MIT license](/license.md).
+ArtisanPack UI Livewire UI Components is open-sourced software licensed under the [MIT license](/license.md).

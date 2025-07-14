@@ -42,21 +42,21 @@
     },
     "autoload": {
         "psr-4": {
-            "ArtisanPackUi\\LivewireUiComponents\\": "src/"
+            "ArtisanPack\\LivewireUiComponents\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "ArtisanPackUi\\LivewireUiComponents\\Tests\\": "tests"
+            "ArtisanPack\\LivewireUiComponents\\Tests\\": "tests"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "ArtisanPackUi\\LivewireUiComponents\\LivewireUiComponentsServiceProvider"
+                "ArtisanPack\\LivewireUiComponents\\LivewireUiComponentsServiceProvider"
             ],
             "aliases": {
-                "LivewireUiComponents": "ArtisanPackUi\\LivewireUiComponents\\Facades\\LivewireUiComponents"
+                "LivewireUiComponents": "ArtisanPack\\LivewireUiComponents\\Facades\\LivewireUiComponents"
             }
         }
     }

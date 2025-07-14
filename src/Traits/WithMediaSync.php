@@ -1,14 +1,44 @@
 <?php
+/**
+ * WithMediaSync Trait
+ *
+ * This trait provides functionality for synchronizing media files with models.
+ *
+ * @package    ArtisanPack\LivewireUiComponents
+ * @subpackage Traits
+ * @author     Jacob Martella
+ * @copyright  2023 Jacob Martella
+ * @license    MIT
+ * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
+ * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
+ * @since      1.0.0
+ */
 
-namespace Mary\Traits;
+namespace ArtisanPack\LivewireUiComponents\Traits;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
-use Str;
+use Illuminate\Support\Str;
 
+/**
+ * WithMediaSync Trait
+ *
+ * Provides methods for handling media file uploads, removals, and synchronization with models.
+ *
+ * @since 1.0.0
+ */
 trait WithMediaSync
 {
-    // Remove media
+    /**
+     * Remove a media file from the library.
+     *
+     * @param string $uuid           The UUID of the media file to remove.
+     * @param string $filesModelName The name of the files model property.
+     * @param string $library        The name of the library property.
+     * @param string $url            The URL of the media file.
+     * @return void
+     * @since 1.0.0
+     */
     public function removeMedia(string $uuid, string $filesModelName, string $library, string $url): void
     {
         // Updates library
@@ -19,7 +49,14 @@ trait WithMediaSync
         $this->{$filesModelName} = collect($this->{$filesModelName})->filter(fn($file) => $file->getFilename() != $name)->all();
     }
 
-    // Set order
+    /**
+     * Refresh the order of media files in the library.
+     *
+     * @param array  $order   The new order of media files by UUID.
+     * @param string $library The name of the library property.
+     * @return void
+     * @since 1.0.0
+     */
     public function refreshMediaOrder(array $order, string $library): void
     {
         $this->{$library} = $this->{$library}->sortBy(function ($item) use ($order) {
@@ -27,7 +64,14 @@ trait WithMediaSync
         });
     }
 
-    // Bind temporary files with respective previews and replace existing ones, if necessary
+    /**
+     * Bind temporary files with respective previews and replace existing ones, if necessary.
+     *
+     * @param string $filesModelName The name of the files model property.
+     * @param string $library        The name of the library property.
+     * @return void
+     * @since 1.0.0
+     */
     public function refreshMediaSources(string $filesModelName, string $library)
     {
         // New files area
@@ -52,7 +96,19 @@ trait WithMediaSync
         $this->validateOnly($filesModelName . '.*');
     }
 
-    // Storage files into permanent area and updates the model with fresh sources
+    /**
+     * Store files into permanent storage area and update the model with fresh sources.
+     *
+     * @param Model  $model           The model to update.
+     * @param string $library         The name of the library property. Default: 'library'.
+     * @param string $files           The name of the files property. Default: 'files'.
+     * @param string $storage_subpath The storage subpath. Default: ''.
+     * @param mixed  $model_field     The model field to update. Default: 'library'.
+     * @param string $visibility      The file visibility. Default: 'public'.
+     * @param string $disk            The storage disk. Default: 'public'.
+     * @return void
+     * @since 1.0.0
+     */
     public function syncMedia(
         Model $model,
         string $library = 'library',
@@ -90,6 +146,13 @@ trait WithMediaSync
         $this->{$files} = [];
     }
 
+    /**
+     * Get the file name from a media array.
+     *
+     * @param array|null $media The media array.
+     * @return string|null The file name.
+     * @since 1.0.0
+     */
     private function getFileName(?array $media): ?string
     {
         $name = $media['uuid'] ?? null;

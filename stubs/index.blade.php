@@ -3,7 +3,7 @@
 use App\Models\User;
 use Illuminate\Support\Collection;
 use Livewire\Volt\Component;
-use Mary\Traits\Toast;
+use ArtisanPack\LivewireUiComponents\Traits\Toast;
 
 new class extends Component {
     use Toast;

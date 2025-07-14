@@ -1,6 +1,21 @@
 <?php
+/**
+ * MaryInstallCommand
+ *
+ * This file contains the MaryInstallCommand class for the ArtisanPack UI Livewire UI Components package.
+ *
+ * @package    ArtisanPack\LivewireUiComponents\Console
+ * @subpackage Commands
+ * @author     Jacob Martella
+ * @copyright  2023 Jacob Martella
+ * @license    MIT
+ * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
+ * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
+ * @since      1.0.0
+ */
 
-namespace Mary\Console\Commands;
+
+namespace ArtisanPack\LivewireUiComponents\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
@@ -9,6 +24,13 @@ use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Str;
 use RuntimeException;
 use function Laravel\Prompts\select;
+/**
+ * MaryInstallCommand Class
+ *
+ * Provides functionality for the MaryInstallCommand component.
+ *
+ * @since 1.0.0
+ */
 
 class MaryInstallCommand extends Command
 {
