@@ -25,7 +25,7 @@ use Illuminate\Support\Facades\Facade;
  * @since 1.0.0
  */
 
-class Mary extends Facade
+class LivewireUiComponents extends Facade
 {
     /**
      * Get the registered name of the component.
@@ -34,6 +34,6 @@ class Mary extends Facade
      */
     protected static function getFacadeAccessor(): string
     {
-        return 'mary';
+        return 'livewireuicomponents';
     }
 }

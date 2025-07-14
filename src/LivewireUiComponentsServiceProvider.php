@@ -17,6 +17,7 @@
 namespace ArtisanPack\LivewireUiComponents;
 
 use Arr;
+use ArtisanPackUI\LivewireUIComponents\Console\Commands\GenerateThemeCss;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use ArtisanPack\LivewireUiComponents\Console\Commands\LivewireUiComponentsBootcampCommand;
@@ -248,6 +249,6 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
             __DIR__ . '/../config/livewire-ui-components.php' => config_path('livewire-ui-components.php'),
         ], 'livewire-ui-components.config');
 
-        $this->commands([LivewireUiComponentsInstallCommand::class, LivewireUiComponentsBootcampCommand::class]);
+        $this->commands([LivewireUiComponentsInstallCommand::class, LivewireUiComponentsBootcampCommand::class, GenerateThemeCss::class,]);
     }
 }

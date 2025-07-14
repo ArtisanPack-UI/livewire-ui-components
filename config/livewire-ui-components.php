@@ -41,5 +41,16 @@ return [
         'spotlight' => [
             'class' => 'App\Support\Spotlight',
         ]
-    ]
+    ],
+	/*
+    |--------------------------------------------------------------------------
+    | Theme Generation Settings
+    |--------------------------------------------------------------------------
+    |
+    | This value specifies the default output path for the generated CSS theme
+    | file within the user's Laravel application. Developers can publish this
+    | file and modify the path to suit their project structure.
+    |
+    */
+	'theme_output_path' => resource_path('css/artisanpack-ui-theme.css'),
 ];
