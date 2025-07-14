@@ -137,93 +137,14 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         // Just rename <x-icon> provided by BladeUI Icons to <x-svg> to not collide with ours
         Blade::component('BladeUI\Icons\Components\Icon', 'svg');
 
-        // No matter if components has custom prefix or not,
-        // we also register below alias to avoid naming collision,
-        // because they are used inside some Livewire UI Components' components itself.
-        Blade::component('artisanpack-button', Button::class);
-        Blade::component('artisanpack-card', Card::class);
-        Blade::component('artisanpack-icon', Icon::class);
-        Blade::component('artisanpack-input', Input::class);
-        Blade::component('artisanpack-list-item', ListItem::class);
-        Blade::component('artisanpack-modal', Modal::class);
-        Blade::component('artisanpack-menu', Menu::class);
-        Blade::component('artisanpack-menu-item', MenuItem::class);
-        Blade::component('artisanpack-header', Header::class);
-        Blade::component('artisanpack-pagination', Pagination::class);
-
-        $prefix = config('livewire-ui-components.prefix');
-
-        // Blade
-        Blade::component($prefix . 'accordion', Accordion::class);
-        Blade::component($prefix . 'alert', Alert::class);
-        Blade::component($prefix . 'avatar', Avatar::class);
-        Blade::component($prefix . 'badge', Badge::class);
-        Blade::component($prefix . 'breadcrumbs', Breadcrumbs::class);
-        Blade::component($prefix . 'button', Button::class);
-        Blade::component($prefix . 'calendar', Calendar::class);
-        Blade::component($prefix . 'card', Card::class);
-        Blade::component($prefix . 'chart', Chart::class);
-        Blade::component($prefix . 'checkbox', Checkbox::class);
-        Blade::component($prefix . 'choices', Choices::class);
-        Blade::component($prefix . 'choices-offline', ChoicesOffline::class);
-        Blade::component($prefix . 'code', Code::class);
-        Blade::component($prefix . 'collapse', Collapse::class);
-        Blade::component($prefix . 'colorpicker', Colorpicker::class);
-        Blade::component($prefix . 'datepicker', DatePicker::class);
-        Blade::component($prefix . 'datetime', DateTime::class);
-        Blade::component($prefix . 'diff', Diff::class);
-        Blade::component($prefix . 'drawer', Drawer::class);
-        Blade::component($prefix . 'dropdown', Dropdown::class);
-        Blade::component($prefix . 'editor', Editor::class);
-        Blade::component($prefix . 'errors', Errors::class);
-        Blade::component($prefix . 'file', File::class);
-        Blade::component($prefix . 'form', Form::class);
-        Blade::component($prefix . 'select-group', SelectGroup::class);
-        Blade::component($prefix . 'header', Header::class);
-        Blade::component($prefix . 'hr', Hr::class);
-        Blade::component($prefix . 'icon', Icon::class);
-        Blade::component($prefix . 'image-gallery', ImageGallery::class);
-        Blade::component($prefix . 'image-library', ImageLibrary::class);
-        Blade::component($prefix . 'input', Input::class);
-        Blade::component($prefix . 'kbd', Kbd::class);
-        Blade::component($prefix . 'list-item', ListItem::class);
-        Blade::component($prefix . 'loading', Loading::class);
-        Blade::component($prefix . 'markdown', Markdown::class);
-        Blade::component($prefix . 'modal', Modal::class);
-        Blade::component($prefix . 'menu', Menu::class);
-        Blade::component($prefix . 'menu-item', MenuItem::class);
-        Blade::component($prefix . 'menu-separator', MenuSeparator::class);
-        Blade::component($prefix . 'menu-sub', MenuSub::class);
-        Blade::component($prefix . 'menu-title', MenuTitle::class);
-        Blade::component($prefix . 'main', Main::class);
-        Blade::component($prefix . 'nav', Nav::class);
-        Blade::component($prefix . 'pagination', Pagination::class);
-        Blade::component($prefix . 'password', Password::class);
-        Blade::component($prefix . 'pin', Pin::class);
-        Blade::component($prefix . 'popover', Popover::class);
-        Blade::component($prefix . 'progress', Progress::class);
-        Blade::component($prefix . 'progress-radial', ProgressRadial::class);
-        Blade::component($prefix . 'radio', Radio::class);
-        Blade::component($prefix . 'group', Group::class);
-        Blade::component($prefix . 'range', Range::class);
-        Blade::component($prefix . 'rating', Rating::class);
-        Blade::component($prefix . 'select', Select::class);
-        Blade::component($prefix . 'signature', Signature::class);
-        Blade::component($prefix . 'spotlight', Spotlight::class);
-        Blade::component($prefix . 'stat', Stat::class);
-        Blade::component($prefix . 'steps', Steps::class);
-        Blade::component($prefix . 'step', Step::class);
-        Blade::component($prefix . 'swap', Swap::class);
-        Blade::component($prefix . 'table', Table::class);
-        Blade::component($prefix . 'tab', Tab::class);
-        Blade::component($prefix . 'tabs', Tabs::class);
-        Blade::component($prefix . 'tags', Tags::class);
-        Blade::component($prefix . 'textarea', Textarea::class);
-        Blade::component($prefix . 'timeline-item', TimelineItem::class);
-        Blade::component($prefix . 'theme-toggle', ThemeToggle::class);
-        Blade::component($prefix . 'toast', Toast::class);
-        Blade::component($prefix . 'toggle', Toggle::class);
-        Blade::component($prefix . 'carousel', Carousel::class);
+        /**
+         * Register the components with the 'artisanpack' prefix.
+         *
+         * This tells Blade to look for components in the
+         * 'ArtisanPack\LivewireUiComponents\View\Components' namespace
+         * when it encounters a tag like <artisanpack:button />.
+         */
+        Blade::componentNamespace('ArtisanPack\\LivewireUiComponents\\View\\Components', 'artisanpack');
     }
 
     /**
