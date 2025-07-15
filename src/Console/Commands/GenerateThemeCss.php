@@ -11,10 +11,10 @@
  * @since      1.0.0
  */
 
-namespace ArtisanPackUI\LivewireUIComponents\Console\Commands;
+namespace ArtisanPack\LivewireUiComponents\Console\Commands;
 
 use Illuminate\Console\Command;
-use ArtisanPackUI\LivewireUIComponents\Styling\ColorGenerator;
+use ArtisanPack\LivewireUiComponents\Styling\ColorGenerator;
 use Illuminate\Support\Facades\File;
 use Exception;
 
