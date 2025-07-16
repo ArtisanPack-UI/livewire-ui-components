@@ -61,7 +61,7 @@ class Password extends Component
         public ?bool $omitError = false,
         public ?bool $firstErrorOnly = false,
     ) {
-        $this->uuid = "mary" . md5(serialize($this)) . $id;
+        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
 
         // Cannot use a left icon when password toggle should be shown on the left side.
         if (($this->icon && ! $this->right) && ! $this->onlyPassword) {
@@ -147,11 +147,11 @@ class Password extends Component
 
                                 {{-- ICON LEFT / TOGGLE INPUT TYPE --}}
                                 @if($icon)
-                                    <x-mary-icon :name="$icon" class="pointer-events-none w-4 h-4 opacity-40" />
+                                    <x-artisanpack-icon :name="$icon" class="pointer-events-none w-4 h-4 opacity-40" />
                                 @elseif($placeToggleLeft())
-                                    <x-mary-button x-on:click="hidden = !hidden" class="btn-ghost btn-xs btn-circle -m-1">
-                                        <x-mary-icon name="{{ $passwordIcon }}" x-show="hidden" class="w-4 h-4 opacity-40" />
-                                        <x-mary-icon name="{{ $passwordVisibleIcon }}" x-show="!hidden" x-cloak class="w-4 h-4 opacity-40" />
+                                    <x-artisanpack-button x-on:click="hidden = !hidden" class="btn-ghost btn-xs btn-circle -m-1">
+                                        <x-artisanpack-icon name="{{ $passwordIcon }}" x-show="hidden" class="w-4 h-4 opacity-40" />
+                                        <x-artisanpack-icon name="{{ $passwordVisibleIcon }}" x-show="!hidden" x-cloak class="w-4 h-4 opacity-40" />
                                     </x-mary-button>
                                 @endif
 
@@ -170,16 +170,16 @@ class Password extends Component
 
                                 {{-- CLEAR ICON  --}}
                                 @if($clearable)
-                                    <x-mary-icon x-on:click="$wire.set('{{ $modelName() }}', '', {{ json_encode($attributes->wire('model')->hasModifier('live')) }})"  name="o-x-mark" class="cursor-pointer w-4 h-4 opacity-40"/>
+                                    <x-artisanpack-icon x-on:click="$wire.set('{{ $modelName() }}', '', {{ json_encode($attributes->wire('model')->hasModifier('live')) }})"  name="o-x-mark" class="cursor-pointer w-4 h-4 opacity-40"/>
                                 @endif
 
                                 {{-- ICON RIGHT / TOGGLE INPUT TYPE --}}
                                 @if($iconRight)
-                                    <x-mary-icon :name="$iconRight" @class(["pointer-events-none w-4 h-4 opacity-40", "!end-10" => $clearable]) />
+                                    <x-artisanpack-icon :name="$iconRight" @class(["pointer-events-none w-4 h-4 opacity-40", "!end-10" => $clearable]) />
                                 @elseif($placeToggleRight())
-                                    <x-mary-button x-on:click="hidden = !hidden" @class(["btn-ghost btn-xs btn-circle -m-1", "!end-9" => $clearable])>
-                                        <x-mary-icon name="{{ $passwordIcon }}" x-show="hidden" class="w-4 h-4 opacity-40" />
-                                        <x-mary-icon name="{{ $passwordVisibleIcon }}" x-show="!hidden" x-cloak class="w-4 h-4 opacity-40" />
+                                    <x-artisanpack-button x-on:click="hidden = !hidden" @class(["btn-ghost btn-xs btn-circle -m-1", "!end-9" => $clearable])>
+                                        <x-artisanpack-icon name="{{ $passwordIcon }}" x-show="hidden" class="w-4 h-4 opacity-40" />
+                                        <x-artisanpack-icon name="{{ $passwordVisibleIcon }}" x-show="!hidden" x-cloak class="w-4 h-4 opacity-40" />
                                     </x-mary-button>
                                 @endif
 

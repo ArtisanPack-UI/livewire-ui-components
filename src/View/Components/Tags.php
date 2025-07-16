@@ -54,7 +54,7 @@ class Tags extends Component
         public ?bool $omitError = false,
         public ?bool $firstErrorOnly = false,
     ) {
-        $this->uuid = "mary" . md5(serialize($this)) . $id;
+        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
     }
 
     public function modelName(): ?string
@@ -200,7 +200,7 @@ class Tags extends Component
 
                                 {{-- ICON LEFT --}}
                                 @if($icon)
-                                    <x-mary-icon :name="$icon" class="pointer-events-none w-4 h-4 opacity-40" />
+                                    <x-artisanpack-icon :name="$icon" class="pointer-events-none w-4 h-4 opacity-40" />
                                 @endif
 
                                 <div class="w-full py-1 min-h-9.5 content-center text-wrap">
@@ -209,7 +209,7 @@ class Tags extends Component
                                         <template :key="index" x-for="(tag, index) in tags">
                                             <span class="mary-tags-element cursor-pointer badge badge-soft m-0.5 !inline-block">
                                                 <span x-text="tag"></span>
-                                                <x-mary-icon @click="remove(index)" x-show="!isReadonly && !isDisabled" name="o-x-mark" class="w-4 h-4 mb-0.5 hover:text-error" />
+                                                <x-artisanpack-icon @click="remove(index)" x-show="!isReadonly && !isDisabled" name="o-x-mark" class="w-4 h-4 mb-0.5 hover:text-error" />
                                             </span>
                                         </template>
                                     </span>
@@ -240,12 +240,12 @@ class Tags extends Component
 
                                 {{-- CLEAR ICON  --}}
                                 @if($clearable && !$isReadonly() && !$isDisabled())
-                                    <x-mary-icon @click="clearAll()" x-show="tags.length" name="o-x-mark" class="cursor-pointer w-4 h-4 opacity-40"/>
+                                    <x-artisanpack-icon @click="clearAll()" x-show="tags.length" name="o-x-mark" class="cursor-pointer w-4 h-4 opacity-40"/>
                                 @endif
 
                                 {{-- ICON RIGHT --}}
                                 @if($iconRight)
-                                    <x-mary-icon :name="$iconRight" class="pointer-events-none w-4 h-4 opacity-40" />
+                                    <x-artisanpack-icon :name="$iconRight" class="pointer-events-none w-4 h-4 opacity-40" />
                                 @endif
 
                                 {{-- SUFFIX --}}

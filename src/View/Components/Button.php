@@ -82,7 +82,7 @@ class Button extends Component
         public ?string $tooltipRight = null,
         public ?string $tooltipBottom = null,
     ) {
-        $this->uuid = "mary" . md5(serialize($this)) . $id;
+        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
         $this->tooltip = $this->tooltip ?? $this->tooltipLeft ?? $this->tooltipRight ?? $this->tooltipBottom;
         $this->tooltipPosition = $this->tooltipLeft ? 'lg:tooltip-left' : ($this->tooltipRight ? 'lg:tooltip-right' : ($this->tooltipBottom ? 'lg:tooltip-bottom' : 'lg:tooltip-top'));
     }
@@ -150,7 +150,7 @@ class Button extends Component
                     <!-- ICON -->
                     @if($icon)
                         <span class="block" @if($spinner) wire:loading.class="hidden" wire:target="{{ $spinnerTarget() }}" @endif>
-                            <x-mary-icon :name="$icon" />
+                            <x-artisanpack-icon :name="$icon" />
                         </span>
                     @endif
 
@@ -169,7 +169,7 @@ class Button extends Component
                     <!-- ICON RIGHT -->
                     @if($iconRight)
                         <span class="block" @if($spinner) wire:loading.class="hidden" wire:target="{{ $spinnerTarget() }}" @endif>
-                            <x-mary-icon :name="$iconRight" />
+                            <x-artisanpack-icon :name="$iconRight" />
                         </span>
                     @endif
 

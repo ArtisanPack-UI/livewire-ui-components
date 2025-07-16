@@ -161,7 +161,7 @@ class ToastException extends Exception
                     'description' => $this->description,
 
                     'position' => $this->position,
-                    'icon' => Blade::render("<x-mary-icon class='w-7 h-7' name='" . $this->icon . "' />"),
+                    'icon' => Blade::render("<x-artisanpack-icon class='w-7 h-7' name='" . $this->icon . "' />"),
                     'css' => $this->css,
                     'timeout' => $this->timeout,
                 ],

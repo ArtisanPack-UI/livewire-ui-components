@@ -42,7 +42,7 @@ class Dropdown extends Component
         // Slots
         public mixed $trigger = null
     ) {
-        $this->uuid = "mary" . md5(serialize($this)) . $id;
+        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
     }
 
     public function render(): View|Closure|string
@@ -68,7 +68,7 @@ class Dropdown extends Component
                     <!-- DEFAULT TRIGGER -->
                     <summary x-ref="button" @click.prevent="open = !open" {{ $attributes->class(["btn"]) }}>
                         {{ $label }}
-                        <x-mary-icon :name="$icon" />
+                        <x-artisanpack-icon :name="$icon" />
                     </summary>
                 @endif
 

@@ -77,7 +77,7 @@ class Choices extends Component
         public mixed $prepend = null,
         public mixed $append = null
     ) {
-        $this->uuid = "mary" . md5(serialize($this)) . $id;
+        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
 
         if (($this->allowAll || $this->compact) && ($this->single || $this->searchable)) {
             throw new Exception("`allow-all` and `compact` does not work combined with `single` or `searchable`.");
@@ -299,7 +299,7 @@ class Choices extends Component
 
                                         {{-- ICON LEFT --}}
                                         @if($icon)
-                                            <x-mary-icon :name="$icon" class="pointer-events-none w-4 h-4 opacity-40" />
+                                            <x-artisanpack-icon :name="$icon" class="pointer-events-none w-4 h-4 opacity-40" />
                                         @endif
 
                                         <div class="w-full py-0.5 min-h-3 content-center text-wrap">
@@ -321,7 +321,7 @@ class Choices extends Component
                                                             @endif
 
                                                             @if(!$isDisabled() && !$isReadonly())
-                                                                <x-mary-icon @click="toggle(option.{{ $optionValue }})" x-show="!isReadonly && !isDisabled && !isSingle" name="o-x-mark" class="w-4 h-4 hover:text-error" />
+                                                                <x-artisanpack-icon @click="toggle(option.{{ $optionValue }})" x-show="!isReadonly && !isDisabled && !isSingle" name="o-x-mark" class="w-4 h-4 hover:text-error" />
                                                             @endif
                                                         </span>
                                                     </template>
@@ -361,12 +361,12 @@ class Choices extends Component
 
                                         {{-- CLEAR ICON  --}}
                                         @if($clearable && !$isReadonly() && !$isDisabled())
-                                            <x-mary-icon @click="reset()" x-show="!isSelectionEmpty" name="o-x-mark" class="cursor-pointer w-4 h-4 opacity-40"/>
+                                            <x-artisanpack-icon @click="reset()" x-show="!isSelectionEmpty" name="o-x-mark" class="cursor-pointer w-4 h-4 opacity-40"/>
                                         @endif
 
                                         {{-- ICON RIGHT --}}
                                         @if($iconRight)
-                                            <x-mary-icon :name="$iconRight" class="pointer-events-none w-4 h-4 opacity-40" />
+                                            <x-artisanpack-icon :name="$iconRight" class="pointer-events-none w-4 h-4 opacity-40" />
                                         @endif
 
                                         {{-- SUFFIX --}}
@@ -443,7 +443,7 @@ class Choices extends Component
                                         @if($item)
                                             {{ $item($option) }}
                                         @else
-                                            <x-mary-list-item :item="$option" :value="$optionLabel" :sub-value="$optionSubLabel" :avatar="$optionAvatar" />
+                                            <x-artisanpack-list-item :item="$option" :value="$optionLabel" :sub-value="$optionSubLabel" :avatar="$optionAvatar" />
                                         @endif
 
                                         {{-- SELECTION SLOT --}}

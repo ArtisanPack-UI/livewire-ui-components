@@ -45,7 +45,7 @@ class Card extends Component
         public mixed $actions = null,
         public mixed $figure = null,
     ) {
-        $this->uuid = "mary" . md5(serialize($this)) . $id;
+        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
     }
 
     public function progressTarget(): ?string

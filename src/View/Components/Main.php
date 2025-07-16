@@ -101,8 +101,8 @@ class Main extends Component
 
                                      {{-- SIDEBAR COLLAPSE  --}}
                                     @if($sidebar->attributes['collapsible'])
-                                    <x-mary-menu class="hidden lg:block">
-                                        <x-mary-menu-item
+                                    <x-artisanpack-menu class="hidden lg:block">
+                                        <x-artisanpack-menu-item
                                             @click="toggle"
                                             icon="{{ $sidebar->attributes['collapse-icon'] ?? $collapseIcon }}"
                                             title="{{ $sidebar->attributes['collapse-text'] ?? $collapseText }}" />

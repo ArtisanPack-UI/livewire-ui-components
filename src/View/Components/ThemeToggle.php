@@ -44,7 +44,7 @@ class ThemeToggle extends Component
         public ?bool $withLabel = false,
 
     ) {
-        $this->uuid = "mary" . md5(serialize($this)) . $id;
+        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
     }
 
     public function render(): View|Closure|string
@@ -81,8 +81,8 @@ class ThemeToggle extends Component
                         {{ $attributes->class("swap swap-rotate") }}
                     >
                         <input id="{{ $uuid }}" type="checkbox" class="theme-controller opacity-0" @click="toggle()" :value="theme" />
-                        <x-mary-icon x-ref="sun" name="o-sun" class="swap-on" />
-                        <x-mary-icon x-ref="moon" name="o-moon" class="swap-off"  />
+                        <x-artisanpack-icon x-ref="sun" name="o-sun" class="swap-on" />
+                        <x-artisanpack-icon x-ref="moon" name="o-moon" class="swap-off"  />
                     </label>
                 </div>
                 <script>

@@ -39,7 +39,7 @@ class Pagination extends Component
         public ?string $id = null,
         public ?array $perPageValues = [10, 20, 50, 100],
     ) {
-        $this->uuid = "mary" . md5(serialize($this)) . $id;
+        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
     }
 
     public function modelName(): ?string

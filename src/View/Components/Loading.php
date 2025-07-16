@@ -35,7 +35,7 @@ class Loading extends Component
     public function __construct(
         public ?string $id = null,
     ) {
-        $this->uuid = "mary" . md5(serialize($this)) . $id;
+        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
     }
 
     public function render(): View|Closure|string

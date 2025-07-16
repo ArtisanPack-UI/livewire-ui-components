@@ -52,7 +52,7 @@ class DateTime extends Component
         public ?bool $firstErrorOnly = false,
 
     ) {
-        $this->uuid = "mary" . md5(serialize($this)) . $id;
+        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
     }
 
     public function modelName(): ?string
@@ -112,7 +112,7 @@ class DateTime extends Component
 
                                 {{-- ICON LEFT --}}
                                 @if($icon)
-                                    <x-mary-icon :name="$icon" class="pointer-events-none w-4 h-4 -ml-1 opacity-40" />
+                                    <x-artisanpack-icon :name="$icon" class="pointer-events-none w-4 h-4 -ml-1 opacity-40" />
                                 @endif
 
                                 {{-- INPUT --}}
@@ -124,7 +124,7 @@ class DateTime extends Component
 
                                 {{-- ICON RIGHT --}}
                                 @if($iconRight)
-                                    <x-mary-icon :name="$iconRight" class="pointer-events-none w-4 h-4 opacity-40" />
+                                    <x-artisanpack-icon :name="$iconRight" class="pointer-events-none w-4 h-4 opacity-40" />
                                 @endif
                             </label>
 

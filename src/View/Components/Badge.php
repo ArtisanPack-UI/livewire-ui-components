@@ -37,7 +37,7 @@ class Badge extends Component
         public ?string $value = null,
 
     ) {
-        $this->uuid = "mary" . md5(serialize($this)) . $id;
+        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
     }
 
     public function render(): View|Closure|string

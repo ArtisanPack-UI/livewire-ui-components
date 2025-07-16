@@ -42,7 +42,7 @@ class Spotlight extends Component
         // Slots
         public mixed $append = null
     ) {
-        $this->uuid = "mary" . md5(serialize($this)) . $id;
+        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
         $this->url = $this->url ?? route('mary.spotlight', absolute: false);
     }
 
@@ -143,7 +143,7 @@ class Spotlight extends Component
                     @mary-search.window="updateQuery(event.detail)"
                     @mary-search-open.window="show(); focus();"
                 >
-                    <x-mary-modal
+                    <x-artisanpack-modal
                         id="marySpotlight"
                         x-ref="marySpotlightRef"
                         class="backdrop-blur-sm"
@@ -154,7 +154,7 @@ class Spotlight extends Component
                             <div class="flex">
                                 <div class="flex-1">
                                     <div class="flex items-center">
-                                        <x-mary-icon name="o-magnifying-glass"  class="opacity-40" />
+                                        <x-artisanpack-icon name="o-magnifying-glass"  class="opacity-40" />
                                         <input
                                             id="{{ $uuid }}"
                                             x-model="value"

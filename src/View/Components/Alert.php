@@ -51,7 +51,7 @@ class Alert extends Component
         // Slots
         public mixed $actions = null
     ) {
-        $this->uuid = "mary" . md5(serialize($this)) . $id;
+        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
     }
 
     public function render(): View|Closure|string
@@ -64,7 +64,7 @@ class Alert extends Component
                     x-data="{ show: true }" x-show="show"
                 >
                     @if($icon)
-                        <x-mary-icon :name="$icon" class="self-center" />
+                        <x-artisanpack-icon :name="$icon" class="self-center" />
                     @endif
 
                     @if($title)
@@ -81,7 +81,7 @@ class Alert extends Component
                     </div>
 
                     @if($dismissible)
-                        <x-mary-button icon="o-x-mark" @click="show = false" class="btn-xs btn-circle btn-ghost static self-start end-0" />
+                        <x-artisanpack-button icon="o-x-mark" @click="show = false" class="btn-xs btn-circle btn-ghost static self-start end-0" />
                     @endif
                 </div>
             BLADE;

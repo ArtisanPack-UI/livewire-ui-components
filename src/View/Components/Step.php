@@ -42,12 +42,12 @@ class Step extends Component
         public ?string $dataContent = null,
 
     ) {
-        $this->uuid = "mary" . md5(serialize($this)) . $id;
+        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
     }
 
     public function iconHTML(): ?string
     {
-        return Blade::render("<x-mary-icon name='" . $this->icon . "' class='w-4 w-4' />");
+        return Blade::render("<x-artisanpack-icon name='" . $this->icon . "' class='w-4 w-4' />");
     }
 
     public function render(): View|Closure|string

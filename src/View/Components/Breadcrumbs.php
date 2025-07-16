@@ -51,7 +51,7 @@ class Breadcrumbs extends Component
         public ?string $separatorClass = "h-3 w-3 mx-1 text-base-content/40",
         public ?bool $noWireNavigate = false,
     ) {
-        $this->uuid = "mary" . md5(serialize($this)) . $id;
+        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
     }
 
     public function tooltip(array $element): ?string
@@ -92,7 +92,7 @@ class Breadcrumbs extends Component
 
                                 {{-- Icon --}}
                                 @if($element['icon'] ?? null)
-                                    <x-mary-icon :name="$element['icon']" @class(["mb-0.5", $iconClass]) />
+                                    <x-artisanpack-icon :name="$element['icon']" @class(["mb-0.5", $iconClass]) />
                                 @endif
 
                                 {{-- Text --}}
@@ -118,7 +118,7 @@ class Breadcrumbs extends Component
                                 "sm:!block" => !$loop->last && $loop->count > 1
                              ])
                         >
-                            <x-mary-icon :name="$separator" @class([$separatorClass]) />
+                            <x-artisanpack-icon :name="$separator" @class([$separatorClass]) />
                         </span>
                     @endforeach
                 </ul>

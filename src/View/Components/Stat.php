@@ -47,7 +47,7 @@ class Stat extends Component
         public ?string $tooltipBottom = null,
 
     ) {
-        $this->uuid = "mary" . md5(serialize($this)) . $id;
+        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
         $this->tooltip = $this->tooltip ?? $this->tooltipLeft ?? $this->tooltipRight ?? $this->tooltipBottom;
         $this->tooltipPosition = $this->tooltipLeft ? 'lg:tooltip-left' : ($this->tooltipRight ? 'lg:tooltip-right' : ($this->tooltipBottom ? 'lg:tooltip-bottom' : 'lg:tooltip-top'));
     }
@@ -65,7 +65,7 @@ class Stat extends Component
                     <div class="flex items-center gap-3">
                         @if($icon)
                             <div class="  {{ $color }}">
-                                <x-mary-icon :name="$icon" class="w-9 h-9" />
+                                <x-artisanpack-icon :name="$icon" class="w-9 h-9" />
                             </div>
                         @endif
 

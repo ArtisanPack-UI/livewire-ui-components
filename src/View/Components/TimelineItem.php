@@ -43,7 +43,7 @@ class TimelineItem extends Component
         public ?bool $last = false,
 
     ) {
-        $this->uuid = "mary" . md5(serialize($this)) . $id;
+        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
     }
 
     public function render(): View|Closure|string
@@ -72,7 +72,7 @@ class TimelineItem extends Component
                         >
                             <!-- ICON -->
                             @if($icon)
-                                <x-mary-icon :name="$icon" @class(["ms-2 mt-1 w-4 h-4", "text-base-100" => !$pending ])  />
+                                <x-artisanpack-icon :name="$icon" @class(["ms-2 mt-1 w-4 h-4", "text-base-100" => !$pending ])  />
                             @endif
                         </div>
 

@@ -86,7 +86,7 @@ class Table extends Component
         unset($this->headers);
 
         // Serialize
-        $this->uuid = "mary" . md5(serialize($this)) . $id;
+        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
 
         // Put them back
         $this->rowDecoration = $rowDecoration;
@@ -337,7 +337,7 @@ class Table extends Component
                                         {{ isset(${"header_".$temp_key}) ? ${"header_".$temp_key}($header) : $header['label'] }}
 
                                         @if($isSortable($header))
-                                            <x-mary-icon :name="$isSortedBy($header) ? $getSort($header)['direction'] == 'asc' ? 'o-chevron-down' : 'o-chevron-up' : 'o-chevron-up-down'"  class="size-3! mb-1 ms-1" />
+                                            <x-artisanpack-icon :name="$isSortedBy($header) ? $getSort($header)['direction'] == 'asc' ? 'o-chevron-down' : 'o-chevron-up' : 'o-chevron-up-down'"  class="size-3! mb-1 ms-1" />
                                         @endif
                                     </th>
                                 @endforeach
@@ -376,7 +376,7 @@ class Table extends Component
                                     @if($expandable)
                                         <td class="w-1 pe-0 py-0">
                                             @if(data_get($row, $expandableCondition))
-                                                <x-mary-icon
+                                                <x-artisanpack-icon
                                                     name="o-chevron-down"
                                                     ::class="isExpanded({{ $getKeyValue($row, 'expandableKey') }}) || '-rotate-90 !text-current'"
                                                     class="cursor-pointer p-2 w-8 h-8 bg-base-300 rounded-lg"
@@ -465,9 +465,9 @@ class Table extends Component
                     <!-- Pagination -->
                     @if($withPagination)
                         @if($perPage)
-                            <x-mary-pagination :rows="$rows" :per-page-values="$perPageValues" wire:model.live="{{ $perPage }}" />
+                            <x-artisanpack-pagination :rows="$rows" :per-page-values="$perPageValues" wire:model.live="{{ $perPage }}" />
                         @else
-                            <x-mary-pagination :rows="$rows" :per-page-values="$perPageValues" />
+                            <x-artisanpack-pagination :rows="$rows" :per-page-values="$perPageValues" />
                         @endif
                     @endif
                 </div>

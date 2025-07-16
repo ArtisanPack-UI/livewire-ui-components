@@ -41,7 +41,7 @@ class Menu extends Component
         public ?bool $activateByRoute = false,
         public ?string $activeBgColor = 'bg-base-300',
     ) {
-        $this->uuid = "mary" . md5(serialize($this)) . $id;
+        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
     }
 
     public function render(): View|Closure|string
@@ -53,7 +53,7 @@ class Menu extends Component
                             <div class="flex items-center gap-2">
 
                                 @if($icon)
-                                    <x-mary-icon :name="$icon" @class(['inline-flex', $iconClasses])  />
+                                    <x-artisanpack-icon :name="$icon" @class(['inline-flex', $iconClasses])  />
                                 @endif
 
                                 {{ $title }}

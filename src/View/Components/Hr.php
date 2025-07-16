@@ -36,7 +36,7 @@ class Hr extends Component
         public ?string $id = null,
         public ?string $target = null,
     ) {
-        $this->uuid = "mary" . md5(serialize($this)) . $id;
+        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
     }
 
     public function progressTarget(): ?string

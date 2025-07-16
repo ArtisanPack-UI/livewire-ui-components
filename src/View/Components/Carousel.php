@@ -47,7 +47,7 @@ class Carousel extends Component
         // Slots
         public mixed $content = null,
     ) {
-        $this->uuid = "mary" . md5(serialize($this)) . $id;
+        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
     }
 
     public function render(): View|Closure|string
@@ -98,9 +98,9 @@ class Carousel extends Component
 
                 @if(!$withoutArrows)
                     <!-- previous button -->
-                    <x-mary-button icon="o-chevron-left"  @click="previous()" class="absolute cursor-pointer left-5 top-1/2 z-[2] btn-circle btn-sm" />
+                    <x-artisanpack-button icon="o-chevron-left"  @click="previous()" class="absolute cursor-pointer left-5 top-1/2 z-[2] btn-circle btn-sm" />
                     <!-- next button -->
-                    <x-mary-button icon="o-chevron-right"  @click="next()" class="absolute cursor-pointer right-5 top-1/2 z-[2] btn-circle btn-sm" />
+                    <x-artisanpack-button icon="o-chevron-right"  @click="next()" class="absolute cursor-pointer right-5 top-1/2 z-[2] btn-circle btn-sm" />
                 @endif
 
                 <!-- slides -->

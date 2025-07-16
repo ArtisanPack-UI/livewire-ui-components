@@ -47,7 +47,7 @@ class Signature extends Component
         public ?bool $omitError = false,
         public ?bool $firstErrorOnly = false,
     ) {
-        $this->uuid = "mary" . md5(serialize($this)) . $id;
+        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
     }
 
     public function modelName(): ?string
@@ -113,7 +113,7 @@ class Signature extends Component
 
                             <!-- CLEAR BUTTON -->
                             <div class="absolute end-2 top-1/2 -translate-y-1/2 ">
-                                <x-mary-button icon="o-backspace" :label="$clearText" @click="clear" class="{{$clearBtnStyle ?? 'btn-sm btn-ghost'}}" />
+                                <x-artisanpack-button icon="o-backspace" :label="$clearText" @click="clear" class="{{$clearBtnStyle ?? 'btn-sm btn-ghost'}}" />
                             </div>
                         </div>
                     </div>

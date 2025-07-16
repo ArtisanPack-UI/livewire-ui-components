@@ -41,7 +41,7 @@ class MenuSub extends Component
         public ?bool $hidden = false,
         public ?bool $disabled = false,
     ) {
-        $this->uuid = "mary" . md5(serialize($this)) . $id;
+        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
     }
 
     public function render(): View|Closure|string
@@ -78,7 +78,7 @@ class MenuSub extends Component
                     <details :open="show" @if($submenuActive) open @endif @click.stop>
                         <summary @click.prevent="toggle()" @class(["hover:text-inherit px-4 py-1.5 my-0.5 text-inherit", $activeBgColor => $submenuActive])>
                             @if($icon)
-                                <x-mary-icon :name="$icon" @class(['inline-flex my-0.5', $iconClasses]) />
+                                <x-artisanpack-icon :name="$icon" @class(['inline-flex my-0.5', $iconClasses]) />
                             @endif
 
                             <span class="mary-hideable whitespace-nowrap truncate">{{ $title }}</span>

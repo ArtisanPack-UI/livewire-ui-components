@@ -39,7 +39,7 @@ class Errors extends Component
         public ?string $icon = 'o-x-circle',
         public ?array $only = [],
     ) {
-        $this->uuid = "mary" . md5(serialize($this)) . $id;
+        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
     }
 
     public function render(): View|Closure|string
@@ -51,7 +51,7 @@ class Errors extends Component
                             <div class="grid gap-3">
                                 <div class="flex gap-2">
                                     @if($title)
-                                        <x-mary-icon :name="$icon" class="w-6 h-6 mt-0.5" />
+                                        <x-artisanpack-icon :name="$icon" class="w-6 h-6 mt-0.5" />
                                     @endif
                                     <div>
                                         @if($title)

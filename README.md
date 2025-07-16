@@ -23,7 +23,7 @@ composer require artisanpack-ui/livewire-ui-components
 After installation, you can use the components in your Livewire views:
 
 ```blade
-<x-artisanpack-button>Click Me</x-artisanpack-button>
+<x-artisanpack-artisanpack-button>Click Me</x-artisanpack-button>
 ```
 
 ## Documentation

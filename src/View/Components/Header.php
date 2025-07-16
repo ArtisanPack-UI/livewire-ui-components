@@ -74,7 +74,7 @@ class Header extends Component
                                 @endif
 
                                 @if($icon)
-                                    <x-mary-icon name="{{ $icon }}" class="{{ $iconClasses }}" />
+                                    <x-artisanpack-icon name="{{ $icon }}" class="{{ $iconClasses }}" />
                                 @endif
 
                                 <span @class(["ml-2" => $icon])>{{ $title }}</span>

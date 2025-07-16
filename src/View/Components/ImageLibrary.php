@@ -52,7 +52,7 @@ class ImageLibrary extends Component
         public Collection $preview = new Collection(),
 
     ) {
-        $this->uuid = "mary" . md5(serialize($this)) . $id;
+        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
     }
 
     public function modelName(): ?string
@@ -205,8 +205,8 @@ class ImageLibrary extends Component
 
                                     {{-- ACTIONS --}}
                                     <div class="absolute flex flex-col gap-2 top-3 start-3 cursor-pointer  p-2 rounded-lg ignore-drag">
-                                        <x-mary-button @click="removeMedia('{{ $image['uuid'] }}', '{{ $image['url'] }}')" @touchend.prevent="removeMedia('{{ $image['uuid'] }}', '{{ $image['url'] }}')" icon="o-x-circle" :tooltip="$removeText"  class="btn-sm btn-ghost btn-circle" />
-                                        <x-mary-button @click="crop('image-{{ $modelName().'.'.$key  }}-{{ $uuid }}')" @touchend.prevent="crop('image-{{ $modelName().'.'.$key }}-{{ $uuid }}')" icon="o-scissors" :tooltip="$cropText"  class="btn-sm btn-ghost btn-circle" />
+                                        <x-artisanpack-button @click="removeMedia('{{ $image['uuid'] }}', '{{ $image['url'] }}')" @touchend.prevent="removeMedia('{{ $image['uuid'] }}', '{{ $image['url'] }}')" icon="o-x-circle" :tooltip="$removeText"  class="btn-sm btn-ghost btn-circle" />
+                                        <x-artisanpack-button @click="crop('image-{{ $modelName().'.'.$key  }}-{{ $uuid }}')" @touchend.prevent="crop('image-{{ $modelName().'.'.$key }}-{{ $uuid }}')" icon="o-scissors" :tooltip="$cropText"  class="btn-sm btn-ghost btn-circle" />
                                     </div>
                                 </div>
                             @endforeach
@@ -215,11 +215,11 @@ class ImageLibrary extends Component
 
                     {{-- CROP MODAL --}}
                     <div @click.prevent="" x-ref="crop" wire:ignore>
-                        <x-mary-modal id="maryCropModal{{ $uuid }}" x-ref="maryCropModal" :title="$cropTitleText" separator class="backdrop-blur-sm" persistent @keydown.window.esc.prevent="" without-trap-focus>
+                        <x-artisanpack-modal id="maryCropModal{{ $uuid }}" x-ref="maryCropModal" :title="$cropTitleText" separator class="backdrop-blur-sm" persistent @keydown.window.esc.prevent="" without-trap-focus>
                             <img src="#" crossOrigin="Anonymous" />
                             <x-slot:actions>
-                                <x-mary-button :label="$cropCancelText" @click="close()" />
-                                <x-mary-button :label="$cropSaveText" class="btn-primary" @click="save()" />
+                                <x-artisanpack-button :label="$cropCancelText" @click="close()" />
+                                <x-artisanpack-button :label="$cropSaveText" class="btn-primary" @click="save()" />
                             </x-slot:actions>
                         </x-mary-modal>
                     </div>
@@ -243,7 +243,7 @@ class ImageLibrary extends Component
 
                     {{-- ADD FILES --}}
                     <div @click="$refs.files.click()" class="btn btn-block" :class="(processing || indeterminate) && 'opacity-50 pointer-events-none'">
-                        <x-mary-icon name="o-plus-circle" label="{{ $addFilesText }}" />
+                        <x-artisanpack-icon name="o-plus-circle" label="{{ $addFilesText }}" />
                     </div>
 
                     {{-- MAIN FILE INPUT --}}

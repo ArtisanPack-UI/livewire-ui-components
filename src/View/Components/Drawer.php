@@ -46,7 +46,7 @@ class Drawer extends Component
         //Slots
         public ?string $actions = null
     ) {
-        $this->uuid = "mary" . md5(serialize($this)) . $id;
+        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
     }
 
     public function id(): string
@@ -104,7 +104,7 @@ class Drawer extends Component
                         <label for="{{ $id() }}" class="drawer-overlay"></label>
 
                         <!-- Content -->
-                        <x-mary-card
+                        <x-artisanpack-card
                             :title="$title"
                             :subtitle="$subtitle"
                             :separator="$separator"
@@ -113,7 +113,7 @@ class Drawer extends Component
                         >
                             @if($withCloseButton)
                                 <x-slot:menu>
-                                    <x-mary-button icon="o-x-mark" class="btn-ghost btn-sm btn-circle" @click="close()" />
+                                    <x-artisanpack-button icon="o-x-mark" class="btn-ghost btn-sm btn-circle" @click="close()" />
                                 </x-slot:menu>
                             @endif
 

@@ -7,15 +7,15 @@ return [
      * Make sure to clear view cache after renaming with `php artisan view:clear`
      *
      *    prefix => ''
-     *              <x-button />
-     *              <x-card />
+     *              <x-artisanpack-button />
+     *              <x-artisanpack-card />
      *
      *    prefix => 'artisanpack-'
-     *               <x-artisanpack-button />
-     *               <x-artisanpack-card />
+     *               <x-artisanpack-artisanpack-button />
+     *               <x-artisanpack-artisanpack-card />
      *
      */
-    'prefix' => '',
+    'prefix' => 'artisanpack-',
 
     /**
      * Default route prefix.

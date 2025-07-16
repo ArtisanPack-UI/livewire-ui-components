@@ -51,7 +51,7 @@ class MenuItem extends Component
         public ?bool $disabled = false,
         public ?bool $exact = false
     ) {
-        $this->uuid = "mary" . md5(serialize($this)) . $id;
+        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
     }
 
     public function spinnerTarget(): ?string
@@ -125,7 +125,7 @@ class MenuItem extends Component
 
                         @if($icon)
                             <span class="block py-0.5" @if($spinner) wire:loading.class="hidden" wire:target="{{ $spinnerTarget() }}" @endif>
-                                <x-mary-icon :name="$icon" @class(['mb-0.5', $iconClasses]) />
+                                <x-artisanpack-icon :name="$icon" @class(['mb-0.5', $iconClasses]) />
                             </span>
                         @endif
 

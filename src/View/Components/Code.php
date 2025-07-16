@@ -45,7 +45,7 @@ class Code extends Component
         public string $lineHeight = '2',
         public bool $printMargin = false,
     ) {
-        $this->uuid = "mary" . md5(serialize($this)) . $id;
+        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
     }
 
     public function modelName(): ?string

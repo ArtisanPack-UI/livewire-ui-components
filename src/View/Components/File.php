@@ -53,7 +53,7 @@ class File extends Component
         public ?bool $firstErrorOnly = false,
 
     ) {
-        $this->uuid = "mary" . md5(serialize($this)) . $id;
+        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
     }
 
     public function modelName(): ?string
@@ -220,11 +220,11 @@ class File extends Component
 
                             <!-- CROP MODAL -->
                             <div @click.prevent="" x-ref="crop" wire:ignore>
-                                <x-mary-modal id="maryCrop{{ $uuid }}" x-ref="maryCrop" :title="$cropTitleText" separator class="backdrop-blur-sm" persistent @keydown.window.esc.prevent="" without-trap-focus>
+                                <x-artisanpack-modal id="maryCrop{{ $uuid }}" x-ref="maryCrop" :title="$cropTitleText" separator class="backdrop-blur-sm" persistent @keydown.window.esc.prevent="" without-trap-focus>
                                     <img src="" />
                                     <x-slot:actions>
-                                        <x-mary-button :label="$cropCancelText" @click="close()" />
-                                        <x-mary-button :label="$cropSaveText" class="btn-primary" @click="save()" ::disabled="processing" />
+                                        <x-artisanpack-button :label="$cropCancelText" @click="close()" />
+                                        <x-artisanpack-button :label="$cropSaveText" class="btn-primary" @click="save()" ::disabled="processing" />
                                     </x-slot:actions>
                                 </x-mary-modal>
                             </div>

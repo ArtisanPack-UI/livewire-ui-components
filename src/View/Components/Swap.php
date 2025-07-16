@@ -40,7 +40,7 @@ class Swap extends Component
         public ?string $falseIcon = 'o-moon',
         public ?string $iconSize = "h-5 w-5",
     ) {
-        $this->uuid = "mary" . md5(serialize($this)) . $id;
+        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
     }
 
     public function render(): View|Closure|string
@@ -68,7 +68,7 @@ class Swap extends Component
                                 {{ $true ?? '' }}
                             </div>
                         @else
-                            <x-mary-icon :name="$trueIcon" class="swap-on {{ $iconSize }}" />
+                            <x-artisanpack-icon :name="$trueIcon" class="swap-on {{ $iconSize }}" />
                         @endif
 
                         {{-- False Element --}}
@@ -77,7 +77,7 @@ class Swap extends Component
                                 {{ $false ?? '' }}
                             </div>
                         @else 
-                            <x-mary-icon :name="$falseIcon" class="swap-off {{ $iconSize }}" />
+                            <x-artisanpack-icon :name="$falseIcon" class="swap-off {{ $iconSize }}" />
                         @endif
 
                     </div>

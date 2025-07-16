@@ -138,21 +138,21 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         // Just rename <x-icon> provided by BladeUI Icons to <x-svg> to not collide with ours
         Blade::component('BladeUI\Icons\Components\Icon', 'svg');
 
+        $prefix = config('livewire-ui-components.prefix');
+
         // No matter if components has custom prefix or not,
         // we also register below alias to avoid naming collision,
         // because they are used inside some Mary's components itself.
-        Blade::component('mary-button', Button::class);
-        Blade::component('mary-card', Card::class);
-        Blade::component('mary-icon', Icon::class);
-        Blade::component('mary-input', Input::class);
-        Blade::component('mary-list-item', ListItem::class);
-        Blade::component('mary-modal', Modal::class);
-        Blade::component('mary-menu', Menu::class);
-        Blade::component('mary-menu-item', MenuItem::class);
-        Blade::component('mary-header', Header::class);
-        Blade::component('mary-pagination', Pagination::class);
-
-        $prefix = config('mary.prefix');
+        Blade::component($prefix . 'button', Button::class);
+        Blade::component($prefix . 'card', Card::class);
+        Blade::component($prefix . 'icon', Icon::class);
+        Blade::component($prefix . 'input', Input::class);
+        Blade::component($prefix . 'list-item', ListItem::class);
+        Blade::component($prefix . 'modal', Modal::class);
+        Blade::component($prefix . 'menu', Menu::class);
+        Blade::component($prefix . 'menu-item', MenuItem::class);
+        Blade::component($prefix . 'header', Header::class);
+        Blade::component($prefix . 'pagination', Pagination::class);
 
         // Blade
         Blade::component($prefix . 'accordion', Accordion::class);
