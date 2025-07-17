@@ -28,7 +28,7 @@ After installation, you can use the components in your Livewire views:
 
 ## Documentation
 
-Comprehensive documentation is coming soon. In the meantime, you can explore the components in the `src/View/Components` directory.
+Comprehensive documentation is available in our [Documentation Wiki](https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components/-/wikis/home). The wiki contains detailed information about all available components, their properties, and usage examples.
 
 ## Acknowledgements
 
