@@ -83,7 +83,7 @@ class Calendar extends Component
 
     /**
      * Determines appropriate text color (black or white) based on background color
-     * 
+     *
      * @param string $hexColor Hex color code (e.g., #FF5733)
      * @return string Text color (#ffffff or #000000)
      */
@@ -92,18 +92,18 @@ class Calendar extends Component
         if (!$hexColor) {
             return '#ffffff'; // Default to white text
         }
-        
+
         // Remove # if present
         $hexColor = ltrim($hexColor, '#');
-        
+
         // Convert to RGB
         $r = hexdec(substr($hexColor, 0, 2));
         $g = hexdec(substr($hexColor, 2, 2));
         $b = hexdec(substr($hexColor, 4, 2));
-        
+
         // Calculate luminance - standard formula
         $luminance = (0.299 * $r + 0.587 * $g + 0.114 * $b) / 255;
-        
+
         // Return black for bright colors, white for dark colors
         return $luminance > 0.5 ? '#000000' : '#ffffff';
     }
@@ -153,7 +153,7 @@ class Calendar extends Component
             'popupEventDescription' => 'text-sm text-gray-600 dark:text-gray-300',
             'popupEventTime' => 'text-xs text-gray-500 dark:text-gray-400',
         ];
-        
+
         return str_replace('"y"', json_encode($cssClasses), $config);
     }
 
@@ -179,7 +179,7 @@ class Calendar extends Component
             // Get event color scheme
             $colorScheme = $event['colorScheme'] ?? $this->colorScheme;
             $customColor = $event['customColor'] ?? $this->customColor;
-            
+
             // Determine CSS class based on color scheme
             $cssClass = match($colorScheme) {
                 'secondary' => 'bg-secondary text-white',
@@ -192,7 +192,7 @@ class Calendar extends Component
                 // Use title instead of description if available
                 $title = $event['title'] ?? $event['description'] ?? null;
                 $startTime = isset($event['start_time']) ? '<div class="text-sm">' . $event['start_time'] . '</div>' : '';
-                
+
                 // Create HTML for event popup
                 $html = '<div class="event-popup">';
                 $html .= '<div><strong>' . $event['label'] . '</strong></div>';
@@ -235,7 +235,7 @@ class Calendar extends Component
         // Get the custom color and contrast color
         $customColor = $this->customColor ?? '#6366f1'; // Default to indigo if not set
         $textColor = $this->getContrastColor($customColor);
-        
+
         return <<<JS
     function applyCustomColors() {
         // Apply custom color to regular event elements
@@ -293,21 +293,14 @@ JS;
                         currentYear: new Date().getFullYear(),
                         currentView: '{{ $view }}',
                         currentDate: new Date(),
-                        calendar: null,
+                        days: [],
+                        weekdays: [],
+                        events: {{ json_encode($events) }},
                         
                         init() {
-                            // Initialize calendar
-                            this.calendar = new VanillaCalendar($refs.calendar, {{ $setup() }}); 
-                            this.calendar.init();
+                            // Initialize calendar data
+                            this.initCalendar();
                             {{ $customColorScript() }}
-                            applyCustomColors();
-                            
-                            // Update month/year display when calendar changes
-                            document.addEventListener('vanilla-calendar-date-selected', (e) => {
-                                this.currentMonth = e.detail.date.toLocaleString('{{ $locale }}', { month: 'long' });
-                                this.currentYear = e.detail.date.getFullYear();
-                                this.currentDate = e.detail.date;
-                            });
                             
                             // Handle view switching
                             this.$watch('currentView', (value) => {
@@ -316,25 +309,126 @@ JS;
                             
                             // Initialize event interactions
                             this.initEventInteractions();
+                            
+                            // Update display based on view
+                            this.updateViewDisplay(this.currentView);
+                        },
+                        
+                        // Initialize calendar data
+                        initCalendar() {
+                            // Set up weekdays based on locale and start day
+                            this.setupWeekdays();
+                            
+                            // Generate days for the current month/view
+                            this.generateDays();
+                        },
+                        
+                        // Set up weekday names based on locale and start day
+                        setupWeekdays() {
+                            const weekdays = [];
+                            const date = new Date(2023, 0, 1); // Sunday
+                            
+                            // Adjust to start with Sunday or Monday based on sundayStart property
+                            const startDay = {{ $sundayStart ? 0 : 1 }};
+                            
+                            for (let i = 0; i < 7; i++) {
+                                const day = new Date(date);
+                                day.setDate(date.getDate() + ((i + startDay) % 7));
+                                
+                                weekdays.push({
+                                    full: day.toLocaleString('{{ $locale }}', { weekday: 'long' }),
+                                    short: day.toLocaleString('{{ $locale }}', { weekday: 'short' }),
+                                    min: day.toLocaleString('{{ $locale }}', { weekday: 'narrow' })
+                                });
+                            }
+                            
+                            this.weekdays = weekdays;
+                        },
+                        
+                        // Generate days for the current month/view
+                        generateDays() {
+                            const days = [];
+                            const year = this.currentDate.getFullYear();
+                            const month = this.currentDate.getMonth();
+                            
+                            // Create a date for the first day of the month
+                            const firstDay = new Date(year, month, 1);
+                            
+                            // Get the day of the week for the first day (0 = Sunday, 1 = Monday, etc.)
+                            let firstDayOfWeek = firstDay.getDay();
+                            
+                            // Adjust for Monday start if needed
+                            if (!{{ $sundayStart ? 'true' : 'false' }} && firstDayOfWeek === 0) {
+                                firstDayOfWeek = 7;
+                            }
+                            
+                            // Calculate the date for the first cell in the calendar grid
+                            // This might be in the previous month
+                            const start = new Date(firstDay);
+                            start.setDate(1 - (firstDayOfWeek - ({{ $sundayStart ? 0 : 1 }})));
+                            
+                            // Get the number of days in the current month
+                            const lastDay = new Date(year, month + 1, 0);
+                            const daysInMonth = lastDay.getDate();
+                            
+                            // Calculate the total number of cells needed (up to 6 weeks)
+                            const totalCells = Math.ceil((daysInMonth + firstDayOfWeek - ({{ $sundayStart ? 0 : 1 }})) / 7) * 7;
+                            
+                            // Generate the days
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0);
+                            
+                            for (let i = 0; i < totalCells; i++) {
+                                const date = new Date(start);
+                                date.setDate(start.getDate() + i);
+                                
+                                const isCurrentMonth = date.getMonth() === month;
+                                const isToday = date.getTime() === today.getTime();
+                                const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+                                
+                                // Find events for this day
+                                const dayEvents = this.getEventsForDate(date);
+                                
+                                days.push({
+                                    date: date,
+                                    day: date.getDate(),
+                                    month: date.getMonth(),
+                                    year: date.getFullYear(),
+                                    isCurrentMonth: isCurrentMonth,
+                                    isToday: isToday,
+                                    isWeekend: isWeekend,
+                                    events: dayEvents
+                                });
+                            }
+                            
+                            this.days = days;
+                        },
+                        
+                        // Get events for a specific date
+                        getEventsForDate(date) {
+                            if (!this.events || !this.events.length) return [];
+                            
+                            const dateStr = date.toISOString().split('T')[0]; // YYYY-MM-DD
+                            
+                            return this.events.filter(event => {
+                                // Single day event
+                                if (event.date && event.date === dateStr) return true;
+                                
+                                // Range event
+                                if (event.range && Array.isArray(event.range) && event.range.length === 2) {
+                                    const startDate = new Date(event.range[0]);
+                                    const endDate = new Date(event.range[1]);
+                                    return date >= startDate && date <= endDate;
+                                }
+                                
+                                return false;
+                            });
                         },
                         
                         // Switch between day, week, month, and year views
                         switchView(view) {
-                            if (!this.calendar) return;
-                            
-                            // Update calendar view
-                            this.calendar.settings.selection.day = view === 'day';
-                            this.calendar.settings.selection.week = view === 'week';
-                            this.calendar.settings.selection.month = view === 'month';
-                            this.calendar.settings.selection.year = view === 'year';
-                            
-                            // Apply the view change
-                            this.calendar.setType(view);
-                            
-                            // Refresh the calendar to apply changes
-                            this.calendar.update();
-                            
-                            // Update display based on view
+                            this.currentView = view;
+                            this.generateDays();
                             this.updateViewDisplay(view);
                         },
                         
@@ -368,80 +462,95 @@ JS;
                         
                         // Navigate to previous period based on current view
                         navigatePrevious() {
-                            if (!this.calendar) return;
-                            
                             if (this.currentView === 'day') {
-                                this.calendar.prev('day');
+                                this.currentDate.setDate(this.currentDate.getDate() - 1);
                             } else if (this.currentView === 'week') {
-                                this.calendar.prev('week');
+                                this.currentDate.setDate(this.currentDate.getDate() - 7);
                             } else if (this.currentView === 'year') {
-                                this.calendar.prev('year');
+                                this.currentDate.setFullYear(this.currentDate.getFullYear() - 1);
                             } else {
                                 // Month view (default)
-                                this.calendar.prev();
+                                this.currentDate.setMonth(this.currentDate.getMonth() - 1);
                             }
                             
-                            // Update the display after navigation
+                            this.currentMonth = this.currentDate.toLocaleString('{{ $locale }}', { month: 'long' });
+                            this.currentYear = this.currentDate.getFullYear();
+                            
+                            this.generateDays();
                             this.updateViewDisplay(this.currentView);
                         },
                         
                         // Navigate to next period based on current view
                         navigateNext() {
-                            if (!this.calendar) return;
-                            
                             if (this.currentView === 'day') {
-                                this.calendar.next('day');
+                                this.currentDate.setDate(this.currentDate.getDate() + 1);
                             } else if (this.currentView === 'week') {
-                                this.calendar.next('week');
+                                this.currentDate.setDate(this.currentDate.getDate() + 7);
                             } else if (this.currentView === 'year') {
-                                this.calendar.next('year');
+                                this.currentDate.setFullYear(this.currentDate.getFullYear() + 1);
                             } else {
                                 // Month view (default)
-                                this.calendar.next();
+                                this.currentDate.setMonth(this.currentDate.getMonth() + 1);
                             }
                             
-                            // Update the display after navigation
+                            this.currentMonth = this.currentDate.toLocaleString('{{ $locale }}', { month: 'long' });
+                            this.currentYear = this.currentDate.getFullYear();
+                            
+                            this.generateDays();
                             this.updateViewDisplay(this.currentView);
                         },
                         
                         // Navigate to today
                         navigateToday() {
-                            if (!this.calendar) return;
-                            
-                            this.calendar.today();
                             this.currentDate = new Date();
                             this.currentMonth = this.currentDate.toLocaleString('{{ $locale }}', { month: 'long' });
                             this.currentYear = this.currentDate.getFullYear();
                             
-                            // Update the display after navigation
+                            this.generateDays();
                             this.updateViewDisplay(this.currentView);
                         },
                         
                         // Initialize event interactions
                         initEventInteractions() {
-                            // Add event listeners after calendar is initialized
-                            document.addEventListener('vanilla-calendar-day-click', (e) => {
-                                // Handle day click event
-                                console.log('Day clicked:', e.detail.date);
+                            // Event click handling is now done with Alpine.js @click handlers
+                        },
+                        
+                        // Handle day click
+                        handleDayClick(day) {
+                            console.log('Day clicked:', day.date);
+                            // Dispatch custom event for day click
+                            const event = new CustomEvent('calendar-day-click', {
+                                detail: { date: day.date }
                             });
-                            
-                            // Event hover interactions are handled by CSS in the addCss method
-                            
-                            // Add click event handling for events
-                            document.addEventListener('click', (e) => {
-                                const eventEl = e.target.closest('.vanilla-calendar-day__event');
-                                if (eventEl) {
-                                    const eventId = eventEl.dataset.eventId;
-                                    if (eventId) {
-                                        console.log('Event clicked:', eventId);
-                                        // Dispatch custom event for event click
-                                        const event = new CustomEvent('calendar-event-click', {
-                                            detail: { eventId: eventId }
-                                        });
-                                        document.dispatchEvent(event);
-                                    }
-                                }
+                            document.dispatchEvent(event);
+                        },
+                        
+                        // Handle event click
+                        handleEventClick(event) {
+                            console.log('Event clicked:', event.id);
+                            // Dispatch custom event for event click
+                            const customEvent = new CustomEvent('calendar-event-click', {
+                                detail: { eventId: event.id }
                             });
+                            document.dispatchEvent(customEvent);
+                        },
+                        
+                        // Get color classes for an event
+                        getEventColorClasses(event) {
+                            const colorScheme = event.colorScheme || 'primary';
+                            
+                            if (colorScheme === 'custom' && event.customColor) {
+                                return {
+                                    'custom-color': true,
+                                    'text-white': true
+                                };
+                            }
+                            
+                            return {
+                                'bg-primary text-white': colorScheme === 'primary',
+                                'bg-secondary text-white': colorScheme === 'secondary',
+                                'bg-accent text-white': colorScheme === 'accent'
+                            };
                         },
                         
                         // Header text computed property
@@ -510,11 +619,59 @@ JS;
                 
                 <!-- Calendar grid -->
                 <div class="w-full max-w-full bg-white dark:bg-dark-2 overflow-x-auto rounded-lg shadow-sm">
-                    <div 
-                        x-ref="calendar"
-                        class="w-full"
-                        x-init="$nextTick(() => { updateViewDisplay(currentView); })"
-                    ></div>
+                    <table class="w-full">
+                        <thead>
+                            <tr class="rounded-t-lg" :class="{
+                                'bg-primary text-white': '{{ $colorScheme }}' === 'primary',
+                                'bg-secondary text-white': '{{ $colorScheme }}' === 'secondary',
+                                'bg-accent text-white': '{{ $colorScheme }}' === 'accent',
+                                'custom-color-header': '{{ $colorScheme }}' === 'custom'
+                            }">
+                                <template x-for="(day, index) in weekdays" :key="index">
+                                    <th class="h-[60px] p-2 text-xs lg:w-28 xl:text-base 2xl:w-40" :class="{ 'rounded-tl-lg': index === 0, 'rounded-tr-lg': index === 6 }">
+                                        <span class="hidden lg:block" x-text="day.full"></span>
+                                        <span class="hidden md:block lg:hidden" x-text="day.short"></span>
+                                        <span class="block md:hidden" x-text="day.min"></span>
+                                    </th>
+                                </template>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="week in Math.ceil(days.length / 7)" :key="week">
+                                <tr class="h-20 text-center">
+                                    <template x-for="i in 7" :key="i">
+                                        <td 
+                                            class="relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 ease hover:bg-gray-2 dark:hover:bg-dark-3 md:h-[125px] lg:w-28 2xl:w-40"
+                                            :class="{
+                                                'bg-gray-100 dark:bg-dark-3': days[(week-1)*7 + i - 1]?.isToday,
+                                                'bg-gray-50 dark:bg-dark-3/50': days[(week-1)*7 + i - 1]?.isWeekend && {{ $weekendHighlight ? 'true' : 'false' }},
+                                                'text-gray-400': !days[(week-1)*7 + i - 1]?.isCurrentMonth
+                                            }"
+                                            @click="handleDayClick(days[(week-1)*7 + i - 1])"
+                                        >
+                                            <!-- Day number -->
+                                            <div class="text-sm font-medium p-1" x-text="days[(week-1)*7 + i - 1]?.day"></div>
+                                            
+                                            <!-- Events for this day -->
+                                            <div class="mt-1 space-y-1 overflow-y-auto max-h-20">
+                                                <template x-for="(event, eventIndex) in days[(week-1)*7 + i - 1]?.events" :key="eventIndex">
+                                                    <div 
+                                                        class="rounded-md p-1 text-xs mb-1 truncate shadow-sm transition-transform duration-200 ease-in-out hover:scale-[1.02]"
+                                                        :class="getEventColorClasses(event)"
+                                                        :style="event.colorScheme === 'custom' && event.customColor ? `background-color: ${event.customColor}; color: {{ getContrastColor(event.customColor) }};` : ''"
+                                                        @click.stop="handleEventClick(event)"
+                                                    >
+                                                        <div class="font-medium" x-text="event.label"></div>
+                                                        <div x-show="event.start_time" class="text-xs opacity-80" x-text="event.start_time"></div>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </td>
+                                    </template>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
                 </div>
             </div>
             BLADE;
