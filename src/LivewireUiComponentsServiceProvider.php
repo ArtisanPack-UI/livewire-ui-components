@@ -92,6 +92,10 @@ use ArtisanPack\LivewireUiComponents\View\Components\ThemeToggle;
 use ArtisanPack\LivewireUiComponents\View\Components\TimelineItem;
 use ArtisanPack\LivewireUiComponents\View\Components\Toast;
 use ArtisanPack\LivewireUiComponents\View\Components\Toggle;
+use ArtisanPack\LivewireUiComponents\View\Components\Heading;
+use ArtisanPack\LivewireUiComponents\View\Components\Subheading;
+use ArtisanPack\LivewireUiComponents\View\Components\Text;
+use ArtisanPack\LivewireUiComponents\View\Components\Link;
 
 /**
  * LivewireUiComponents Service Provider Class
@@ -225,6 +229,10 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         Blade::component($prefix . 'toast', Toast::class);
         Blade::component($prefix . 'toggle', Toggle::class);
         Blade::component($prefix . 'carousel', Carousel::class);
+        Blade::component($prefix . 'heading', Heading::class);
+        Blade::component($prefix . 'subheading', Subheading::class);
+        Blade::component($prefix . 'text', Text::class);
+        Blade::component($prefix . 'link', Link::class);
     }
 
     /**
