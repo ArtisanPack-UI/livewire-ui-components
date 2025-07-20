@@ -39,16 +39,8 @@ class Accordion extends Component
         $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
     }
 
-    public function render(): View|Closure|string
+    public function render(): View
     {
-        return <<<'BLADE'
-                <div
-                    x-data="{ model: @entangle($attributes->wire('model')) }"
-                    {{ $attributes->whereDoesntStartWith('wire:model')->merge(['class' => ($noJoin ? '' : 'join join-vertical w-full')]) }}
-                    wire:key="accordion-{{ $uuid }}"
-                >
-                        {{ $slot }}
-                </div>
-            BLADE;
+        return view('livewire-ui-components::components.accordion');
     }
 }

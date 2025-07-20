@@ -111,24 +111,11 @@ class Heading extends Component
     /**
      * Renders the heading component.
      *
-     * @return View|Closure|string The rendered component.
+     * @return View The rendered component.
      * @since 1.0.0
      */
-    public function render(): View|Closure|string
+    public function render(): View
     {
-        return <<<'BLADE'
-            <h{{ $level }} 
-                id="{{ $id }}"
-                {{ $attributes->class([
-                    $sizeClass(),
-                    $fontWeightClass(),
-                    $color ?? 'text-base-content',
-                    'tracking-tight',
-                    'text-center' => $center,
-                ]) }}
-            >
-                {{ $slot }}
-            </h{{ $level }}>
-        BLADE;
+        return view('livewire-ui-components::components.heading');
     }
 }

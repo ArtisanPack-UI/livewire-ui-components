@@ -111,45 +111,11 @@ class Link extends Component
     /**
      * Renders the link component.
      *
-     * @return View|Closure|string The rendered component.
+     * @return View The rendered component.
      * @since 1.0.0
      */
-    public function render(): View|Closure|string
+    public function render(): View
     {
-        return <<<'BLADE'
-            <a 
-                id="{{ $id }}"
-                href="{{ $href }}"
-                {{ $attributes->class([
-                    'inline-flex items-center gap-1',
-                    $colorClass(),
-                    $underlineClass(),
-                    "lg:tooltip $tooltipPosition" => $tooltip,
-                ]) }}
-                
-                @if($external)
-                    target="_blank"
-                    rel="noopener noreferrer"
-                @endif
-
-                @if(!$external && !$noWireNavigate)
-                    wire:navigate
-                @endif
-
-                @if($tooltip)
-                    data-tip="{{ $tooltip }}"
-                @endif
-            >
-                @if($icon)
-                    <x-artisanpack-icon :name="$icon" />
-                @endif
-
-                {{ $slot }}
-
-                @if($iconRight)
-                    <x-artisanpack-icon :name="$iconRight" />
-                @endif
-            </a>
-        BLADE;
+        return view('livewire-ui-components::components.link');
     }
 }
