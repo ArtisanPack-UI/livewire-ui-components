@@ -87,7 +87,7 @@ class Calendar extends Component
      * @param string $hexColor Hex color code (e.g., #FF5733)
      * @return string Text color (#ffffff or #000000)
      */
-    public function getContrastColor(string $hexColor = null): string
+    public function a11yGetContrastColor(string $hexColor = null): string
     {
         if (!$hexColor) {
             return '#ffffff'; // Default to white text
@@ -206,7 +206,7 @@ class Calendar extends Component
                 // Add custom color inline style if needed
                 $modifier = $event['css'] ?? $cssClass;
                 if ($colorScheme === 'custom' && $customColor) {
-                    $textColor = $this->getContrastColor($customColor);
+                    $textColor = $this->a11yGetContrastColor($customColor);
                     $modifier .= ' custom-color';
                     // The inline style will be applied via JavaScript
                 }
@@ -234,7 +234,7 @@ class Calendar extends Component
     {
         // Get the custom color and contrast color
         $customColor = $this->customColor ?? '#6366f1'; // Default to indigo if not set
-        $textColor = $this->getContrastColor($customColor);
+        $textColor = $this->a11yGetContrastColor($customColor);
 
         return <<<JS
     function applyCustomColors() {
@@ -242,7 +242,7 @@ class Calendar extends Component
         document.querySelectorAll('.custom-color').forEach(el => {
             const customColor = el.closest('[data-custom-color]')?.dataset.customColor || '{$customColor}';
             if (customColor) {
-                const textColor = getContrastColor(customColor);
+                const textColor = a11yGetContrastColor(customColor);
                 el.style.backgroundColor = customColor;
                 el.style.color = textColor;
             }
@@ -271,7 +271,7 @@ class Calendar extends Component
         });
     }
     
-    function getContrastColor(hexColor) {
+    function a11yGetContrastColor(hexColor) {
         hexColor = hexColor.replace('#', '');
         const r = parseInt(hexColor.substr(0, 2), 16);
         const g = parseInt(hexColor.substr(2, 2), 16);
@@ -291,7 +291,7 @@ JS;
                     x-data="{
                         currentMonth: new Date().toLocaleString('{{ $locale }}', { month: 'long' }),
                         currentYear: new Date().getFullYear(),
-                        currentView: '{{ $view }}',
+                        currentView: 'month',
                         currentDate: new Date(),
                         days: [],
                         weekdays: [],
@@ -300,7 +300,7 @@ JS;
                         init() {
                             // Initialize calendar data
                             this.initCalendar();
-                            {{ $customColorScript() }}
+                            {!! $this->customColorScript() !!}
                             
                             // Handle view switching
                             this.$watch('currentView', (value) => {
@@ -658,7 +658,7 @@ JS;
                                                     <div 
                                                         class="rounded-md p-1 text-xs mb-1 truncate shadow-sm transition-transform duration-200 ease-in-out hover:scale-[1.02]"
                                                         :class="getEventColorClasses(event)"
-                                                        :style="event.colorScheme === 'custom' && event.customColor ? `background-color: ${event.customColor}; color: {{ getContrastColor(event.customColor) }};` : ''"
+                                                        :style="event.colorScheme === 'custom' && event.customColor ? `background-color: ${event.customColor}; color: ${a11yGetContrastColor(event.customColor)};` : ''"
                                                         @click.stop="handleEventClick(event)"
                                                     >
                                                         <div class="font-medium" x-text="event.label"></div>
