@@ -113,12 +113,8 @@ class Calendar extends Component
         });
     }
 
-    public function render(): View|Closure|string
+    public function render(): View
     {
-        return <<<'HTML'
-            <div wire:key="calendar-{{ rand() }}">
-                <div x-data x-init="const calendar = new VanillaCalendar($el, {{ $setup() }}); calendar.init();" class="w-fit"></div>
-            </div>
-            HTML;
+        return view('livewire-ui-components::components.calendar');
     }
 }

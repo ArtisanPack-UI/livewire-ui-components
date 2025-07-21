@@ -40,13 +40,6 @@ class Kbd extends Component
 
     public function render(): View|Closure|string
     {
-        return <<<'HTML'
-                <kbd
-                    wire:key="{{ $uuid }}"
-                    {{ $attributes->merge(["class" => "kbd"]) }}
-                >
-                    {{ $slot }}
-                </kbd>
-            HTML;
+        return view('livewire-ui-components::components.kbd');
     }
 }

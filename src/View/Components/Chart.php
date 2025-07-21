@@ -38,22 +38,8 @@ class Chart extends Component
         $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
     }
 
-    public function render(): View|Closure|string
+    public function render(): View
     {
-        return <<<'HTML'
-                <div
-                    wire:key="{{ $uuid }}-{{ rand() }}"
-                    x-data="{
-                        settings: @entangle($attributes->wire('model')),
-                        init(){
-                            new Chart($refs.chart, this.settings);
-                        }
-                    }"
-
-                    {{ $attributes->class(["relative"]) }}
-                >
-                    <canvas x-ref="chart"></canvas>
-                </div>
-            HTML;
+        return view('livewire-ui-components::components.chart');
     }
 }

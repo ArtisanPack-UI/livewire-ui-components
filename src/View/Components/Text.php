@@ -116,26 +116,11 @@ class Text extends Component
     /**
      * Renders the text component.
      *
-     * @return View|Closure|string The rendered component.
+     * @return View The rendered component.
      * @since 1.0.0
      */
-    public function render(): View|Closure|string
+    public function render(): View
     {
-        return <<<'BLADE'
-            <p 
-                id="{{ $id }}"
-                {{ $attributes->class([
-                    $sizeClass(),
-                    $fontWeightClass(),
-                    $colorClass(),
-                    'leading-relaxed',
-                    'text-center' => $center,
-                    'prose prose-base max-w-none' => $prose,
-                    'mb-4' => !$attributes->has('class') || !str_contains($attributes->get('class'), 'mb-'),
-                ]) }}
-            >
-                {{ $slot }}
-            </p>
-        BLADE;
+        return view('livewire-ui-components::components.text');
     }
 }

@@ -159,6 +159,7 @@ class LivewireUiComponentsInstallCommand extends Command
             }
 
             /* Livewire UI Components */
+            @source "../../vendor/artisanpack-ui/livewire-ui-components/resources/views/**/*.php";
             @source "../../vendor/artisanpack-ui/livewire-ui-components/src/View/Components/**/*.php";
 
             /* Theme toggle */

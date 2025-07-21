@@ -43,15 +43,6 @@ class Progress extends Component
 
     public function render(): View|Closure|string
     {
-        return <<<'HTML'
-                <progress
-                    {{ $attributes->class("progress") }}
-
-                    @if(!$indeterminate)
-                        value="{{ $value }}"
-                        max="{{ $max }}"
-                    @endif
-                ></progress>
-            HTML;
+        return view('livewire-ui-components::components.progress');
     }
 }

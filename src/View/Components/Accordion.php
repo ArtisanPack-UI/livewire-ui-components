@@ -30,25 +30,20 @@ use Illuminate\View\Component;
 
 class Accordion extends Component
 {
-    public string $uuid;
 
     public function __construct(
         public ?string $id = null,
         public ?bool $noJoin = false,
+        public string $uuid = '',
     ) {
-        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+        // Set uuid if not provided or empty
+        if (empty($this->uuid)) {
+            $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+        }
     }
 
-    public function render(): View|Closure|string
+    public function render(): View
     {
-        return <<<'BLADE'
-                <div
-                    x-data="{ model: @entangle($attributes->wire('model')) }"
-                    {{ $attributes->whereDoesntStartWith('wire:model')->merge(['class' => ($noJoin ? '' : 'join join-vertical w-full')]) }}
-                    wire:key="accordion-{{ $uuid }}"
-                >
-                        {{ $slot }}
-                </div>
-            BLADE;
+        return view('livewire-ui-components::components.accordion');
     }
 }
