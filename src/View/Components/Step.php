@@ -52,15 +52,6 @@ class Step extends Component
 
     public function render(): View|Closure|string
     {
-        return <<<'BLADE'
-                    <div
-                        class="hidden"
-                        x-init="steps.push({ step: '{{ $step }}', text: '{{ $text }}', classes: '{{ $stepClasses }}' @if($icon) , icon: {{ json_encode($iconHTML()) }}  @endif @if($dataContent), dataContent: '{{ $dataContent }}' @endif })"
-                    ></div>
-
-                    <div x-show="current == '{{ $step }}'" {{ $attributes->class("px-1") }} >
-                        {{ $slot }}
-                    </div>
-            BLADE;
+        return view('livewire-ui-components::components.step');
     }
 }

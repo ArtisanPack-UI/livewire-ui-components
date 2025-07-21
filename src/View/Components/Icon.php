@@ -32,14 +32,17 @@ use Illuminate\View\Component;
 
 class Icon extends Component
 {
-    public string $uuid;
 
     public function __construct(
         public string $name,
         public ?string $id = null,
-        public ?string $label = null
+        public ?string $label = null,
+        public string $uuid = ''
     ) {
-        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+        // Set uuid if not provided or empty
+        if (empty($this->uuid)) {
+            $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+        }
     }
 
     public function icon(): string|Stringable
@@ -57,21 +60,6 @@ class Icon extends Component
 
     public function render(): View|Closure|string
     {
-        return <<<'BLADE'
-                @if(strlen($label ?? '') > 0)
-                    <div class="inline-flex items-center gap-1">
-                @endif
-                    <x-svg
-                        :name="$icon()"
-                        {{ $attributes->class(['inline', 'w-5 h-5' => !Str::contains($attributes->get('class') ?? '', ['w-', 'h-']) ]) }}
-                    />
-
-                @if(strlen($label ?? '') > 0)
-                        <div class="{{ $labelClasses() }}" {{ $attributes->whereStartsWith('@') }}>
-                            {{ $label }}
-                        </div>
-                    </div>
-                @endif
-            BLADE;
+        return view('livewire-ui-components::components.icon');
     }
 }

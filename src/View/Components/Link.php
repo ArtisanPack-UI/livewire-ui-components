@@ -28,13 +28,7 @@ use Illuminate\View\Component;
  */
 class Link extends Component
 {
-    /**
-     * Unique identifier for the link instance.
-     *
-     * @var string
-     * @since 1.0.0
-     */
-    public string $uuid;
+
 
     /**
      * Constructor for the Link component.
@@ -68,10 +62,21 @@ class Link extends Component
         public ?string $tooltipLeft = null,
         public ?string $tooltipRight = null,
         public ?string $tooltipBottom = null,
+        public string $uuid = '',
+        public string $tooltipPosition = 'lg:tooltip-top',
     ) {
-        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+        // Set uuid if not provided or empty
+        if (empty($this->uuid)) {
+            $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+        }
+
+        // Set tooltip based on the first non-null value if not already set
         $this->tooltip = $this->tooltip ?? $this->tooltipLeft ?? $this->tooltipRight ?? $this->tooltipBottom;
-        $this->tooltipPosition = $this->tooltipLeft ? 'lg:tooltip-left' : ($this->tooltipRight ? 'lg:tooltip-right' : ($this->tooltipBottom ? 'lg:tooltip-bottom' : 'lg:tooltip-top'));
+
+        // Set tooltipPosition if not explicitly provided (using default value)
+        if ($this->tooltipPosition === 'lg:tooltip-top') {
+            $this->tooltipPosition = $this->tooltipLeft ? 'lg:tooltip-left' : ($this->tooltipRight ? 'lg:tooltip-right' : ($this->tooltipBottom ? 'lg:tooltip-bottom' : 'lg:tooltip-top'));
+        }
     }
 
     /**

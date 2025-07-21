@@ -30,7 +30,6 @@ use Illuminate\View\Component;
 
 class Alert extends Component
 {
-    public string $uuid;
 
     /**
      * @param ?string  $title  The title of the alert, displayed in bold.
@@ -38,6 +37,7 @@ class Alert extends Component
      * @param ?string  $description  A short description under the title.
      * @param ?bool  $shadow  Whether to apply a shadow effect to the alert.
      * @param ?bool  $dismissible  Whether the alert can be dismissed by the user.
+     * @param string  $uuid  Unique identifier for the alert instance.
      * @slot  mixed  $actions  Slots for actionable elements like buttons or links.
      */
     public function __construct(
@@ -49,9 +49,13 @@ class Alert extends Component
         public ?bool $dismissible = false,
 
         // Slots
-        public mixed $actions = null
+        public mixed $actions = null,
+        public string $uuid = ''
     ) {
-        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+        // Set uuid if not provided or empty
+        if (empty($this->uuid)) {
+            $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+        }
     }
 
     public function render(): View

@@ -30,13 +30,16 @@ use Illuminate\View\Component;
 
 class Accordion extends Component
 {
-    public string $uuid;
 
     public function __construct(
         public ?string $id = null,
         public ?bool $noJoin = false,
+        public string $uuid = '',
     ) {
-        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+        // Set uuid if not provided or empty
+        if (empty($this->uuid)) {
+            $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+        }
     }
 
     public function render(): View

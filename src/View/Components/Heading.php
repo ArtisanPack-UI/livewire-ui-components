@@ -28,13 +28,6 @@ use Illuminate\View\Component;
  */
 class Heading extends Component
 {
-    /**
-     * Unique identifier for the heading instance.
-     *
-     * @var string
-     * @since 1.0.0
-     */
-    public string $uuid;
 
     /**
      * Constructor for the Heading component.
@@ -58,8 +51,12 @@ class Heading extends Component
         public ?bool $bold = false,
         public ?bool $extrabold = false,
         public ?bool $center = false,
+        public string $uuid = '',
     ) {
-        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+        // Set uuid if not provided or empty
+        if (empty($this->uuid)) {
+            $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+        }
     }
 
     /**

@@ -30,8 +30,28 @@ use Illuminate\View\Component;
 
 class Textarea extends Component
 {
+    /**
+     * Unique identifier for the textarea instance.
+     *
+     * @var string
+     * @since 1.0.0
+     */
     public string $uuid;
 
+    /**
+     * Constructor for the Textarea component.
+     *
+     * @param string|null $id            Optional ID for the textarea.
+     * @param string|null $label         Label text for the textarea.
+     * @param string|null $hint          Hint text displayed below the textarea.
+     * @param string|null $hintClass     CSS class for the hint text.
+     * @param bool|null   $inline        Whether to display the label inline with the textarea.
+     * @param string|null $errorField    Field name for error messages.
+     * @param string|null $errorClass    CSS class for error messages.
+     * @param bool|null   $omitError     Whether to hide error messages.
+     * @param bool|null   $firstErrorOnly Whether to show only the first error message.
+     * @since 1.0.0
+     */
     public function __construct(
         public ?string $id = null,
         public ?string $label = null,
@@ -48,77 +68,36 @@ class Textarea extends Component
         $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
     }
 
+    /**
+     * Get the model name from the wire:model attribute.
+     *
+     * @return string|null The model name.
+     * @since 1.0.0
+     */
     public function modelName(): ?string
     {
         return $this->attributes->whereStartsWith('wire:model')->first();
     }
 
+    /**
+     * Get the field name for error messages.
+     *
+     * @return string|null The error field name.
+     * @since 1.0.0
+     */
     public function errorFieldName(): ?string
     {
         return $this->errorField ?? $this->modelName();
     }
 
-    public function render(): View|Closure|string
+    /**
+     * Renders the textarea component.
+     *
+     * @return View The rendered component.
+     * @since 1.0.0
+     */
+    public function render(): View
     {
-        return <<<'BLADE'
-            <div>
-                @php
-                    // We need this extra step to support models arrays. Ex: wire:model="emails.0"  , wire:model="emails.1"
-                    $uuid = $uuid . $modelName()
-                @endphp
-
-                <fieldset class="fieldset py-0">
-                    {{-- STANDARD LABEL --}}
-                    @if($label && !$inline)
-                        <legend class="fieldset-legend mb-0.5">
-                            {{ $label }}
-
-                            @if($attributes->get('required'))
-                                <span class="text-error">*</span>
-                            @endif
-                        </legend>
-                    @endif
-
-                    <label @class(["floating-label" => $label && $inline])>
-                        {{-- FLOATING LABEL--}}
-                        @if ($label && $inline)
-                            <span class="font-semibold">{{ $label }}</span>
-                        @endif
-
-                        <div class="w-full">
-                            {{-- TEXTAREA --}}
-                            <textarea
-                                placeholder="{{ $attributes->get('placeholder') }} "
-
-                               {{
-                                    $attributes->merge(['id' => $uuid])
-                                    ->class([
-                                        "textarea w-full",
-                                        "border-dashed" => $attributes->has("readonly") && $attributes->get("readonly") == true,
-                                        "!textarea-error" => $errorFieldName() && $errors->has($errorFieldName()) && !$omitError
-                                    ])
-                               }}
-                            >{{ $slot }}</textarea>
-                        </div>
-                    </label>
-
-                    {{-- ERROR --}}
-                    @if(!$omitError && $errors->has($errorFieldName()))
-                        @foreach($errors->get($errorFieldName()) as $message)
-                            @foreach(Arr::wrap($message) as $line)
-                                <div class="{{ $errorClass }}" x-class="text-error">{{ $line }}</div>
-                                @break($firstErrorOnly)
-                            @endforeach
-                            @break($firstErrorOnly)
-                        @endforeach
-                    @endif
-
-                    {{-- HINT --}}
-                    @if($hint)
-                        <div class="{{ $hintClass }}" x-classes="fieldset-label">{{ $hint }}</div>
-                    @endif
-                </fieldset>
-            </div>
-            BLADE;
+        return view('livewire-ui-components::components.textarea');
     }
 }
