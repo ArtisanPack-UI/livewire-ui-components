@@ -1,5 +1,10 @@
 # ArtisanPack UI Livewire UI Components
 
+## [0.3.1] - 2025-07-21
+
+- Fixed a problem with the theme generator CSS overwriting dark mode CSS variables.
+- Fixed a problem with color stops not being generated for primary, secondary and accent colors.
+
 ## [0.3.0] - 2025-07-20
 - Added fixes for rendering the components.
 
