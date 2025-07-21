@@ -42,18 +42,6 @@ class ProgressRadial extends Component
 
     public function render(): View|Closure|string
     {
-        return <<<'HTML'
-                 <div
-                    {{
-                        $attributes
-                            ->class("radial-progress")
-                            ->style("--value: $value")
-                    }}
-
-                    role="progressbar"
-                >
-                    {{ $value }}{{ $unit }}
-                </div>
-            HTML;
+        return view('livewire-ui-components::components.progress-radial');
     }
 }

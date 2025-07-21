@@ -97,24 +97,11 @@ class Subheading extends Component
     /**
      * Renders the subheading component.
      *
-     * @return View|Closure|string The rendered component.
+     * @return View The rendered component.
      * @since 1.0.0
      */
-    public function render(): View|Closure|string
+    public function render(): View
     {
-        return <<<'BLADE'
-            <p 
-                id="{{ $id }}"
-                {{ $attributes->class([
-                    $size ?? 'text-lg',
-                    $fontWeightClass(),
-                    $colorClass(),
-                    'leading-relaxed',
-                    'text-center' => $center,
-                ]) }}
-            >
-                {{ $slot }}
-            </p>
-        BLADE;
+        return view('livewire-ui-components::components.subheading');
     }
 }

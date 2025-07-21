@@ -117,6 +117,7 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'livewire-ui-components');
         $this->registerComponents();
         $this->registerBladeDirectives();
 
