@@ -247,19 +247,20 @@ class ColorGenerator
 	{
 		$shades = [];
 		// The API endpoint from "Tints and Shades Generator" is used here.
-		$response = Http::get( 'https://www.tints.dev/api/color/' . substr( $baseHex, 1 ) . '/steps/10' );
+		$response = Http::get( 'https://tailwind.simeongriggs.dev/api/generated-color/' . substr( $baseHex, 1 ) );
 
-		if ( $response->successful() && isset( $response->json()['shades'] ) ) {
-			$apiShades = $response->json()['shades'];
-			$stops     = [ 50, 100, 200, 300, 400, 500, 600, 700, 800, 900 ];
-			foreach ( $stops as $index => $stop ) {
+		if ( $response->successful() && isset( $response->json()['generated-color'] ) ) {
+			$apiShades = $response->json()['generated-color'];
+			$stops     = [ 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950 ];
+			foreach ( $stops as $stop ) {
 				// The API returns shades from lightest to darkest.
-				$shades[ $stop ] = $apiShades[ $index ]['hex'];
+				$shades[ $stop ] = $apiShades[ $stop ];
 			}
 		} else {
 			// Fallback to a simple array if the API fails
-			for ( $i = 50; $i <= 900; $i += ( $i < 100 ? 50 : 100 ) ) {
-				$shades[ $i ] = $baseHex;
+			$stops     = [ 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950 ];
+			foreach ( $stops as $stop ) {
+				$shades[ $stop ] = $baseHex;
 			}
 		}
 
