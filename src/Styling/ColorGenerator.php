@@ -87,6 +87,30 @@ class ColorGenerator
 	];
 
 	/**
+	 * Default DaisyUI dark mode color theme variables.
+	 *
+	 * @since 1.0.2
+	 * @var   array
+	 * @link  https://daisyui.com/docs/colors/
+	 */
+	protected array $daisyUiDarkColorDefaults = [
+		'neutral'           => '#191D24',
+		'neutral-content'   => '#A6ADBB',
+		'base-100'          => '#2A303C',
+		'base-200'          => '#242933',
+		'base-300'          => '#20252E',
+		'base-content'      => '#A6ADBB',
+		'info'              => '#0ea5e9', // sky-500
+		'info-content'      => '#ffffff',
+		'success'           => '#22c55e', // green-500
+		'success-content'   => '#ffffff',
+		'warning'           => '#f97316', // orange-500
+		'warning-content'   => '#ffffff',
+		'error'             => '#ef4444', // red-500
+		'error-content'     => '#ffffff',
+	];
+
+	/**
 	 * Default DaisyUI utility and component variables.
 	 *
 	 * @since 1.0.0
@@ -292,7 +316,7 @@ class ColorGenerator
 
         $css .= "\n    /* --- DaisyUI Color Variables --- */\n";
         foreach ( $daisyTheme as $key => $value ) {
-            $css .= "    --{$key}: {$value};\n";
+            $css .= "    --color-{$key}: {$value};\n";
         }
 
         $css .= "\n    /* --- DaisyUI Global Utility Variables --- */\n";
@@ -301,6 +325,14 @@ class ColorGenerator
         }
 
         $css .= "}\n";
+
+		// Dark mode overrides
+		$css .= "\n[data-theme=\"dark\"] {\n";
+		$css .= "    /* --- ArtisanPack UI Dark Mode Overrides --- */\n";
+		foreach ( $this->daisyUiDarkColorDefaults as $key => $value ) {
+			$css .= "    --color-{$key}: {$value};\n";
+		}
+		$css .= "}\n";
 
         // Component-specific variables
         $css .= "\n/**\n * ===================================================================================\n * Component CSS Variables\n * ===================================================================================\n * \n * Uncomment the blocks below to override the default values for specific components.\n * These are scoped to the component class for precision.\n */\n";
