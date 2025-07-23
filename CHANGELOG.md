@@ -1,5 +1,8 @@
 # ArtisanPack UI Livewire UI Components
 
+## [0.3.2] - 2025-07-22
+- Fixed styling for the sidebar on the main component.
+
 ## [0.3.1] - 2025-07-21
 
 - Fixed a problem with the theme generator CSS overwriting dark mode CSS variables.
