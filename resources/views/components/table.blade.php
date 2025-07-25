@@ -47,21 +47,21 @@
                 }
              }"
 >
-<div class="{{ $containerClass }}" x-classes="overflow-x-auto">
-<table
-        {{
-            $attributes
-                ->whereDoesntStartWith('wire:model')
-                ->class([
-                    'table',
-                    'table-zebra' => $striped,
-                    '[&_tr:nth-child(4n+3)]:bg-base-200' => $striped && $expandable,
-                    'cursor-pointer' => $attributes->hasAny(['@row-click', 'link'])
-                ])
-        }}
-    >
-        <!-- HEADERS -->
-        <thead @class(["text-base-content", "hidden" => $noHeaders])>
+    <div class="{{ $containerClass }}" x-classes="overflow-x-auto">
+        <table
+            {{
+				$attributes
+					->whereDoesntStartWith('wire:model')
+					->class([
+						'table',
+						'table-zebra' => $striped,
+						'[&_tr:nth-child(4n+3)]:bg-base-200' => $striped && $expandable,
+						'cursor-pointer' => $attributes->hasAny(['@row-click', 'link'])
+					])
+			}}
+        >
+            <!-- HEADERS -->
+            <thead @class(["text-base-content", "hidden" => $noHeaders])>
             <tr x-ref="headers">
                 <!-- CHECKALL -->
                 @if($selectable)
@@ -79,10 +79,10 @@
                 <!-- EXPAND EXTRA HEADER -->
                 @if($expandable)
                     <th class="w-1"></th>
-                 @endif
+                @endif
 
                 @foreach($headers as $header)
-                     @php
+                    @php
                         # SKIP THE HIDDEN COLUMN
                         if($isHidden($header)) continue;
 
@@ -111,13 +111,13 @@
                     <th class="w-1"></th>
                 @endif
             </tr>
-        </thead>
+            </thead>
 
-        <!-- ROWS -->
-        <tbody>
+            <!-- ROWS -->
+            <tbody>
             @foreach($rows as $k => $row)
                 <tr
-                    wire:key="{{ $uuid }}-{{ $k }}"
+                    wire:key="artisan-pack-table-row-{{ data_get($row, $keyBy) }}"
                     @class([$rowClasses($row), "hover:bg-base-200" => !$noHover])
                     @if($attributes->has('@row-click'))
                         @click="$dispatch('row-click', {{ json_encode($row) }});"
@@ -147,7 +147,7 @@
                                     @click="toggleExpand({{ $getKeyValue($row, 'expandableKey') }});" />
                             @endif
                         </td>
-                     @endif
+                    @endif
 
                     <!--  ROW VALUES -->
                     @foreach($headers as $header)
@@ -160,28 +160,28 @@
                             $temp_key = str_replace('.', '___', $header['key'])
                         @endphp
 
-                        <!--  HAS CUSTOM SLOT ? -->
+                            <!--  HAS CUSTOM SLOT ? -->
                         @if(isset(${"cell_".$temp_key}))
                             <td @class([$cellClasses($row, $header), "p-0" => $hasLink($header)])>
                                 @if($hasLink($header))
                                     <a href="{{ $redirectLink($row) }}" wire:navigate class="block py-3 px-4">
-                                @endif
+                                        @endif
 
-                                {{ ${"cell_".$temp_key}($row)  }}
+                                        {{ ${"cell_".$temp_key}($row)  }}
 
-                                @if($hasLink($header))
+                                        @if($hasLink($header))
                                     </a>
-                                 @endif
+                                @endif
                             </td>
                         @else
                             <td @class([$cellClasses($row, $header), "p-0" => $hasLink($header)])>
                                 @if($hasLink($header))
                                     <a href="{{ $redirectLink($row) }}" wire:navigate class="block py-3 px-4">
-                                @endif
+                                        @endif
 
-                                {{ $format($row, data_get($row, $header['key']), $header) }}
+                                        {{ $format($row, data_get($row, $header['key']), $header) }}
 
-                                @if($hasLink($header))
+                                        @if($hasLink($header))
                                     </a>
                                 @endif
                             </td>
@@ -203,29 +203,29 @@
                     </tr>
                 @endif
             @endforeach
-        </tbody>
+            </tbody>
 
-        <!-- FOOTER SLOT -->
-        @isset ($footer)
-            <tfoot {{ $footer->attributes ?? '' }}>
+            <!-- FOOTER SLOT -->
+            @isset ($footer)
+                <tfoot {{ $footer->attributes ?? '' }}>
                 {{ $footer }}
-            </tfoot>
-        @endisset
-    </table>
+                </tfoot>
+            @endisset
+        </table>
 
-    @if(count($rows) === 0)
-        @if($showEmptyText)
-            <div class="text-center py-4 text-base-content/50">
-                {{ $emptyText }}
-            </div>
+        @if(count($rows) === 0)
+            @if($showEmptyText)
+                <div class="text-center py-4 text-base-content/50">
+                    {{ $emptyText }}
+                </div>
+            @endif
+            @if($empty)
+                <div class="text-center py-4 text-base-content/50">
+                    {{ $empty }}
+                </div>
+            @endif
         @endif
-        @if($empty)
-            <div class="text-center py-4 text-base-content/50">
-                {{ $empty }}
-            </div>
-        @endif
-    @endif
-</div>
+    </div>
     <!-- Pagination -->
     @if($withPagination)
         @if($perPage)
