@@ -1,4 +1,4 @@
-<div wire:key="calendar-{{ rand() }}" class="mx-auto px-4 lg:container">
+<div wire:key="calendar-{{ $uuid }}" class="mx-auto px-4 lg:container">
 	<!-- Header with month/year display, navigation, and view selector -->
 	<div
 		x-data="{
@@ -13,7 +13,7 @@
             init() {
                 // Initialize calendar data
                 this.initCalendar();
-                {!! $customColorScript !!}
+                this.applyCustomColors();
                 
                 // Handle view switching
                 this.$watch('currentView', (value) => {
@@ -26,6 +26,8 @@
                 // Update display based on view
                 this.updateViewDisplay(this.currentView);
             },
+
+            {!! $customColorScript !!}
             
             // Initialize calendar data
             initCalendar() {

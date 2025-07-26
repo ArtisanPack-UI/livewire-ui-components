@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calendar | TailGrids</title>
+    <link
+      rel="shortcut icon"
+      href="./../assets/images/favicon.svg"
+      type="image/x-icon"
+    />
+    <link rel="stylesheet" href="./../assets/css/tailwind.css" />
+  </head>
+  <body>
+    <!-- ====== Calendar Section Start -->
+    <section class="relative z-10 bg-white dark:bg-dark py-[120px]">
+      <div class="mx-auto px-4 lg:container">
+        <div
+          class="mb-[30px] flex items-center justify-between rounded-lg border border-stroke dark:border-dark-3 bg-gray-2 dark:bg-dark-2 py-3 pr-4 pl-[30px]"
+        >
+          <p class="text-base font-semibold text-dark dark:text-white sm:text-xl">
+            December 2025
+          </p>
+
+          <div class="relative z-20 inline-flex rounded-[5px] bg-white dark:bg-dark">
+            <select
+              name=""
+              id=""
+              class="relative z-20 h-11 appearance-none rounded-[5px] text-dark dark:text-white border border-stroke dark:border-dark-3 bg-transparent pr-10 pl-5 outline-hidden"
+            >
+              <option value="" class="dark:bg-dark-2">Week</option>
+              <option value="" class="dark:bg-dark-2">Month</option>
+              <option value="" class="dark:bg-dark-2">Year</option>
+            </select>
+            <span class="absolute right-5 top-1/2 z-10 -translate-y-1/2 text-dark dark:text-white">
+              <svg 
+                width="11" 
+                height="6" 
+                viewBox="0 0 11 6" 
+                fill="none" 
+                xmlns="http://www.w3.org/2000/svg"
+                class="fill-current"
+              >
+                <path 
+                  d="M5.49652 5.57195C5.29784 5.57195 5.09917 5.50239 4.93361 5.34588L0.496609 0.963677C0.380718 0.841949 0.380718 0.650662 0.480054 0.528935C0.595945 0.407207 0.778061 0.407207 0.893953 0.511545L5.33096 4.89375C5.41374 4.9807 5.56274 4.9807 5.66208 4.89375L10.0991 0.511545C10.215 0.389817 10.3971 0.407207 10.513 0.528935C10.6289 0.650662 10.6123 0.841949 10.4964 0.963677L6.05942 5.32849C5.89386 5.485 5.69519 5.57195 5.49652 5.57195Z" 
+                />
+                <path 
+                  fill-rule="evenodd" 
+                  clip-rule="evenodd" 
+                  d="M4.65444 5.65773L0.212873 1.27101L0.208441 1.26636C-0.0635564 0.980663 -0.0621445 0.535609 0.170632 0.250361L0.180818 0.237879L0.191885 0.226255C0.463883 -0.0594399 0.887599 -0.0579557 1.15917 0.186543L1.16629 0.192953L5.49652 4.4697L9.81622 0.203348C10.1204 -0.109866 10.5585 -0.0286158 10.8011 0.226255C11.1055 0.545928 11.0287 1.01 10.7846 1.26636L10.7799 1.27131L6.3321 5.64672C6.10301 5.86329 5.8101 6 5.49652 6C5.20451 6 4.90666 5.89629 4.66099 5.66405L4.65444 5.65773ZM10.0991 0.511545L5.66208 4.89375C5.56274 4.9807 5.41374 4.9807 5.33096 4.89375L0.893953 0.511545C0.778061 0.407207 0.595945 0.407207 0.480054 0.528935C0.380718 0.650662 0.380718 0.841949 0.496609 0.963677L4.93361 5.34588C5.09917 5.50239 5.29784 5.57195 5.49652 5.57195C5.69519 5.57195 5.89386 5.485 6.05942 5.32849L10.4964 0.963677C10.6123 0.841949 10.6289 0.650662 10.513 0.528935C10.3971 0.407207 10.215 0.389817 10.0991 0.511545Z" 
+                />
+              </svg>                
+            </span>
+          </div>
+        </div>
+
+        <div class="w-full max-w-full bg-white dark:bg-dark-2 overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="rounded-t-lg bg-primary text-white">
+                <th
+                  class="h-[60px] w-10 rounded-tl-lg p-2 text-xs lg:w-28 xl:text-base 2xl:w-40"
+                >
+                  <span class="hidden lg:block"> Sunday </span>
+                  <span class="block lg:hidden"> Sun </span>
+                </th>
+                <th class="h-[60px] w-10 p-2 text-xs lg:w-28 xl:text-base 2xl:w-40">
+                  <span class="hidden lg:block"> Monday </span>
+                  <span class="block lg:hidden"> Mon </span>
+                </th>
+                <th class="h-[60px] w-10 p-2 text-xs lg:w-28 xl:text-base 2xl:w-40">
+                  <span class="hidden lg:block"> Tuesday </span>
+                  <span class="block lg:hidden"> Tue </span>
+                </th>
+                <th class="h-[60px] w-10 p-2 text-xs lg:w-28 xl:text-base 2xl:w-40">
+                  <span class="hidden lg:block"> Wednesday </span>
+                  <span class="block lg:hidden"> Wed </span>
+                </th>
+                <th class="h-[60px] w-10 p-2 text-xs lg:w-28 xl:text-base 2xl:w-40">
+                  <span class="hidden lg:block"> Thursday </span>
+                  <span class="block lg:hidden"> Thur </span>
+                </th>
+                <th class="h-[60px] w-10 p-2 text-xs lg:w-28 xl:text-base 2xl:w-40">
+                  <span class="hidden lg:block"> Friday </span>
+                  <span class="block lg:hidden"> Fri </span>
+                </th>
+                <th
+                  class="h-[60px] w-10 rounded-tr-lg p-2 text-xs lg:w-28 xl:text-base 2xl:w-40"
+                >
+                  <span class="hidden lg:block"> Saturday </span>
+                  <span class="block lg:hidden"> Sat </span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="h-20 text-center">
+                <td
+                  class="ease hover:bg-gray-2 dark:hover:bg-dark relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">1</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 group h-16 w-full grow cursor-pointer py-1"
+                    >
+                      <span class="group-hover:text-primary md:hidden text-dark dark:text-white">
+                        More
+                      </span>
+                      <div
+                        class="event invisible absolute z-10 left-2 mb-1 w-[200%] rounded-sm border-l-[3px] border-primary bg-gray-2 dark:bg-dark px-[18px] py-[6px] text-left opacity-0 group-hover:visible group-hover:opacity-100 md:visible md:w-[190%] md:opacity-100"
+                      >
+                        <span
+                          class="event-name text-sm font-medium text-dark dark:text-white block"
+                        >
+                          Redesign Website
+                        </span>
+                        <span class="time text-sm text-body-color dark:text-dark-6">
+                          1 Dec - 2 Dec
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td
+                  class="ease hover:bg-gray-2 dark:hover:bg-dark relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">2</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 h-16 w-full grow cursor-pointer py-1"
+                    ></div>
+                  </div>
+                </td>
+                <td
+                  class="ease hover:bg-gray-2 dark:hover:bg-dark relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">3</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 h-16 w-full grow cursor-pointer py-1"
+                    ></div>
+                  </div>
+                </td>
+                <td
+                  class="ease hover:bg-gray-2 dark:hover:bg-dark relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">4</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 h-16 w-full grow cursor-pointer py-1"
+                    ></div>
+                  </div>
+                </td>
+                <td
+                  class="ease hover:bg-gray-2 dark:hover:bg-dark relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">6</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 h-16 w-full grow cursor-pointer py-1"
+                    ></div>
+                  </div>
+                </td>
+                <td
+                  class="ease h-28 w-10 cursor-pointer overflow-hidden border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">7</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 h-16 w-full grow cursor-pointer py-1"
+                    ></div>
+                  </div>
+                </td>
+                <td
+                  class="ease hover:bg-gray-2 dark:hover:bg-dark relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">8</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 h-16 w-full grow cursor-pointer py-1"
+                    ></div>
+                  </div>
+                </td>
+              </tr>
+
+              <!--         line 1 -->
+              <tr class="h-20 text-center">
+                <td
+                  class="ease hover:bg-gray-2 dark:hover:bg-dark relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">9</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 h-16 w-full grow cursor-pointer py-1"
+                    ></div>
+                  </div>
+                </td>
+                <td
+                  class="ease hover:bg-gray-2 dark:hover:bg-dark relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">10</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 h-16 w-full grow cursor-pointer py-1"
+                    ></div>
+                  </div>
+                </td>
+                <td
+                  class="ease hover:bg-gray-2 dark:hover:bg-dark relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">12</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 h-16 w-full grow cursor-pointer py-1"
+                    ></div>
+                  </div>
+                </td>
+                <td
+                  class="ease hover:bg-gray-2 dark:hover:bg-dark relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">13</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 h-16 w-full grow cursor-pointer py-1"
+                    ></div>
+                  </div>
+                </td>
+                <td
+                  class="ease hover:bg-gray-2 dark:hover:bg-dark relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">14</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 h-16 w-full grow cursor-pointer py-1"
+                    ></div>
+                  </div>
+                </td>
+                <td
+                  class="ease hover:bg-gray-2 dark:hover:bg-dark relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">15</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 h-16 w-full grow cursor-pointer py-1"
+                    ></div>
+                  </div>
+                </td>
+                <td
+                  class="ease hover:bg-gray-2 dark:hover:bg-dark relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">16</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 h-16 w-full grow cursor-pointer py-1"
+                    ></div>
+                  </div>
+                </td>
+              </tr>
+              <!--         line 1 -->
+
+              <!--         line 2 -->
+              <tr class="h-20 text-center">
+                <td
+                  class="ease hover:bg-gray-2 dark:hover:bg-dark relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">16</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 h-16 w-full grow cursor-pointer py-1"
+                    ></div>
+                  </div>
+                </td>
+                <td
+                  class="ease hover:bg-gray-2 dark:hover:bg-dark relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">17</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 h-16 w-full grow cursor-pointer py-1"
+                    ></div>
+                  </div>
+                </td>
+                <td
+                  class="ease hover:bg-gray-2 dark:hover:bg-dark relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">18</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 h-16 w-full grow cursor-pointer py-1"
+                    ></div>
+                  </div>
+                </td>
+                <td
+                  class="ease hover:bg-gray-2 dark:hover:bg-dark relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">19</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 h-16 w-full grow cursor-pointer py-1"
+                    ></div>
+                  </div>
+                </td>
+                <td
+                  class="ease hover:bg-gray-2 dark:hover:bg-dark relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">20</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 h-16 w-full grow cursor-pointer py-1"
+                    ></div>
+                  </div>
+                </td>
+                <td
+                  class="ease hover:bg-gray-2 dark:hover:bg-dark relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">21</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 h-16 w-full grow cursor-pointer py-1"
+                    ></div>
+                  </div>
+                </td>
+                <td
+                  class="ease hover:bg-gray-2 dark:hover:bg-dark relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">22</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 h-16 w-full grow cursor-pointer py-1"
+                    ></div>
+                  </div>
+                </td>
+              </tr>
+              <!--         line 2 -->
+
+              <!--         line 3 -->
+              <tr class="h-20 text-center">
+                <td
+                  class="ease hover:bg-gray-2 dark:hover:bg-dark relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">23</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 h-16 w-full grow cursor-pointer py-1"
+                    ></div>
+                  </div>
+                </td>
+                <td
+                  class="ease hover:bg-gray-2 dark:hover:bg-dark relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">24</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 h-16 w-full grow cursor-pointer py-1"
+                    ></div>
+                  </div>
+                </td>
+                <td
+                  class="ease hover:bg-gray-2 dark:hover:bg-dark relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">25</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 h-16 w-full grow cursor-pointer py-1"
+                    ></div>
+                  </div>
+                </td>
+                <td
+                  class="ease hover:bg-gray-2 dark:hover:bg-dark relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">26</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 h-16 w-full grow cursor-pointer py-1"
+                    ></div>
+                  </div>
+                </td>
+                <td
+                  class="ease hover:bg-gray-2 dark:hover:bg-dark relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">27</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 h-16 w-full grow cursor-pointer py-1"
+                    ></div>
+                  </div>
+                </td>
+                <td
+                  class="ease hover:bg-gray-2 dark:hover:bg-dark relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">28</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 h-16 w-full grow cursor-pointer py-1"
+                    ></div>
+                  </div>
+                </td>
+                <td
+                  class="ease hover:bg-gray-2 dark:hover:bg-dark relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">29</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 h-16 w-full grow cursor-pointer py-1"
+                    ></div>
+                  </div>
+                </td>
+              </tr>
+              <!--         line 3 -->
+
+              <!--         line 4 -->
+              <tr class="h-20 text-center">
+                <td
+                  class="ease hover:bg-gray-2 dark:hover:bg-dark relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">30</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 h-16 w-full grow cursor-pointer py-1"
+                    ></div>
+                  </div>
+                </td>
+                <td
+                  class="ease hover:bg-gray-2 dark:hover:bg-dark relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">31</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 h-16 w-full grow cursor-pointer py-1"
+                    ></div>
+                  </div>
+                </td>
+                <td
+                  class="ease relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">1</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 h-16 w-full grow cursor-pointer py-1"
+                    ></div>
+                  </div>
+                </td>
+                <td
+                  class="ease relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">2</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 h-16 w-full grow cursor-pointer py-1"
+                    ></div>
+                  </div>
+                </td>
+                <td
+                  class="ease relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">3</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 h-16 w-full grow cursor-pointer py-1"
+                    ></div>
+                  </div>
+                </td>
+                <td
+                  class="ease relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">4</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 h-16 w-full grow cursor-pointer py-1"
+                    ></div>
+                  </div>
+                </td>
+                <td
+                  class="ease relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40"
+                >
+                  <div
+                    class="mx-auto flex h-24 w-10 flex-col overflow-hidden sm:w-full md:h-40 md:w-20 lg:w-28 2xl:w-40"
+                  >
+                    <div class="top h-5 w-full">
+                      <span class="text-base font-semibold text-dark dark:text-white">5</span>
+                    </div>
+                    <div
+                      class="bottom md:h-30 h-16 w-full grow cursor-pointer py-1"
+                    ></div>
+                  </div>
+                </td>
+              </tr>
+              <!--         line 4 -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+    <!-- ====== Calendar Section End -->
+  </body>
+</html>
