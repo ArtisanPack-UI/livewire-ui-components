@@ -40,12 +40,8 @@ class Badge extends Component
         $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
     }
 
-    public function render(): View|Closure|string
+    public function render(): View
     {
-        return <<<'HTML'
-                <div {{ $attributes->class(["badge"])}}>
-                    {{ $value }}
-                </div>
-            HTML;
+        return view('livewire-ui-components::components.badge');
     }
 }

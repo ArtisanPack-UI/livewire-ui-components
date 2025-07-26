@@ -40,8 +40,6 @@ class Loading extends Component
 
     public function render(): View|Closure|string
     {
-        return <<<'HTML'
-                <span {{ $attributes->class("loading") }}></span>
-            HTML;
+        return view('livewire-ui-components::components.loading');
     }
 }

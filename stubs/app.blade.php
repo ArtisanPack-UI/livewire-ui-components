@@ -20,7 +20,7 @@
                 <x-artisanpack-icon name="o-bars-3" class="cursor-pointer" />
             </label>
         </x-slot:actions>
-    </x-nav>
+    </x-artisanpack-nav>
 
     {{-- MAIN --}}
     <x-artisanpack-main>
@@ -41,7 +41,7 @@
                         <x-slot:actions>
                             <x-artisanpack-button icon="o-power" class="btn-circle btn-ghost btn-xs" tooltip-left="logoff" no-wire-navigate link="/logout" />
                         </x-slot:actions>
-                    </x-list-item>
+                    </x-artisanpack-list-item>
 
                     <x-artisanpack-menu-separator />
                 @endif
@@ -51,15 +51,15 @@
                 <x-artisanpack-menu-sub title="Settings" icon="o-cog-6-tooth">
                     <x-artisanpack-menu-item title="Wifi" icon="o-wifi" link="####" />
                     <x-artisanpack-menu-item title="Archives" icon="o-archive-box" link="####" />
-                </x-menu-sub>
-            </x-menu>
+                </x-artisanpack-menu-sub>
+            </x-artisanpack-menu>
         </x-slot:sidebar>
 
         {{-- The `$slot` goes here --}}
         <x-slot:content>
             {{ $slot }}
         </x-slot:content>
-    </x-main>
+    </x-artisanpack-main>
 
     {{--  TOAST area --}}
     <x-artisanpack-toast />

@@ -35,442 +35,252 @@ use Illuminate\View\Component;
 
 class Table extends Component
 {
-    public string $uuid;
 
-    public mixed $loop = null;
+	/**
+	 * Loop variable for the table.
+	 *
+	 * @var mixed
+	 * @since 1.0.0
+	 */
+	public mixed $loop = null;
 
-    public function __construct(
-        public array $headers,
-        public ArrayAccess|array $rows,
-        public ?string $id = null,
-        public ?bool $striped = false,
-        public ?bool $noHeaders = false,
-        public ?bool $selectable = false,
-        public ?string $selectableKey = 'id',
-        public ?bool $expandable = false,
-        public ?string $expandableKey = 'id',
-        public mixed $expandableCondition = null,
-        public ?string $link = null,
-        public ?bool $withPagination = false,
-        public ?string $perPage = null,
-        public ?array $perPageValues = [10, 20, 50, 100],
-        public ?array $sortBy = [],
-        public ?array $rowDecoration = [],
-        public ?array $cellDecoration = [],
-        public ?bool $showEmptyText = false,
-        public mixed $emptyText = 'No records found.',
-        public string $containerClass = 'overflow-x-auto',
-        public ?bool $noHover = false,
+	/**
+	 * Constructor for the Table component.
+	 *
+	 * @param array             $headers             Array of header definitions.
+	 * @param ArrayAccess|array $rows                Data rows to display in the table.
+	 * @param string|null       $id                  Optional ID for the table.
+	 * @param bool|null         $striped             Whether to use striped rows.
+	 * @param bool|null         $noHeaders           Whether to hide table headers.
+	 * @param bool|null         $selectable          Whether rows can be selected with checkboxes.
+	 * @param string|null       $selectableKey       Key to use for selectable rows.
+	 * @param bool|null         $expandable          Whether rows can be expanded.
+	 * @param string|null       $expandableKey       Key to use for expandable rows.
+	 * @param mixed|null        $expandableCondition Condition to determine if a row is expandable.
+	 * @param string|null       $link                URL pattern for row links.
+	 * @param bool|null         $withPagination      Whether to show pagination controls.
+	 * @param string|null       $perPage             Wire model for items per page.
+	 * @param array|null        $perPageValues       Available options for items per page.
+	 * @param array|null        $sortBy              Sorting configuration.
+	 * @param array|null        $rowDecoration       Row decoration rules.
+	 * @param array|null        $cellDecoration      Cell decoration rules.
+	 * @param bool|null         $showEmptyText       Whether to show text when no records found.
+	 * @param mixed|null        $emptyText           Text to display when no records found.
+	 * @param string            $containerClass      CSS class for the table container.
+	 * @param bool|null         $noHover             Whether to disable hover effect on rows.
+	 * @param mixed|null        $actions             Slot for row actions.
+	 * @param mixed|null        $tr                  Slot for custom row rendering.
+	 * @param mixed|null        $cell                Slot for custom cell rendering.
+	 * @param mixed|null        $expansion           Slot for expanded row content.
+	 * @param mixed|null        $empty               Slot for empty state content.
+	 * @param mixed|null        $footer              Slot for table footer.
+	 * @since 1.0.0
+	 */
+	public function __construct(
+		public array $headers,
+		public ArrayAccess|array $rows,
+		public ?string $id = null,
+		public ?bool $striped = false,
+		public ?bool $noHeaders = false,
+		public ?bool $selectable = false,
+		public ?string $selectableKey = 'id',
+		public ?bool $expandable = false,
+		public ?string $expandableKey = 'id',
+		public mixed $expandableCondition = null,
+		public ?string $link = null,
+		public ?bool $withPagination = false,
+		public ?string $perPage = null,
+		public ?array $perPageValues = [10, 20, 50, 100],
+		public ?array $sortBy = [],
+		public ?array $rowDecoration = [],
+		public ?array $cellDecoration = [],
+		public ?bool $showEmptyText = false,
+		public mixed $emptyText = 'No records found.',
+		public string $containerClass = 'overflow-x-auto',
+		public ?bool $noHover = false,
+		public string $uuid = '',
+		public string $keyBy = 'id',
 
-        // Slots
-        public mixed $actions = null,
-        public mixed $tr = null,
-        public mixed $cell = null,
-        public mixed $expansion = null,
-        public mixed $empty = null,
-        public mixed $footer = null,
+		// Slots
+		public mixed $actions = null,
+		public mixed $tr = null,
+		public mixed $cell = null,
+		public mixed $expansion = null,
+		public mixed $empty = null,
+		public mixed $footer = null,
 
-    ) {
-        if ($this->selectable && $this->expandable) {
-            throw new Exception("You can not combine `expandable` with `selectable`.");
-        }
+	) {
+		if ($this->selectable && $this->expandable) {
+			throw new Exception("You can not combine `expandable` with `selectable`.");
+		}
 
-        // Temp
-        $rowDecoration = $this->rowDecoration;
-        $cellDecoration = $this->cellDecoration;
-        $headers = $this->headers;
+		// Temp
+		$rowDecoration = $this->rowDecoration;
+		$cellDecoration = $this->cellDecoration;
+		$headers = $this->headers;
 
-        // Remove them from serialization, because they are closures.
-        unset($this->rowDecoration);
-        unset($this->cellDecoration);
-        unset($this->headers);
+		// Remove them from serialization, because they are closures.
+		unset($this->rowDecoration);
+		unset($this->cellDecoration);
+		unset($this->headers);
 
-        // Serialize
-        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+		// Set uuid if not provided or empty
+		if (empty($this->uuid)) {
+			// Serialize
+			$this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+		}
 
-        // Put them back
-        $this->rowDecoration = $rowDecoration;
-        $this->cellDecoration = $cellDecoration;
-        $this->headers = $headers;
-    }
+		// Put them back
+		$this->rowDecoration = $rowDecoration;
+		$this->cellDecoration = $cellDecoration;
+		$this->headers = $headers;
+	}
 
-    // Get all ids for selectable and expandable features
-    public function getAllIds(): array
-    {
-        if (is_array($this->rows)) {
-            return collect($this->rows)->pluck($this->selectableKey)->all();
-        }
+	// Get all ids for selectable and expandable features
+	public function getAllIds(): array
+	{
+		if (is_array($this->rows)) {
+			return collect($this->rows)->pluck($this->selectableKey)->all();
+		}
 
-        return $this->rows->pluck($this->selectableKey)->all();
-    }
+		return $this->rows->pluck($this->selectableKey)->all();
+	}
 
-    // Check if header is sortable
-    public function isSortable(mixed $header): bool
-    {
-        return count($this->sortBy) && ($header['sortable'] ?? true);
-    }
+	// Check if header is sortable
+	public function isSortable(mixed $header): bool
+	{
+		return count($this->sortBy) && ($header['sortable'] ?? true);
+	}
 
-    // Check if header is hidden
-    public function isHidden(mixed $header): bool
-    {
-        return $header['hidden'] ?? false;
-    }
+	// Check if header is hidden
+	public function isHidden(mixed $header): bool
+	{
+		return $header['hidden'] ?? false;
+	}
 
-    // Format header
-    public function format(mixed $row, mixed $field, mixed $header): mixed
-    {
-        $format = $header['format'] ?? null;
+	// Format header
+	public function format(mixed $row, mixed $field, mixed $header): mixed
+	{
+		$format = $header['format'] ?? null;
 
-        if (! $format) {
-            return $field;
-        }
+		if (! $format) {
+			return $field;
+		}
 
-        if (is_callable($format)) {
-            return $format($row, $field);
-        }
+		if (is_callable($format)) {
+			return $format($row, $field);
+		}
 
-        if ($format[0] == 'currency') {
-            return ($format[2] ?? '') . number_format($field, ...str_split($format[1]));
-        }
+		if ($format[0] == 'currency') {
+			return ($format[2] ?? '') . number_format($field, ...str_split($format[1]));
+		}
 
-        if ($format[0] == 'date' && $field) {
-            return Carbon::parse($field)->translatedFormat($format[1]);
-        }
+		if ($format[0] == 'date' && $field) {
+			return Carbon::parse($field)->translatedFormat($format[1]);
+		}
 
-        return $field;
-    }
+		return $field;
+	}
 
-    // Check if link should be shown in cell
-    public function hasLink(mixed $header): bool
-    {
-        return $this->link && empty($header['disableLink']);
-    }
+	// Check if link should be shown in cell
+	public function hasLink(mixed $header): bool
+	{
+		return $this->link && empty($header['disableLink']);
+	}
 
-    // Check if is currently sorted by this header
-    public function isSortedBy(mixed $header): bool
-    {
-        if (count($this->sortBy) == 0) {
-            return false;
-        }
+	// Check if is currently sorted by this header
+	public function isSortedBy(mixed $header): bool
+	{
+		if (count($this->sortBy) == 0) {
+			return false;
+		}
 
-        return $this->sortBy['column'] == ($header['sortBy'] ?? $header['key']);
-    }
+		return $this->sortBy['column'] == ($header['sortBy'] ?? $header['key']);
+	}
 
-    // Handle header sort
-    public function getSort(mixed $header): mixed
-    {
-        if (! $this->isSortable($header)) {
-            return false;
-        }
+	// Handle header sort
+	public function getSort(mixed $header): mixed
+	{
+		if (! $this->isSortable($header)) {
+			return false;
+		}
 
-        if (count($this->sortBy) == 0) {
-            return ['column' => '', 'direction' => ''];
-        }
+		if (count($this->sortBy) == 0) {
+			return ['column' => '', 'direction' => ''];
+		}
 
-        $direction = $this->isSortedBy($header)
-            ? ($this->sortBy['direction'] == 'asc') ? 'desc' : 'asc'
-            : 'asc';
+		$direction = $this->isSortedBy($header)
+			? ($this->sortBy['direction'] == 'asc') ? 'desc' : 'asc'
+			: 'asc';
 
-        return ['column' => $header['sortBy'] ?? $header['key'], 'direction' => $direction];
-    }
+		return ['column' => $header['sortBy'] ?? $header['key'], 'direction' => $direction];
+	}
 
-    // Build row link
-    public function redirectLink(mixed $row): string
-    {
-        $link = $this->link;
+	// Build row link
+	public function redirectLink(mixed $row): string
+	{
+		$link = $this->link;
 
-        // Transform from `route()` pattern
-        $link = Str::of($link)->replace('%5B', '{')->replace('%5D', '}');
+		// Transform from `route()` pattern
+		$link = Str::of($link)->replace('%5B', '{')->replace('%5D', '}');
 
-        // Extract tokens like {id}, {city.name} ...
-        $tokens = Str::of($link)->matchAll('/\{(.*?)\}/');
+		// Extract tokens like {id}, {city.name} ...
+		$tokens = Str::of($link)->matchAll('/\{(.*?)\}/');
 
-        // Replace tokens by actual row values
-        $tokens->each(function (string $token) use ($row, &$link) {
-            $link = Str::of($link)->replace("{" . $token . "}", data_get($row, $token))->toString();
-        });
+		// Replace tokens by actual row values
+		$tokens->each(function (string $token) use ($row, &$link) {
+			$link = Str::of($link)->replace("{" . $token . "}", data_get($row, $token))->toString();
+		});
 
-        return $link;
-    }
+		return $link;
+	}
 
-    public function rowClasses(mixed $row): ?string
-    {
-        $classes = [];
+	public function rowClasses(mixed $row): ?string
+	{
+		$classes = [];
 
-        foreach ($this->rowDecoration as $class => $condition) {
-            if ($condition($row)) {
-                $classes[] = $class;
-            }
-        }
+		foreach ($this->rowDecoration as $class => $condition) {
+			if ($condition($row)) {
+				$classes[] = $class;
+			}
+		}
 
-        return Arr::join($classes, ' ');
-    }
+		return Arr::join($classes, ' ');
+	}
 
-    public function cellClasses(mixed $row, array $header): ?string
-    {
-        $classes = Str::of($header['class'] ?? '')->explode(' ')->all();
+	public function cellClasses(mixed $row, array $header): ?string
+	{
+		$classes = Str::of($header['class'] ?? '')->explode(' ')->all();
 
-        foreach ($this->cellDecoration[$header['key']] ?? [] as $class => $condition) {
-            if ($condition($row)) {
-                $classes[] = $class;
-            }
-        }
+		foreach ($this->cellDecoration[$header['key']] ?? [] as $class => $condition) {
+			if ($condition($row)) {
+				$classes[] = $class;
+			}
+		}
 
-        return Arr::join($classes, ' ');
-    }
+		return Arr::join($classes, ' ');
+	}
 
-    public function selectableModifier(): string
-    {
-        return is_string($this->getAllIds()[0] ?? null) ? "" : ".number";
-    }
+	public function selectableModifier(): string
+	{
+		return is_string($this->getAllIds()[0] ?? null) ? "" : ".number";
+	}
 
-    public function getKeyValue($row, $key): mixed
-    {
-        $value = data_get($row, $this->$key);
+	public function getKeyValue($row, $key): mixed
+	{
+		$value = data_get($row, $this->$key);
 
-        return is_numeric($value) && ! str($value)->startsWith('0') ? $value : "'$value'";
-    }
+		return is_numeric($value) && ! str($value)->startsWith('0') ? $value : "'$value'";
+	}
 
-    public function render(): View|Closure|string
-    {
-        return <<<'HTML'
-                <div x-data="{
-                                selection: @entangle($attributes->wire('model')),
-                                pageIds: {{ json_encode($getAllIds()) }},
-                                isSelectable: {{ json_encode($selectable) }},
-                                colspanSize: 0,
-                                init() {
-                                    this.colspanSize = $refs.headers.childElementCount
-
-                                    if (this.isSelectable) {
-                                        this.handleCheckAll()
-                                    }
-                                },
-                                isExpanded(key) {
-                                    return this.selection.includes(key)
-                                },
-                                isPageFullSelected() {
-                                    return this.pageIds.length && [...this.selection]
-                                                .sort((a, b) => b - a)
-                                                .toString()
-                                                .includes([...this.pageIds].sort((a, b) => b - a).toString())
-                                },
-                                toggleCheck(checked, content) {
-                                    this.$dispatch('row-selection', { row: content, selected: checked });
-                                    this.handleCheckAll()
-                                },
-                                toggleCheckAll(checked) {
-                                    this.$dispatch('row-selection-all', { selected: checked });
-                                    checked ? this.pushIds() : this.removeIds()
-                                },
-                                toggleExpand(key) {
-                                     this.selection.includes(key)
-                                        ? this.selection = this.selection.filter(i => i !== key)
-                                        : this.selection.push(key)
-                                },
-                                pushIds() {
-                                    this.selection.push(...this.pageIds.filter(i => !this.selection.includes(i)))
-                                },
-                                removeIds() {
-                                    this.selection =  this.selection.filter(i => !this.pageIds.includes(i) )
-                                },
-                                handleCheckAll() {
-                                    this.$nextTick(() => {
-                                            this.isPageFullSelected()
-                                                ? this.$refs.mainCheckbox.checked = true
-                                                : this.$refs.mainCheckbox.checked = false
-                                        })
-                                }
-                             }"
-                >
-                <div class="{{ $containerClass }}" x-classes="overflow-x-auto">
-                <table
-                        {{
-                            $attributes
-                                ->whereDoesntStartWith('wire:model')
-                                ->class([
-                                    'table',
-                                    'table-zebra' => $striped,
-                                    '[&_tr:nth-child(4n+3)]:bg-base-200' => $striped && $expandable,
-                                    'cursor-pointer' => $attributes->hasAny(['@row-click', 'link'])
-                                ])
-                        }}
-                    >
-                        <!-- HEADERS -->
-                        <thead @class(["text-base-content", "hidden" => $noHeaders])>
-                            <tr x-ref="headers">
-                                <!-- CHECKALL -->
-                                @if($selectable)
-                                    <th class="w-1" wire:key="{{ $uuid }}-checkall-{{ implode(',', $getAllIds()) }}">
-                                        <input
-                                            id="checkAll-{{ $uuid }}"
-                                            type="checkbox"
-                                            class="checkbox checkbox-sm"
-                                            x-ref="mainCheckbox"
-                                            x-bind:disabled="pageIds.length === 0"
-                                            @click="toggleCheckAll($el.checked)" />
-                                    </th>
-                                @endif
-
-                                <!-- EXPAND EXTRA HEADER -->
-                                @if($expandable)
-                                    <th class="w-1"></th>
-                                 @endif
-
-                                @foreach($headers as $header)
-                                     @php
-                                        # SKIP THE HIDDEN COLUMN
-                                        if($isHidden($header)) continue;
-
-                                        # Scoped slot`s name like `user.city` are compiled to `user___city` through `@scope / @endscope`.
-                                        # So we use current `$header` key  to find that slot on context.
-                                        $temp_key = str_replace('.', '___', $header['key'])
-                                    @endphp
-
-                                    <th
-                                        class="@if($isSortable($header)) cursor-pointer hover:bg-base-200 @endif {{ $header['class'] ?? ' ' }}"
-
-                                        @if($sortBy && $isSortable($header))
-                                            @click="$wire.set('sortBy', {column: '{{ $getSort($header)['column'] }}', direction: '{{ $getSort($header)['direction'] }}' })"
-                                        @endif
-                                    >
-                                        {{ isset(${"header_".$temp_key}) ? ${"header_".$temp_key}($header) : $header['label'] }}
-
-                                        @if($isSortable($header))
-                                            <x-artisanpack-icon :name="$isSortedBy($header) ? $getSort($header)['direction'] == 'asc' ? 'o-chevron-down' : 'o-chevron-up' : 'o-chevron-up-down'"  class="size-3! mb-1 ms-1" />
-                                        @endif
-                                    </th>
-                                @endforeach
-
-                                <!-- ACTIONS (Just a empty column) -->
-                                @if($actions)
-                                    <th class="w-1"></th>
-                                @endif
-                            </tr>
-                        </thead>
-
-                        <!-- ROWS -->
-                        <tbody>
-                            @foreach($rows as $k => $row)
-                                <tr
-                                    wire:key="{{ $uuid }}-{{ $k }}"
-                                    @class([$rowClasses($row), "hover:bg-base-200" => !$noHover])
-                                    @if($attributes->has('@row-click'))
-                                        @click="$dispatch('row-click', {{ json_encode($row) }});"
-                                    @endif
-                                >
-                                    <!-- CHECKBOX -->
-                                    @if($selectable)
-                                        <td class="w-1">
-                                            <input
-                                                id="checkbox-{{ $uuid }}-{{ $k }}"
-                                                type="checkbox"
-                                                class="checkbox checkbox-sm"
-                                                value="{{ data_get($row, $selectableKey) }}"
-                                                x-model{{ $selectableModifier() }}="selection"
-                                                @click.stop="toggleCheck($el.checked, {{ json_encode($row) }})" />
-                                        </td>
-                                    @endif
-
-                                    <!-- EXPAND ICON -->
-                                    @if($expandable)
-                                        <td class="w-1 pe-0 py-0">
-                                            @if(data_get($row, $expandableCondition))
-                                                <x-artisanpack-icon
-                                                    name="o-chevron-down"
-                                                    ::class="isExpanded({{ $getKeyValue($row, 'expandableKey') }}) || '-rotate-90 !text-current'"
-                                                    class="cursor-pointer p-2 w-8 h-8 bg-base-300 rounded-lg"
-                                                    @click="toggleExpand({{ $getKeyValue($row, 'expandableKey') }});" />
-                                            @endif
-                                        </td>
-                                     @endif
-
-                                    <!--  ROW VALUES -->
-                                    @foreach($headers as $header)
-                                        @php
-                                            # SKIP THE HIDDEN COLUMN
-                                            if($isHidden($header)) continue;
-
-                                            # Scoped slot`s name like `user.city` are compiled to `user___city` through `@scope / @endscope`.
-                                            # So we use current `$header` key  to find that slot on context.
-                                            $temp_key = str_replace('.', '___', $header['key'])
-                                        @endphp
-
-                                        <!--  HAS CUSTOM SLOT ? -->
-                                        @if(isset(${"cell_".$temp_key}))
-                                            <td @class([$cellClasses($row, $header), "p-0" => $hasLink($header)])>
-                                                @if($hasLink($header))
-                                                    <a href="{{ $redirectLink($row) }}" wire:navigate class="block py-3 px-4">
-                                                @endif
-
-                                                {{ ${"cell_".$temp_key}($row)  }}
-
-                                                @if($hasLink($header))
-                                                    </a>
-                                                 @endif
-                                            </td>
-                                        @else
-                                            <td @class([$cellClasses($row, $header), "p-0" => $hasLink($header)])>
-                                                @if($hasLink($header))
-                                                    <a href="{{ $redirectLink($row) }}" wire:navigate class="block py-3 px-4">
-                                                @endif
-
-                                                {{ $format($row, data_get($row, $header['key']), $header) }}
-
-                                                @if($hasLink($header))
-                                                    </a>
-                                                @endif
-                                            </td>
-                                        @endif
-                                    @endforeach
-
-                                    <!-- ACTIONS -->
-                                    @if($actions)
-                                        <td class="text-right py-0">{{ $actions($row) }}</td>
-                                    @endif
-                                </tr>
-
-                                <!-- EXPANSION SLOT -->
-                                @if($expandable)
-                                    <tr wire:key="{{ $uuid }}-{{ $k }}--expand" class="!bg-inherit" :class="isExpanded({{ $getKeyValue($row, 'expandableKey') }}) || 'hidden'">
-                                        <td :colspan="colspanSize">
-                                            {{ $expansion($row) }}
-                                        </td>
-                                    </tr>
-                                @endif
-                            @endforeach
-                        </tbody>
-
-                        <!-- FOOTER SLOT -->
-                        @isset ($footer)
-                            <tfoot {{ $footer->attributes ?? '' }}>
-                                {{ $footer }}
-                            </tfoot>
-                        @endisset
-                    </table>
-
-                    @if(count($rows) === 0)
-                        @if($showEmptyText)
-                            <div class="text-center py-4 text-base-content/50">
-                                {{ $emptyText }}
-                            </div>
-                        @endif
-                        @if($empty)
-                            <div class="text-center py-4 text-base-content/50">
-                                {{ $empty }}
-                            </div>
-                        @endif
-                    @endif
-                </div>
-                    <!-- Pagination -->
-                    @if($withPagination)
-                        @if($perPage)
-                            <x-artisanpack-pagination :rows="$rows" :per-page-values="$perPageValues" wire:model.live="{{ $perPage }}" />
-                        @else
-                            <x-artisanpack-pagination :rows="$rows" :per-page-values="$perPageValues" />
-                        @endif
-                    @endif
-                </div>
-            HTML;
-    }
+	/**
+	 * Renders the table component.
+	 *
+	 * @return View The rendered component.
+	 * @since 1.0.0
+	 */
+	public function render(): View
+	{
+		return view('livewire-ui-components::components.table');
+	}
 }

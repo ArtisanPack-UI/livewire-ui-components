@@ -19,6 +19,8 @@ namespace ArtisanPack\LivewireUiComponents\View\Components;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\View\ComponentSlot;
 
 /**
  * Button Component Class
@@ -29,21 +31,6 @@ use Illuminate\View\Component;
  */
 class Button extends Component
 {
-    /**
-     * Unique identifier for the button instance.
-     *
-     * @var string
-     * @since 1.0.0
-     */
-    public string $uuid;
-
-    /**
-     * Default tooltip position.
-     *
-     * @var string
-     * @since 1.0.0
-     */
-    public string $tooltipPosition = 'lg:tooltip-top';
 
     /**
      * Constructor for the Button component.
@@ -81,10 +68,21 @@ class Button extends Component
         public ?string $tooltipLeft = null,
         public ?string $tooltipRight = null,
         public ?string $tooltipBottom = null,
+        public string $uuid = '',
+        public string $tooltipPosition = 'lg:tooltip-top',
     ) {
-        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+        // Set uuid if not provided or empty
+        if (empty($this->uuid)) {
+            $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+        }
+
+        // Set tooltip based on the first non-null value if not already set
         $this->tooltip = $this->tooltip ?? $this->tooltipLeft ?? $this->tooltipRight ?? $this->tooltipBottom;
-        $this->tooltipPosition = $this->tooltipLeft ? 'lg:tooltip-left' : ($this->tooltipRight ? 'lg:tooltip-right' : ($this->tooltipBottom ? 'lg:tooltip-bottom' : 'lg:tooltip-top'));
+
+        // Set tooltipPosition if not explicitly provided (using default value)
+        if ($this->tooltipPosition === 'lg:tooltip-top') {
+            $this->tooltipPosition = $this->tooltipLeft ? 'lg:tooltip-left' : ($this->tooltipRight ? 'lg:tooltip-right' : ($this->tooltipBottom ? 'lg:tooltip-bottom' : 'lg:tooltip-top'));
+        }
     }
 
     /**
@@ -105,84 +103,8 @@ class Button extends Component
         return $this->spinner;
     }
 
-    /**
-     * Renders the button component.
-     *
-     * @return View|Closure|string The rendered component.
-     * @since 1.0.0
-     */
-    public function render(): View|Closure|string
+    public function render(): View
     {
-        return <<<'BLADE'
-                @if($link)
-                    <a href="{!! $link !!}"
-                @else
-                    <button
-                @endif
-
-                    wire:key="{{ $uuid }}"
-                    {{ $attributes->whereDoesntStartWith('class')->merge(['type' => 'button']) }}
-                    {{ $attributes->class(['btn', "!inline-flex lg:tooltip $tooltipPosition" => $tooltip]) }}
-
-                    @if($link && $external)
-                        target="_blank"
-                    @endif
-
-                    @if($link && !$external && !$noWireNavigate)
-                        wire:navigate
-                    @endif
-
-                    @if($tooltip)
-                        data-tip="{{ $tooltip }}"
-                    @endif
-
-                    @if($spinner)
-                        wire:target="{{ $spinnerTarget() }}"
-                        wire:loading.attr="disabled"
-                    @endif
-                >
-
-                    <!-- SPINNER LEFT -->
-                    @if($spinner && !$iconRight)
-                        <span wire:loading wire:target="{{ $spinnerTarget() }}" class="loading loading-spinner w-5 h-5"></span>
-                    @endif
-
-                    <!-- ICON -->
-                    @if($icon)
-                        <span class="block" @if($spinner) wire:loading.class="hidden" wire:target="{{ $spinnerTarget() }}" @endif>
-                            <x-artisanpack-icon :name="$icon" />
-                        </span>
-                    @endif
-
-                    <!-- LABEL / SLOT -->
-                    @if($label)
-                        <span @class(["hidden lg:block" => $responsive ])>
-                            {{ $label }}
-                        </span>
-                        @if(strlen($badge ?? '') > 0)
-                            <span class="badge badge-sm {{ $badgeClasses }}">{{ $badge }}</span>
-                        @endif
-                    @else
-                        {{ $slot }}
-                    @endif
-
-                    <!-- ICON RIGHT -->
-                    @if($iconRight)
-                        <span class="block" @if($spinner) wire:loading.class="hidden" wire:target="{{ $spinnerTarget() }}" @endif>
-                            <x-artisanpack-icon :name="$iconRight" />
-                        </span>
-                    @endif
-
-                    <!-- SPINNER RIGHT -->
-                    @if($spinner && $iconRight)
-                        <span wire:loading wire:target="{{ $spinnerTarget() }}" class="loading loading-spinner w-5 h-5"></span>
-                    @endif
-
-                @if(!$link)
-                    </button>
-                @else
-                    </a>
-                @endif
-            BLADE;
+        return view('livewire-ui-components::components.button');
     }
 }

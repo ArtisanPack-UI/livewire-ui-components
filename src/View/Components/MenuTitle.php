@@ -43,17 +43,6 @@ class MenuTitle extends Component
 
     public function render(): View|Closure|string
     {
-        return <<<'BLADE'
-                <li {{ $attributes->class(["menu-title"]) }}>
-                    <div class="flex items-center gap-2">
-
-                        @if($icon)
-                            <x-artisanpack-icon :name="$icon" @class([$iconClasses]) />
-                        @endif
-
-                        {{ $title }}
-                    </div>
-                </li>
-            BLADE;
+        return view('livewire-ui-components::components.menu-title');
     }
 }

@@ -1,7 +1,7 @@
 <div wire:key="calendar-{{ rand() }}" class="mx-auto px-4 lg:container">
-    <!-- Header with month/year display, navigation, and view selector -->
-    <div 
-        x-data="{
+	<!-- Header with month/year display, navigation, and view selector -->
+	<div
+		x-data="{
             currentMonth: new Date().toLocaleString('{{ $locale }}', { month: 'long' }),
             currentYear: new Date().getFullYear(),
             currentView: 'month',
@@ -269,121 +269,121 @@
             // Header text computed property
             headerText: ''
         }"
-        class="mb-[30px] flex flex-col space-y-3 rounded-lg border border-stroke dark:border-dark-3 bg-gray-2 dark:bg-dark-2 py-3 px-4"
-    >
-        <!-- Navigation and title row -->
-        <div class="flex items-center justify-between">
-            <!-- Navigation buttons -->
-            <div class="flex items-center space-x-2">
-                <button 
-                    @click="navigatePrevious()"
-                    class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-3 transition-colors duration-200 ease-in-out"
-                    aria-label="Previous"
-                >
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M10.6663 2.66668L4.66634 8.00001L10.6663 13.3333" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </button>
-                
-                <button 
-                    @click="navigateToday()"
-                    class="px-3 py-1 text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-dark-3 transition-colors duration-200 ease-in-out"
-                >
-                    Today
-                </button>
-                
-                <button 
-                    @click="navigateNext()"
-                    class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-3 transition-colors duration-200 ease-in-out"
-                    aria-label="Next"
-                >
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M5.33366 2.66668L11.3337 8.00001L5.33366 13.3333" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </button>
-            </div>
-            
-            <!-- Current period display -->
-            <p 
-                x-text="headerText || `${currentMonth} ${currentYear}`"
-                class="text-base font-semibold text-dark dark:text-white sm:text-xl"
-            ></p>
-            
-            <!-- View selector dropdown -->
-            <div class="relative z-20 inline-flex rounded-[5px] bg-white dark:bg-dark">
-                <select 
-                    x-model="currentView"
-                    class="relative z-20 h-11 appearance-none rounded-[5px] text-dark dark:text-white border border-stroke dark:border-dark-3 bg-transparent pr-10 pl-5 outline-hidden transition-all duration-300 ease-in-out"
-                >
-                    <option value="day" class="dark:bg-dark-2">Day</option>
-                    <option value="week" class="dark:bg-dark-2">Week</option>
-                    <option value="month" class="dark:bg-dark-2">Month</option>
-                    <option value="year" class="dark:bg-dark-2">Year</option>
-                </select>
-                <!-- Dropdown arrow icon -->
-                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-dark dark:text-white">
+		class="mb-[30px] flex flex-col space-y-3 rounded-lg border border-stroke dark:border-dark-3 bg-gray-2 dark:bg-dark-2 py-3 px-4"
+	>
+		<!-- Navigation and title row -->
+		<div class="flex items-center justify-between">
+			<!-- Navigation buttons -->
+			<div class="flex items-center space-x-2">
+				<button
+					@click="navigatePrevious()"
+					class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-3 transition-colors duration-200 ease-in-out"
+					aria-label="Previous"
+				>
+					<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<path d="M10.6663 2.66668L4.66634 8.00001L10.6663 13.3333" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+					</svg>
+				</button>
+
+				<button
+					@click="navigateToday()"
+					class="px-3 py-1 text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-dark-3 transition-colors duration-200 ease-in-out"
+				>
+					Today
+				</button>
+
+				<button
+					@click="navigateNext()"
+					class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-3 transition-colors duration-200 ease-in-out"
+					aria-label="Next"
+				>
+					<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<path d="M5.33366 2.66668L11.3337 8.00001L5.33366 13.3333" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+					</svg>
+				</button>
+			</div>
+
+			<!-- Current period display -->
+			<p
+				x-text="headerText || `${currentMonth} ${currentYear}`"
+				class="text-base font-semibold text-dark dark:text-white sm:text-xl"
+			></p>
+
+			<!-- View selector dropdown -->
+			<div class="relative z-20 inline-flex rounded-[5px] bg-white dark:bg-dark">
+				<select
+					x-model="currentView"
+					class="relative z-20 h-11 appearance-none rounded-[5px] text-dark dark:text-white border border-stroke dark:border-dark-3 bg-transparent pr-10 pl-5 outline-hidden transition-all duration-300 ease-in-out"
+				>
+					<option value="day" class="dark:bg-dark-2">Day</option>
+					<option value="week" class="dark:bg-dark-2">Week</option>
+					<option value="month" class="dark:bg-dark-2">Month</option>
+					<option value="year" class="dark:bg-dark-2">Year</option>
+				</select>
+				<!-- Dropdown arrow icon -->
+				<span class="absolute right-4 top-1/2 -translate-y-1/2 text-dark dark:text-white">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M8.00039 11.4L3.20039 6.60001L4.60039 5.20001L8.00039 8.60001L11.4004 5.20001L12.8004 6.60001L8.00039 11.4Z" fill="currentColor"/>
                     </svg>
                 </span>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Calendar grid -->
-    <div class="w-full max-w-full bg-white dark:bg-dark-2 overflow-x-auto rounded-lg shadow-sm">
-        <table class="w-full">
-            <thead>
-                <tr class="rounded-t-lg" :class="{
+			</div>
+		</div>
+	</div>
+
+	<!-- Calendar grid -->
+	<div class="w-full max-w-full bg-white dark:bg-dark-2 overflow-x-auto rounded-lg shadow-sm">
+		<table class="w-full">
+			<thead>
+			<tr class="rounded-t-lg" :class="{
                     'bg-primary text-white': '{{ $colorScheme }}' === 'primary',
                     'bg-secondary text-white': '{{ $colorScheme }}' === 'secondary',
                     'bg-accent text-white': '{{ $colorScheme }}' === 'accent',
                     'custom-color-header': '{{ $colorScheme }}' === 'custom'
                 }">
-                    <template x-for="(day, index) in weekdays" :key="index">
-                        <th class="h-[60px] p-2 text-xs lg:w-28 xl:text-base 2xl:w-40" :class="{ 'rounded-tl-lg': index === 0, 'rounded-tr-lg': index === 6 }">
-                            <span class="hidden lg:block" x-text="day.full"></span>
-                            <span class="hidden md:block lg:hidden" x-text="day.short"></span>
-                            <span class="block md:hidden" x-text="day.min"></span>
-                        </th>
-                    </template>
-                </tr>
-            </thead>
-            <tbody>
-                <template x-for="week in Math.ceil(days.length / 7)" :key="week">
-                    <tr class="h-20 text-center">
-                        <template x-for="i in 7" :key="i">
-                            <td 
-                                class="relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 ease hover:bg-gray-2 dark:hover:bg-dark-3 md:h-[125px] lg:w-28 2xl:w-40"
-                                :class="{
+				<template x-for="(day, index) in weekdays" :key="index">
+					<th class="h-[60px] p-2 text-xs lg:w-28 xl:text-base 2xl:w-40" :class="{ 'rounded-tl-lg': index === 0, 'rounded-tr-lg': index === 6 }">
+						<span class="hidden lg:block" x-text="day.full"></span>
+						<span class="hidden md:block lg:hidden" x-text="day.short"></span>
+						<span class="block md:hidden" x-text="day.min"></span>
+					</th>
+				</template>
+			</tr>
+			</thead>
+			<tbody>
+			<template x-for="week in Math.ceil(days.length / 7)" :key="week">
+				<tr class="h-20 text-center">
+					<template x-for="i in 7" :key="i">
+						<td
+							class="relative h-28 w-10 cursor-pointer border border-stroke dark:border-dark-3 p-1 transition duration-500 ease hover:bg-gray-2 dark:hover:bg-dark-3 md:h-[125px] lg:w-28 2xl:w-40"
+							:class="{
                                     'bg-gray-100 dark:bg-dark-3': days[(week-1)*7 + i - 1]?.isToday,
                                     'bg-gray-50 dark:bg-dark-3/50': days[(week-1)*7 + i - 1]?.isWeekend && {{ $weekendHighlight ? 'true' : 'false' }},
                                     'text-gray-400': !days[(week-1)*7 + i - 1]?.isCurrentMonth
                                 }"
-                                @click="handleDayClick(days[(week-1)*7 + i - 1])"
-                            >
-                                <!-- Day number -->
-                                <div class="text-sm font-medium p-1" x-text="days[(week-1)*7 + i - 1]?.day"></div>
-                                
-                                <!-- Events for this day -->
-                                <div class="mt-1 space-y-1 overflow-y-auto max-h-20">
-                                    <template x-for="(event, eventIndex) in days[(week-1)*7 + i - 1]?.events" :key="eventIndex">
-                                        <div 
-                                            class="rounded-md p-1 text-xs mb-1 truncate shadow-sm transition-transform duration-200 ease-in-out hover:scale-[1.02]"
-                                            :class="getEventColorClasses(event)"
-                                            :style="event.colorScheme === 'custom' && event.customColor ? `background-color: ${event.customColor}; color: ${a11yGetContrastColor(event.customColor)};` : ''"
-                                            @click.stop="handleEventClick(event)"
-                                        >
-                                            <div class="font-medium" x-text="event.label"></div>
-                                            <div x-show="event.start_time" class="text-xs opacity-80" x-text="event.start_time"></div>
-                                        </div>
-                                    </template>
-                                </div>
-                            </td>
-                        </template>
-                    </tr>
-                </template>
-            </tbody>
-        </table>
-    </div>
+							@click="handleDayClick(days[(week-1)*7 + i - 1])"
+						>
+							<!-- Day number -->
+							<div class="text-sm font-medium p-1" x-text="days[(week-1)*7 + i - 1]?.day"></div>
+
+							<!-- Events for this day -->
+							<div class="mt-1 space-y-1 overflow-y-auto max-h-20">
+								<template x-for="(event, eventIndex) in days[(week-1)*7 + i - 1]?.events" :key="eventIndex">
+									<div
+										class="rounded-md p-1 text-xs mb-1 truncate shadow-sm transition-transform duration-200 ease-in-out hover:scale-[1.02]"
+										:class="getEventColorClasses(event)"
+										:style="event.colorScheme === 'custom' && event.customColor ? `background-color: ${event.customColor}; color: ${a11yGetContrastColor(event.customColor)};` : ''"
+										@click.stop="handleEventClick(event)"
+									>
+										<div class="font-medium" x-text="event.label"></div>
+										<div x-show="event.start_time" class="text-xs opacity-80" x-text="event.start_time"></div>
+									</div>
+								</template>
+							</div>
+						</td>
+					</template>
+				</tr>
+			</template>
+			</tbody>
+		</table>
+	</div>
 </div>

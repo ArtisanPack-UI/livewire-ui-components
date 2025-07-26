@@ -139,6 +139,7 @@ Update your `resources/css/app.css` file to include:
 }
 
 /* Livewire UI Components */
+@source "../../vendor/artisanpack-ui/livewire-ui-components/resources/views/**/*.php";
 @source "../../vendor/artisanpack-ui/livewire-ui-components/src/View/Components/**/*.php";
 
 /* Theme toggle */
