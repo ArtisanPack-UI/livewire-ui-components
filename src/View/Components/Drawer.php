@@ -63,5 +63,4 @@ class Drawer extends Component
     {
         return view('livewire-ui-components::components.drawer');
     }
-    }
 }

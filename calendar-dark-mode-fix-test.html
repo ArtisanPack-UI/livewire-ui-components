@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar Dark Mode Fix Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            DEFAULT: '#3b82f6', // blue-500
+                        },
+                        secondary: {
+                            DEFAULT: '#64748b', // slate-500
+                        },
+                        accent: {
+                            DEFAULT: '#f59e0b', // amber-500
+                        },
+                        neutral: {
+                            DEFAULT: '#191D24', // From theme file
+                        },
+                        base: {
+                            '100': '#2A303C', // From theme file
+                            '200': '#242933', // From theme file
+                            '300': '#20252E', // From theme file
+                        },
+                        stroke: {
+                            DEFAULT: '#e5e7eb', // gray-200
+                        },
+                        gray: {
+                            '1': '#f9fafb', // gray-50
+                            '2': '#f3f4f6', // gray-100
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Simulate the calendar component styles */
+        .calendar-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Dark mode styles */
+        .dark {
+            background-color: #111827;
+            color: white;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-white dark:bg-base-200">
+    <div class="calendar-container">
+        <h1 class="text-2xl font-bold mb-6 text-dark dark:text-white">Calendar Dark Mode Fix Test</h1>
+        
+        <!-- Test main container -->
+        <div class="bg-white dark:bg-base-200 border border-stroke dark:border-base-300 rounded-lg p-4 mb-6">
+            <h2 class="text-xl font-semibold mb-4 text-dark dark:text-white">Main Container</h2>
+            <p class="text-dark dark:text-white">This tests the main container background color (dark:bg-base-200)</p>
+        </div>
+        
+        <!-- Test header -->
+        <div class="mb-[30px] flex items-center justify-between rounded-lg border border-stroke dark:border-base-300 bg-gray-2 dark:bg-base-200 py-3 pr-4 pl-[30px] mb-6">
+            <h2 class="text-xl font-semibold text-dark dark:text-white">Header</h2>
+            <p class="text-dark dark:text-white">This tests the header background color (dark:bg-base-200)</p>
+        </div>
+        
+        <!-- Test select container -->
+        <div class="relative z-20 inline-flex rounded-[5px] bg-white dark:bg-base-100 p-4 mb-6">
+            <h2 class="text-xl font-semibold text-dark dark:text-white">Select Container</h2>
+            <p class="text-dark dark:text-white">This tests the select container background color (dark:bg-base-100)</p>
+        </div>
+        
+        <!-- Test table container -->
+        <div class="w-full max-w-full bg-white dark:bg-neutral overflow-x-auto rounded-lg shadow-sm p-4 mb-6">
+            <h2 class="text-xl font-semibold text-dark dark:text-white">Table Container</h2>
+            <p class="text-dark dark:text-white">This tests the table container background color (dark:bg-neutral)</p>
+        </div>
+        
+        <!-- Test hover effects -->
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold mb-4 text-dark dark:text-white">Hover Effects</h2>
+            <button type="button" class="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-base-300 transition-colors duration-200 ease-in-out text-dark dark:text-white mb-2">
+                Hover over me (dark:hover:bg-base-300)
+            </button>
+            <div class="ease hover:bg-gray-2 dark:hover:bg-base-200 relative h-28 cursor-pointer border border-stroke dark:border-base-300 p-4 transition duration-500 text-dark dark:text-white mb-2">
+                Hover over me (dark:hover:bg-base-200)
+            </div>
+        </div>
+        
+        <!-- Test cell backgrounds -->
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold mb-4 text-dark dark:text-white">Cell Backgrounds</h2>
+            <div class="bg-gray-1 dark:bg-base-300/50 p-4 mb-2 text-dark dark:text-white">
+                This tests the non-current month cell background (dark:bg-base-300/50)
+            </div>
+            <div class="bg-gray-1/50 dark:bg-base-300/30 p-4 text-dark dark:text-white">
+                This tests the weekend cell background (dark:bg-base-300/30)
+            </div>
+        </div>
+        
+        <!-- Toggle dark mode -->
+        <button onclick="document.documentElement.classList.toggle('dark')" class="px-4 py-2 bg-primary text-white rounded-md">
+            Toggle Dark Mode
+        </button>
+    </div>
+</body>
+</html>

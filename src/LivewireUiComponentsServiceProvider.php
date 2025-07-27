@@ -122,8 +122,6 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         $this->registerComponents();
         $this->registerBladeDirectives();
 
-		$this->loadViewsFrom(__DIR__ . '/../../resources/views', 'livewire-ui-components');
-
 		$this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
 
         // Publishing is only necessary when using the CLI.
