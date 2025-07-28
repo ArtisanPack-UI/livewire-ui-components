@@ -125,7 +125,7 @@
     </div>
 
     {{-- Event Details Modal --}}
-    <x-artisanpack-modal wire:model="eventModal" title="Event Details">
+    <x-artisanpack-modal wire:model="eventModal" title="Event Details" class="calendar-event-modal">
         <livewire:dynamic-component :component="$eventView" />
     </x-artisanpack-modal>
 </div>
