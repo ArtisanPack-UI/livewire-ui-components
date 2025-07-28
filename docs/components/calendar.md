@@ -233,11 +233,14 @@ Events can be specified in two formats:
 
 ## Customizing the Event Modal
 
-The Calendar component allows you to customize the event modal that appears when a user clicks on an event. By default, the modal displays the event title, description, dates, and times. However, you can completely customize the content of the modal by using a named slot.
+The Calendar component provides two ways to customize the event modal that appears when a user clicks on an event:
 
-### Using the Event Modal Slot
+1. Using the `eventModalContent` slot for simple customizations
+2. Creating a custom Livewire component for more complex customizations
 
-To customize the event modal, use the `eventModalContent` slot:
+### Method 1: Using the Event Modal Slot
+
+For simple customizations, you can use the `eventModalContent` slot:
 
 ```php
 <x-calendar :events="$events">
@@ -246,8 +249,6 @@ To customize the event modal, use the `eventModalContent` slot:
     </x-slot:eventModalContent>
 </x-calendar>
 ```
-
-### Accessing Event Data
 
 Within the `eventModalContent` slot, you have access to the `$selectedEvent` variable, which contains all the data for the currently selected event:
 
@@ -265,29 +266,151 @@ Within the `eventModalContent` slot, you have access to the `$selectedEvent` var
 </x-slot:eventModalContent>
 ```
 
-### Adding Interactive Elements
+### Method 2: Creating a Custom Livewire Component
 
-You can add forms, buttons, or other interactive elements to your custom event modal:
+For more complex customizations, you can create a custom Livewire component that replaces the default `EventModalContent` component. This approach gives you more flexibility and allows you to add custom logic, methods, and properties.
+
+#### Step 1: Create a Custom Livewire Component
+
+Create a new Livewire component that will handle the event modal content:
 
 ```php
-<x-slot:eventModalContent>
-    <div>
-        <h3 class="text-2xl font-bold">{{ $selectedEvent['title'] }}</h3>
-        <p class="mt-4">{{ $selectedEvent['description'] }}</p>
+<?php
+
+namespace App\Livewire;
+
+use Livewire\Component;
+use Livewire\Attributes\On;
+use Illuminate\View\View;
+
+class CustomEventModal extends Component
+{
+    public ?array $event = null;
+    
+    // You can add additional properties here
+    public bool $isEditing = false;
+    public array $editableEvent = [];
+
+    #[On('loadEventModal')]
+    public function loadEvent(array $selectedEvent): void
+    {
+        $this->event = $selectedEvent;
+        $this->resetState();
+    }
+    
+    // You can add additional methods here
+    public function resetState(): void
+    {
+        $this->isEditing = false;
+        $this->editableEvent = [];
+    }
+    
+    public function startEditing(): void
+    {
+        $this->isEditing = true;
+        $this->editableEvent = $this->event;
+    }
+    
+    public function saveChanges(): void
+    {
+        // Handle saving changes to the event
+        $this->isEditing = false;
         
-        {{-- Add a form to update the event --}}
-        <form wire:submit.prevent="updateEvent({{ $selectedEvent['id'] }})">
-            <div class="mt-4">
-                <label class="block text-sm font-medium">Title</label>
-                <input type="text" wire:model="editingEvent.title" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-            </div>
-            
-            <div class="mt-4">
-                <button type="submit" class="btn btn-primary">Save Changes</button>
-            </div>
-        </form>
-    </div>
-</x-slot:eventModalContent>
+        // Emit an event to update the calendar
+        $this->dispatch('eventUpdated', event: $this->editableEvent);
+    }
+
+    public function render(): View
+    {
+        return view('livewire.custom-event-modal');
+    }
+}
+```
+
+#### Step 2: Create a Blade Template for Your Component
+
+Create a corresponding Blade template for your custom component:
+
+```php
+{{-- resources/views/livewire/custom-event-modal.blade.php --}}
+<div>
+    @if ($event)
+        <div>
+            @if ($isEditing)
+                {{-- Edit Mode --}}
+                <form wire:submit.prevent="saveChanges">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-1">Title</label>
+                        <input type="text" wire:model="editableEvent.title" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-1">Description</label>
+                        <textarea wire:model="editableEvent.description" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-1">Location</label>
+                        <input type="text" wire:model="editableEvent.location" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800">
+                    </div>
+                    
+                    <div class="flex space-x-3 mt-6">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <button type="button" wire:click="resetState" class="btn btn-outline">Cancel</button>
+                    </div>
+                </form>
+            @else
+                {{-- View Mode --}}
+                <h3 class="text-2xl font-bold text-dark dark:text-white">{{ $event['title'] ?? $event['label'] }}</h3>
+                
+                @if (!empty($event['description']))
+                    <p class="mt-4 mb-4 text-base-content">{{ $event['description'] }}</p>
+                @endif
+                
+                <div class="bg-gray-100 dark:bg-base-300 p-4 rounded-lg mt-4">
+                    <div class="flex items-center space-x-2 text-base-content mb-2">
+                        <span class="font-semibold">Date:</span>
+                        @if (isset($event['range']))
+                            <span>{{ $event['start_date'] }} - {{ $event['end_date'] }}</span>
+                        @else
+                            <span>{{ date('j M Y', strtotime($event['date'])) }}</span>
+                        @endif
+                    </div>
+                    
+                    <div class="flex items-center space-x-2 text-base-content mb-2">
+                        <span class="font-semibold">Time:</span>
+                        @if (!empty($event['start_time']))
+                            <span>{{ $event['start_time'] }}@if (!empty($event['end_time'])) - {{ $event['end_time'] }}@endif</span>
+                        @else
+                            <span>All day</span>
+                        @endif
+                    </div>
+                    
+                    <div class="flex items-center space-x-2 text-base-content">
+                        <span class="font-semibold">Location:</span>
+                        <span>{{ $event['location'] ?? 'No location specified' }}</span>
+                    </div>
+                </div>
+                
+                <div class="mt-6 flex space-x-3">
+                    <button wire:click="startEditing" class="btn btn-primary">Edit Event</button>
+                    <button class="btn btn-outline btn-error">Delete Event</button>
+                </div>
+            @endif
+        </div>
+    @endif
+</div>
+```
+
+#### Step 3: Use Your Custom Component with the Calendar
+
+Pass your custom component's name to the Calendar component using the `eventView` parameter:
+
+```php
+<x-calendar 
+    :events="$events" 
+    eventView="custom-event-modal"
+/>
 ```
 
 ### Example: Custom Event Modal with Tabs
@@ -381,6 +504,21 @@ Here's an example of a more complex custom event modal with tabs:
     </x-slot:eventModalContent>
 </x-calendar>
 ```
+
+### Understanding the EventModalContent Component
+
+The default `EventModalContent` component is a Livewire component that displays event details in the calendar modal. It:
+
+1. Listens for the `loadEventModal` event dispatched by the Calendar component
+2. Receives the selected event data and stores it in the `$event` property
+3. Renders a view that displays the event details
+
+When you create a custom component, you need to ensure it:
+
+1. Has a public `$event` property to store the event data
+2. Listens for the `loadEventModal` event using the `#[On('loadEventModal')]` attribute
+3. Has a `loadEvent()` method that accepts the selected event data
+4. Renders a view that displays the event data
 
 ## Color Schemes
 

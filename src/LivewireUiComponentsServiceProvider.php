@@ -18,6 +18,7 @@ namespace ArtisanPack\LivewireUiComponents;
 
 use Arr;
 use ArtisanPack\LivewireUiComponents\Console\Commands\GenerateThemeCss;
+use ArtisanPack\LivewireUiComponents\View\Components\EventModalContent;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use ArtisanPack\LivewireUiComponents\Console\Commands\LivewireUiComponentsBootcampCommand;
@@ -96,6 +97,7 @@ use ArtisanPack\LivewireUiComponents\View\Components\Heading;
 use ArtisanPack\LivewireUiComponents\View\Components\Subheading;
 use ArtisanPack\LivewireUiComponents\View\Components\Text;
 use ArtisanPack\LivewireUiComponents\View\Components\Link;
+use Laravel\Prompts\Concerns\Events;
 use Livewire\Livewire;
 
 /**
@@ -237,6 +239,7 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
 
 		// Livewire Components
 		Livewire::component($prefix . 'calendar', Calendar::class);
+		Livewire::component('event-modal-content', EventModalContent::class);
 	}
 
     /**
