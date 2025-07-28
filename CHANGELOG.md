@@ -1,5 +1,8 @@
 # ArtisanPack UI Livewire UI Components
 
+## [0.4.0] - 2025-07-27
+- Updated the calendar component to be able to show events and event modals.
+
 ## [0.3.3] - 2025-07-25
 - Fixed issues with tables and Livewire components.
 
