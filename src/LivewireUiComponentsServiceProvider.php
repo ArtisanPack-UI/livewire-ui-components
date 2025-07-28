@@ -96,6 +96,7 @@ use ArtisanPack\LivewireUiComponents\View\Components\Heading;
 use ArtisanPack\LivewireUiComponents\View\Components\Subheading;
 use ArtisanPack\LivewireUiComponents\View\Components\Text;
 use ArtisanPack\LivewireUiComponents\View\Components\Link;
+use Livewire\Livewire;
 
 /**
  * LivewireUiComponents Service Provider Class
@@ -121,7 +122,7 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         $this->registerComponents();
         $this->registerBladeDirectives();
 
-        $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
+		$this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
 
         // Publishing is only necessary when using the CLI.
         if ($this->app->runningInConsole()) {
@@ -166,7 +167,6 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         Blade::component($prefix . 'badge', Badge::class);
         Blade::component($prefix . 'breadcrumbs', Breadcrumbs::class);
         Blade::component($prefix . 'button', Button::class);
-        Blade::component($prefix . 'calendar', Calendar::class);
         Blade::component($prefix . 'card', Card::class);
         Blade::component($prefix . 'chart', Chart::class);
         Blade::component($prefix . 'checkbox', Checkbox::class);
@@ -234,7 +234,10 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         Blade::component($prefix . 'subheading', Subheading::class);
         Blade::component($prefix . 'text', Text::class);
         Blade::component($prefix . 'link', Link::class);
-    }
+
+		// Livewire Components
+		Livewire::component($prefix . 'calendar', Calendar::class);
+	}
 
     /**
      * Register all Blade directives provided by the package.

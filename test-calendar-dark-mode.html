@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar Dark Mode Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            DEFAULT: '#3b82f6', // blue-500
+                        },
+                        secondary: {
+                            DEFAULT: '#10b981', // emerald-500
+                        },
+                        accent: {
+                            DEFAULT: '#8b5cf6', // violet-500
+                        },
+                        dark: {
+                            DEFAULT: '#1f2937', // gray-800
+                            '2': '#111827', // gray-900
+                            '3': '#374151', // gray-700
+                        },
+                        stroke: {
+                            DEFAULT: '#e5e7eb', // gray-200
+                        },
+                        gray: {
+                            '1': '#f9fafb', // gray-50
+                            '2': '#f3f4f6', // gray-100
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Simulate the calendar component styles */
+        .calendar-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Dark mode styles */
+        .dark {
+            background-color: #111827;
+            color: white;
+        }
+        
+        /* Test different color schemes */
+        .color-scheme-test {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .color-test {
+            padding: 10px;
+            border-radius: 5px;
+            width: 150px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-white dark:bg-dark-2">
+    <div class="calendar-container">
+        <h1 class="text-2xl font-bold mb-6 text-dark dark:text-white">Calendar Dark Mode Test</h1>
+        
+        <!-- Test different color schemes -->
+        <h2 class="text-xl font-semibold mb-4 text-dark dark:text-white">Color Scheme Tests</h2>
+        
+        <div class="color-scheme-test">
+            <div class="color-test bg-primary text-white">Primary</div>
+            <div class="color-test bg-secondary text-white">Secondary</div>
+            <div class="color-test bg-accent text-white">Accent</div>
+            <div class="color-test" style="background-color: #8A2BE2; color: white;">Custom</div>
+        </div>
+        
+        <!-- Test calendar header -->
+        <h2 class="text-xl font-semibold mb-4 text-dark dark:text-white">Calendar Header</h2>
+        
+        <div class="mb-[30px] flex items-center justify-between rounded-lg border border-stroke dark:border-dark-3 bg-gray-2 dark:bg-dark-2 py-3 pr-4 pl-[30px]">
+            <div class="flex items-center space-x-2">
+                <button type="button" class="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-dark-3 transition-colors duration-200 ease-in-out">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+                <button type="button" class="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-dark-3 transition-colors duration-200 ease-in-out">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+                <button type="button" class="px-3 py-1 rounded-md hover:bg-gray-100 dark:hover:bg-dark-3 transition-colors duration-200 ease-in-out">
+                    Today
+                </button>
+            </div>
+            
+            <p class="text-base font-semibold text-dark dark:text-white sm:text-xl">
+                July 2025
+            </p>
+            
+            <div class="relative z-20 inline-flex rounded-[5px] bg-white dark:bg-dark">
+                <select class="relative z-20 h-11 appearance-none rounded-[5px] text-dark dark:text-white border border-stroke dark:border-dark-3 bg-transparent pr-10 pl-5 outline-hidden">
+                    <option value="day" class="dark:bg-dark-2">Day</option>
+                    <option value="week" class="dark:bg-dark-2">Week</option>
+                    <option value="month" class="dark:bg-dark-2">Month</option>
+                    <option value="year" class="dark:bg-dark-2">Year</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- Test weekday header -->
+        <h2 class="text-xl font-semibold mb-4 text-dark dark:text-white">Weekday Header</h2>
+        
+        <div class="w-full max-w-full bg-white dark:bg-dark-2 overflow-x-auto rounded-lg shadow-sm mb-6">
+            <table class="w-full">
+                <thead>
+                    <tr class="rounded-t-lg bg-primary text-white">
+                        <th class="h-[60px] w-10 p-2 text-xs lg:w-28 xl:text-base 2xl:w-40 rounded-tl-lg">
+                            <span class="hidden lg:block">Monday</span>
+                            <span class="hidden md:block lg:hidden">Mon</span>
+                            <span class="block md:hidden">M</span>
+                        </th>
+                        <th class="h-[60px] w-10 p-2 text-xs lg:w-28 xl:text-base 2xl:w-40">
+                            <span class="hidden lg:block">Tuesday</span>
+                            <span class="hidden md:block lg:hidden">Tue</span>
+                            <span class="block md:hidden">T</span>
+                        </th>
+                        <th class="h-[60px] w-10 p-2 text-xs lg:w-28 xl:text-base 2xl:w-40 rounded-tr-lg">
+                            <span class="hidden lg:block">Wednesday</span>
+                            <span class="hidden md:block lg:hidden">Wed</span>
+                            <span class="block md:hidden">W</span>
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        
+        <!-- Test today highlight -->
+        <h2 class="text-xl font-semibold mb-4 text-dark dark:text-white">Today Highlight</h2>
+        
+        <div class="flex gap-4 mb-6">
+            <div class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-primary text-white">
+                15
+            </div>
+            <div class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-secondary text-white">
+                16
+            </div>
+            <div class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-accent text-white">
+                17
+            </div>
+            <div class="inline-flex items-center justify-center w-7 h-7 rounded-full" style="background-color: #8A2BE2; color: white;">
+                18
+            </div>
+        </div>
+        
+        <!-- Test events -->
+        <h2 class="text-xl font-semibold mb-4 text-dark dark:text-white">Events</h2>
+        
+        <div class="flex flex-col gap-2 mb-6">
+            <div class="text-xs rounded-md p-1 text-xs mb-1 truncate shadow-sm transition-transform duration-200 ease-in-out hover:scale-[1.02] bg-primary text-white">
+                Team Meeting
+            </div>
+            <div class="text-xs rounded-md p-1 text-xs mb-1 truncate shadow-sm transition-transform duration-200 ease-in-out hover:scale-[1.02] bg-secondary text-white">
+                Project Review
+            </div>
+            <div class="text-xs rounded-md p-1 text-xs mb-1 truncate shadow-sm transition-transform duration-200 ease-in-out hover:scale-[1.02] bg-accent text-white">
+                Conference Call
+            </div>
+            <div class="text-xs rounded-md p-1 text-xs mb-1 truncate shadow-sm transition-transform duration-200 ease-in-out hover:scale-[1.02]" style="background-color: #8A2BE2; color: white;">
+                Custom Event
+            </div>
+        </div>
+        
+        <!-- Toggle dark mode -->
+        <button onclick="document.documentElement.classList.toggle('dark')" class="px-4 py-2 bg-primary text-white rounded-md">
+            Toggle Dark Mode
+        </button>
+    </div>
+</body>
+</html>
