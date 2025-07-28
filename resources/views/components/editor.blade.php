@@ -102,3 +102,5 @@
         @endif
     </fieldset>
 </div>
+
+<script src="{{ asset('vendor/artisanpack-ui/js/tinymce/tinymce.min.js') }}" referrerpolicy="origin"></script>

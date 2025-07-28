@@ -41,7 +41,7 @@ class Editor extends Component
         public ?string $hintClass = 'fieldset-label',
         public ?string $disk = 'public',
         public ?string $folder = 'editor',
-        public ?bool $gplLicense = false,
+        public ?bool $gplLicense = true,
         public ?array $config = [],
 
         // Validations

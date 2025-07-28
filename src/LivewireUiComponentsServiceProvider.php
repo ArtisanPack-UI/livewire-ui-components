@@ -126,7 +126,12 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
 
 		$this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
 
-        // Publishing is only necessary when using the CLI.
+		$this->publishes([
+			__DIR__.'/../resources/js/tinymce' => public_path('vendor/artisanpack-ui/js/tinymce'),
+		], 'artisanpack-assets');
+
+
+		// Publishing is only necessary when using the CLI.
         if ($this->app->runningInConsole()) {
             $this->bootForConsole();
         }
