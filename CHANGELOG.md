@@ -1,5 +1,8 @@
 # ArtisanPack UI Livewire UI Components
 
+## [0.4.1] - 2025-07-28
+- Added a fix for the custom event modal for the calendar.
+
 ## [0.4.0] - 2025-07-27
 - Updated the calendar component to be able to show events and event modals.
 
