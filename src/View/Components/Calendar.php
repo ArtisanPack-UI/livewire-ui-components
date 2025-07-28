@@ -1,39 +1,180 @@
 <?php
+/**
+ * Calendar Component
+ *
+ * A Livewire component for displaying a calendar with events.
+ *
+ * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
+ * @package    ArtisanPack\LivewireUiComponents
+ * @subpackage ArtisanPack\LivewireUiComponents\View\Components
+ * @since      1.0.0
+ */
+
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
-use Illuminate\View\View;
-use Livewire\Component;
+use ArtisanPackUI\Accessibility\A11y;
+use Carbon\CarbonPeriod;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use Carbon\CarbonPeriod;
+use Illuminate\View\View;
+use Livewire\Component;
 
-class Calendar extends Component
-{
-    // Component Properties
+/**
+ * Renders an interactive calendar component.
+ *
+ * @since 1.0.0
+ */
+class Calendar extends Component {
+
+    /**
+     * The unique ID for the calendar component.
+     *
+     * @since 1.0.0
+     * @var   string|null
+     */
     public ?string $id = null;
+
+    /**
+     * The number of months to display.
+     *
+     * @since 1.0.0
+     * @var   int|null
+     */
     public ?int $months = 1;
-    public ?string $locale = 'en-EN';
+
+    /**
+     * The locale for date formatting.
+     *
+     * @since 1.0.0
+     * @var   string|null
+     */
+    public ?string $locale = 'en-US';
+
+    /**
+     * Whether to highlight weekend days.
+     *
+     * @since 1.0.0
+     * @var   bool|null
+     */
     public ?bool $weekendHighlight = false;
+
+    /**
+     * Whether the week should start on Sunday.
+     *
+     * @since 1.0.0
+     * @var   bool|null
+     */
     public ?bool $sundayStart = false;
+
+    /**
+     * The color scheme for the calendar.
+     *
+     * @since 1.0.0
+     * @var   string|null
+     */
     public ?string $colorScheme = 'primary';
+
+    /**
+     * A custom hex color if 'custom' scheme is used.
+     *
+     * @since 1.0.0
+     * @var   string|null
+     */
     public ?string $customColor = null;
+
+    /**
+     * The current view of the calendar.
+     *
+     * @since 1.0.0
+     * @var   string|null
+     */
     public ?string $view = 'month';
+
+    /**
+     * Component configuration options.
+     *
+     * @since 1.0.0
+     * @var   array|null
+     */
     public ?array $config = [];
+
+    /**
+     * The array of events to display.
+     *
+     * @since 1.0.0
+     * @var   array|null
+     */
     public ?array $events = [];
+
+    /**
+     * The unique identifier for the component instance.
+     *
+     * @since 1.0.0
+     * @var   string
+     */
     public string $uuid;
+
+    /**
+     * The JavaScript for applying custom colors.
+     *
+     * @since 1.0.0
+     * @var   string
+     */
     public string $customColorScript;
 
-    // Internal State
+    /**
+     * The starting date for the calendar grid.
+     *
+     * @since 1.0.0
+     * @var   Carbon
+     */
     public Carbon $gridStartsAt;
+
+    /**
+     * The text displayed in the calendar header.
+     *
+     * @since 1.0.0
+     * @var   string
+     */
     public string $headerText = '';
 
     /**
+     * Controls the visibility of the event details modal.
+     *
+     * @since 1.0.0
+     * @var   bool
+     */
+    public bool $eventModal = false;
+
+    /**
+     * The event data currently selected for modal view.
+     *
+     * @since 1.0.0
+     * @var   array|null
+     */
+    public ?array $selectedEvent = null;
+
+    /**
      * Mount the component and initialize the state.
+     *
+     * @since 1.0.0
+     *
+     * @param  string|null $id               Optional. The ID for the calendar component. Default null.
+     * @param  int|null    $months           Optional. The number of months to display. Default 1.
+     * @param  string|null $locale           Optional. The locale for date formatting. Default 'en-US'.
+     * @param  bool|null   $weekendHighlight Optional. Whether to highlight weekends. Default false.
+     * @param  bool|null   $sundayStart      Optional. Whether the week starts on Sunday. Default false.
+     * @param  string|null $colorScheme      Optional. The color scheme. Accepts 'primary', 'secondary', 'accent', 'custom'. Default 'primary'.
+     * @param  string|null $customColor      Optional. A custom hex color if 'custom' scheme is used. Default null.
+     * @param  string|null $view             Optional. The default view ('day', 'week', 'month', 'year'). Default 'month'.
+     * @param  array|null  $config           Optional. Configuration options. Default empty array.
+     * @param  array|null  $events           Optional. An array of event objects. Default empty array.
+     * @return void
      */
     public function mount(
         ?string $id = null,
         ?int $months = 1,
-        ?string $locale = 'en-EN',
+        ?string $locale = 'en-US',
         ?bool $weekendHighlight = false,
         ?bool $sundayStart = false,
         ?string $colorScheme = 'primary',
@@ -41,96 +182,56 @@ class Calendar extends Component
         ?string $view = 'month',
         ?array $config = [],
         ?array $events = []
-    ) {
-        $this->id = $id ?? 'calendar-' . uniqid();
-        $this->uuid = uniqid('calendar-');
-        $this->months = $months;
-        $this->locale = $locale;
+    ): void {
+        $this->id               = $id ?? 'calendar-' . uniqid();
+        $this->uuid             = uniqid( 'calendar-' );
+        $this->months           = $months;
+        $this->locale           = $locale;
         $this->weekendHighlight = $weekendHighlight;
-        $this->sundayStart = $sundayStart;
-        
-        // Validate color scheme
-        $validColorSchemes = ['primary', 'secondary', 'accent', 'custom'];
-        $this->colorScheme = in_array($colorScheme, $validColorSchemes) ? $colorScheme : 'primary';
-        
-        // Validate custom color
-        if ($this->colorScheme === 'custom' && !empty($customColor)) {
+        $this->sundayStart      = $sundayStart;
+
+        $validColorSchemes = [ 'primary', 'secondary', 'accent', 'custom' ];
+        $this->colorScheme = in_array( $colorScheme, $validColorSchemes, true ) ? $colorScheme : 'primary';
+
+        if ( 'custom' === $this->colorScheme && ! empty( $customColor ) ) {
             $this->customColor = $customColor;
         }
-        
-        // Validate view
-        $validViews = ['day', 'week', 'month', 'year'];
-        $this->view = in_array($view, $validViews) ? $view : 'month';
-        
+
+        $validViews = [ 'day', 'week', 'month', 'year' ];
+        $this->view = in_array( $view, $validViews, true ) ? $view : 'month';
+
         $this->config = $config;
         $this->events = $events;
-        
-        Carbon::setLocale($this->locale);
-        $this->gridStartsAt = Carbon::today()->startOfMonth();
+
+        Carbon::setLocale( $this->locale );
+        $this->gridStartsAt      = Carbon::today()->startOfMonth();
         $this->customColorScript = $this->generateCustomColorScript();
-        
-        // Initialize header text based on current view
+
         $this->updateHeaderText();
     }
 
     /**
-     * Generate the javascript for custom colors
+     * Open the event modal and set the selected event data.
+     *
+     * @since 1.0.0
+     *
+     * @param  string $eventId The ID of the event to display.
+     * @return void
      */
-    private function generateCustomColorScript(): string
-    {
-        if ($this->colorScheme !== 'custom' || empty($this->customColor)) {
-            return 'applyCustomColors() {},';
-        }
-
-        $bgColor = $this->customColor;
-        $textColor = $this->a11yGetContrastColor($bgColor);
-        $bgColorLight = $this->hexToRgba($bgColor, 0.1); // 10% opacity for hover/selected states
-
-        return <<<JS
-        applyCustomColors() {
-            const style = document.createElement('style');
-            style.textContent = `
-                [wire\\:key="calendar-{$this->uuid}"] .bg-custom {
-                    background-color: {$bgColor};
-                    color: {$textColor};
-                }
-                [wire\\:key="calendar-{$this->uuid}"] .text-custom {
-                    color: {$bgColor};
-                }
-                [wire\\:key="calendar-{$this->uuid}"] .hover\\:bg-custom:hover {
-                    background-color: {$bgColorLight};
-                }
-                [wire\\:key="calendar-{$this->uuid}"] .border-custom {
-                    border-color: {$bgColor};
-                }
-                [wire\\:key="calendar-{$this->uuid}"] .bg-custom-light {
-                    background-color: {$bgColorLight};
-                }
-            `;
-            document.head.appendChild(style);
-        },
-        JS;
-    }
-    
-    /**
-     * Convert hex color to rgba with opacity
-     */
-    private function hexToRgba(string $hexColor, float $opacity = 1.0): string
-    {
-        $hexColor = ltrim($hexColor, '#');
-        $r = hexdec(substr($hexColor, 0, 2));
-        $g = hexdec(substr($hexColor, 2, 2));
-        $b = hexdec(substr($hexColor, 4, 2));
-        
-        return "rgba({$r}, {$g}, {$b}, {$opacity})";
+    public function openEventModal( string $eventId ): void {
+        $this->selectedEvent = collect( $this->events )->firstWhere( 'id', $eventId );
+        $this->eventModal    = true;
     }
 
     /**
-     * Go to the next period based on current view.
+     * Go to the next period based on the current view.
+     *
+     * @since 1.0.0
+     *
+     * @return void
      */
-    public function goToNextPeriod(): void
-    {
-        switch ($this->view) {
+    public function goToNextPeriod(): void {
+        switch ( $this->view ) {
             case 'day':
                 $this->gridStartsAt->addDay();
                 break;
@@ -145,17 +246,19 @@ class Calendar extends Component
                 $this->gridStartsAt->addMonthNoOverflow();
                 break;
         }
-        
-        // Update header text after changing the date
+
         $this->updateHeaderText();
     }
 
     /**
-     * Go to the previous period based on current view.
+     * Go to the previous period based on the current view.
+     *
+     * @since 1.0.0
+     *
+     * @return void
      */
-    public function goToPreviousPeriod(): void
-    {
-        switch ($this->view) {
+    public function goToPreviousPeriod(): void {
+        switch ( $this->view ) {
             case 'day':
                 $this->gridStartsAt->subDay();
                 break;
@@ -170,24 +273,26 @@ class Calendar extends Component
                 $this->gridStartsAt->subMonthNoOverflow();
                 break;
         }
-        
-        // Update header text after changing the date
+
         $this->updateHeaderText();
     }
 
     /**
-     * Go to today/current period based on current view.
+     * Go to today's date based on the current view.
+     *
+     * @since 1.0.0
+     *
+     * @return void
      */
-    public function goToToday(): void
-    {
+    public function goToToday(): void {
         $today = Carbon::today();
-        
-        switch ($this->view) {
+
+        switch ( $this->view ) {
             case 'day':
                 $this->gridStartsAt = $today;
                 break;
             case 'week':
-                $this->gridStartsAt = $today->startOfWeek($this->sundayStart ? Carbon::SUNDAY : Carbon::MONDAY);
+                $this->gridStartsAt = $today->startOfWeek( $this->sundayStart ? Carbon::SUNDAY : Carbon::MONDAY );
                 break;
             case 'year':
                 $this->gridStartsAt = $today->startOfYear();
@@ -197,92 +302,105 @@ class Calendar extends Component
                 $this->gridStartsAt = $today->startOfMonth();
                 break;
         }
-        
-        // Update header text after changing the date
+
         $this->updateHeaderText();
     }
-    
+
     /**
      * Go to the next month (legacy method for backward compatibility).
+     *
+     * @since 1.0.0
+     *
+     * @return void
      */
-    public function goToNextMonth(): void
-    {
+    public function goToNextMonth(): void {
         $this->goToNextPeriod();
     }
 
     /**
      * Go to the previous month (legacy method for backward compatibility).
+     *
+     * @since 1.0.0
+     *
+     * @return void
      */
-    public function goToPreviousMonth(): void
-    {
+    public function goToPreviousMonth(): void {
         $this->goToPreviousPeriod();
     }
 
     /**
      * Go to the current month (legacy method for backward compatibility).
+     *
+     * @since 1.0.0
+     *
+     * @return void
      */
-    public function goToCurrentMonth(): void
-    {
+    public function goToCurrentMonth(): void {
         $this->goToToday();
     }
-    
+
     /**
-     * Switch to a different view (day, week, month, year).
+     * Fired when the view property is updated.
+     *
+     * Resets the grid start date and updates the header text.
+     *
+     * @since 1.0.0
+     *
+     * @return void
      */
-    public function updatedView(): void
-    {
-        // Reset grid start date based on new view
+    public function updatedView(): void {
         $this->goToToday();
-        
-        // Update header text
         $this->updateHeaderText();
     }
-    
+
     /**
      * Update the header text based on current view and date.
+     *
+     * @since 1.0.0
+     *
+     * @return void
      */
-    public function updateHeaderText(): void
-    {
-        switch ($this->view) {
+    public function updateHeaderText(): void {
+        switch ( $this->view ) {
             case 'day':
-                $this->headerText = $this->gridStartsAt->format('l, F j, Y');
+                $this->headerText = $this->gridStartsAt->format( 'l, F j, Y' );
                 break;
             case 'week':
-                $weekStart = $this->gridStartsAt->clone()->startOfWeek($this->sundayStart ? Carbon::SUNDAY : Carbon::MONDAY);
-                $weekEnd = $weekStart->clone()->addDays(6);
-                
-                if ($weekStart->month === $weekEnd->month) {
-                    // Same month
-                    $this->headerText = $weekStart->format('F j') . ' - ' . $weekEnd->format('j, Y');
-                } elseif ($weekStart->year === $weekEnd->year) {
-                    // Different months, same year
-                    $this->headerText = $weekStart->format('F j') . ' - ' . $weekEnd->format('F j, Y');
+                $weekStart = $this->gridStartsAt->clone()->startOfWeek( $this->sundayStart ? Carbon::SUNDAY : Carbon::MONDAY );
+                $weekEnd   = $weekStart->clone()->addDays( 6 );
+
+                if ( $weekStart->month === $weekEnd->month ) {
+                    $this->headerText = $weekStart->format( 'F j' ) . ' - ' . $weekEnd->format( 'j, Y' );
+                } elseif ( $weekStart->year === $weekEnd->year ) {
+                    $this->headerText = $weekStart->format( 'F j' ) . ' - ' . $weekEnd->format( 'F j, Y' );
                 } else {
-                    // Different years
-                    $this->headerText = $weekStart->format('F j, Y') . ' - ' . $weekEnd->format('F j, Y');
+                    $this->headerText = $weekStart->format( 'F j, Y' ) . ' - ' . $weekEnd->format( 'F j, Y' );
                 }
                 break;
             case 'year':
-                $this->headerText = $this->gridStartsAt->format('Y');
+                $this->headerText = $this->gridStartsAt->format( 'Y' );
                 break;
             case 'month':
             default:
-                $this->headerText = $this->gridStartsAt->format('F Y');
+                $this->headerText = $this->gridStartsAt->format( 'F Y' );
                 break;
         }
     }
-    
+
     /**
      * Computed property to get the weekday names.
+     *
+     * @since 1.0.0
+     *
+     * @return Collection
      */
-    public function getWeekdaysProperty(): Collection
-    {
+    public function getWeekdaysProperty(): Collection {
         $weekdays = collect();
         $startDay = $this->sundayStart ? Carbon::SUNDAY : Carbon::MONDAY;
-        $day = Carbon::now()->startOfWeek($startDay);
+        $day      = Carbon::now()->startOfWeek( $startDay );
 
-        for ($i = 0; $i < 7; $i++) {
-            $weekdays->push($day->clone());
+        for ( $i = 0; $i < 7; $i++ ) {
+            $weekdays->push( $day->clone() );
             $day->addDay();
         }
 
@@ -291,102 +409,135 @@ class Calendar extends Component
 
     /**
      * Computed property to get the weeks for the calendar grid.
+     *
+     * @since 1.0.0
+     *
+     * @return Collection
      */
-    public function getWeeksProperty(): Collection
-    {
+    public function getWeeksProperty(): Collection {
         $startDayOfWeek = $this->sundayStart ? Carbon::SUNDAY : Carbon::MONDAY;
-        $endDayOfWeek = $this->sundayStart ? Carbon::SATURDAY : Carbon::SUNDAY;
+        $endDayOfWeek   = $this->sundayStart ? Carbon::SATURDAY : Carbon::SUNDAY;
 
-        $start = $this->gridStartsAt->clone()->startOfMonth()->startOfWeek($startDayOfWeek);
-        $end = $this->gridStartsAt->clone()->endOfMonth()->endOfWeek($endDayOfWeek);
+        $start = $this->gridStartsAt->clone()->startOfMonth()->startOfWeek( $startDayOfWeek );
+        $end   = $this->gridStartsAt->clone()->endOfMonth()->endOfWeek( $endDayOfWeek );
 
-        return collect(CarbonPeriod::create($start, '1 day', $end)->toArray())
-            ->chunk(7)
-            ->map(function (Collection $week) {
-                return $week->map(function (Carbon $day) {
-                    $dayEvents = collect($this->events)->filter(function($event) use ($day) {
-                        // Handle single date events
-                        if (isset($event['date'])) {
-                            return Carbon::parse($event['date'])->isSameDay($day);
-                        }
+        return collect( CarbonPeriod::create( $start, '1 day', $end )->toArray() )
+            ->chunk( 7 )
+            ->map(
+                function ( Collection $week ) {
+                    return $week->map(
+                        function ( Carbon $day ) {
+                            $dayEvents = collect( $this->events )->filter(
+                                function( $event ) use ( $day ) {
+                                    if ( isset( $event['date'] ) ) {
+                                        return Carbon::parse( $event['date'] )->isSameDay( $day );
+                                    }
 
-                        // Handle date range events
-                        if (isset($event['range']) && is_array($event['range']) && count($event['range']) === 2) {
-                            $rangeStart = Carbon::parse($event['range'][0]);
-                            $rangeEnd = Carbon::parse($event['range'][1]);
-                            return $day->between($rangeStart, $rangeEnd);
+                                    if ( isset( $event['range'] ) && is_array( $event['range'] ) && 2 === count( $event['range'] ) ) {
+                                        $rangeStart = Carbon::parse( $event['range'][0] );
+                                        $rangeEnd   = Carbon::parse( $event['range'][1] );
+                                        return $day->between( $rangeStart, $rangeEnd );
+                                    }
+
+                                    return false;
+                                }
+                            )->map(
+                                function( $event ) {
+                                    if ( ! isset( $event['title'] ) && isset( $event['description'] ) ) {
+                                        $event['title'] = $event['description'];
+                                    }
+                                    if ( ! isset( $event['label'] ) ) {
+                                        $event['label'] = $event['title'] ?? 'Event';
+                                    }
+                                    if ( ! isset( $event['id'] ) ) {
+                                        $event['id'] = uniqid( 'event-' );
+                                    }
+
+                                    if ( isset( $event['range'] ) && is_array( $event['range'] ) && 2 === count( $event['range'] ) ) {
+                                        $rangeStart = Carbon::parse( $event['range'][0] );
+                                        $rangeEnd   = Carbon::parse( $event['range'][1] );
+
+                                        $event['is_multiday'] = ! $rangeStart->isSameDay( $rangeEnd );
+                                        $event['start_date']  = $rangeStart->format( 'j M' );
+                                        $event['end_date']    = $rangeEnd->format( 'j M' );
+                                    }
+
+                                    if ( isset( $event['time'] ) && is_array( $event['time'] ) && 2 === count( $event['time'] ) ) {
+                                        $event['start_time'] = $event['time'][0];
+                                        $event['end_time']   = $event['time'][1];
+                                    }
+                                    return $event;
+                                }
+                            );
+
+                            return (object) [
+                                'date'   => $day,
+                                'events' => $dayEvents,
+                            ];
                         }
-                        
-                        return false;
-                    })->map(function($event) {
-                        // Process event data
-                        
-                        // Support for title property (renamed from description)
-                        if (!isset($event['title']) && isset($event['description'])) {
-                            $event['title'] = $event['description'];
-                        }
-                        
-                        // Ensure label exists
-                        if (!isset($event['label'])) {
-                            $event['label'] = $event['title'] ?? 'Event';
-                        }
-                        
-                        // Ensure id exists
-                        if (!isset($event['id'])) {
-                            $event['id'] = uniqid('event-');
-                        }
-                        
-                        // Set multiday flag and format dates for display
-                        if (isset($event['range']) && is_array($event['range']) && count($event['range']) === 2) {
-                            $rangeStart = Carbon::parse($event['range'][0]);
-                            $rangeEnd = Carbon::parse($event['range'][1]);
-                            
-                            // Set is_multiday flag if event spans multiple days
-                            $event['is_multiday'] = !$rangeStart->isSameDay($rangeEnd);
-                            
-                            // Format dates for display
-                            $event['start_date'] = $rangeStart->format('j M');
-                            $event['end_date'] = $rangeEnd->format('j M');
-                        }
-                        
-                        // Format times for single-day events
-                        if (isset($event['time']) && is_array($event['time']) && count($event['time']) === 2) {
-                            $event['start_time'] = $event['time'][0];
-                            $event['end_time'] = $event['time'][1];
-                        }
-                        
-                        return $event;
-                    });
-                    
-                    return (object)[
-                        'date' => $day,
-                        'events' => $dayEvents,
-                    ];
-                });
-            });
+                    );
+                }
+            );
     }
 
     /**
      * Render the component.
+     *
+     * @since 1.0.0
+     *
+     * @return View
      */
-    public function render(): View
-    {
-		return view('livewire-ui-components::components.calendar');
-	}
+    public function render(): View {
+        return view( 'livewire-ui-components::components.calendar' );
+    }
 
     /**
-     * Determines appropriate text color (black or white) based on background color
+     * Generate the JavaScript for custom colors.
+     *
+     * This script generates a <style> block to apply custom colors for the calendar.
+     *
+     * @since 1.0.0
+     *
+     * @return string The JavaScript code to be executed in AlpineJS.
      */
-    public function a11yGetContrastColor(string $hexColor = null): string
-    {
-        if (!$hexColor) {
-            return '#ffffff';
+    private function generateCustomColorScript(): string {
+        if ( 'custom' !== $this->colorScheme || empty( $this->customColor ) ) {
+            return '';
         }
-        $hexColor = ltrim($hexColor, '#');
-        $r = hexdec(substr($hexColor, 0, 2));
-        $g = hexdec(substr($hexColor, 2, 2));
-        $b = hexdec(substr($hexColor, 4, 2));
-        $luminance = (0.299 * $r + 0.587 * $g + 0.114 * $b) / 255;
-        return $luminance > 0.5 ? '#000000' : '#ffffff';
+
+        $a11y         = new A11y();
+        $bgColor      = $this->customColor;
+        $textColor    = $a11y->a11yGetContrastColor( $bgColor );
+        $bgColorLight = self::hexToRgba( $bgColor, 0.1 );
+
+        return "
+			const style = document.createElement('style');
+			style.textContent = `
+				[wire\\:key=\"calendar-{$this->uuid}\"] .bg-custom { background-color: {$bgColor}; color: {$textColor}; }
+				[wire\\:key=\"calendar-{$this->uuid}\"] .text-custom { color: {$bgColor}; }
+				[wire\\:key=\"calendar-{$this->uuid}\"] .hover\\\\:bg-custom:hover { background-color: {$bgColorLight}; }
+				[wire\\:key=\"calendar-{$this->uuid}\"] .border-custom { border-color: {$bgColor}; }
+				[wire\\:key=\"calendar-{$this->uuid}\"] .bg-custom-light { background-color: {$bgColorLight}; }
+			`;
+			document.head.appendChild(style);
+		";
+    }
+
+    /**
+     * Convert hex color to rgba with opacity.
+     *
+     * @since 1.0.0
+     *
+     * @param  string $hexColor The hex color code.
+     * @param  float  $opacity  Optional. The opacity value between 0 and 1. Default 1.0.
+     * @return string The color in rgba format.
+     */
+    private static function hexToRgba( string $hexColor, float $opacity = 1.0 ): string {
+        $hexColor = ltrim( $hexColor, '#' );
+        $r        = hexdec( substr( $hexColor, 0, 2 ) );
+        $g        = hexdec( substr( $hexColor, 2, 2 ) );
+        $b        = hexdec( substr( $hexColor, 4, 2 ) );
+
+        return "rgba({$r}, {$g}, {$b}, {$opacity})";
     }
 }
