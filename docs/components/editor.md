@@ -2,6 +2,36 @@
 
 The Editor component provides a rich text editor with formatting options, image uploads, and more. It's built on top of TinyMCE and integrates with Livewire for two-way data binding.
 
+## Installation
+
+### 1. Publish TinyMCE Resources
+
+First, you need to publish the TinyMCE resources to your public directory:
+
+```bash
+php artisan vendor:publish --tag=artisanpack-assets
+```
+
+This will copy the TinyMCE files to `public/vendor/artisanpack-ui/js/tinymce`.
+
+### 2. Load TinyMCE in Your Layout
+
+To prevent "Alpine Expression Error: Can't find variable: tinymce" errors, you must load the TinyMCE script in the `<head>` section of your main layout file, before any Alpine.js components are initialized:
+
+```html
+<head>
+    <!-- Other head elements -->
+    
+    <!-- Add this line to load TinyMCE -->
+    <script src="{{ asset('vendor/artisanpack-ui/js/tinymce/tinymce.min.js') }}" referrerpolicy="origin"></script>
+    
+    <!-- Your other scripts (app.js, etc.) -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+```
+
+> **Important:** Loading TinyMCE in the head section ensures it's available globally before Alpine.js initializes any components that depend on it. This prevents race conditions that can cause errors.
+
 ## Basic Usage
 
 ```php
