@@ -36,7 +36,9 @@
         "jfcherng/php-diff": "^6.15",
         "laravel/prompts": "^0|^1",
         "blade-ui-kit/blade-heroicons": "^2.0",
-        "livewire/livewire": "^3.6"
+        "livewire/livewire": "^3.6",
+        "artisanpack-ui/accessibility": "^1.1",
+        "artisanpack-ui/security": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^10|^11",
