@@ -31,26 +31,56 @@ use Illuminate\View\Component;
 
 class MenuSub extends Component
 {
-    public string $uuid;
+	public string $uuid;
+	// For theme colors like 'primary'
+	public array $themeColorClasses = [];
+	// For dynamic hex colors from a database
+	public ?string $dynamicBgColor = null;
+	public ?string $dynamicTextColor = null;
 
-    public function __construct(
-        public ?string $id = null,
-        public ?string $title = null,
-        public ?string $icon = null,
-        public ?string $iconClasses = null,
-        public bool $open = false,
-        public ?bool $hidden = false,
-        public ?bool $disabled = false,
-    ) {
-        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
-    }
+	public function __construct(
+		public ?string $id = null,
+		public ?string $title = null,
+		public ?string $icon = null,
+		public ?string $iconClasses = null,
+		public bool $open = false,
+		public ?bool $hidden = false,
+		public ?bool $disabled = false,
+		public bool $active = false, // ** ADD THIS LINE **
+		public ?string $bgColor = null
+	) {
+		$this->uuid = "artisanpack" . md5(serialize($this)) . $id;
 
-    public function render(): View|Closure|string
-    {
-        if ($this->hidden === true) {
-            return '';
-        }
+		if ($this->bgColor) {
+			// Check if it's a dynamic hex color
+			if (str_starts_with($this->bgColor, '#')) {
+				$this->dynamicBgColor = $this->bgColor;
+				$this->dynamicTextColor = generateAccessibleTextColor($this->bgColor);
+			} else {
+				// Otherwise, treat as a theme color and generate Tailwind classes
+				$baseBgClass = "bg-{$this->bgColor}";
+				$baseTextColorClass = "text-{$this->bgColor}-content";
 
-        return view('livewire-ui-components::components.menu-sub');
-    }
+				$this->themeColorClasses = [
+					"active-bg"    => $baseBgClass,
+					"active-text"  => $baseTextColorClass,
+					"hover-focus" => [
+						"hover:{$baseBgClass}",
+						"hover:{$baseTextColorClass}",
+						"focus:{$baseBgClass}",
+						"focus:{$baseTextColorClass}",
+					]
+				];
+			}
+		}
+	}
+
+	public function render(): View|Closure|string
+	{
+		if ($this->hidden === true) {
+			return '';
+		}
+
+		return view('livewire-ui-components::components.menu-sub');
+	}
 }

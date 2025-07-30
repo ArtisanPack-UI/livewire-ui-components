@@ -1,5 +1,9 @@
 # ArtisanPack UI Livewire UI Components
 
+## [0.4.3] - 2025-07-29
+- Fixed issue with the rich text editor component.
+- Added in ability to customize the background for hover and active states for menu items.
+
 ## [0.4.2] - 2025-07-28
 - Added in some various fixes to the package.
 

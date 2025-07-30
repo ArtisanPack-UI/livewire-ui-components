@@ -4,8 +4,128 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ae43d149bb3d2982cb7c1de9138a06f8",
+    "content-hash": "d108a2a518d6eaf46b3f14fb71d6d2f0",
     "packages": [
+        {
+            "name": "artisanpack-ui/accessibility",
+            "version": "1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://gitlab.com/jacob-martella-web-design/artisanpack-ui/artisanpack-ui-accessibility.git",
+                "reference": "5a3df62cf8d90d98cdda9d8864230cc4e0186366"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://gitlab.com/api/v4/projects/jacob-martella-web-design%2Fartisanpack-ui%2Fartisanpack-ui-accessibility/repository/archive.zip?sha=5a3df62cf8d90d98cdda9d8864230cc4e0186366",
+                "reference": "5a3df62cf8d90d98cdda9d8864230cc4e0186366",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": ">=5.3",
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^10.2",
+                "pestphp/pest": "^3.8",
+                "pestphp/pest-plugin-laravel": "^3.1"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "A11y": "ArtisanPackUI\\Accessibility\\Facades\\A11y"
+                    },
+                    "providers": [
+                        "ArtisanPackUI\\Accessibility\\A11yServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
+                "psr-4": {
+                    "ArtisanPackUI\\Accessibility\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Jacob Martella",
+                    "email": "me@jacobmartella.com"
+                }
+            ],
+            "description": "A package for all accessibility functions for ArtisanPack UI.",
+            "support": {
+                "issues": "https://gitlab.com/jacob-martella-web-design/artisanpack-ui/artisanpack-ui-accessibility/-/issues",
+                "source": "https://gitlab.com/jacob-martella-web-design/artisanpack-ui/artisanpack-ui-accessibility/-/tree/v1.1.1"
+            },
+            "time": "2025-07-01T16:15:48+00:00"
+        },
+        {
+            "name": "artisanpack-ui/security",
+            "version": "1.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://gitlab.com/jacob-martella-web-design/artisanpack-ui/artisanpack-ui-security.git",
+                "reference": "55292940cad93a5895486ad12cf58aa2feef8934"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://gitlab.com/api/v4/projects/jacob-martella-web-design%2Fartisanpack-ui%2Fartisanpack-ui-security/repository/archive.zip?sha=55292940cad93a5895486ad12cf58aa2feef8934",
+                "reference": "55292940cad93a5895486ad12cf58aa2feef8934",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": ">=5.3",
+                "laminas/laminas-escaper": "^2.16",
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^10.2",
+                "pestphp/pest": "^3.8",
+                "pestphp/pest-plugin-laravel": "^3.1"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "Security": "ArtisanPackUI\\Security\\Facades\\Security"
+                    },
+                    "providers": [
+                        "ArtisanPackUI\\Security\\SecurityServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/helpers.php",
+                    "src/HTMLawed.php"
+                ],
+                "psr-4": {
+                    "ArtisanPackUI\\Security\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jacob Martella",
+                    "email": "me@jacobmartella.com"
+                }
+            ],
+            "description": "Provides escaping and sanitation functions to provide security for Digital Shopfront CMS.",
+            "support": {
+                "issues": "https://gitlab.com/jacob-martella-web-design/artisanpack-ui/artisanpack-ui-security/-/issues",
+                "source": "https://gitlab.com/jacob-martella-web-design/artisanpack-ui/artisanpack-ui-security/-/tree/v1.0.3"
+            },
+            "time": "2025-05-14T16:45:20+00:00"
+        },
         {
             "name": "blade-ui-kit/blade-heroicons",
             "version": "2.6.0",
@@ -1440,6 +1560,67 @@
                 }
             ],
             "time": "2023-05-21T07:57:08+00:00"
+        },
+        {
+            "name": "laminas/laminas-escaper",
+            "version": "2.17.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laminas/laminas-escaper.git",
+                "reference": "df1ef9503299a8e3920079a16263b578eaf7c3ba"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laminas/laminas-escaper/zipball/df1ef9503299a8e3920079a16263b578eaf7c3ba",
+                "reference": "df1ef9503299a8e3920079a16263b578eaf7c3ba",
+                "shasum": ""
+            },
+            "require": {
+                "ext-ctype": "*",
+                "ext-mbstring": "*",
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0"
+            },
+            "conflict": {
+                "zendframework/zend-escaper": "*"
+            },
+            "require-dev": {
+                "infection/infection": "^0.29.8",
+                "laminas/laminas-coding-standard": "~3.0.1",
+                "phpunit/phpunit": "^10.5.45",
+                "psalm/plugin-phpunit": "^0.19.2",
+                "vimeo/psalm": "^6.6.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Laminas\\Escaper\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Securely and safely escape HTML, HTML attributes, JavaScript, CSS, and URLs",
+            "homepage": "https://laminas.dev",
+            "keywords": [
+                "escaper",
+                "laminas"
+            ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-escaper/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-escaper/issues",
+                "rss": "https://github.com/laminas/laminas-escaper/releases.atom",
+                "source": "https://github.com/laminas/laminas-escaper"
+            },
+            "funding": [
+                {
+                    "url": "https://funding.communitybridge.org/projects/laminas-project",
+                    "type": "community_bridge"
+                }
+            ],
+            "time": "2025-05-06T19:29:36+00:00"
         },
         {
             "name": "laravel/framework",
