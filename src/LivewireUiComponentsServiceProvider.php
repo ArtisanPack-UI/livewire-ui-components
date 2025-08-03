@@ -127,7 +127,7 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
 		$this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
 
 		$this->publishes([
-			__DIR__.'/../resources/js/tinymce' => public_path('vendor/artisanpack-ui/js/tinymce'),
+			__DIR__.'/../resources/js' => public_path('vendor/artisanpack-ui/js'),
 		], 'artisanpack-assets');
 
 

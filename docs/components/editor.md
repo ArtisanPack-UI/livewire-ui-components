@@ -14,7 +14,26 @@ php artisan vendor:publish --tag=artisanpack-assets
 
 This will copy the TinyMCE files to `public/vendor/artisanpack-ui/js/tinymce`.
 
-### 2. Load TinyMCE in Your Layout
+### 2. Include the Alpine.js Integration File
+
+You need to include the TinyMCE Alpine.js integration file in your project. Copy the `tinymce-editor.js` file from the package to your project:
+
+```bash
+# Create the directory if it doesn't exist
+mkdir -p resources/js
+
+# Copy the file
+cp vendor/artisanpack-ui/livewire-ui-components/resources/js/tinymce-editor.js resources/js/
+```
+
+Then, import it in your main JavaScript file (typically `resources/js/app.js`):
+
+```javascript
+// Import the TinyMCE Alpine.js integration
+import './tinymce-editor.js';
+```
+
+### 3. Load TinyMCE in Your Layout
 
 To prevent "Alpine Expression Error: Can't find variable: tinymce" errors, you must load the TinyMCE script in the `<head>` section of your main layout file, before any Alpine.js components are initialized:
 
