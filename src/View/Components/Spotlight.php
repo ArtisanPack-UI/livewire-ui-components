@@ -59,7 +59,7 @@ class Spotlight extends Component
         }
 
         // Set url if not provided
-        $this->url = $this->url ?? route('mary.spotlight', absolute: false);
+        $this->url = $this->url ?? route('artisanpack.spotlight', absolute: false);
     }
 
     /**
