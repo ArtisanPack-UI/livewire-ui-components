@@ -82,6 +82,26 @@
                         <span class="label">{{ $suffix }}</span>
                     @endif
                 </label>
+
+                {{-- RANDOM COLOR GENERATOR BUTTON --}}
+                @if($random)
+                    <button
+                        type="button"
+                        class="btn btn-outline join-item border-transparent bg-base-100 hover:border-0 focus:border-0"
+                        @if(!$isDisabled() && !$isReadonly())
+                            x-on:click="
+                                const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+                                $wire.set('{{ $modelName() }}', randomColor);
+                                $refs.colorpicker.value = randomColor;
+                            "
+                        @else
+                            disabled
+                        @endif
+                        aria-label="Generate Random Color"
+                    >
+                        <x-artisanpack-icon name="fas.arrows-spin" class="w-4 h-4" />
+                    </button>
+                @endif
             </div>
         </label>
 
