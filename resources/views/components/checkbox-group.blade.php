@@ -1,23 +1,23 @@
 <div>
     <fieldset class="fieldset py-0">
-    {{-- STANDARD LABEL --}}
-    @if($label)
-        <legend class="fieldset-legend mb-2">
-            {{ $label }}
+        {{-- GROUP LABEL --}}
+        @if($label)
+            <legend class="fieldset-legend mb-2">
+                {{ $label }}
 
-            @if($attributes->get('required'))
-                <span class="text-error">*</span>
-            @endif
-        </legend>
-    @endif
+                @if($attributes->get('required'))
+                    <span class="text-error">*</span>
+                @endif
+            </legend>
+        @endif
 
-        <div @class(["gap-4 grid", "sm:flex sm:gap-6" => $inline])>
+        <div @class(["gap-4 grid", "sm:flex sm:gap-6" => $horizontal])>
             @foreach ($options as $option)
                 @if($card)
                     <label class="relative">
                         <input
-                            type="radio"
-                            name="{{ $modelName() }}"
+                            type="checkbox"
+                            name="{{ $modelName() }}[]"
                             value="{{ data_get($option, $optionValue) }}"
                             @if(data_get($option, 'disabled')) disabled @endif
                             class="sr-only peer"
@@ -46,22 +46,23 @@
                                 </div>
                             </div>
                         </div>
-                        {{-- Radio indicator positioned as peer sibling --}}
-                        <div class="absolute top-4 right-4 h-4 w-4 rounded-full border-2 border-base-300 bg-base-100 peer-checked:border-primary peer-checked:bg-primary transition-colors flex items-center justify-center pointer-events-none">
-                            <div class="w-2 h-2 rounded-full bg-primary-content opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+                        {{-- Checkbox indicator positioned as peer sibling --}}
+                        <div class="absolute top-4 right-4 h-4 w-4 rounded border-2 border-base-300 bg-base-100 peer-checked:border-primary peer-checked:bg-primary transition-colors flex items-center justify-center pointer-events-none">
+                            <svg class="w-3 h-3 text-primary-content opacity-0 peer-checked:opacity-100 transition-opacity" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
                         </div>
                     </label>
                 @else
                     <label>
                         <div @class(["flex items-center gap-3 cursor-pointer", "!items-start" => data_get($option, $optionHint)])>
                             <input
-                                type="radio"
-                                name="{{ $modelName() }}"
+                                type="checkbox"
+                                name="{{ $modelName() }}[]"
                                 value="{{ data_get($option, $optionValue) }}"
                                 @if(data_get($option, 'disabled')) disabled @endif
-
                                 {{ $attributes->whereStartsWith('wire:model') }}
-                                {{ $attributes->class(["radio"]) }}
+                                {{ $attributes->class(["checkbox"]) }}
                             />
 
                             <div>
@@ -98,5 +99,5 @@
         @if($hint)
             <div class="{{ $hintClass }}" x-classes="fieldset-label">{{ $hint }}</div>
         @endif
-</fieldset>
+    </fieldset>
 </div>

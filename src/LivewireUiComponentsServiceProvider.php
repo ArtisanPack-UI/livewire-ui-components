@@ -18,7 +18,9 @@ namespace ArtisanPack\LivewireUiComponents;
 
 use Arr;
 use ArtisanPack\LivewireUiComponents\Console\Commands\GenerateThemeCss;
+use ArtisanPack\LivewireUiComponents\View\Components\CheckboxGroup;
 use ArtisanPack\LivewireUiComponents\View\Components\EventModalContent;
+use ArtisanPack\LivewireUiComponents\View\Components\RadioGroup;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use ArtisanPack\LivewireUiComponents\Console\Commands\LivewireUiComponentsBootcampCommand;
@@ -177,6 +179,7 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         Blade::component($prefix . 'card', Card::class);
         Blade::component($prefix . 'chart', Chart::class);
         Blade::component($prefix . 'checkbox', Checkbox::class);
+		Blade::component($prefix . 'checkbox-group', CheckboxGroup::class);
         Blade::component($prefix . 'choices', Choices::class);
         Blade::component($prefix . 'choices-offline', ChoicesOffline::class);
         Blade::component($prefix . 'code', Code::class);
@@ -217,6 +220,7 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         Blade::component($prefix . 'progress', Progress::class);
         Blade::component($prefix . 'progress-radial', ProgressRadial::class);
         Blade::component($prefix . 'radio', Radio::class);
+		Blade::component($prefix . 'radio-group', RadioGroup::class);
         Blade::component($prefix . 'group', Group::class);
         Blade::component($prefix . 'range', Range::class);
         Blade::component($prefix . 'rating', Rating::class);
