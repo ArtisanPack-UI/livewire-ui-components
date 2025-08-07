@@ -31,19 +31,19 @@ use Illuminate\View\Component;
 class Accordion extends Component
 {
 
-    public function __construct(
-        public ?string $id = null,
-        public ?bool $noJoin = false,
-        public string $uuid = '',
-    ) {
-        // Set uuid if not provided or empty
-        if (empty($this->uuid)) {
-            $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
-        }
-    }
+	public function __construct(
+		public ?string $id = null,
+		public ?bool $noJoin = false,
+		public string $uuid = '',
+	) {
+		// Set uuid if not provided or empty
+		if (empty($this->uuid)) {
+			$this->uuid = "artisanpack" . uniqid() . $id;
+		}
+	}
 
-    public function render(): View
-    {
-        return view('livewire-ui-components::components.accordion');
-    }
+	public function render(): View
+	{
+		return view('livewire-ui-components::components.accordion');
+	}
 }
