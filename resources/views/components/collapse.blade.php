@@ -1,12 +1,11 @@
-@aware(['noJoin' => null])
-
+@aware(['noJoin' => null, 'usePlusMinus' => false])
 <div
     {{
         $attributes->class([
             'collapse border-[length:var(--border)] border-base-content/10',
             'join-item' => !$noJoin,
-            'collapse-arrow' => !$collapsePlusMinus && !$noIcon,
-            'collapse-plus' => $collapsePlusMinus && !$noIcon
+            'collapse-arrow' => (!$collapsePlusMinus && !$usePlusMinus) && !$noIcon,
+            'collapse-plus' => ($collapsePlusMinus || $usePlusMinus) && !$noIcon
         ])
     }}
 

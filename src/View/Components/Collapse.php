@@ -32,10 +32,12 @@ class Collapse extends Component
 {
 	public string $uuid;
 
+    public bool $collapsePlusMinus = false;
+    public bool $usePlusMinus = false;
+
 	public function __construct(
 		public ?string $id = null,
 		public ?string $name = null,
-		public ?bool $collapsePlusMinus = false,
 		public ?bool $separator = false,
 		public ?bool $noIcon = false,
 

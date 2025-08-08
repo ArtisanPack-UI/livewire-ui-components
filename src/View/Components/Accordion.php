@@ -31,15 +31,19 @@ use Illuminate\View\Component;
 class Accordion extends Component
 {
 
+    public bool $usePlusMinus;
+
 	public function __construct(
 		public ?string $id = null,
 		public ?bool $noJoin = false,
 		public string $uuid = '',
-	) {
+        mixed $collapsePlusMinus = false,
+    ) {
 		// Set uuid if not provided or empty
 		if (empty($this->uuid)) {
 			$this->uuid = "artisanpack" . uniqid() . $id;
 		}
+        $this->usePlusMinus = ($collapsePlusMinus === true || $collapsePlusMinus === '');
 	}
 
 	public function render(): View
