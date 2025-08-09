@@ -33,19 +33,22 @@ class Collapse extends Component
 	public string $uuid;
 
     public bool $collapsePlusMinus = false;
-    public bool $usePlusMinus = false;
 
 	public function __construct(
 		public ?string $id = null,
 		public ?string $name = null,
 		public ?bool $separator = false,
 		public ?bool $noIcon = false,
+		mixed $collapsePlusMinus = false,
+		public ?string $customOpenIcon = null,
+		public ?string $customClosedIcon = null,
 
 		// Slots
 		public mixed $heading = null,
 		public mixed $content = null,
 	) {
 		$this->uuid = "artisanpack" . uniqid() . $id;
+		$this->collapsePlusMinus = ($collapsePlusMinus === true || $collapsePlusMinus === '');
 	}
 
 	public function render(): View
