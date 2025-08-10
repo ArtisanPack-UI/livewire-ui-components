@@ -4,17 +4,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
-Route::middleware('web')->prefix(config('mary.route_prefix'))->get('/mary/toogle-sidebar', function (Request $request) {
+Route::middleware('web')->prefix(config('artisanpack.route_prefix'))->get('/artisanpack/toogle-sidebar', function (Request $request) {
     if ($request->collapsed) {
-        session(['mary-sidebar-collapsed' => $request->collapsed]);
+        session(['artisanpack-sidebar-collapsed' => $request->collapsed]);
     }
-})->name('mary.toogle-sidebar');
+})->name('artisanpack.toogle-sidebar');
 
-Route::middleware('web')->prefix(config('mary.route_prefix'))->get('/mary/spotlight', function (Request $request) {
-    return app()->make(config('mary.components.spotlight.class'))->search($request);
-})->name('mary.spotlight');
+Route::middleware('web')->prefix(config('artisanpack.route_prefix'))->get('/artisanpack/spotlight', function (Request $request) {
+    return app()->make(config('artisanpack.components.spotlight.class'))->search($request);
+})->name('artisanpack.spotlight');
 
-Route::middleware(['web', 'auth'])->prefix(config('mary.route_prefix'))->post('/mary/upload', function (Request $request) {
+Route::middleware(['web', 'auth'])->prefix(config('artisanpack.route_prefix'))->post('/artisanpack/upload', function (Request $request) {
     $disk = $request->disk ?? 'public';
     $folder = $request->folder ?? 'editor';
 
@@ -22,4 +22,4 @@ Route::middleware(['web', 'auth'])->prefix(config('mary.route_prefix'))->post('/
     $url = Storage::disk($disk)->url($file);
 
     return ['location' => $url];
-})->name('mary.upload');
+})->name('artisanpack.upload');

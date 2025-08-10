@@ -51,7 +51,7 @@ class Editor extends Component
         public ?bool $firstErrorOnly = false,
     ) {
         $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
-        $this->uploadUrl = route('mary.upload', absolute: false);
+        $this->uploadUrl = route('artisanpack.upload', absolute: false);
     }
 
     public function modelName(): ?string

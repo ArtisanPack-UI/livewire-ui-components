@@ -44,7 +44,7 @@ class Main extends Component
         public ?string $collapseIcon = 'o-bars-3-bottom-right',
         public ?bool $collapsible = false,
     ) {
-        $this->url = route('mary.toogle-sidebar', absolute: false);
+        $this->url = route('artisanpack.toogle-sidebar', absolute: false);
     }
 
     public function render(): View|Closure|string
