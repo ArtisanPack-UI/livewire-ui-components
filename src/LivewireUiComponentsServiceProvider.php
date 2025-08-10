@@ -50,7 +50,7 @@ use ArtisanPack\LivewireUiComponents\View\Components\File;
 use ArtisanPack\LivewireUiComponents\View\Components\Form;
 use ArtisanPack\LivewireUiComponents\View\Components\Group;
 use ArtisanPack\LivewireUiComponents\View\Components\Header;
-use ArtisanPack\LivewireUiComponents\View\Components\Hr;
+use ArtisanPack\LivewireUiComponents\View\Components\Separator;
 use ArtisanPack\LivewireUiComponents\View\Components\Icon;
 use ArtisanPack\LivewireUiComponents\View\Components\ImageGallery;
 use ArtisanPack\LivewireUiComponents\View\Components\ImageLibrary;
@@ -193,7 +193,7 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         Blade::component($prefix . 'form', Form::class);
         Blade::component($prefix . 'select-group', SelectGroup::class);
         Blade::component($prefix . 'header', Header::class);
-        Blade::component($prefix . 'hr', Hr::class);
+        Blade::component($prefix . 'separator', Separator::class);
         Blade::component($prefix . 'icon', Icon::class);
         Blade::component($prefix . 'image-gallery', ImageGallery::class);
         Blade::component($prefix . 'image-library', ImageLibrary::class);
