@@ -1,6 +1,5 @@
 <div
     x-data="calendar(@js($events))"
-    wire:key="calendar-{{ $uuid }}"
     class="w-full"
 >
     <div class="bg-white dark:bg-base-200 border border-stroke dark:border-base-300 rounded-lg p-4">

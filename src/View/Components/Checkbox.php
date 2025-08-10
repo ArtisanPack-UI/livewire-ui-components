@@ -38,6 +38,8 @@ class Checkbox extends Component
         public ?bool $right = false,
         public ?string $hint = null,
         public ?string $hintClass = 'fieldset-label',
+        public ?bool $card = false, // New card variant
+        public ?string $cardClass = 'card card-compact border-2 border-base-300 hover:border-primary cursor-pointer transition-colors', // Card styling with proper color variables
 
         // Validations
         public ?string $errorField = null,

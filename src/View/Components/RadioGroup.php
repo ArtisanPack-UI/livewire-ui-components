@@ -1,19 +1,17 @@
 <?php
 /**
- * Radio
+ * RadioGroup
  *
- * This file contains the Radio class for the ArtisanPack UI Livewire UI Components package.
+ * This file contains the RadioGroup class for the ArtisanPack UI Livewire UI Components package.
  *
  * @package    ArtisanPack\LivewireUiComponents\View
  * @subpackage Components
  * @author     Jacob Martella
  * @copyright  2023 Jacob Martella
  * @license    MIT
- * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
  * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
  * @since      1.0.0
  */
-
 
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
@@ -22,15 +20,15 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\View\Component;
+
 /**
- * Radio Class
+ * RadioGroup Class
  *
- * Provides functionality for the Radio component.
+ * Provides functionality for the RadioGroup component.
  *
  * @since 1.0.0
  */
-
-class Radio extends Component
+class RadioGroup extends Component
 {
     public string $uuid;
 
@@ -43,9 +41,9 @@ class Radio extends Component
         public ?string $optionLabel = 'name',
         public ?string $optionHint = 'hint',
         public Collection|array $options = new Collection(),
-        public ?bool $inline = false,
-        public ?bool $card = false, // New card variant
-        public ?string $cardClass = 'card card-compact border-2 border-base-300 hover:border-primary cursor-pointer transition-colors', // Card styling with proper color variables
+        public ?bool $horizontal = false,
+        public ?bool $card = false,
+        public ?string $cardClass = 'card card-compact border-2 border-base-300 hover:border-primary cursor-pointer transition-colors',
 
         // Validations
         public ?string $errorField = null,
@@ -68,6 +66,6 @@ class Radio extends Component
 
     public function render(): View|Closure|string
     {
-        return view('livewire-ui-components::components.radio');
+        return view('livewire-ui-components::components.radio-group');
     }
 }

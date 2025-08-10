@@ -1,8 +1,8 @@
 <?php
 /**
- * Mary
+ * ArtisanPack
  *
- * This file contains the Mary class for the ArtisanPack UI Livewire UI Components package.
+ * This file contains the ArtisanPack class for the ArtisanPack UI Livewire UI Components package.
  *
  * @package    ArtisanPack\LivewireUiComponents\Facades
  * @author     Jacob Martella
@@ -18,9 +18,9 @@ namespace ArtisanPack\LivewireUiComponents\Facades;
 
 use Illuminate\Support\Facades\Facade;
 /**
- * Mary Class
+ * ArtisanPack Class
  *
- * Provides functionality for the Mary component.
+ * Provides functionality for the ArtisanPack component.
  *
  * @since 1.0.0
  */

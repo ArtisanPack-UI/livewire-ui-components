@@ -18,7 +18,9 @@ namespace ArtisanPack\LivewireUiComponents;
 
 use Arr;
 use ArtisanPack\LivewireUiComponents\Console\Commands\GenerateThemeCss;
+use ArtisanPack\LivewireUiComponents\View\Components\CheckboxGroup;
 use ArtisanPack\LivewireUiComponents\View\Components\EventModalContent;
+use ArtisanPack\LivewireUiComponents\View\Components\RadioGroup;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use ArtisanPack\LivewireUiComponents\Console\Commands\LivewireUiComponentsBootcampCommand;
@@ -50,7 +52,7 @@ use ArtisanPack\LivewireUiComponents\View\Components\File;
 use ArtisanPack\LivewireUiComponents\View\Components\Form;
 use ArtisanPack\LivewireUiComponents\View\Components\Group;
 use ArtisanPack\LivewireUiComponents\View\Components\Header;
-use ArtisanPack\LivewireUiComponents\View\Components\Hr;
+use ArtisanPack\LivewireUiComponents\View\Components\Separator;
 use ArtisanPack\LivewireUiComponents\View\Components\Icon;
 use ArtisanPack\LivewireUiComponents\View\Components\ImageGallery;
 use ArtisanPack\LivewireUiComponents\View\Components\ImageLibrary;
@@ -177,6 +179,7 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         Blade::component($prefix . 'card', Card::class);
         Blade::component($prefix . 'chart', Chart::class);
         Blade::component($prefix . 'checkbox', Checkbox::class);
+		Blade::component($prefix . 'checkbox-group', CheckboxGroup::class);
         Blade::component($prefix . 'choices', Choices::class);
         Blade::component($prefix . 'choices-offline', ChoicesOffline::class);
         Blade::component($prefix . 'code', Code::class);
@@ -193,7 +196,7 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         Blade::component($prefix . 'form', Form::class);
         Blade::component($prefix . 'select-group', SelectGroup::class);
         Blade::component($prefix . 'header', Header::class);
-        Blade::component($prefix . 'hr', Hr::class);
+        Blade::component($prefix . 'separator', Separator::class);
         Blade::component($prefix . 'icon', Icon::class);
         Blade::component($prefix . 'image-gallery', ImageGallery::class);
         Blade::component($prefix . 'image-library', ImageLibrary::class);
@@ -217,6 +220,7 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         Blade::component($prefix . 'progress', Progress::class);
         Blade::component($prefix . 'progress-radial', ProgressRadial::class);
         Blade::component($prefix . 'radio', Radio::class);
+		Blade::component($prefix . 'radio-group', RadioGroup::class);
         Blade::component($prefix . 'group', Group::class);
         Blade::component($prefix . 'range', Range::class);
         Blade::component($prefix . 'rating', Rating::class);
