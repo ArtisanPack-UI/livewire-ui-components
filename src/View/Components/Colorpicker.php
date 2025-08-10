@@ -43,6 +43,7 @@ class Colorpicker extends Component
         public ?string $suffix = null,
         public ?bool $inline = false,
         public ?bool $clearable = false,
+        public ?bool $random = false,
 
         // Validations
         public ?string $errorField = null,
