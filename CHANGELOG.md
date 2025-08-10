@@ -1,5 +1,15 @@
 # ArtisanPack UI Livewire UI Components
 
+## [0.5.0] - 2025-08-10
+- Added random color generator functionality.
+- Added icon options for accordion and collapse components.
+- Added card variant support for checkbox and radio components.
+- Added card figure positioning options.
+- Updated HR separator component.
+- Updated menu documentation.
+- Fixed calendar component issues.
+- Fixed Mary references throughout the codebase.
+
 ## [0.4.4] - 2025-08-03
 - Fixed issue with the editor component.
 
