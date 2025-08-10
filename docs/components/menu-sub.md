@@ -61,6 +61,45 @@ The MenuSub component provides a way to create nested submenus within a menu. It
 </x-artisanpack-menu-sub>
 ```
 
+### Active Submenu
+
+```php
+<x-artisanpack-menu-sub 
+    title="Current Section" 
+    icon="o-folder-open" 
+    :active="true"
+>
+    <x-artisanpack-menu-item title="Overview" link="/section/overview" />
+    <x-artisanpack-menu-item title="Details" link="/section/details" />
+</x-artisanpack-menu-sub>
+```
+
+### Submenu with Custom Background Color
+
+```php
+<x-artisanpack-menu-sub 
+    title="Primary Section" 
+    icon="o-bolt" 
+    bgColor="primary"
+>
+    <x-artisanpack-menu-item title="Features" link="/features" />
+    <x-artisanpack-menu-item title="Pricing" link="/pricing" />
+</x-artisanpack-menu-sub>
+```
+
+### Submenu with Custom Hex Background Color
+
+```php
+<x-artisanpack-menu-sub 
+    title="Special Section" 
+    icon="o-star" 
+    bgColor="#4a90e2"
+>
+    <x-artisanpack-menu-item title="VIP" link="/vip" />
+    <x-artisanpack-menu-item title="Premium" link="/premium" />
+</x-artisanpack-menu-sub>
+```
+
 ### Nested Submenus
 
 ```php
@@ -122,6 +161,8 @@ The MenuSub component provides a way to create nested submenus within a menu. It
 | `open` | boolean | `false` | Whether the submenu should be initially open |
 | `hidden` | boolean\|null | `false` | Whether the submenu should be hidden |
 | `disabled` | boolean\|null | `false` | Whether the submenu should be disabled |
+| `active` | boolean | `false` | Whether the submenu is active |
+| `bgColor` | string\|null | `null` | Background color for the submenu (theme color like 'primary' or hex color like '#ff0000') |
 
 ## Slots
 

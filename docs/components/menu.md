@@ -87,6 +87,7 @@ The Menu component provides a vertical navigation menu with support for titles, 
 | hidden | boolean | false | Whether to hide the menu item |
 | disabled | boolean | false | Whether the menu item is disabled |
 | exact | boolean | false | Whether to match the route exactly |
+| bgColor | string | null | Background color for the menu item (theme color like 'primary' or hex color like '#ff0000') |
 
 ## MenuSeparator Props
 
@@ -108,6 +109,8 @@ The Menu component provides a vertical navigation menu with support for titles, 
 | open | boolean | false | Whether the submenu is open by default |
 | hidden | boolean | false | Whether to hide the submenu |
 | disabled | boolean | false | Whether the submenu is disabled |
+| active | boolean | false | Whether the submenu is active |
+| bgColor | string | null | Background color for the submenu (theme color like 'primary' or hex color like '#ff0000') |
 
 ## MenuTitle Props
 

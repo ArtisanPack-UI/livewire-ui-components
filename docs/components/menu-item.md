@@ -64,6 +64,28 @@ The MenuItem component provides a way to create individual items within a menu. 
 />
 ```
 
+### Menu Item with Custom Background Color
+
+```php
+<x-artisanpack-menu-item 
+    title="Primary Action" 
+    icon="o-bolt" 
+    link="/action" 
+    bgColor="primary" 
+/>
+```
+
+### Menu Item with Custom Hex Background Color
+
+```php
+<x-artisanpack-menu-item 
+    title="Special Item" 
+    icon="o-star" 
+    link="/special" 
+    bgColor="#4a90e2" 
+/>
+```
+
 ### Menu Item with Custom Content
 
 ```php
@@ -117,6 +139,7 @@ The MenuItem component provides a way to create individual items within a menu. 
 | `hidden` | boolean\|null | `false` | Whether the menu item is hidden |
 | `disabled` | boolean\|null | `false` | Whether the menu item is disabled |
 | `exact` | boolean\|null | `false` | Whether to use exact route matching |
+| `bgColor` | string\|null | `null` | Background color for the menu item (theme color like 'primary' or hex color like '#ff0000') |
 
 ## Slots
 
