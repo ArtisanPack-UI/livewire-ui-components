@@ -40,8 +40,6 @@ class Collapse extends Component
 		public ?bool $separator = false,
 		public ?bool $noIcon = false,
 		mixed $collapsePlusMinus = false,
-		public ?string $customOpenIcon = null,
-		public ?string $customClosedIcon = null,
 
 		// Slots
 		public mixed $heading = null,

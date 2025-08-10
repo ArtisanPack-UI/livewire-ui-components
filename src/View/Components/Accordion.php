@@ -38,8 +38,6 @@ class Accordion extends Component
 		public ?bool $noJoin = false,
 		public string $uuid = '',
         mixed $collapsePlusMinus = false,
-        public ?string $customOpenIcon = null,
-        public ?string $customClosedIcon = null,
     ) {
 		// Set uuid if not provided or empty
 		if (empty($this->uuid)) {
