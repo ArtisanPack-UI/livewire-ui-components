@@ -34,12 +34,51 @@ The Card component is a versatile container for displaying content in a clean, o
 
 ```php
 <x-artisanpack-card>
-    <img src="https://example.com/image.jpg" alt="Card image" class="w-full h-48 object-cover" />
+    <x-slot:figure>
+        <img src="https://example.com/image.jpg" alt="Card image" class="w-full h-48 object-cover" />
+    </x-slot:figure>
     
-    <div class="p-4">
-        <h3 class="text-lg font-bold">Card with Image</h3>
-        <p class="mt-2">This card includes an image at the top.</p>
-    </div>
+    <h3 class="text-lg font-bold">Card with Image</h3>
+    <p class="mt-2">This card includes an image at the top (default position).</p>
+</x-artisanpack-card>
+```
+
+### Card with Image at Bottom
+
+```php
+<x-artisanpack-card figure-position="bottom">
+    <x-slot:figure>
+        <img src="https://example.com/image.jpg" alt="Card image" class="w-full h-48 object-cover" />
+    </x-slot:figure>
+    
+    <h3 class="text-lg font-bold">Card with Bottom Image</h3>
+    <p class="mt-2">This card includes an image at the bottom.</p>
+</x-artisanpack-card>
+```
+
+### Card with Image on Left
+
+```php
+<x-artisanpack-card figure-position="left">
+    <x-slot:figure>
+        <img src="https://example.com/image.jpg" alt="Card image" class="w-32 h-full object-cover" />
+    </x-slot:figure>
+    
+    <h3 class="text-lg font-bold">Card with Left Image</h3>
+    <p class="mt-2">This card includes an image on the left side.</p>
+</x-artisanpack-card>
+```
+
+### Card with Image on Right
+
+```php
+<x-artisanpack-card figure-position="right">
+    <x-slot:figure>
+        <img src="https://example.com/image.jpg" alt="Card image" class="w-32 h-full object-cover" />
+    </x-slot:figure>
+    
+    <h3 class="text-lg font-bold">Card with Right Image</h3>
+    <p class="mt-2">This card includes an image on the right side.</p>
 </x-artisanpack-card>
 ```
 
@@ -170,6 +209,7 @@ The Card component is a versatile container for displaying content in a clean, o
 |------|------|---------|-------------|
 | `bordered` | boolean | `false` | Whether to display a border around the card |
 | `compact` | boolean | `false` | Whether to use reduced padding for a more compact appearance |
+| `figurePosition` | string | `'top'` | Position of the figure/image within the card. Possible values: `'top'`, `'bottom'`, `'left'`, `'right'` |
 | `side` | boolean | `false` | Whether to display content side-by-side (horizontal layout) |
 | `shadow` | string | `null` | Shadow size (`sm`, `md`, `lg`, `xl`, `2xl`) |
 | `loading` | boolean | `false` | Whether to display the card in a loading state |

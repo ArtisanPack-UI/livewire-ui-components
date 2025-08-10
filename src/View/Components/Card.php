@@ -39,6 +39,7 @@ class Card extends Component
         public ?bool $separator = false,
         public ?bool $shadow = false,
         public ?string $progressIndicator = null,
+        public ?string $figurePosition = 'top', // New prop for figure position
 
         // Slots
         public mixed $menu = null,
@@ -46,6 +47,11 @@ class Card extends Component
         public mixed $figure = null,
     ) {
         $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+        
+        // Validate figure position
+        $this->figurePosition = in_array($this->figurePosition, ['top', 'bottom', 'left', 'right']) 
+            ? $this->figurePosition 
+            : 'top';
     }
 
     public function progressTarget(): ?string
