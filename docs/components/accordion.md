@@ -1,320 +1,271 @@
 # Accordion Component
 
-The Accordion component is a layout element that displays collapsible content panels for presenting information in a limited space. It allows users to expand and collapse sections of content, making it ideal for FAQs, product details, or any content that benefits from progressive disclosure.
+The Accordion component is a container that groups multiple collapse components together, allowing only one section to be expanded at a time. It's ideal for organizing content in a space-efficient way, perfect for FAQs, product details, or any content that benefits from progressive disclosure.
 
 ## Basic Usage
 
 ```php
-<x-artisanpack-accordion>
-    <x-artisanpack-accordion.item title="Section 1">
-        Content for section 1
-    </x-artisanpack-accordion.item>
+<x-artisanpack-accordion wire:model="selectedSection">
+    <x-artisanpack-collapse name="section1">
+        <x-slot:heading>What is ArtisanPack UI?</x-slot:heading>
+        <x-slot:content>
+            ArtisanPack UI is a collection of Livewire components for Laravel applications.
+            It provides a set of pre-built, customizable UI components that integrate seamlessly
+            with Laravel, Livewire, and Tailwind CSS.
+        </x-slot:content>
+    </x-artisanpack-collapse>
     
-    <x-artisanpack-accordion.item title="Section 2">
-        Content for section 2
-    </x-artisanpack-accordion.item>
+    <x-artisanpack-collapse name="section2">
+        <x-slot:heading>How do I install it?</x-slot:heading>
+        <x-slot:content>
+            You can install ArtisanPack UI using Composer:
+            <pre>composer require artisanpack-ui/livewire-ui-components</pre>
+            Then run the installer:
+            <pre>php artisan livewire-ui-components:install</pre>
+        </x-slot:content>
+    </x-artisanpack-collapse>
     
-    <x-artisanpack-accordion.item title="Section 3">
-        Content for section 3
-    </x-artisanpack-accordion.item>
+    <x-artisanpack-collapse name="section3">
+        <x-slot:heading>Is it free to use?</x-slot:heading>
+        <x-slot:content>
+            Yes, ArtisanPack UI is open-source and free to use under the MIT license.
+        </x-slot:content>
+    </x-artisanpack-collapse>
 </x-artisanpack-accordion>
 ```
 
 ## Examples
 
-### Simple Accordion
+### Simple Accordion with Arrow Icons (Default)
 
 ```php
-<x-artisanpack-accordion>
-    <x-artisanpack-accordion.item title="What is ArtisanPack UI?">
-        ArtisanPack UI is a collection of Livewire components for Laravel applications.
-        It provides a set of pre-built, customizable UI components that integrate seamlessly
-        with Laravel, Livewire, and Tailwind CSS.
-    </x-artisanpack-accordion.item>
+<x-artisanpack-accordion wire:model="accordionModel">
+    <x-artisanpack-collapse name="item1">
+        <x-slot:heading>Section 1</x-slot:heading>
+        <x-slot:content>
+            This accordion uses arrow icons by default. The arrows point right when collapsed
+            and down when expanded.
+        </x-slot:content>
+    </x-artisanpack-collapse>
     
-    <x-artisanpack-accordion.item title="How do I install it?">
-        You can install ArtisanPack UI using Composer:
-        <pre>composer require artisanpack-ui/livewire-ui-components</pre>
-        Then run the installer:
-        <pre>php artisan livewire-ui-components:install</pre>
-    </x-artisanpack-accordion.item>
-    
-    <x-artisanpack-accordion.item title="Is it free to use?">
-        Yes, ArtisanPack UI is open-source and free to use under the MIT license.
-    </x-artisanpack-accordion.item>
+    <x-artisanpack-collapse name="item2">
+        <x-slot:heading>Section 2</x-slot:heading>
+        <x-slot:content>
+            Only one section can be open at a time in an accordion.
+        </x-slot:content>
+    </x-artisanpack-collapse>
 </x-artisanpack-accordion>
 ```
 
-### Accordion with Default Open Item
+### Accordion with Plus/Minus Icons
 
 ```php
-<x-artisanpack-accordion>
-    <x-artisanpack-accordion.item title="Section 1" open>
-        This section is open by default.
-    </x-artisanpack-accordion.item>
+<x-artisanpack-accordion wire:model="plusMinusModel" collapse-plus-minus>
+    <x-artisanpack-collapse name="item1">
+        <x-slot:heading>Section 1 (Plus/Minus)</x-slot:heading>
+        <x-slot:content>
+            This accordion uses plus/minus icons. Shows "+" when collapsed and "-" when expanded.
+        </x-slot:content>
+    </x-artisanpack-collapse>
     
-    <x-artisanpack-accordion.item title="Section 2">
-        This section is closed by default.
-    </x-artisanpack-accordion.item>
+    <x-artisanpack-collapse name="item2">
+        <x-slot:heading>Section 2 (Plus/Minus)</x-slot:heading>
+        <x-slot:content>
+            The plus/minus icon style is inherited by all collapse items within this accordion.
+        </x-slot:content>
+    </x-artisanpack-collapse>
 </x-artisanpack-accordion>
 ```
 
-### Accordion with Custom Icons
+### Accordion with Mixed Content Types
 
 ```php
-<x-artisanpack-accordion>
-    <x-artisanpack-accordion.item 
-        title="Section 1" 
-        icon="heroicon-o-information-circle"
-    >
-        Content with custom icon
-    </x-artisanpack-accordion.item>
+<x-artisanpack-accordion wire:model="mixedModel">
+    <x-artisanpack-collapse name="text">
+        <x-slot:heading>Text Content</x-slot:heading>
+        <x-slot:content>
+            <p>This section contains simple text content.</p>
+            <p>You can include multiple paragraphs and basic HTML.</p>
+        </x-slot:content>
+    </x-artisanpack-collapse>
     
-    <x-artisanpack-accordion.item 
-        title="Section 2" 
-        icon="heroicon-o-question-mark-circle"
-    >
-        Content with custom icon
-    </x-artisanpack-accordion.item>
-</x-artisanpack-accordion>
-```
-
-### Accordion with Custom Chevron Icons
-
-```php
-<x-artisanpack-accordion 
-    chevron-open-icon="heroicon-o-chevron-up" 
-    chevron-closed-icon="heroicon-o-chevron-down"
->
-    <x-artisanpack-accordion.item title="Section 1">
-        Content with custom chevron icons
-    </x-artisanpack-accordion.item>
+    <x-artisanpack-collapse name="list">
+        <x-slot:heading>List Content</x-slot:heading>
+        <x-slot:content>
+            <ul class="list-disc list-inside">
+                <li>First item</li>
+                <li>Second item</li>
+                <li>Third item</li>
+            </ul>
+        </x-slot:content>
+    </x-artisanpack-collapse>
     
-    <x-artisanpack-accordion.item title="Section 2">
-        Content with custom chevron icons
-    </x-artisanpack-accordion.item>
-</x-artisanpack-accordion>
-```
-
-### Accordion with Custom Title Component
-
-```php
-<x-artisanpack-accordion>
-    <x-artisanpack-accordion.item>
-        <x-slot:title>
-            <div class="flex items-center">
-                <x-artisanpack-icon name="heroicon-o-star" class="w-5 h-5 mr-2" />
-                <span class="font-bold">Featured Section</span>
+    <x-artisanpack-collapse name="form">
+        <x-slot:heading>Interactive Content</x-slot:heading>
+        <x-slot:content>
+            <div class="space-y-4">
+                <x-artisanpack-input label="Name" />
+                <x-artisanpack-input label="Email" type="email" />
+                <x-artisanpack-button>Submit</x-artisanpack-button>
             </div>
-        </x-slot:title>
-        
-        Content with custom title component
-    </x-artisanpack-accordion.item>
+        </x-slot:content>
+    </x-artisanpack-collapse>
 </x-artisanpack-accordion>
 ```
 
-### Accordion with Multiple Open Items
+### Accordion with Custom Styling
 
 ```php
-<x-artisanpack-accordion :multiple="true">
-    <x-artisanpack-accordion.item title="Section 1" open>
-        This section can be open at the same time as other sections.
-    </x-artisanpack-accordion.item>
+<x-artisanpack-accordion wire:model="styledModel" class="max-w-2xl mx-auto">
+    <x-artisanpack-collapse name="styled1">
+        <x-slot:heading class="text-lg font-bold text-primary">
+            Custom Styled Heading
+        </x-slot:heading>
+        <x-slot:content class="bg-base-200 p-4 rounded">
+            This content has custom styling applied to both the heading and content areas.
+        </x-slot:content>
+    </x-artisanpack-collapse>
     
-    <x-artisanpack-accordion.item title="Section 2" open>
-        This section can also be open at the same time.
-    </x-artisanpack-accordion.item>
-    
-    <x-artisanpack-accordion.item title="Section 3">
-        This section is closed by default.
-    </x-artisanpack-accordion.item>
+    <x-artisanpack-collapse name="styled2">
+        <x-slot:heading class="text-lg font-bold text-secondary">
+            Another Styled Section
+        </x-slot:heading>
+        <x-slot:content class="prose prose-sm">
+            <p>This content uses prose styling for better typography.</p>
+            <blockquote>You can include rich content like quotes, code, and more.</blockquote>
+        </x-slot:content>
+    </x-artisanpack-collapse>
 </x-artisanpack-accordion>
 ```
 
-### Accordion with Custom Colors
+### Accordion with Separators
 
 ```php
-<x-artisanpack-accordion>
-    <x-artisanpack-accordion.item 
-        title="Primary Section" 
-        color="primary"
-    >
-        Content with primary color
-    </x-artisanpack-accordion.item>
+<x-artisanpack-accordion wire:model="separatorModel">
+    <x-artisanpack-collapse name="sep1" separator>
+        <x-slot:heading>Section with Separator</x-slot:heading>
+        <x-slot:content>
+            This section has a separator line between the heading and content.
+        </x-slot:content>
+    </x-artisanpack-collapse>
     
-    <x-artisanpack-accordion.item 
-        title="Secondary Section" 
-        color="secondary"
-    >
-        Content with secondary color
-    </x-artisanpack-accordion.item>
-    
-    <x-artisanpack-accordion.item 
-        title="Accent Section" 
-        color="accent"
-    >
-        Content with accent color
-    </x-artisanpack-accordion.item>
+    <x-artisanpack-collapse name="sep2" separator>
+        <x-slot:heading>Another Separated Section</x-slot:heading>
+        <x-slot:content>
+            The separator helps visually distinguish between the heading and content.
+        </x-slot:content>
+    </x-artisanpack-collapse>
 </x-artisanpack-accordion>
 ```
 
-### Accordion with Bordered Style
+### Accordion without Icons
 
 ```php
-<x-artisanpack-accordion bordered>
-    <x-artisanpack-accordion.item title="Section 1">
-        Content with bordered style
-    </x-artisanpack-accordion.item>
+<x-artisanpack-accordion wire:model="noIconModel">
+    <x-artisanpack-collapse name="clean1" no-icon>
+        <x-slot:heading>Clean Section (No Icon)</x-slot:heading>
+        <x-slot:content>
+            This section doesn't show any toggle icons for a cleaner look.
+        </x-slot:content>
+    </x-artisanpack-collapse>
     
-    <x-artisanpack-accordion.item title="Section 2">
-        Content with bordered style
-    </x-artisanpack-accordion.item>
+    <x-artisanpack-collapse name="clean2" no-icon>
+        <x-slot:heading>Another Clean Section</x-slot:heading>
+        <x-slot:content>
+            Useful when you want a minimal design without visual indicators.
+        </x-slot:content>
+    </x-artisanpack-collapse>
 </x-artisanpack-accordion>
 ```
-
-### Accordion with Arrow Style
-
-```php
-<x-artisanpack-accordion arrow>
-    <x-artisanpack-accordion.item title="Section 1">
-        Content with arrow style
-    </x-artisanpack-accordion.item>
-    
-    <x-artisanpack-accordion.item title="Section 2">
-        Content with arrow style
-    </x-artisanpack-accordion.item>
-</x-artisanpack-accordion>
-```
-
-### Accordion with Join Style
-
-```php
-<x-artisanpack-accordion join>
-    <x-artisanpack-accordion.item title="Section 1">
-        Content with join style
-    </x-artisanpack-accordion.item>
-    
-    <x-artisanpack-accordion.item title="Section 2">
-        Content with join style
-    </x-artisanpack-accordion.item>
-</x-artisanpack-accordion>
-```
-
-### Accordion with Custom Classes
-
-```php
-<x-artisanpack-accordion class="border-2 border-primary rounded-lg">
-    <x-artisanpack-accordion.item 
-        title="Section 1" 
-        title-class="font-bold text-primary"
-        content-class="bg-base-200 p-4"
-    >
-        Content with custom classes
-    </x-artisanpack-accordion.item>
-</x-artisanpack-accordion>
-```
-
-### Accordion with Livewire Integration
-
-```php
-<x-artisanpack-accordion wire:model="openSections">
-    <x-artisanpack-accordion.item title="Section 1" id="section1">
-        Content controlled by Livewire
-    </x-artisanpack-accordion.item>
-    
-    <x-artisanpack-accordion.item title="Section 2" id="section2">
-        Content controlled by Livewire
-    </x-artisanpack-accordion.item>
-</x-artisanpack-accordion>
-```
-
 ## Props
 
-### Accordion Component Props
-
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `multiple` | boolean | `false` | Whether multiple items can be open simultaneously |
-| `bordered` | boolean | `false` | Whether to display a border around the accordion |
-| `arrow` | boolean | `false` | Whether to use the arrow style for the accordion |
-| `join` | boolean | `false` | Whether to join the accordion items together |
-| `chevron-open-icon` | string | `'heroicon-o-chevron-up'` | The icon to display when an item is open |
-| `chevron-closed-icon` | string | `'heroicon-o-chevron-down'` | The icon to display when an item is closed |
+| `id` | string\|null | `null` | Optional ID for the accordion element |
+| `noJoin` | boolean | `false` | Whether to disable the join styling (allows individual collapse styling) |
+| `collapse-plus-minus` | boolean | `false` | Whether to use plus/minus icons instead of arrows for all child collapses |
 
-### Accordion Item Props
+## Required Attributes
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `title` | string | `null` | The title of the accordion item |
-| `id` | string | `null` | The ID of the accordion item (auto-generated if not provided) |
-| `open` | boolean | `false` | Whether the accordion item is open by default |
-| `icon` | string | `null` | The icon to display next to the title |
-| `color` | string | `null` | The color of the accordion item (`primary`, `secondary`, `accent`, etc.) |
-| `title-class` | string | `null` | Additional classes for the title element |
-| `content-class` | string | `null` | Additional classes for the content element |
-| `disabled` | boolean | `false` | Whether the accordion item is disabled |
+The accordion component requires a `wire:model` attribute for proper functionality:
 
-## Slots
+```php
+<x-artisanpack-accordion wire:model="selectedSection">
+    <!-- collapse components -->
+</x-artisanpack-accordion>
+```
 
-### Accordion Component Slots
+## Livewire Integration
 
-| Slot | Description |
-|------|-------------|
-| `default` | The accordion items |
+The accordion component is designed to work with Livewire and requires a model binding:
 
-### Accordion Item Slots
+```php
+// In your Livewire component
+class MyComponent extends Component
+{
+    public $selectedSection = null; // or 'section1' for default open
+    
+    public function render()
+    {
+        return view('livewire.my-component');
+    }
+}
+```
 
-| Slot | Description |
-|------|-------------|
-| `default` | The content of the accordion item |
-| `title` | Custom title content (overrides the `title` prop) |
-| `icon` | Custom icon content (overrides the `icon` prop) |
+```php
+<!-- In your Blade template -->
+<x-artisanpack-accordion wire:model="selectedSection">
+    <x-artisanpack-collapse name="section1">
+        <x-slot:heading>First Section</x-slot:heading>
+        <x-slot:content>Content for the first section</x-slot:content>
+    </x-artisanpack-collapse>
+    
+    <x-artisanpack-collapse name="section2">
+        <x-slot:heading>Second Section</x-slot:heading>
+        <x-slot:content>Content for the second section</x-slot:content>
+    </x-artisanpack-collapse>
+</x-artisanpack-accordion>
+```
 
-## Events
+## Icon Types
 
-The Accordion component supports the following events:
+The accordion supports two icon styles:
 
-- `open` - Triggered when an accordion item is opened
-- `close` - Triggered when an accordion item is closed
+### Arrow Icons (Default)
+- Uses DaisyUI's `collapse-arrow` class
+- Shows `>` when collapsed, `∨` when expanded
+- Applied automatically when no icon modifier is specified
 
-It also supports Livewire model binding for tracking open items:
-
-- `wire:model` - Binds the open items to a Livewire property
+### Plus/Minus Icons
+- Uses DaisyUI's `collapse-plus` class  
+- Shows `+` when collapsed, `-` when expanded
+- Enable by adding `collapse-plus-minus` attribute to the accordion
 
 ## Styling
 
-The Accordion component uses DaisyUI's collapse component under the hood, which provides a consistent styling with other components. You can customize the appearance by:
+The Accordion component uses DaisyUI's collapse component with join styling for a seamless appearance. You can customize the appearance by:
 
-1. Using the provided props (`bordered`, `arrow`, `join`, etc.)
-2. Adding custom classes via the `class`, `title-class`, and `content-class` attributes
-3. Using the `color` prop to change the color scheme
+1. Adding custom classes to the accordion container
+2. Adding custom classes to individual collapse components within the accordion
+3. Using the `collapse-plus-minus` prop to change icon style
 
-### Custom Styling Example
+### Default Classes Applied
 
-```php
-<x-artisanpack-accordion class="max-w-md mx-auto">
-    <x-artisanpack-accordion.item 
-        title="Custom Styled Item" 
-        title-class="font-bold text-primary text-lg"
-        content-class="bg-base-200 p-4 rounded-b-lg"
-    >
-        Content with custom styling
-    </x-artisanpack-accordion.item>
-</x-artisanpack-accordion>
-```
+- `join join-vertical w-full` - Applied to the accordion container
+- `join-item` - Applied to each collapse component within the accordion
+- `collapse-arrow` or `collapse-plus` - Applied based on icon preference
 
 ## Accessibility
 
 The Accordion component follows accessibility best practices:
 
-- Uses appropriate ARIA attributes for accordion functionality
-- Supports keyboard navigation (Tab to focus, Enter/Space to toggle)
-- Maintains focus management
-- Ensures adequate color contrast
-- Provides clear visual indication of the current state
+- Uses proper radio button inputs for mutually exclusive sections
+- Supports keyboard navigation
+- Maintains focus management when sections are toggled
+- Uses semantic HTML structure
+- Provides clear visual indicators for expanded/collapsed state
 
 ## Related Components
 
-- [Collapse](collapse.md) - Simple collapsible content container
-- [Tabs](tabs.md) - Tabbed interface for organizing content
-- [Card](card.md) - Content container with optional header and footer
+- [Collapse](collapse.md) - Individual collapsible content container used within accordions
+- [Card](card.md) - Content container that can include collapsible sections

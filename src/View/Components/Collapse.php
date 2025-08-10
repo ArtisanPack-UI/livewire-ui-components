@@ -30,24 +30,27 @@ use Illuminate\View\Component;
 
 class Collapse extends Component
 {
-    public string $uuid;
+	public string $uuid;
 
-    public function __construct(
-        public ?string $id = null,
-        public ?string $name = null,
-        public ?bool $collapsePlusMinus = false,
-        public ?bool $separator = false,
-        public ?bool $noIcon = false,
+    public bool $collapsePlusMinus = false;
 
-        // Slots
-        public mixed $heading = null,
-        public mixed $content = null,
-    ) {
-        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
-    }
+	public function __construct(
+		public ?string $id = null,
+		public ?string $name = null,
+		public ?bool $separator = false,
+		public ?bool $noIcon = false,
+		mixed $collapsePlusMinus = false,
 
-    public function render(): View
-    {
-        return view('livewire-ui-components::components.collapse');
-    }
+		// Slots
+		public mixed $heading = null,
+		public mixed $content = null,
+	) {
+		$this->uuid = "artisanpack" . uniqid() . $id;
+		$this->collapsePlusMinus = ($collapsePlusMinus === true || $collapsePlusMinus === '');
+	}
+
+	public function render(): View
+	{
+		return view('livewire-ui-components::components.collapse');
+	}
 }
