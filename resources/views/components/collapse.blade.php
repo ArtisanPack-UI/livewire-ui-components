@@ -1,11 +1,29 @@
 @aware(['noJoin' => null, 'usePlusMinus' => false, 'customOpenIcon' => null, 'customClosedIcon' => null])
+
+@php
+    // Resolve custom icons early so we can use them in CSS class logic
+    // The @aware variables come from the accordion parent component
+    $inheritedOpenIcon = $customOpenIcon ?? null;
+    $inheritedClosedIcon = $customClosedIcon ?? null;
+    
+    // Get the local component properties directly from attributes or use null
+    // Since attributes are passed as kebab-case, we need to check for both formats
+    $localOpenIcon = $attributes->get('custom-open-icon') ?? $attributes->get('customOpenIcon') ?? null;
+    $localClosedIcon = $attributes->get('custom-closed-icon') ?? $attributes->get('customClosedIcon') ?? null;
+    
+    // Local component properties take precedence over inherited ones from accordion
+    $finalOpenIcon = $localOpenIcon ?? $inheritedOpenIcon;
+    $finalClosedIcon = $localClosedIcon ?? $inheritedClosedIcon;
+    $hasCustomIcons = $finalOpenIcon || $finalClosedIcon;
+@endphp
+
 <div
     {{
         $attributes->class([
             'collapse border-[length:var(--border)] border-base-content/10',
             'join-item' => !$noJoin,
-            'collapse-arrow' => (!$collapsePlusMinus && !$usePlusMinus) && !$noIcon && !($customOpenIcon || $customClosedIcon),
-            'collapse-plus' => ($collapsePlusMinus || $usePlusMinus) && !$noIcon && !($customOpenIcon || $customClosedIcon)
+            'collapse-arrow' => (!$collapsePlusMinus && !$usePlusMinus) && !$noIcon && !$hasCustomIcons,
+            'collapse-plus' => ($collapsePlusMinus || $usePlusMinus) && !$noIcon && !$hasCustomIcons
         ])
     }}
 
@@ -26,13 +44,6 @@
         @click="if (model == '{{ $name }}') model = null"
         @endif
     >
-        @php
-            // Determine which icons to use - local component props take precedence over inherited accordion props
-            $finalOpenIcon = $customOpenIcon;
-            $finalClosedIcon = $customClosedIcon;
-            $hasCustomIcons = $finalOpenIcon || $finalClosedIcon;
-        @endphp
-
         @if($hasCustomIcons && !$noIcon)
             <div class="flex items-center justify-between w-full">
                 <span>{{ $heading }}</span>
