@@ -1,17 +1,17 @@
 <div>
     <fieldset class="fieldset py-0">
-    {{-- STANDARD LABEL --}}
-    @if($label)
-        <legend class="fieldset-legend mb-2">
-            {{ $label }}
+        {{-- GROUP LABEL --}}
+        @if($label)
+            <legend class="fieldset-legend mb-2">
+                {{ $label }}
 
-            @if($attributes->get('required'))
-                <span class="text-error">*</span>
-            @endif
-        </legend>
-    @endif
+                @if($attributes->get('required'))
+                    <span class="text-error">*</span>
+                @endif
+            </legend>
+        @endif
 
-        <div @class(["gap-4 grid", "sm:flex sm:gap-6" => $inline])>
+        <div @class(["gap-4 grid", "sm:flex sm:gap-6" => $horizontal])>
             @foreach ($options as $option)
                 @if($card)
                     <label class="relative">
@@ -59,7 +59,6 @@
                                 name="{{ $modelName() }}"
                                 value="{{ data_get($option, $optionValue) }}"
                                 @if(data_get($option, 'disabled')) disabled @endif
-
                                 {{ $attributes->whereStartsWith('wire:model') }}
                                 {{ $attributes->class(["radio"]) }}
                             />
@@ -98,5 +97,5 @@
         @if($hint)
             <div class="{{ $hintClass }}" x-classes="fieldset-label">{{ $hint }}</div>
         @endif
-</fieldset>
+    </fieldset>
 </div>
