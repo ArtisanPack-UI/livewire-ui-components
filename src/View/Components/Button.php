@@ -68,6 +68,7 @@ class Button extends Component
         public ?string $tooltipLeft = null,
         public ?string $tooltipRight = null,
         public ?string $tooltipBottom = null,
+        public ?string $variant = 'primary',
         public string $uuid = '',
         public string $tooltipPosition = 'lg:tooltip-top',
     ) {
@@ -76,6 +77,9 @@ class Button extends Component
             $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
         }
 
+        // Validate variant
+        $this->variant = $this->validateVariant($this->variant);
+
         // Set tooltip based on the first non-null value if not already set
         $this->tooltip = $this->tooltip ?? $this->tooltipLeft ?? $this->tooltipRight ?? $this->tooltipBottom;
 
@@ -83,6 +87,50 @@ class Button extends Component
         if ($this->tooltipPosition === 'lg:tooltip-top') {
             $this->tooltipPosition = $this->tooltipLeft ? 'lg:tooltip-left' : ($this->tooltipRight ? 'lg:tooltip-right' : ($this->tooltipBottom ? 'lg:tooltip-bottom' : 'lg:tooltip-top'));
         }
+    }
+
+    /**
+     * Validate and return a supported variant.
+     *
+     * @param string|null $variant
+     * @return string
+     * @since 1.0.0
+     */
+    private function validateVariant(?string $variant): string
+    {
+        $supportedVariants = [
+            'primary',
+            'secondary',
+            'accent',
+            'success',
+            'warning',
+            'error',
+            'ghost',
+            'outline'
+        ];
+
+        return in_array($variant, $supportedVariants) ? $variant : 'primary';
+    }
+
+    /**
+     * Get variant-specific CSS classes.
+     *
+     * @return string
+     * @since 1.0.0
+     */
+    public function getVariantClasses(): string
+    {
+        return match($this->variant) {
+            'primary' => 'btn-primary',
+            'secondary' => 'btn-secondary',
+            'accent' => 'btn-accent',
+            'success' => 'btn-success',
+            'warning' => 'btn-warning',
+            'error' => 'btn-error',
+            'ghost' => 'btn-ghost',
+            'outline' => 'btn-outline',
+            default => 'btn-primary',
+        };
     }
 
     /**

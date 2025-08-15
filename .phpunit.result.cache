@@ -1,0 +1,1 @@
+{"version":1,"defects":[],"times":{"ButtonTest::test_button_uses_primary_variant_by_default":0.009,"ButtonTest::test_button_accepts_valid_variants":0,"ButtonTest::test_button_falls_back_to_primary_for_invalid_variants":0,"ButtonTest::test_button_maintains_existing_functionality":0,"ButtonTest::test_button_generates_uuid":0.002}}

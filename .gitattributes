@@ -10,3 +10,4 @@
 /phpunit.xml   export-ignore
 /.gitlab-ci.yml export-ignore
 /docs export-ignore
+/.junie export-ignore

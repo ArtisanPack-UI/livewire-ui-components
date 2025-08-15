@@ -6,7 +6,7 @@
 
     wire:key="{{ $uuid }}"
     {{ $attributes->whereDoesntStartWith('class')->merge(['type' => 'button']) }}
-    {{ $attributes->class(['btn', '!inline-flex lg:tooltip ' . $tooltipPosition => $tooltip]) }}
+    {{ $attributes->class(['btn', '!inline-flex', 'lg:tooltip ' . $tooltipPosition => $tooltip, $getVariantClasses()]) }}
 
     @if($link && $external)
         target="_blank"
