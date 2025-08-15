@@ -20,6 +20,7 @@ namespace ArtisanPack\LivewireUiComponents\View\Components;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
+use ArtisanPack\LivewireUiComponents\Styling\ColorGenerator;
 /**
  * Avatar Class
  *
@@ -40,12 +41,16 @@ class Avatar extends Component
      * @slot  ?string  $title  The title text displayed beside the avatar.
      * @param  ?string  $subtitle  The subtitle text displayed beside the avatar.
      * @slot  ?string  $subtitle The subtitle text displayed beside the avatar.
+     * @param  ?string  $color  Color variant, Tailwind color, or hex code for placeholder/border.
+     * @param  ?string  $colorAdjustment  Background adjustment (lighter, darker, transparent, subtle).
      */
     public function __construct(
         public ?string $id = null,
         public ?string $image = '',
         public ?string $alt = '',
         public ?string $placeholder = '',
+        public ?string $color = null,
+        public ?string $colorAdjustment = null,
 
         // Slots
         public ?string $title = null,
@@ -53,6 +58,30 @@ class Avatar extends Component
 
     ) {
         $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+    }
+
+    /**
+     * Get color-specific CSS classes using ColorGenerator.
+     *
+     * @return array
+     * @since 1.1.0
+     */
+    public function getColorClasses(): array
+    {
+        if (!$this->color) {
+            return [];
+        }
+
+        $colorGenerator = new ColorGenerator();
+        
+        // Use ColorGenerator for color resolution
+        $colorClasses = $colorGenerator->resolveComponentColor(
+            $this->color, 
+            $this->colorAdjustment, 
+            'avatar'
+        );
+        
+        return $colorClasses;
     }
 
     public function render(): View

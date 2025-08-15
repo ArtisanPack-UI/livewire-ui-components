@@ -6,7 +6,32 @@
 
     wire:key="{{ $uuid }}"
     {{ $attributes->whereDoesntStartWith('class')->merge(['type' => 'button']) }}
-    {{ $attributes->class(['btn', '!inline-flex', 'lg:tooltip ' . $tooltipPosition => $tooltip, $getVariantClasses()]) }}
+    @php
+        $colorClasses = $getColorClasses();
+        $baseClasses = ['btn', '!inline-flex', 'transition-all', 'duration-300'];
+        $tooltipClass = $tooltip ? 'lg:tooltip ' . $tooltipPosition : '';
+        
+        // Handle new color system
+        if (!empty($colorClasses)) {
+            // Add color classes from new system
+            foreach ($colorClasses as $type => $class) {
+                if ($type === 'style' && $class) {
+                    // Handle inline styles for hex colors
+                    $attributes = $attributes->merge(['style' => $class]);
+                } elseif ($type !== 'style' && $class) {
+                    $baseClasses[] = $class;
+                }
+            }
+        } else {
+            // Fall back to legacy variant classes
+            $baseClasses[] = $getVariantClasses();
+        }
+        
+        if ($tooltipClass) {
+            $baseClasses[] = $tooltipClass;
+        }
+    @endphp
+    {{ $attributes->class($baseClasses) }}
 
     @if($link && $external)
         target="_blank"

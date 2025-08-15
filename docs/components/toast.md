@@ -65,15 +65,69 @@ $this->success('Created!', 'New record created successfully.', null, 'o-check-ci
 $this->toast('custom', 'Custom Toast', 'With custom styling', null, 'o-sparkles', 'bg-purple-500 text-white');
 ```
 
+## Color System
+
+The toast component now supports flexible color customization using the color system:
+
+### Using Color Parameter
+
+```php
+// Predefined variants
+$this->toast('custom', 'Custom Toast', 'Using predefined variant', null, 'o-sparkles', null, 3000, null, 'primary');
+$this->toast('custom', 'Custom Toast', 'Using predefined variant', null, 'o-sparkles', null, 3000, null, 'secondary');
+
+// Tailwind colors
+$this->toast('custom', 'Custom Toast', 'Using Tailwind color', null, 'o-sparkles', null, 3000, null, 'blue-500');
+$this->toast('custom', 'Custom Toast', 'Using Tailwind color', null, 'o-sparkles', null, 3000, null, 'purple-600');
+
+// Custom hex colors
+$this->toast('custom', 'Custom Toast', 'Using hex color', null, 'o-sparkles', null, 3000, null, '#ff6b6b');
+$this->toast('custom', 'Custom Toast', 'Using hex color', null, 'o-sparkles', null, 3000, null, '#4ecdc4');
+```
+
+### Using Color Adjustments
+
+```php
+// Lighter background
+$this->toast('custom', 'Lighter Toast', 'With lighter background', null, 'o-sparkles', null, 3000, null, 'blue-500', 'lighter');
+
+// Darker background
+$this->toast('custom', 'Darker Toast', 'With darker background', null, 'o-sparkles', null, 3000, null, 'blue-500', 'darker');
+
+// Transparent background
+$this->toast('custom', 'Transparent Toast', 'With transparent background', null, 'o-sparkles', null, 3000, null, 'blue-500', 'transparent');
+
+// Subtle background
+$this->toast('custom', 'Subtle Toast', 'With subtle background', null, 'o-sparkles', null, 3000, null, 'blue-500', 'subtle');
+```
+
+### Enhanced Convenience Methods
+
+The convenience methods also support the new color system:
+
+```php
+// Success toast with custom color
+$this->success('Success!', 'Operation completed', null, 'o-check-circle', null, 3000, null, 'green-600');
+
+// Warning toast with color adjustment
+$this->warning('Warning!', 'Action cannot be undone', null, 'o-exclamation-triangle', null, 3000, null, 'orange-500', 'subtle');
+
+// Error toast with hex color
+$this->error('Error!', 'Something went wrong', null, 'o-x-circle', null, 3000, null, '#ff4757');
+
+// Info toast with brand color
+$this->info('Information', 'Session expires soon', null, 'o-information-circle', null, 5000, null, '#4ecdc4', 'lighter');
+```
+
 ## Methods
 
 | Method | Parameters | Description |
 |--------|------------|-------------|
-| `toast` | `$type`, `$title`, `$description`, `$position`, `$icon`, `$css`, `$timeout`, `$redirectTo` | Base method for displaying toast notifications |
-| `success` | `$title`, `$description`, `$position`, `$icon`, `$css`, `$timeout`, `$redirectTo` | Display a success toast notification |
-| `warning` | `$title`, `$description`, `$position`, `$icon`, `$css`, `$timeout`, `$redirectTo` | Display a warning toast notification |
-| `error` | `$title`, `$description`, `$position`, `$icon`, `$css`, `$timeout`, `$redirectTo` | Display an error toast notification |
-| `info` | `$title`, `$description`, `$position`, `$icon`, `$css`, `$timeout`, `$redirectTo` | Display an info toast notification |
+| `toast` | `$type`, `$title`, `$description`, `$position`, `$icon`, `$css`, `$timeout`, `$redirectTo`, `$color`, `$colorAdjustment` | Base method for displaying toast notifications |
+| `success` | `$title`, `$description`, `$position`, `$icon`, `$css`, `$timeout`, `$redirectTo`, `$color`, `$colorAdjustment` | Display a success toast notification |
+| `warning` | `$title`, `$description`, `$position`, `$icon`, `$css`, `$timeout`, `$redirectTo`, `$color`, `$colorAdjustment` | Display a warning toast notification |
+| `error` | `$title`, `$description`, `$position`, `$icon`, `$css`, `$timeout`, `$redirectTo`, `$color`, `$colorAdjustment` | Display an error toast notification |
+| `info` | `$title`, `$description`, `$position`, `$icon`, `$css`, `$timeout`, `$redirectTo`, `$color`, `$colorAdjustment` | Display an info toast notification |
 
 ## Parameters
 
@@ -87,6 +141,8 @@ $this->toast('custom', 'Custom Toast', 'With custom styling', null, 'o-sparkles'
 | `$css` | string | Varies by type | CSS classes for the toast notification |
 | `$timeout` | int | `3000` | Timeout in milliseconds before the toast automatically dismisses |
 | `$redirectTo` | string\|null | `null` | Optional URL to redirect to after displaying the toast |
+| `$color` | string\|null | `null` | Color variant, Tailwind color (e.g., 'red-500'), or hex code (e.g., '#ff0000') |
+| `$colorAdjustment` | string\|null | `null` | Background adjustment: 'lighter', 'darker', 'transparent', or 'subtle' |
 
 ## Usage in Livewire Components
 

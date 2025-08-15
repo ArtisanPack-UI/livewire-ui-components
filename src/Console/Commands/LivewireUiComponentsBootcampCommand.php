@@ -31,12 +31,35 @@ use RuntimeException;
 
 class LivewireUiComponentsBootcampCommand extends Command
 {
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
     protected $signature = 'livewire-ui-components:bootcamp';
 
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
     protected $description = 'Prepare the app for the bootcamp';
 
+    /**
+     * Directory separator constant for cross-platform compatibility.
+     *
+     * @var string
+     */
     protected $ds = DIRECTORY_SEPARATOR;
 
+    /**
+     * Execute the console command.
+     *
+     * Sets up the application for bootcamp by installing dependencies, copying files, and seeding the database.
+     *
+     * @return void
+     * @since 1.0.0
+     */
     public function handle()
     {
         $this->info("❤️  Livewire UI Components bootcamp install");
@@ -79,6 +102,15 @@ class LivewireUiComponentsBootcampCommand extends Command
         $this->info("\n✅   Done! Go back to Bootcamp page.\n");
     }
 
+    /**
+     * Copy a file from source to destination with cross-platform path handling.
+     *
+     * @param string $source The source file path
+     * @param string $destination The destination file path
+     * @return void
+     * @throws RuntimeException If the file copy operation fails
+     * @since 1.0.0
+     */
     private function copyFile(string $source, string $destination): void
     {
         $source = str_replace('/', DIRECTORY_SEPARATOR, $source);

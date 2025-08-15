@@ -21,6 +21,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\View\ComponentSlot;
+use ArtisanPack\LivewireUiComponents\Styling\ColorGenerator;
 
 /**
  * Button Component Class
@@ -31,6 +32,12 @@ use Illuminate\View\ComponentSlot;
  */
 class Button extends Component
 {
+    /**
+     * The resolved color for the button (either from color prop or variant).
+     *
+     * @var string|null
+     */
+    public ?string $resolvedColor = null;
 
     /**
      * Constructor for the Button component.
@@ -50,6 +57,9 @@ class Button extends Component
      * @param string|null $tooltipLeft    Optional tooltip text (left position).
      * @param string|null $tooltipRight   Optional tooltip text (right position).
      * @param string|null $tooltipBottom  Optional tooltip text (bottom position).
+     * @param string|null $variant        Button variant (for backward compatibility).
+     * @param string|null $color          Color variant, Tailwind color, or hex code.
+     * @param string|null $colorAdjustment Background adjustment (lighter, darker, transparent, subtle).
      * @since 1.0.0
      */
     public function __construct(
@@ -69,6 +79,8 @@ class Button extends Component
         public ?string $tooltipRight = null,
         public ?string $tooltipBottom = null,
         public ?string $variant = 'primary',
+        public ?string $color = null,
+        public ?string $colorAdjustment = null,
         public string $uuid = '',
         public string $tooltipPosition = 'lg:tooltip-top',
     ) {
@@ -77,8 +89,15 @@ class Button extends Component
             $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
         }
 
-        // Validate variant
-        $this->variant = $this->validateVariant($this->variant);
+        // Handle color priority: color prop takes precedence over variant
+        if ($this->color) {
+            // If color is specified, use it instead of variant
+            $this->resolvedColor = $this->color;
+        } else {
+            // If no color specified, use variant for backward compatibility
+            $this->variant = $this->validateVariant($this->variant);
+            $this->resolvedColor = $this->variant;
+        }
 
         // Set tooltip based on the first non-null value if not already set
         $this->tooltip = $this->tooltip ?? $this->tooltipLeft ?? $this->tooltipRight ?? $this->tooltipBottom;
@@ -113,13 +132,39 @@ class Button extends Component
     }
 
     /**
-     * Get variant-specific CSS classes.
+     * Get color-specific CSS classes using ColorGenerator.
+     *
+     * @return array
+     * @since 1.0.0
+     */
+    public function getColorClasses(): array
+    {
+        $colorGenerator = new ColorGenerator();
+        
+        // Use ColorGenerator for new color system
+        $colorClasses = $colorGenerator->resolveComponentColor(
+            $this->resolvedColor, 
+            $this->colorAdjustment, 
+            'button'
+        );
+        
+        // If ColorGenerator didn't return classes (invalid color), fall back to DaisyUI variants
+        if (empty($colorClasses) && $this->resolvedColor) {
+            $colorClasses = $this->getFallbackVariantClasses($this->resolvedColor);
+        }
+        
+        return $colorClasses;
+    }
+    
+    /**
+     * Get variant-specific CSS classes (legacy method for backward compatibility).
      *
      * @return string
      * @since 1.0.0
      */
     public function getVariantClasses(): string
     {
+        // For backward compatibility, return DaisyUI button classes
         return match($this->variant) {
             'primary' => 'btn-primary',
             'secondary' => 'btn-secondary',
@@ -131,6 +176,30 @@ class Button extends Component
             'outline' => 'btn-outline',
             default => 'btn-primary',
         };
+    }
+    
+    /**
+     * Get fallback variant classes for invalid colors.
+     *
+     * @param string $color
+     * @return array
+     * @since 1.1.0
+     */
+    protected function getFallbackVariantClasses(string $color): array
+    {
+        $variantClass = match($color) {
+            'primary' => 'btn-primary',
+            'secondary' => 'btn-secondary',
+            'accent' => 'btn-accent',
+            'success' => 'btn-success',
+            'warning' => 'btn-warning',
+            'error' => 'btn-error',
+            'ghost' => 'btn-ghost',
+            'outline' => 'btn-outline',
+            default => 'btn-primary',
+        };
+        
+        return ['btn' => $variantClass];
     }
 
     /**

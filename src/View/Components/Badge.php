@@ -20,6 +20,7 @@ namespace ArtisanPack\LivewireUiComponents\View\Components;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
+use ArtisanPack\LivewireUiComponents\Styling\ColorGenerator;
 /**
  * Badge Class
  *
@@ -35,9 +36,34 @@ class Badge extends Component
     public function __construct(
         public ?string $id = null,
         public ?string $value = null,
-
+        public ?string $color = null,
+        public ?string $colorAdjustment = null,
     ) {
         $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+    }
+
+    /**
+     * Get color-specific CSS classes using ColorGenerator.
+     *
+     * @return array
+     * @since 1.1.0
+     */
+    public function getColorClasses(): array
+    {
+        if (!$this->color) {
+            return [];
+        }
+
+        $colorGenerator = new ColorGenerator();
+        
+        // Use ColorGenerator for color resolution
+        $colorClasses = $colorGenerator->resolveComponentColor(
+            $this->color, 
+            $this->colorAdjustment, 
+            'badge'
+        );
+        
+        return $colorClasses;
     }
 
     public function render(): View
