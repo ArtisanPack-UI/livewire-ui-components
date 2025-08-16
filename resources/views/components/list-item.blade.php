@@ -8,9 +8,20 @@
         }}
     >
 
-        @if($link && (data_get($item, $avatar) || !is_string($avatar)))
+        @if($link && ($shouldShowIcon() || data_get($item, $avatar) || !is_string($avatar)))
             <div>
                 <a href="{{ $link }}" wire:navigate>
+        @endif
+
+        <!-- ICON (NEW) -->
+        @if($shouldShowIcon())
+            <div class="py-3 flex-shrink-0">
+                @if($iconSlot)
+                    {{ $iconSlot }}
+                @elseif($getIcon())
+                    <x-svg :name="$getIcon()" class="{{ $iconClass }}" />
+                @endif
+            </div>
         @endif
 
         <!-- AVATAR -->
@@ -31,7 +42,7 @@
         @endif
 
 
-        @if($link && (data_get($item, $avatar) || !is_string($avatar)))
+        @if($link && ($shouldShowIcon() || data_get($item, $avatar) || !is_string($avatar)))
                 </a>
             </div>
         @endif

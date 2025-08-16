@@ -132,6 +132,10 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
 			__DIR__.'/../resources/js' => public_path('vendor/artisanpack-ui/js'),
 		], 'artisanpack-assets');
 
+		$this->publishes([
+			__DIR__.'/../config/livewire-ui-components.php' => config_path('livewire-ui-components.php'),
+		], 'artisanpack-config');
+
 
 		// Publishing is only necessary when using the CLI.
         if ($this->app->runningInConsole()) {
