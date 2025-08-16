@@ -43,9 +43,13 @@
 
     @if(!$withoutArrows)
         <!-- previous button -->
-        <x-artisanpack-button icon="o-chevron-left"  @click="previous()" class="absolute cursor-pointer left-5 top-1/2 z-[2] btn-circle btn-sm" />
+        <button @click="previous()" class="absolute cursor-pointer left-5 top-1/2 z-[2] btn btn-circle btn-sm">
+            {!! $renderIcon($previousArrow, 'o-chevron-left', ['w-4', 'h-4']) !!}
+        </button>
         <!-- next button -->
-        <x-artisanpack-button icon="o-chevron-right"  @click="next()" class="absolute cursor-pointer right-5 top-1/2 z-[2] btn-circle btn-sm" />
+        <button @click="next()" class="absolute cursor-pointer right-5 top-1/2 z-[2] btn btn-circle btn-sm">
+            {!! $renderIcon($nextArrow, 'o-chevron-right', ['w-4', 'h-4']) !!}
+        </button>
     @endif
 
     <!-- slides -->
@@ -99,7 +103,13 @@
     @if(! $withoutIndicators)
         <div class="absolute rounded-xl bottom-3 md:bottom-5 left-1/2 z-[2] flex -translate-x-1/2 gap-4 md:gap-3 bg-base-300 px-1.5 py-1 md:px-2" role="group" aria-label="slides" >
             <template x-for="(slide, index) in slides">
-                <button class="size-2.5 cursor-pointer rounded-full transition hover:scale-125" @click="currentSlideIndex = index + 1" :class="[currentSlideIndex === index + 1 ? 'bg-base-content' : 'bg-base-content/30']"></button>
+                @if($dots !== null)
+                    <button class="cursor-pointer transition hover:scale-125" @click="currentSlideIndex = index + 1" :class="[currentSlideIndex === index + 1 ? 'opacity-100' : 'opacity-30']">
+                        {!! $renderIcon($dots, '', ['w-2.5', 'h-2.5']) !!}
+                    </button>
+                @else
+                    <button class="size-2.5 cursor-pointer rounded-full transition hover:scale-125" @click="currentSlideIndex = index + 1" :class="[currentSlideIndex === index + 1 ? 'bg-base-content' : 'bg-base-content/30']"></button>
+                @endif
             </template>
         </div>
     @endif
