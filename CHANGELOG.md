@@ -1,18 +1,5 @@
 # ArtisanPack UI Livewire UI Components
 
-## [0.6.0] - 2025-08-16
-- **NEW FEATURE**: Added vertical tabs support to the Tabs component
-  - Added `orientation` property with support for `horizontal`, `vertical-left`, and `vertical-right` orientations
-  - Implemented responsive design that adapts to mobile devices (horizontal on mobile, vertical on desktop)
-  - Added comprehensive vertical-specific CSS class properties for full customization
-  - Added proper ARIA attributes for accessibility (`aria-orientation="vertical"`)
-  - Maintained 100% backward compatibility - all existing implementations continue to work unchanged
-  - Added helper methods: `isVertical()`, `isVerticalRight()`, `getTabsContainerClass()`, `getLabelDivClass()`, `getLabelClass()`, `getActiveClass()`
-  - Enhanced Blade template with conditional layout logic for proper DOM ordering
-  - Comprehensive documentation and examples added for all vertical tab variants
-  - Full test coverage with unit and feature tests
-  - Edge case handling for disabled, hidden, and invalid orientation values
-
 ## [0.5.0] - 2025-08-10
 - Added random color generator functionality.
 - Added icon options for accordion and collapse components.
