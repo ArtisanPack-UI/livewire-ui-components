@@ -51,6 +51,11 @@ class Carousel extends Component
         public mixed $previousArrow = null,
         public mixed $dots = null,
 
+        // Accessibility props
+        public ?string $ariaLabel = null,
+        public ?string $ariaLabelledBy = null,
+        public ?bool $respectsReducedMotion = true,
+
         // Slots
         public mixed $content = null,
     ) {

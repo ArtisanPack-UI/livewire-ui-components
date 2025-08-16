@@ -3,10 +3,12 @@
     withoutIndicators: {{ json_encode($withoutIndicators) }},
     autoplay: {{ json_encode($autoplay) }},
     interval: {{ json_encode($interval) }},
+    respectsReducedMotion: {{ json_encode($respectsReducedMotion) }},
     currentSlideIndex: 1,
     touchStartX: null,
     touchEndX: null,
     swipeThreshold: 50,
+    reducedMotion: false,
     previous() {
         this.currentSlideIndex = (this.currentSlideIndex > 1)
             ? --this.currentSlideIndex
@@ -16,6 +18,29 @@
         this.currentSlideIndex = (this.currentSlideIndex < this.slides.length)
             ? ++this.currentSlideIndex
             : 1
+    },
+    goToSlide(index) {
+        this.currentSlideIndex = index + 1
+    },
+    handleKeydown(event) {
+        switch(event.key) {
+            case 'ArrowLeft':
+                event.preventDefault();
+                this.previous();
+                break;
+            case 'ArrowRight':
+                event.preventDefault();
+                this.next();
+                break;
+            case 'Home':
+                event.preventDefault();
+                this.currentSlideIndex = 1;
+                break;
+            case 'End':
+                event.preventDefault();
+                this.currentSlideIndex = this.slides.length;
+                break;
+        }
     },
     handleTouchStart(event) {
         this.touchStartX = event.touches[0].clientX
@@ -36,18 +61,39 @@
         }
     },
     init() {
-        if (this.autoplay)
+        // Check for reduced motion preference
+        this.reducedMotion = this.respectsReducedMotion && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        
+        if (this.autoplay && !this.reducedMotion) {
             setInterval(() => { this.next(); }, this.interval);
+        }
     }
-}" class="relative w-full overflow-hidden">
+}" 
+@keydown="handleKeydown($event)"
+tabindex="0"
+role="region"
+@if($ariaLabel)
+    aria-label="{{ $ariaLabel }}"
+@elseif($ariaLabelledBy)
+    aria-labelledby="{{ $ariaLabelledBy }}"
+@else
+    aria-label="Image carousel"
+@endif
+aria-live="polite"
+aria-atomic="false"
+class="relative w-full overflow-hidden focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
 
     @if(!$withoutArrows)
         <!-- previous button -->
-        <button @click="previous()" class="absolute cursor-pointer left-5 top-1/2 z-[2] btn btn-circle btn-sm">
+        <button @click="previous()" 
+                aria-label="Previous slide" 
+                class="absolute cursor-pointer left-5 top-1/2 z-[2] btn btn-circle btn-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
             {!! $renderIcon($previousArrow, 'o-chevron-left', ['w-4', 'h-4']) !!}
         </button>
         <!-- next button -->
-        <button @click="next()" class="absolute cursor-pointer right-5 top-1/2 z-[2] btn btn-circle btn-sm">
+        <button @click="next()" 
+                aria-label="Next slide" 
+                class="absolute cursor-pointer right-5 top-1/2 z-[2] btn btn-circle btn-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
             {!! $renderIcon($nextArrow, 'o-chevron-right', ['w-4', 'h-4']) !!}
         </button>
     @endif
@@ -63,6 +109,8 @@
                 x-cloak
                 x-show="currentSlideIndex == {{ $index + 1 }}"
                 x-transition.opacity.duration.500ms
+                :aria-current="currentSlideIndex === {{ $index + 1 }} ? 'true' : 'false'"
+                aria-label="Slide {{ $index + 1 }} of {{ count($slides) }}"
                 @class(["absolute inset-0", "cursor-pointer" => data_get($slide, 'url') ])
                 @if(data_get($slide, 'url'))
                     @click="window.location = '{{ data_get($slide, 'url') }}'"
@@ -95,7 +143,9 @@
                 @endif
 
                 <!-- Image -->
-                <img class="w-full h-full inset-0 object-cover" src="{{ data_get($slide, 'image') }}" />
+                <img class="w-full h-full inset-0 object-cover" 
+                     src="{{ data_get($slide, 'image') }}" 
+                     alt="{{ data_get($slide, 'alt', data_get($slide, 'title', 'Slide image')) }}" />
             </div>
         @endforeach
     </div>
@@ -104,11 +154,19 @@
         <div class="absolute rounded-xl bottom-3 md:bottom-5 left-1/2 z-[2] flex -translate-x-1/2 gap-4 md:gap-3 bg-base-300 px-1.5 py-1 md:px-2" role="group" aria-label="slides" >
             <template x-for="(slide, index) in slides">
                 @if($dots !== null)
-                    <button class="cursor-pointer transition hover:scale-125" @click="currentSlideIndex = index + 1" :class="[currentSlideIndex === index + 1 ? 'opacity-100' : 'opacity-30']">
+                    <button class="cursor-pointer transition hover:scale-125 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50" 
+                            @click="goToSlide(index)" 
+                            :aria-label="`Go to slide ${index + 1}`"
+                            :aria-current="currentSlideIndex === index + 1 ? 'true' : 'false'"
+                            :class="[currentSlideIndex === index + 1 ? 'opacity-100' : 'opacity-30']">
                         {!! $renderIcon($dots, '', ['w-2.5', 'h-2.5']) !!}
                     </button>
                 @else
-                    <button class="size-2.5 cursor-pointer rounded-full transition hover:scale-125" @click="currentSlideIndex = index + 1" :class="[currentSlideIndex === index + 1 ? 'bg-base-content' : 'bg-base-content/30']"></button>
+                    <button class="size-2.5 cursor-pointer rounded-full transition hover:scale-125 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50" 
+                            @click="goToSlide(index)" 
+                            :aria-label="`Go to slide ${index + 1}`"
+                            :aria-current="currentSlideIndex === index + 1 ? 'true' : 'false'"
+                            :class="[currentSlideIndex === index + 1 ? 'bg-base-content' : 'bg-base-content/30']"></button>
                 @endif
             </template>
         </div>

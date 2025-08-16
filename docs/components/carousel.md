@@ -166,6 +166,9 @@ This ensures complete backward compatibility with existing implementations.
 | `nextArrow` | mixed\|null | `null` | Custom icon for the next arrow (icon name or raw SVG) |
 | `previousArrow` | mixed\|null | `null` | Custom icon for the previous arrow (icon name or raw SVG) |
 | `dots` | mixed\|null | `null` | Custom icon for the dot indicators (icon name or raw SVG) |
+| `ariaLabel` | string\|null | `null` | Accessible label for the carousel (overrides default) |
+| `ariaLabelledBy` | string\|null | `null` | ID of element that labels the carousel |
+| `respectsReducedMotion` | boolean\|null | `true` | Whether to respect user's reduced motion preference |
 
 ## Slots
 
@@ -180,12 +183,15 @@ Each slide in the `slides` array can have the following properties:
 ```php
 [
     'image' => 'https://example.com/image.jpg', // URL of the image to display (required)
+    'alt' => 'Descriptive alt text for the image', // Alt text for accessibility (recommended)
     'title' => 'Slide Title', // Title text to display
     'description' => 'Slide description text', // Description text to display
     'url' => '/some-page', // URL to navigate to when the slide is clicked
     'urlText' => 'Learn More' // Text for the button that links to the URL
 ]
 ```
+
+**Note**: If no `alt` text is provided, the component will fallback to using the `title` property, or "Slide image" as a default. For optimal accessibility, always provide descriptive alt text.
 
 ## Styling
 
@@ -203,12 +209,51 @@ The Carousel component uses a combination of Tailwind CSS and Alpine.js for styl
 
 ## Accessibility
 
-The Carousel component follows accessibility best practices:
+The Carousel component includes comprehensive accessibility features to ensure it's usable by all users:
 
-- Uses appropriate ARIA attributes for the slide indicators
-- Provides keyboard navigation support
-- Includes visible controls for navigating between slides
-- Supports touch gestures for mobile devices
+### ARIA Support
+- Uses `role="region"` with proper labeling for the main carousel container
+- Implements `aria-live="polite"` to announce slide changes to screen readers
+- Provides `aria-current="true"` for the active slide
+- Labels all interactive elements with descriptive `aria-label` attributes
+
+### Keyboard Navigation
+- **Arrow Keys**: Use Left/Right arrow keys to navigate between slides
+- **Home/End Keys**: Jump to first/last slide
+- **Tab Navigation**: All interactive elements are keyboard accessible
+- **Focus Management**: Clear visual focus indicators on all controls
+
+### Screen Reader Support
+- Images include meaningful alt text (uses slide 'alt', 'title', or defaults)
+- Slide position announced ("Slide X of Y")
+- Navigation buttons clearly labeled ("Previous slide", "Next slide")
+- Indicator buttons labeled ("Go to slide X")
+
+### Motion and Animation
+- Respects `prefers-reduced-motion` setting
+- Disables autoplay when users prefer reduced motion
+- Maintains functionality without relying on animations
+
+### Implementation Guidelines
+To ensure your carousel is fully accessible:
+
+1. **Always provide alt text for images**:
+```php
+$slides = [
+    [
+        'image' => 'path/to/image.jpg',
+        'alt' => 'Descriptive text about the image content',
+        'title' => 'Slide Title'
+    ]
+];
+```
+
+2. **Add a descriptive label for the carousel**:
+```php
+<x-artisanpack-carousel :slides="$slides" aria-label="Product showcase carousel" />
+```
+
+3. **Test with keyboard navigation and screen readers** to ensure proper functionality.
 
 ## Related Components
 
