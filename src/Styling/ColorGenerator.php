@@ -376,6 +376,11 @@ class ColorGenerator
 			return [];
 		}
 
+		// DatePicker-specific color handling
+		if ($component === 'datepicker') {
+			return $this->resolveDatePickerColors($color, $adjustment);
+		}
+
 		// Check if it's a predefined variant
 		if ($this->isVariant($color)) {
 			return $this->getVariantClasses($color, $adjustment, $component);
@@ -985,5 +990,104 @@ class ColorGenerator
 		$b = min(255, max(0, $b + ($b * $percent)));
 		
 		return sprintf('#%02x%02x%02x', $r, $g, $b);
+	}
+
+	/**
+	 * Resolves DatePicker-specific colors and generates appropriate CSS custom properties.
+	 *
+	 * @since 1.1.0
+	 *
+	 * @param  string $color The color input (variant, tailwind color, or hex)
+	 * @param  string|null $adjustment Background adjustment (lighter, darker, transparent, subtle)
+	 * @return array Array containing style CSS custom properties
+	 */
+	public function resolveDatePickerColors(string $color, ?string $adjustment = null): array
+	{
+		$baseColor = null;
+		$textColor = null;
+
+		// Resolve the base color based on type
+		if ($this->isVariant($color)) {
+			$baseColor = $this->getVariantBaseColor($color);
+		} elseif ($this->isTailwindColorWithIntensity($color)) {
+			$baseColor = $this->tailwindColorToHex(...explode('-', $color));
+		} elseif ($this->isTailwindColorName($color)) {
+			$baseColor = $this->tailwindColorToHex($color, 500);
+		} elseif ($this->isHexColor($color)) {
+			$baseColor = $color;
+		}
+
+		if (!$baseColor) {
+			return [];
+		}
+
+		// Generate contrasting text color
+		$textColor = $this->getContrastingTextForHex($baseColor);
+
+		// Apply adjustments to base color
+		if ($adjustment) {
+			$baseColor = $this->applyDatePickerAdjustment($baseColor, $adjustment);
+		}
+
+		// Generate CSS custom properties for DatePicker theming
+		$cssVariables = [
+			'--artisanpack-custom-color' => $baseColor,
+			'--artisanpack-text-color' => $textColor,
+		];
+
+		// Return as style property
+		return [
+			'style' => implode(' ', array_map(fn($key, $value) => "{$key}: {$value};", array_keys($cssVariables), $cssVariables))
+		];
+	}
+
+	/**
+	 * Gets the base hex color for a variant.
+	 *
+	 * @since 1.1.0
+	 *
+	 * @param  string $variant
+	 * @return string|null
+	 */
+	protected function getVariantBaseColor(string $variant): ?string
+	{
+		$variantColors = [
+			'primary' => '#3b82f6',    // Blue 500
+			'secondary' => '#6b7280',  // Gray 500
+			'accent' => '#06b6d4',     // Cyan 500
+			'success' => '#10b981',    // Emerald 500
+			'warning' => '#f59e0b',    // Amber 500
+			'error' => '#ef4444',      // Red 500
+			'info' => '#0ea5e9',       // Sky 500
+			'neutral' => '#737373',    // Neutral 500
+		];
+
+		return $variantColors[$variant] ?? null;
+	}
+
+	/**
+	 * Applies DatePicker-specific color adjustments.
+	 *
+	 * @since 1.1.0
+	 *
+	 * @param  string $color Base hex color
+	 * @param  string $adjustment Adjustment type
+	 * @return string Adjusted hex color
+	 */
+	protected function applyDatePickerAdjustment(string $color, string $adjustment): string
+	{
+		switch ($adjustment) {
+			case 'lighter':
+				return $this->adjustHexBrightness($color, 0.3);
+			case 'darker':
+				return $this->adjustHexBrightness($color, -0.3);
+			case 'subtle':
+				return $this->adjustHexBrightness($color, 0.7);
+			case 'transparent':
+				// For transparent, we'll still return the color but the CSS will handle transparency
+				return $color;
+			default:
+				return $color;
+		}
 	}
 }

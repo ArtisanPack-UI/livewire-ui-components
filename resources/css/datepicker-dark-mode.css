@@ -1,0 +1,166 @@
+/**
+ * DatePicker Dark Mode Theme
+ * 
+ * Dark theme color variables for ArtisanPack UI DatePicker.
+ * These variables override the base and light theme for dark mode appearance.
+ *
+ * @package ArtisanPack\LivewireUiComponents
+ * @since 1.1.0
+ */
+
+/* Dark Mode Automatic Detection */
+@media (prefers-color-scheme: dark) {
+    .flatpickr-calendar[data-theme="artisanpack"][data-dark-mode="supported"] {
+        /* Dark theme background and surfaces */
+        --flatpickr-bg-color: #1f2937;
+        --flatpickr-border-color: #374151;
+        
+        /* Dark theme text colors */
+        --flatpickr-text-color: #f9fafb;
+        --flatpickr-disabled-text: #6b7280;
+        
+        /* Dark theme interactive elements */
+        --flatpickr-hover-bg: #374151;
+        --flatpickr-hover-text: #ffffff;
+        
+        /* Dark theme today indicator */
+        --flatpickr-today-bg: #451a03;
+        --flatpickr-today-text: #fbbf24;
+        
+        /* Dark theme navigation */
+        --flatpickr-arrow-color: #9ca3af;
+        --flatpickr-arrow-hover: #f3f4f6;
+    }
+}
+
+/* Explicit Dark Mode Class */
+.dark .flatpickr-calendar[data-theme="artisanpack"] {
+    /* Dark theme background and surfaces */
+    --flatpickr-bg-color: #1f2937;
+    --flatpickr-border-color: #374151;
+    
+    /* Dark theme text colors */
+    --flatpickr-text-color: #f9fafb;
+    --flatpickr-disabled-text: #6b7280;
+    
+    /* Dark theme interactive elements */
+    --flatpickr-hover-bg: #374151;
+    --flatpickr-hover-text: #ffffff;
+    
+    /* Dark theme today indicator */
+    --flatpickr-today-bg: #451a03;
+    --flatpickr-today-text: #fbbf24;
+    
+    /* Dark theme navigation */
+    --flatpickr-arrow-color: #9ca3af;
+    --flatpickr-arrow-hover: #f3f4f6;
+}
+
+/* Dark Mode Variant Colors */
+@media (prefers-color-scheme: dark) {
+    .flatpickr-calendar[data-theme="artisanpack"][data-color="primary"][data-dark-mode="supported"] {
+        --flatpickr-selected-bg: #2563eb;
+        --flatpickr-selected-text: #ffffff;
+    }
+
+    .flatpickr-calendar[data-theme="artisanpack"][data-color="secondary"][data-dark-mode="supported"] {
+        --flatpickr-selected-bg: #4b5563;
+        --flatpickr-selected-text: #ffffff;
+    }
+
+    .flatpickr-calendar[data-theme="artisanpack"][data-color="accent"][data-dark-mode="supported"] {
+        --flatpickr-selected-bg: #0891b2;
+        --flatpickr-selected-text: #ffffff;
+    }
+
+    .flatpickr-calendar[data-theme="artisanpack"][data-color="success"][data-dark-mode="supported"] {
+        --flatpickr-selected-bg: #059669;
+        --flatpickr-selected-text: #ffffff;
+    }
+
+    .flatpickr-calendar[data-theme="artisanpack"][data-color="warning"][data-dark-mode="supported"] {
+        --flatpickr-selected-bg: #d97706;
+        --flatpickr-selected-text: #ffffff;
+    }
+
+    .flatpickr-calendar[data-theme="artisanpack"][data-color="error"][data-dark-mode="supported"] {
+        --flatpickr-selected-bg: #dc2626;
+        --flatpickr-selected-text: #ffffff;
+    }
+}
+
+/* Dark Mode Variant Colors - Explicit Class */
+.dark .flatpickr-calendar[data-theme="artisanpack"][data-color="primary"] {
+    --flatpickr-selected-bg: #2563eb;
+    --flatpickr-selected-text: #ffffff;
+}
+
+.dark .flatpickr-calendar[data-theme="artisanpack"][data-color="secondary"] {
+    --flatpickr-selected-bg: #4b5563;
+    --flatpickr-selected-text: #ffffff;
+}
+
+.dark .flatpickr-calendar[data-theme="artisanpack"][data-color="accent"] {
+    --flatpickr-selected-bg: #0891b2;
+    --flatpickr-selected-text: #ffffff;
+}
+
+.dark .flatpickr-calendar[data-theme="artisanpack"][data-color="success"] {
+    --flatpickr-selected-bg: #059669;
+    --flatpickr-selected-text: #ffffff;
+}
+
+.dark .flatpickr-calendar[data-theme="artisanpack"][data-color="warning"] {
+    --flatpickr-selected-bg: #d97706;
+    --flatpickr-selected-text: #ffffff;
+}
+
+.dark .flatpickr-calendar[data-theme="artisanpack"][data-color="error"] {
+    --flatpickr-selected-bg: #dc2626;
+    --flatpickr-selected-text: #ffffff;
+}
+
+/* Dark Mode Enhanced Shadows */
+.dark .flatpickr-calendar[data-theme="artisanpack"] {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark Mode Focus States */
+.dark .flatpickr-calendar[data-theme="artisanpack"] .flatpickr-day:focus {
+    outline: 2px solid var(--flatpickr-selected-bg);
+    outline-offset: -2px;
+}
+
+.dark .flatpickr-calendar[data-theme="artisanpack"] .flatpickr-prev-month:focus,
+.dark .flatpickr-calendar[data-theme="artisanpack"] .flatpickr-next-month:focus {
+    outline: 2px solid var(--flatpickr-selected-bg);
+    outline-offset: -2px;
+}
+
+/* Dark Mode Time Picker Styling */
+.dark .flatpickr-calendar[data-theme="artisanpack"] .flatpickr-time input {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #f9fafb;
+}
+
+.dark .flatpickr-calendar[data-theme="artisanpack"] .flatpickr-time input:focus {
+    border-color: var(--flatpickr-selected-bg);
+    box-shadow: 0 0 0 1px var(--flatpickr-selected-bg);
+}
+
+/* Dark Mode Dropdown Styling */
+.dark .flatpickr-calendar[data-theme="artisanpack"] .flatpickr-current-month .flatpickr-monthDropdown-months {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #f9fafb;
+}
+
+.dark .flatpickr-calendar[data-theme="artisanpack"] .flatpickr-current-month .flatpickr-monthDropdown-months option {
+    background-color: #374151;
+    color: #f9fafb;
+}
+
+.dark .flatpickr-calendar[data-theme="artisanpack"] .flatpickr-current-month .flatpickr-monthDropdown-months option:hover {
+    background-color: #4b5563;
+}

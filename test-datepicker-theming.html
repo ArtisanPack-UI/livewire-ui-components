@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DatePicker Theming Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 2rem;
+            background: #f9fafb;
+        }
+        
+        .dark {
+            background: #111827;
+            color: #f9fafb;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dark .test-container {
+            background: #1f2937;
+        }
+        
+        .test-section {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+        }
+        
+        .dark .test-section {
+            border-color: #374151;
+        }
+        
+        .test-input {
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            width: 200px;
+        }
+        
+        .dark .test-input {
+            background: #374151;
+            border-color: #4b5563;
+            color: #f9fafb;
+        }
+        
+        .theme-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.5rem 1rem;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+    
+    <!-- Include our CSS files -->
+    <style id="datepicker-base">
+        /* Inline version of datepicker-base.css for testing */
+        .flatpickr-calendar[data-theme="artisanpack"] {
+            --flatpickr-bg-color: #ffffff;
+            --flatpickr-text-color: #374151;
+            --flatpickr-border-color: #d1d5db;
+            --flatpickr-selected-bg: #3b82f6;
+            --flatpickr-selected-text: #ffffff;
+            --flatpickr-hover-bg: #f3f4f6;
+            --flatpickr-hover-text: #374151;
+            --flatpickr-today-bg: #fef3c7;
+            --flatpickr-today-text: #92400e;
+            --flatpickr-disabled-text: #9ca3af;
+            --flatpickr-arrow-color: #6b7280;
+            --flatpickr-arrow-hover: #374151;
+            --flatpickr-font-family: inherit;
+            --flatpickr-font-size: 0.875rem;
+            --flatpickr-font-weight: 400;
+            --flatpickr-cell-size: 2.25rem;
+            --flatpickr-border-radius: 0.375rem;
+            --flatpickr-calendar-padding: 1rem;
+        }
+        
+        .flatpickr-calendar[data-theme="artisanpack"] {
+            background-color: var(--flatpickr-bg-color);
+            color: var(--flatpickr-text-color);
+            border: 1px solid var(--flatpickr-border-color);
+            border-radius: var(--flatpickr-border-radius);
+            font-family: var(--flatpickr-font-family);
+            font-size: var(--flatpickr-font-size);
+            padding: var(--flatpickr-calendar-padding);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .flatpickr-calendar[data-theme="artisanpack"] .flatpickr-day {
+            background-color: transparent;
+            color: var(--flatpickr-text-color);
+            border: none;
+            border-radius: var(--flatpickr-border-radius);
+            width: var(--flatpickr-cell-size);
+            height: var(--flatpickr-cell-size);
+            line-height: var(--flatpickr-cell-size);
+            margin: 1px;
+            transition: all 0.15s ease;
+        }
+        
+        .flatpickr-calendar[data-theme="artisanpack"] .flatpickr-day:hover {
+            background-color: var(--flatpickr-hover-bg);
+            color: var(--flatpickr-hover-text);
+        }
+        
+        .flatpickr-calendar[data-theme="artisanpack"] .flatpickr-day.selected {
+            background-color: var(--flatpickr-selected-bg);
+            color: var(--flatpickr-selected-text);
+        }
+        
+        .flatpickr-calendar[data-theme="artisanpack"] .flatpickr-day.today {
+            background-color: var(--flatpickr-today-bg);
+            color: var(--flatpickr-today-text);
+            font-weight: 600;
+        }
+        
+        /* Dark mode styles */
+        .dark .flatpickr-calendar[data-theme="artisanpack"] {
+            --flatpickr-bg-color: #1f2937;
+            --flatpickr-text-color: #f9fafb;
+            --flatpickr-border-color: #374151;
+            --flatpickr-hover-bg: #374151;
+            --flatpickr-hover-text: #ffffff;
+            --flatpickr-today-bg: #451a03;
+            --flatpickr-today-text: #fbbf24;
+            --flatpickr-disabled-text: #6b7280;
+            --flatpickr-arrow-color: #9ca3af;
+            --flatpickr-arrow-hover: #f3f4f6;
+        }
+        
+        /* ColorGenerator integration */
+        .flatpickr-calendar[data-theme="artisanpack"] {
+            --flatpickr-selected-bg: var(--artisanpack-custom-color, var(--flatpickr-selected-bg));
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()">Toggle Dark Mode</button>
+    
+    <div class="test-container">
+        <h1>DatePicker Theming Test</h1>
+        
+        <div class="test-section">
+            <h2>Basic DatePicker (Default Primary)</h2>
+            <input type="text" class="test-input" id="basic-picker" placeholder="Select date">
+        </div>
+        
+        <div class="test-section">
+            <h2>Red Variant</h2>
+            <input type="text" class="test-input" id="red-picker" placeholder="Select date">
+        </div>
+        
+        <div class="test-section">
+            <h2>Custom Hex Color</h2>
+            <input type="text" class="test-input" id="custom-picker" placeholder="Select date">
+        </div>
+        
+        <div class="test-section">
+            <h2>Tailwind Color (Green-600)</h2>
+            <input type="text" class="test-input" id="tailwind-picker" placeholder="Select date">
+        </div>
+        
+        <div class="test-section">
+            <h2>Custom Font</h2>
+            <input type="text" class="test-input" id="font-picker" placeholder="Select date">
+        </div>
+    </div>
+
+    <script>
+        // Simplified theme manager for testing
+        function applyTheme(calendar, color = null) {
+            calendar.setAttribute('data-theme', 'artisanpack');
+            
+            if (color) {
+                calendar.style.setProperty('--artisanpack-custom-color', color);
+            }
+            
+            // Update dark mode
+            const isDark = document.documentElement.classList.contains('dark');
+            calendar.setAttribute('data-mode', isDark ? 'dark' : 'light');
+        }
+        
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+            
+            // Update all calendars
+            document.querySelectorAll('.flatpickr-calendar[data-theme="artisanpack"]').forEach(calendar => {
+                const isDark = document.documentElement.classList.contains('dark');
+                calendar.setAttribute('data-mode', isDark ? 'dark' : 'light');
+            });
+        }
+        
+        // Initialize pickers
+        document.addEventListener('DOMContentLoaded', function() {
+            // Basic picker
+            flatpickr('#basic-picker', {
+                onReady: function(selectedDates, dateStr, instance) {
+                    applyTheme(instance.calendarContainer);
+                }
+            });
+            
+            // Red variant
+            flatpickr('#red-picker', {
+                onReady: function(selectedDates, dateStr, instance) {
+                    applyTheme(instance.calendarContainer, '#ef4444');
+                }
+            });
+            
+            // Custom hex color
+            flatpickr('#custom-picker', {
+                onReady: function(selectedDates, dateStr, instance) {
+                    applyTheme(instance.calendarContainer, '#8b5cf6');
+                }
+            });
+            
+            // Tailwind color
+            flatpickr('#tailwind-picker', {
+                onReady: function(selectedDates, dateStr, instance) {
+                    applyTheme(instance.calendarContainer, '#059669');
+                }
+            });
+            
+            // Custom font
+            flatpickr('#font-picker', {
+                onReady: function(selectedDates, dateStr, instance) {
+                    applyTheme(instance.calendarContainer, '#f59e0b');
+                    instance.calendarContainer.style.setProperty('--flatpickr-font-family', 'Georgia, serif');
+                    instance.calendarContainer.style.setProperty('--flatpickr-font-size', '1rem');
+                    instance.calendarContainer.style.setProperty('--flatpickr-font-weight', '500');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

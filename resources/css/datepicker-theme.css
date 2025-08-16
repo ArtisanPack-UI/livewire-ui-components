@@ -1,0 +1,168 @@
+/**
+ * DatePicker ArtisanPack Theme
+ * 
+ * Main theme file that integrates ColorGenerator custom properties
+ * with FlatPicker theming system for ArtisanPack UI DatePicker.
+ *
+ * @package ArtisanPack\LivewireUiComponents
+ * @since 1.1.0
+ */
+
+/* Import Base Theming Files */
+@import url('datepicker-base.css');
+@import url('datepicker-light-mode.css');
+@import url('datepicker-dark-mode.css');
+
+/* ColorGenerator Integration */
+.flatpickr-calendar[data-theme="artisanpack"] {
+    /* Use ColorGenerator custom properties when available */
+    --flatpickr-selected-bg: var(--artisanpack-custom-color, var(--artisanpack-tailwind-color, var(--flatpickr-selected-bg)));
+    --flatpickr-selected-text: var(--artisanpack-text-color, var(--flatpickr-selected-text));
+}
+
+/* ColorGenerator Background Color Integration */
+.flatpickr-calendar[data-theme="artisanpack"][style*="--artisanpack-custom-color"] {
+    --flatpickr-selected-bg: var(--artisanpack-custom-color);
+}
+
+.flatpickr-calendar[data-theme="artisanpack"][style*="--artisanpack-tailwind-color"] {
+    --flatpickr-selected-bg: var(--artisanpack-tailwind-color);
+}
+
+/* Dynamic Hover Colors Based on Selected Color */
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-day.selected:hover,
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-day.startRange:hover,
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-day.endRange:hover {
+    filter: brightness(0.9);
+}
+
+/* Today + Selected State */
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-day.today.selected {
+    background-color: var(--flatpickr-selected-bg);
+    color: var(--flatpickr-selected-text);
+    border: 2px solid var(--flatpickr-today-text);
+}
+
+/* Range Selection with Custom Colors */
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-day.inRange {
+    background-color: color-mix(in srgb, var(--flatpickr-selected-bg) 20%, transparent);
+    color: var(--flatpickr-text-color);
+}
+
+/* Focus States with Dynamic Colors */
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-day:focus {
+    outline-color: var(--flatpickr-selected-bg);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--flatpickr-selected-bg) 30%, transparent);
+}
+
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-prev-month:focus,
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-next-month:focus {
+    outline-color: var(--flatpickr-selected-bg);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--flatpickr-selected-bg) 30%, transparent);
+}
+
+/* Font Configuration Integration */
+.flatpickr-calendar[data-theme="artisanpack"][style*="--artisanpack-datepicker-font-family"] {
+    font-family: var(--artisanpack-datepicker-font-family);
+}
+
+.flatpickr-calendar[data-theme="artisanpack"][style*="--artisanpack-datepicker-font-size"] {
+    font-size: var(--artisanpack-datepicker-font-size);
+}
+
+.flatpickr-calendar[data-theme="artisanpack"][style*="--artisanpack-datepicker-font-weight"] {
+    font-weight: var(--artisanpack-datepicker-font-weight);
+}
+
+.flatpickr-calendar[data-theme="artisanpack"][style*="--artisanpack-datepicker-line-height"] {
+    line-height: var(--artisanpack-datepicker-line-height);
+}
+
+/* Day-specific Font Weights */
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-day {
+    font-weight: var(--artisanpack-datepicker-font-weight, var(--flatpickr-day-font-weight));
+}
+
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-weekday {
+    font-weight: var(--flatpickr-weekday-font-weight);
+    font-size: var(--flatpickr-weekday-font-size);
+}
+
+/* Color Adjustment Support */
+.flatpickr-calendar[data-theme="artisanpack"][data-color-adjustment="lighter"] {
+    --flatpickr-selected-bg: color-mix(in srgb, var(--flatpickr-selected-bg) 70%, white);
+}
+
+.flatpickr-calendar[data-theme="artisanpack"][data-color-adjustment="darker"] {
+    --flatpickr-selected-bg: color-mix(in srgb, var(--flatpickr-selected-bg) 80%, black);
+}
+
+.flatpickr-calendar[data-theme="artisanpack"][data-color-adjustment="subtle"] {
+    --flatpickr-selected-bg: color-mix(in srgb, var(--flatpickr-selected-bg) 30%, var(--flatpickr-bg-color));
+}
+
+/* Transparent adjustment - use border instead of background */
+.flatpickr-calendar[data-theme="artisanpack"][data-color-adjustment="transparent"] .flatpickr-day.selected,
+.flatpickr-calendar[data-theme="artisanpack"][data-color-adjustment="transparent"] .flatpickr-day.startRange,
+.flatpickr-calendar[data-theme="artisanpack"][data-color-adjustment="transparent"] .flatpickr-day.endRange {
+    background-color: transparent;
+    border: 2px solid var(--flatpickr-selected-bg);
+    color: var(--flatpickr-selected-bg);
+}
+
+/* Responsive Design Adjustments */
+@media (max-width: 640px) {
+    .flatpickr-calendar[data-theme="artisanpack"] {
+        --flatpickr-cell-size: 2rem;
+        --flatpickr-font-size: 0.8125rem;
+        --flatpickr-calendar-padding: 0.75rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .flatpickr-calendar[data-theme="artisanpack"] {
+        --flatpickr-cell-size: 2.5rem;
+        --flatpickr-font-size: 0.9375rem;
+        --flatpickr-calendar-padding: 1.25rem;
+    }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+    .flatpickr-calendar[data-theme="artisanpack"] {
+        --flatpickr-border-color: #000000;
+        border-width: 2px;
+    }
+    
+    .flatpickr-calendar[data-theme="artisanpack"] .flatpickr-day {
+        border: 1px solid var(--flatpickr-border-color);
+    }
+    
+    .flatpickr-calendar[data-theme="artisanpack"] .flatpickr-day.selected {
+        border-width: 3px;
+    }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    .flatpickr-calendar[data-theme="artisanpack"],
+    .flatpickr-calendar[data-theme="artisanpack"] .flatpickr-day,
+    .flatpickr-calendar[data-theme="artisanpack"] .flatpickr-prev-month,
+    .flatpickr-calendar[data-theme="artisanpack"] .flatpickr-next-month {
+        transition: none;
+        animation: none;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .flatpickr-calendar[data-theme="artisanpack"] {
+        --flatpickr-bg-color: white;
+        --flatpickr-text-color: black;
+        --flatpickr-border-color: black;
+        --flatpickr-selected-bg: black;
+        --flatpickr-selected-text: white;
+        box-shadow: none;
+        border: 2px solid black;
+    }
+}
