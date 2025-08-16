@@ -1,6 +1,6 @@
 # Carousel Component
 
-The Carousel component provides a slideshow for cycling through a series of images or content. It supports navigation arrows, indicators, autoplay, and touch gestures for swiping.
+The Carousel component provides a slideshow for cycling through a series of images or content. It supports navigation arrows, indicators, autoplay, touch gestures for swiping, and customizable icons for navigation controls.
 
 ## Basic Usage
 
@@ -100,6 +100,59 @@ $slides = [
 <x-artisanpack-carousel :slides="$slides" class="h-96 rounded-none" />
 ```
 
+## Icon Customization
+
+The Carousel component allows you to customize the navigation arrows and dot indicators using either icon names or raw SVG content. This provides complete flexibility over the appearance of carousel controls.
+
+### Custom Icon Names
+
+You can use any Heroicon name for the navigation arrows and dot indicators:
+
+```php
+<x-artisanpack-carousel 
+    :slides="$slides" 
+    nextArrow="o-arrow-right"
+    previousArrow="o-arrow-left"
+    dots="o-star"
+/>
+```
+
+### Raw SVG Icons
+
+For complete control over the icon appearance, you can provide raw SVG content:
+
+```php
+<x-artisanpack-carousel 
+    :slides="$slides"
+    nextArrow="<svg viewBox='0 0 24 24' fill='currentColor'><path d='M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z'/></svg>"
+    previousArrow="<svg viewBox='0 0 24 24' fill='currentColor'><path d='M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z'/></svg>"
+    dots="<svg viewBox='0 0 8 8' fill='currentColor'><circle cx='4' cy='4' r='3'/></svg>"
+/>
+```
+
+### Mixed Usage
+
+You can also mix icon names and raw SVG content as needed:
+
+```php
+<x-artisanpack-carousel 
+    :slides="$slides"
+    nextArrow="<svg viewBox='0 0 24 24' stroke='currentColor' fill='none'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 18l6-6-6-6'/></svg>"
+    previousArrow="<svg viewBox='0 0 24 24' stroke='currentColor' fill='none'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 18l-6-6 6-6'/></svg>"
+    dots="o-stop-circle"
+/>
+```
+
+### Default Behavior
+
+When no custom icons are specified, the carousel uses default chevron icons for navigation arrows and CSS-styled dots for indicators:
+
+- **Default Next Arrow**: `o-chevron-right`
+- **Default Previous Arrow**: `o-chevron-left` 
+- **Default Dots**: CSS-styled circular buttons
+
+This ensures complete backward compatibility with existing implementations.
+
 ## Props
 
 | Prop | Type | Default | Description |
@@ -110,6 +163,9 @@ $slides = [
 | `withoutArrows` | boolean\|null | `false` | Whether to hide the navigation arrows |
 | `autoplay` | boolean\|null | `false` | Whether to automatically advance slides |
 | `interval` | int\|null | `2000` | Time between slides in milliseconds when autoplay is enabled |
+| `nextArrow` | mixed\|null | `null` | Custom icon for the next arrow (icon name or raw SVG) |
+| `previousArrow` | mixed\|null | `null` | Custom icon for the previous arrow (icon name or raw SVG) |
+| `dots` | mixed\|null | `null` | Custom icon for the dot indicators (icon name or raw SVG) |
 
 ## Slots
 
