@@ -291,6 +291,46 @@ public function searchTags($query)
 - Set appropriate `min-chars` to reduce unnecessary requests
 - Cache search results when appropriate
 
+## Alpine.js Directive Fixes
+
+### Recent Technical Improvements
+
+The Tags component has been updated to resolve Alpine.js directive rendering issues that could cause problems in certain environments:
+
+#### Issues Resolved
+
+1. **Class Attribute Rendering Issue**
+   - **Problem**: `:class` attributes were being rendered as literal text instead of being processed by Alpine.js
+   - **Cause**: Invalid Alpine.js directive syntax (`x-class` and `x-classes` instead of `:class`)
+   - **Solution**: Updated all instances to use proper Alpine.js syntax
+
+2. **Alpine.js Anchor Reference Error**
+   - **Problem**: Console error "Alpine: no element provided to x-anchor..."
+   - **Cause**: Missing `x-ref="container"` reference for the `x-anchor` directive
+   - **Solution**: Added proper element reference to resolve anchor positioning
+
+#### Technical Changes Made
+
+```php
+// Fixed directive syntax
+// Before: x-class="text-error" 
+// After:  :class="'text-error'"
+
+// Before: x-classes="fieldset-label"
+// After:  :class="'fieldset-label'"
+
+// Added missing reference
+<label x-ref="container" ... >
+```
+
+#### Impact
+
+These fixes ensure:
+- Proper CSS class application in error and hint states
+- Correct dropdown positioning with Alpine.js anchor directive
+- Elimination of browser console errors
+- Improved component reliability across different Alpine.js versions
+
 ## Browser Compatibility
 
 - Modern browsers with ES6+ support
@@ -305,11 +345,9 @@ The component includes comprehensive tests covering:
 - Error handling for invalid configurations
 - Helper method functionality
 - Advanced configuration options
+- Alpine.js directive fixes and compatibility
 
-Run tests with:
-```bash
-php test_tags_search.php
-```
+Use PHPUnit or your preferred testing framework to run the component tests.
 
 ## Contributing
 
@@ -322,6 +360,12 @@ When contributing to the Tags component:
 
 ## Changelog
 
+### Version 2.0.1
+- ✅ Fixed Alpine.js directive syntax issues (x-class/x-classes → :class)
+- ✅ Resolved Alpine.js anchor reference error
+- ✅ Improved component reliability and console error elimination
+- ✅ Enhanced Alpine.js compatibility across versions
+
 ### Version 2.0.0
 - ✅ Added search functionality
 - ✅ Server-side and client-side search support
@@ -333,4 +377,4 @@ When contributing to the Tags component:
 
 ---
 
-For more examples and advanced usage patterns, see the implementation plan and test files included with this component.
+This component provides a comprehensive tagging solution with advanced search capabilities and robust Alpine.js integration.
