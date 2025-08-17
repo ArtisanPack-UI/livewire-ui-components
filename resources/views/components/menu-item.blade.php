@@ -8,7 +8,7 @@
     $extraAttributes = [];
 
     if ($isActive) {
-        $classes[] = 'mary-active-menu';
+        $classes[] = 'artisanpack-active-menu';
     }
 
     if ($dynamicBgColor) {
@@ -65,7 +65,7 @@
         </div>
 
         @if($title || $slot->isNotEmpty())
-            <span class="mary-hideable whitespace-nowrap truncate flex-1">
+            <span class="artisanpack-hideable whitespace-nowrap truncate flex-1">
             @if($title)
                     {{ $title }}
 

@@ -1,22 +1,28 @@
-<div class="mary-table-pagination">
+<div class="{{ $getVariantClasses() }}">
     <div {{ $attributes->class(["mb-4 border-t-[length:var(--border)] border-t-base-content/5"]) }}></div>
-    <div class="justify-between md:flex md:flex-row w-auto md:w-full items-center overflow-y-auto pl-2 pr-2 relative">
-        @if($isShowable())
-        <div class="flex flex-row justify-center md:justify-start mb-2 md:mb-0 py-1">
-            <select id="{{ $uuid }}" @if(!empty($modelName())) wire:model.live="{{ $modelName() }}" @endif
-                    class="select select-sm flex sm:text-sm sm:leading-6 w-auto md:mr-5">
-                @foreach ($perPageValues as $option)
-                <option value="{{ $option }}" @selected($rows->perPage() === $option)>{{ $option }}</option>
-                @endforeach
-            </select>
-        </div>
-        @endif
-        <div class="w-full">
-        @if($rows instanceof LengthAwarePaginator)
-            {{ $rows->onEachSide(1)->links(data: ['scrollTo' => false]) }}
+    
+    {{-- Per-page selector (unless hidden or in simple/minimal mode) --}}
+    @if($shouldShowPerPageSelector())
+        @include('livewire-ui-components::components.pagination.per-page-selector')
+    @endif
+
+    {{-- Main pagination controls --}}
+    <div class="pagination-controls {{ $size !== 'default' ? 'pagination-size-' . $size : '' }}">
+        @if($simple)
+            @include('livewire-ui-components::components.pagination.simple')
+        @elseif($compact)
+            @include('livewire-ui-components::components.pagination.compact')
+        @elseif($advanced)
+            @include('livewire-ui-components::components.pagination.advanced')
+        @elseif($minimal)
+            @include('livewire-ui-components::components.pagination.minimal')
         @else
-            {{ $rows->links(data: ['scrollTo' => false]) }}
+            @include('livewire-ui-components::components.pagination.default')
         @endif
-        </div>
     </div>
+
+    {{-- Page information --}}
+    @if($shouldShowPageInfo())
+        @include('livewire-ui-components::components.pagination.page-info')
+    @endif
 </div>

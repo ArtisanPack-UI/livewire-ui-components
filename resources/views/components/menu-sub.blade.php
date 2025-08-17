@@ -8,7 +8,7 @@
     $extraAttributes = [];
 
     if ($submenuActive) {
-        $classes[] = 'mary-active-menu';
+        $classes[] = 'artisanpack-active-menu';
     }
 
     if ($dynamicBgColor) {
@@ -62,10 +62,10 @@
                     @endif
                 </div>
 
-                <span class="mary-hideable whitespace-nowrap truncate flex-1">{{ $title }}</span>
+                <span class="artisanpack-hideable whitespace-nowrap truncate flex-1">{{ $title }}</span>
             </summary>
 
-            <ul class="mary-hideable">
+            <ul class="artisanpack-hideable">
                 {{ $slot }}
             </ul>
         </details>
