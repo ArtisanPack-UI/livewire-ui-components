@@ -1,3 +1,7 @@
+---
+title: File Component
+---
+
 # File Component
 
 The File component is a form element that provides an enhanced file upload interface. It supports single and multiple file uploads, preview capabilities, drag-and-drop functionality, and integrates seamlessly with Livewire for handling file uploads.

@@ -1,3 +1,7 @@
+---
+title: Link Component
+---
+
 # Link Component
 
 The Link component is used to display hyperlinks with customizable styling options. It provides a consistent way to style links throughout your application with support for icons, tooltips, and external link behavior.

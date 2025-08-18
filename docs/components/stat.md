@@ -1,3 +1,7 @@
+---
+title: Stat Component
+---
+
 # Stat Component
 
 The Stat component displays key metrics or statistics in a visually appealing and structured format. It's ideal for dashboards, reports, and anywhere you need to highlight important numbers or data points.

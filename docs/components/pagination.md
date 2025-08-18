@@ -1,3 +1,7 @@
+---
+title: Pagination Component
+---
+
 # Pagination Component
 
 The Pagination component provides a flexible user interface for navigating through paginated data, with support for multiple display variants ranging from simple to advanced layouts.

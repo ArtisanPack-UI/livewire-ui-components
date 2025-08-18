@@ -1,3 +1,7 @@
+---
+title: Loading Component
+---
+
 # Loading Component
 
 The Loading component provides a way to display loading spinners or indicators in your application. It's useful for indicating that content is being loaded or an action is in progress.

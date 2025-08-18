@@ -1,3 +1,7 @@
+---
+title: Advanced Topics
+---
+
 # Advanced Topics
 
 This section covers advanced usage patterns and customization options for ArtisanPack UI Livewire Components.

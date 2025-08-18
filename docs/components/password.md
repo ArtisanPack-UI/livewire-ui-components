@@ -1,3 +1,7 @@
+---
+title: Password Component
+---
+
 # Password Component
 
 The Password component is a specialized input element designed for secure password entry. It includes a visibility toggle feature that allows users to show or hide the password text, enhancing usability while maintaining security.

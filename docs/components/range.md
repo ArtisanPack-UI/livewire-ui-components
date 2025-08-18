@@ -1,3 +1,7 @@
+---
+title: Range Component
+---
+
 # Range Component
 
 The Range component is a form element that provides a slider interface for selecting a numeric value within a specified range. It offers a more intuitive way for users to input numeric values compared to standard number inputs.

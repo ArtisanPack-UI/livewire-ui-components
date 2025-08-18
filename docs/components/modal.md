@@ -1,3 +1,7 @@
+---
+title: Modal Component
+---
+
 # Modal Component
 
 The Modal component is a layout element that displays content in a dialog box that overlays the page. It's commonly used for alerts, confirmations, forms, and other content that requires user attention or interaction without navigating away from the current page.

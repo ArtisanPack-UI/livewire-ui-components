@@ -1,3 +1,7 @@
+---
+title: Header Component
+---
+
 # Header Component
 
 The Header component provides a flexible and consistent way to create page or section headers. It supports titles, subtitles, icons, action buttons, and more, making it ideal for creating structured and visually appealing page layouts.

@@ -1,3 +1,7 @@
+---
+title: TimelineItem Component
+---
+
 # TimelineItem Component
 
 The TimelineItem component represents a single event or milestone within a chronological sequence. It's designed to be used within a timeline layout to display a series of events in order.

@@ -1,3 +1,7 @@
+---
+title: Heading Component
+---
+
 # Heading Component
 
 The Heading component is used to display headings with customizable styling options. It supports all heading levels (h1-h6) with appropriate default styling for each level.

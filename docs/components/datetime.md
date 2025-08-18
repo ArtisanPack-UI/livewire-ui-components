@@ -1,3 +1,7 @@
+---
+title: DateTime Component
+---
+
 # DateTime Component
 
 The DateTime component is a form element that provides an interactive interface for selecting both date and time. It extends the functionality of the DatePicker component by adding time selection capabilities, offering a comprehensive solution for datetime inputs.

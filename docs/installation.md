@@ -1,3 +1,7 @@
+---
+title: Installation Guide
+---
+
 # Installation Guide
 
 This guide will walk you through the process of installing and configuring ArtisanPack UI Livewire Components in your Laravel application.

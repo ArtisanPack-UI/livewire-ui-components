@@ -1,3 +1,7 @@
+---
+title: Breadcrumbs Component
+---
+
 # Breadcrumbs Component
 
 The Breadcrumbs component provides a navigation aid that helps users understand their current location within the application's hierarchy.

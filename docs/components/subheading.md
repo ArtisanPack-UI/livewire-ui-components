@@ -1,3 +1,7 @@
+---
+title: Subheading Component
+---
+
 # Subheading Component
 
 The Subheading component is used to display secondary headings or subtitles with customizable styling options. It's designed to complement the Heading component with appropriate styling for subheadings.

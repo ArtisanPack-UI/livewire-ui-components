@@ -1,3 +1,7 @@
+---
+title: Component Prefixing
+---
+
 # Component Prefixing
 
 Component prefixing is a powerful feature that allows you to avoid naming collisions between ArtisanPack UI components and other components in your application.

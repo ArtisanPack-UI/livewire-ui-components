@@ -1,3 +1,7 @@
+---
+title: ImageSlider Component
+---
+
 # ImageSlider Component
 
 The ImageSlider component provides a powerful carousel/slider for sequential image navigation with full touch support, accessibility features, and PhotoSwipe lightbox integration.

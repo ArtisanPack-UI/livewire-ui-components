@@ -1,3 +1,7 @@
+---
+title: MenuItem Component
+---
+
 # MenuItem Component
 
 The MenuItem component provides a way to create individual items within a menu. It supports icons, badges, links, loading states, and various customization options. It's designed to be used within the Menu component.

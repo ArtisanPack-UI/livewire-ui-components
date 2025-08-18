@@ -1,3 +1,7 @@
+---
+title: Generating Color Themes
+---
+
 # Generating Color Themes
 
 ArtisanPack UI Livewire Components includes a powerful theme generation system that allows you to create custom color themes for your application. This guide will walk you through the process of generating and customizing themes.

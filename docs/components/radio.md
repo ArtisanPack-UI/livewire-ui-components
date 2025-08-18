@@ -1,3 +1,7 @@
+---
+title: Radio Component
+---
+
 # Radio Component
 
 The Radio component is a form element that allows users to select a single option from a set of mutually exclusive choices. It provides a simple way to implement radio button inputs with labels and various styling options.

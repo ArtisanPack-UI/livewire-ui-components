@@ -1,3 +1,7 @@
+---
+title: Spotlight Component
+---
+
 # Spotlight Component
 
 The Spotlight component provides a searchable command palette for your application, similar to the command palette in popular applications like VS Code or Slack.

@@ -1,3 +1,7 @@
+---
+title: Main Component
+---
+
 # Main Component
 
 The Main component provides a structured page layout with a main content area, an optional sidebar, and an optional footer. It's designed to create consistent, responsive layouts for your application with support for collapsible sidebars and various configuration options.

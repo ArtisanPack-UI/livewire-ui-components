@@ -1,3 +1,7 @@
+---
+title: Color System
+---
+
 # Color System
 
 The ArtisanPack UI Components package includes a powerful, flexible color system that provides consistent theming across all components. This system supports predefined variants, the full Tailwind color palette, custom hex colors, and advanced color adjustments.

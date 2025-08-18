@@ -1,3 +1,7 @@
+---
+title: Toast Component
+---
+
 # Toast Component
 
 The Toast component provides a way to display brief, non-disruptive notifications to users. Toasts are useful for success messages, warnings, errors, and general information.

@@ -1,3 +1,7 @@
+---
+title: Button Component
+---
+
 # Button Component
 
 The Button component is a versatile interactive element used for triggering actions, submitting forms, and navigating between pages.

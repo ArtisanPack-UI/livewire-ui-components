@@ -1,3 +1,7 @@
+---
+title: Signature Component
+---
+
 # Signature Component
 
 The Signature component is a specialized form element that allows users to draw their signature using a mouse, touch, or stylus. It provides a canvas-based interface for capturing handwritten signatures with various customization options and export capabilities.

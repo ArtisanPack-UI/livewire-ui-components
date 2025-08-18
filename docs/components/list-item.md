@@ -1,3 +1,7 @@
+---
+title: ListItem Component
+---
+
 # ListItem Component
 
 The ListItem component provides a structured way to display items in a list format with support for avatars, content, and actions. It's ideal for user lists, notification feeds, message lists, and other data collections that benefit from a consistent layout.

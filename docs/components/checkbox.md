@@ -1,3 +1,7 @@
+---
+title: Checkbox Component
+---
+
 # Checkbox Component
 
 The Checkbox component is a form element that allows users to select one or more options from a set. It provides a simple way to implement checkbox inputs with labels and various styling options.

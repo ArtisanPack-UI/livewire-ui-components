@@ -1,3 +1,7 @@
+---
+title: Editor Component
+---
+
 # Editor Component
 
 The Editor component provides a rich text editor with formatting options, image uploads, and more. It's built on top of TinyMCE and integrates with Livewire for two-way data binding.

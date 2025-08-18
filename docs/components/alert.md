@@ -1,3 +1,7 @@
+---
+title: Alert Component
+---
+
 # Alert Component
 
 The Alert component displays important messages or notifications to users in a prominent way. Unlike toasts, alerts are static elements that remain on the page until dismissed by the user or programmatically.

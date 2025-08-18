@@ -1,3 +1,7 @@
+---
+title: Swap Component
+---
+
 # Swap Component
 
 The Swap component allows you to toggle between two different content elements with a smooth transition effect. It's useful for creating toggles, showing/hiding content, or any interface element that needs to alternate between two states.

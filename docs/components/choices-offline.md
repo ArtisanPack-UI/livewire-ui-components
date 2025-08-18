@@ -1,3 +1,7 @@
+---
+title: ChoicesOffline Component
+---
+
 # ChoicesOffline Component
 
 The ChoicesOffline component is a variant of the Choices component that works entirely client-side without making network requests. It provides a searchable, multi-select dropdown interface with all the functionality of the standard Choices component but optimized for offline use or when all options are known in advance.

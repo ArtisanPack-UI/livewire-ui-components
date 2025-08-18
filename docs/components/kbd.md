@@ -1,3 +1,7 @@
+---
+title: Kbd Component
+---
+
 # Kbd Component
 
 The Kbd component provides a way to display keyboard keys or keyboard shortcuts in a visually distinct way. It's useful for displaying keyboard commands, shortcuts, or key combinations in documentation, tutorials, or help sections.

@@ -1,3 +1,7 @@
+---
+title: Accordion Component
+---
+
 # Accordion Component
 
 The Accordion component is a container that groups multiple collapse components together, allowing only one section to be expanded at a time. It's ideal for organizing content in a space-efficient way, perfect for FAQs, product details, or any content that benefits from progressive disclosure.

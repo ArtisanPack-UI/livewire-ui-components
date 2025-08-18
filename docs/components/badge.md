@@ -1,3 +1,7 @@
+---
+title: Badge Component
+---
+
 # Badge Component
 
 The Badge component displays a small count, label, or status indicator with flexible color customization options.

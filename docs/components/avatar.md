@@ -1,3 +1,7 @@
+---
+title: Avatar Component
+---
+
 # Avatar Component
 
 The Avatar component displays a user's profile picture with optional title and subtitle text.

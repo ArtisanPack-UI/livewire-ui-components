@@ -1,3 +1,7 @@
+---
+title: ThemeToggle Component
+---
+
 # ThemeToggle Component
 
 The ThemeToggle component provides a user interface element for switching between light and dark themes. It's a specialized version of the Swap component designed specifically for theme switching.

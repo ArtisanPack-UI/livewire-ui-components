@@ -1,3 +1,7 @@
+---
+title: ProgressRadial Component
+---
+
 # ProgressRadial Component
 
 The ProgressRadial component displays a circular progress indicator to visualize the completion status of a task or process.

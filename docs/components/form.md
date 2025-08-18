@@ -1,3 +1,7 @@
+---
+title: Form Component
+---
+
 # Form Component
 
 The Form component is a container for form elements that provides a consistent layout, validation handling, and submission functionality. It works seamlessly with Livewire and other ArtisanPack UI form components.

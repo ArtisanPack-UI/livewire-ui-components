@@ -1,3 +1,7 @@
+---
+title: Components Overview
+---
+
 # Components Overview
 
 ArtisanPack UI Livewire Components provides a comprehensive set of UI components for Laravel applications. This page provides an overview of all available components, organized by category.

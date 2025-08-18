@@ -1,3 +1,7 @@
+---
+title: Markdown Component
+---
+
 # Markdown Component
 
 The Markdown component provides a full-featured Markdown editor with live preview, image uploads, and formatting tools. It's built on top of EasyMDE and integrates with Livewire for two-way data binding.

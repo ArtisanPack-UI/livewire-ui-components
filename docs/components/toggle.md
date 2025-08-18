@@ -1,3 +1,7 @@
+---
+title: Toggle Component
+---
+
 # Toggle Component
 
 The Toggle component is a form element that provides a switch-like interface for boolean inputs. It offers a more intuitive and visually appealing alternative to checkboxes for toggling between two states.

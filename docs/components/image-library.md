@@ -1,3 +1,7 @@
+---
+title: ImageLibrary Component
+---
+
 # ImageLibrary Component
 
 The ImageLibrary component provides a comprehensive solution for managing multiple images with features like uploading, cropping, reordering, and removing images. It's ideal for product galleries, article attachments, or any scenario where multiple image management is needed.

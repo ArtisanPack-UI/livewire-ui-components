@@ -1,3 +1,7 @@
+---
+title: Diff Component
+---
+
 # Diff Component
 
 The Diff component provides a visual way to display differences between two text strings, similar to how Git shows file differences. It's useful for comparing code, configuration files, or any text-based content.

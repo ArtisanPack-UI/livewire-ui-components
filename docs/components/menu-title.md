@@ -1,3 +1,7 @@
+---
+title: MenuTitle Component
+---
+
 # MenuTitle Component
 
 The MenuTitle component provides a way to add section titles or headers within a menu. It's useful for organizing menu items into logical groups and improving the visual hierarchy of navigation menus.

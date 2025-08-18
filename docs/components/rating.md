@@ -1,3 +1,7 @@
+---
+title: Rating Component
+---
+
 # Rating Component
 
 The Rating component is a form element that allows users to provide a rating using a visual star system. Built on DaisyUI's rating component, it provides an intuitive interface for collecting user feedback or displaying ratings with extensive customization options.

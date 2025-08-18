@@ -1,3 +1,7 @@
+---
+title: ImageGallery Component
+---
+
 # ImageGallery Component
 
 The ImageGallery component provides a responsive grid-based layout for displaying collections of images with advanced features like filtering, pagination, lazy loading, and PhotoSwipe lightbox integration.

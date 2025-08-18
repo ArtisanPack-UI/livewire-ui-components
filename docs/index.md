@@ -1,3 +1,7 @@
+---
+title: ArtisanPack UI Livewire Components
+---
+
 # ArtisanPack UI Livewire Components
 
 Welcome to the ArtisanPack UI Livewire Components documentation. This package provides a comprehensive set of UI components for Laravel applications using the TALL stack (Tailwind CSS, Alpine.js, Laravel, and Livewire).

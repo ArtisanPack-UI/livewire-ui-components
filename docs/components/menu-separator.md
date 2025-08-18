@@ -1,3 +1,7 @@
+---
+title: MenuSeparator Component
+---
+
 # MenuSeparator Component
 
 The MenuSeparator component provides a visual separator between groups of menu items. It can be used to create logical sections within a menu and optionally include a section title with an icon.

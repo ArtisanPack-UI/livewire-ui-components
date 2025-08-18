@@ -1,3 +1,7 @@
+---
+title: DatePicker Component
+---
+
 # DatePicker Component
 
 The DatePicker component is a form element that provides an interactive calendar interface for selecting dates. It offers a user-friendly alternative to the standard date input with enhanced functionality and styling.

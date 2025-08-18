@@ -1,3 +1,7 @@
+---
+title: Progress Component
+---
+
 # Progress Component
 
 The Progress component displays a horizontal progress bar to visualize the completion status of a task or process.

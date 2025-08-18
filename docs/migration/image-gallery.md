@@ -1,3 +1,7 @@
+---
+title: ImageGallery Component Migration Guide
+---
+
 # ImageGallery Component Migration Guide
 
 This guide helps you migrate from the old carousel-based ImageGallery component to the new ImageSlider and grid-based ImageGallery components.

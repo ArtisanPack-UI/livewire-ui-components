@@ -1,3 +1,7 @@
+---
+title: Nav Component
+---
+
 # Nav Component
 
 The Nav component provides a navigation bar for your application with support for brand and action elements.

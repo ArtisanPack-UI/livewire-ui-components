@@ -1,3 +1,7 @@
+---
+title: Tabs Component
+---
+
 # Tabs Component
 
 The Tabs component provides a way to organize content into multiple sections that can be displayed one at a time. It's ideal for interfaces where users need to switch between related content without navigating to a different page.

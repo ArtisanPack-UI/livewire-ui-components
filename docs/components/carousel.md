@@ -1,3 +1,7 @@
+---
+title: Carousel Component
+---
+
 # Carousel Component
 
 The Carousel component provides a slideshow for cycling through a series of images or content. It supports navigation arrows, indicators, autoplay, touch gestures for swiping, and customizable icons for navigation controls.
