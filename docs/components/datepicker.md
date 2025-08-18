@@ -2,6 +2,108 @@
 
 The DatePicker component is a form element that provides an interactive calendar interface for selecting dates. It offers a user-friendly alternative to the standard date input with enhanced functionality and styling.
 
+## Installation & Setup
+
+The DatePicker component requires additional setup to function properly in your application.
+
+### 1. Install FlatPickr Dependency
+
+The DatePicker component uses FlatPickr under the hood. You need to install it as a dependency:
+
+```bash
+npm install flatpickr
+```
+
+### 2. Configure Assets
+
+Add FlatPickr and its plugins to your JavaScript build process. In your `resources/js/app.js` file:
+
+```javascript
+import './bootstrap';
+
+// Import flatpickr and make it globally available
+import flatpickr from 'flatpickr';
+import weekSelect from 'flatpickr/dist/plugins/weekSelect/weekSelect.js';
+
+// Import flatpickr CSS
+import 'flatpickr/dist/flatpickr.min.css';
+
+// Make flatpickr and plugins globally available
+window.flatpickr = flatpickr;
+window.weekSelect = weekSelect;
+```
+
+### 3. Publish and Import Theme Assets
+
+The DatePicker includes custom theming. Publish the theme assets:
+
+```bash
+php artisan vendor:publish --tag=artisanpack-assets
+```
+
+Then import the DatePicker theme CSS in your `resources/css/app.css`:
+
+```css
+@import url('../../public/vendor/artisanpack-ui/css/datepicker-theme.css');
+```
+
+### 4. Build Assets
+
+After making these changes, rebuild your assets:
+
+```bash
+npm run build
+# or for development
+npm run dev
+```
+
+### 5. Theming Configuration
+
+The DatePicker supports extensive theming through the following properties:
+
+- `color` - Set custom colors (e.g., "primary", "secondary", or hex values)
+- `color-adjustment` - Modify color intensity ("lighter", "darker", "subtle", "transparent")
+- `theme` - Theme variant (default: "artisanpack")
+- `dark-mode-support` - Enable dark mode theming (default: true)
+- `font-config` - Custom font configuration array
+
+Example with theming:
+
+```php
+<x-artisanpack-datepicker 
+    label="Themed DatePicker" 
+    color="primary"
+    color-adjustment="subtle"
+    :font-config="[
+        'font-family' => 'Inter, sans-serif',
+        'font-size' => '0.875rem',
+        'font-weight' => '400'
+    ]"
+/>
+```
+
+## Troubleshooting
+
+### Common Issues
+
+**Error: "Can't find variable: flatpickr"**
+- Ensure you've installed the flatpickr dependency: `npm install flatpickr`
+- Verify flatpickr is imported and made globally available in your `app.js`
+- Rebuild your assets: `npm run build`
+
+**Error: "Can't find variable: weekSelect"**
+- Ensure the weekSelect plugin is imported in your `app.js`
+- Make sure it's made globally available: `window.weekSelect = weekSelect`
+
+**DatePicker appears unstyled or with incorrect theming**
+- Publish the theme assets: `php artisan vendor:publish --tag=artisanpack-assets`
+- Import the theme CSS in your `app.css`
+- Rebuild your assets: `npm run build`
+
+**Livewire errors about component not found**
+- Ensure you have wire:model attribute if using Livewire binding
+- Check that the Livewire component context is available
+
 ## Basic Usage
 
 ```php

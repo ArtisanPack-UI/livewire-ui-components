@@ -1,7 +1,29 @@
 <div
     wire:key="{{ $uuid }}"
     {{ $attributes->whereDoesntStartWith('class') }}
-    {{ $attributes->class(['alert rounded-md', 'shadow-md' => $shadow])}}
+    @php
+        $colorClasses = $getColorClasses();
+        $baseClasses = ['alert', 'rounded-md'];
+        
+        // Add shadow class if needed
+        if ($shadow) {
+            $baseClasses[] = 'shadow-md';
+        }
+        
+        // Handle new color system
+        if (!empty($colorClasses)) {
+            // Add color classes from new system
+            foreach ($colorClasses as $type => $class) {
+                if ($type === 'style' && $class) {
+                    // Handle inline styles for hex colors
+                    $attributes = $attributes->merge(['style' => $class]);
+                } elseif ($type !== 'style' && $class) {
+                    $baseClasses[] = $class;
+                }
+            }
+        }
+    @endphp
+    {{ $attributes->class($baseClasses) }}
     x-data="{ show: true }" x-show="show"
 >
     @if($icon)

@@ -20,6 +20,7 @@ namespace ArtisanPack\LivewireUiComponents\View\Components;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
+use ArtisanPack\LivewireUiComponents\Styling\ColorGenerator;
 /**
  * Alert Class
  *
@@ -37,6 +38,8 @@ class Alert extends Component
      * @param ?string  $description  A short description under the title.
      * @param ?bool  $shadow  Whether to apply a shadow effect to the alert.
      * @param ?bool  $dismissible  Whether the alert can be dismissed by the user.
+     * @param ?string  $color  Color variant, Tailwind color, or hex code.
+     * @param ?string  $colorAdjustment  Background adjustment (lighter, darker, transparent, subtle).
      * @param string  $uuid  Unique identifier for the alert instance.
      * @slot  mixed  $actions  Slots for actionable elements like buttons or links.
      */
@@ -47,6 +50,8 @@ class Alert extends Component
         public ?string $description = null,
         public ?bool $shadow = false,
         public ?bool $dismissible = false,
+        public ?string $color = null,
+        public ?string $colorAdjustment = null,
 
         // Slots
         public mixed $actions = null,
@@ -56,6 +61,30 @@ class Alert extends Component
         if (empty($this->uuid)) {
             $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
         }
+    }
+
+    /**
+     * Get color-specific CSS classes using ColorGenerator.
+     *
+     * @return array
+     * @since 1.1.0
+     */
+    public function getColorClasses(): array
+    {
+        if (!$this->color) {
+            return [];
+        }
+
+        $colorGenerator = new ColorGenerator();
+        
+        // Use ColorGenerator for color resolution
+        $colorClasses = $colorGenerator->resolveComponentColor(
+            $this->color, 
+            $this->colorAdjustment, 
+            'alert'
+        );
+        
+        return $colorClasses;
     }
 
     public function render(): View

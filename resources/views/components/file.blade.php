@@ -140,13 +140,13 @@
 
            <!-- CROP MODAL -->
            <div @click.prevent="" x-ref="crop" wire:ignore>
-               <x-mary-modal id="maryCrop{{ $uuid }}" x-ref="maryCrop" :title="$cropTitleText" separator class="backdrop-blur-sm" persistent @keydown.window.esc.prevent="" without-trap-focus>
+               <x-artisanpack-modal id="maryCrop{{ $uuid }}" x-ref="maryCrop" :title="$cropTitleText" separator class="backdrop-blur-sm" persistent @keydown.window.esc.prevent="" without-trap-focus>
                    <img src="" />
                    <x-slot:actions>
                        <x-artisanpack-button :label="$cropCancelText" @click="close()" />
                        <x-artisanpack-button :label="$cropSaveText" class="btn-primary" @click="save()" ::disabled="processing" />
                    </x-slot:actions>
-               </x-mary-modal>
+               </x-artisanpack-modal>
            </div>
        @endif
 

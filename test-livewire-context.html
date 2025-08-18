@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DatePicker Livewire Context Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 2rem;
+            background: #f9fafb;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .test-section {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+        }
+        
+        .test-input {
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            width: 200px;
+        }
+        
+        .status {
+            padding: 0.5rem;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+        }
+        
+        .success { background: #dcfce7; color: #166534; }
+        .error { background: #fee2e2; color: #dc2626; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>DatePicker Livewire Context Test</h1>
+        <p>This test verifies that the DatePicker works without throwing JavaScript errors when <code>$wire</code> is not available.</p>
+        
+        <div class="test-section">
+            <h2>Test 1: Basic DatePicker (No Livewire Context)</h2>
+            <p>This should work without errors even though <code>$wire</code> is undefined.</p>
+            
+            <div x-data="{instance: undefined}" x-init="
+                // Simulate the DatePicker's Alpine.js initialization
+                const config = {
+                    dateFormat: 'Y-m-d H:i',
+                    altInput: true,
+                    altInputClass: ' ',
+                    clickOpens: true,
+                    defaultDate: null,
+                    plugins: [],
+                    disable: [],
+                    mode: 'single'
+                };
+                
+                instance = flatpickr($refs.input, config);
+                
+                // Log status
+                $refs.status.textContent = 'SUCCESS: DatePicker initialized without errors';
+                $refs.status.className = 'status success';
+            " @change="
+                // This simulates the range mode change handler with the fix
+                const value = $event.target.value; 
+                if (typeof $wire !== 'undefined') { 
+                    console.log('$wire is available, would call $wire.set()'); 
+                } else {
+                    console.log('$wire is not available, skipping $wire.set() call');
+                }
+            ">
+                <input x-ref="input" type="date" class="test-input" placeholder="Select date">
+                <div x-ref="status" class="status">Initializing...</div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Test 2: Range DatePicker (No Livewire Context)</h2>
+            <p>This tests the range mode specifically, which is where the <code>$wire.set()</code> call occurs.</p>
+            
+            <div x-data="{instance: undefined}" x-init="
+                const config = {
+                    dateFormat: 'Y-m-d H:i',
+                    altInput: true,
+                    altInputClass: ' ',
+                    clickOpens: true,
+                    defaultDate: null,
+                    plugins: [],
+                    disable: [],
+                    mode: 'range'
+                };
+                
+                instance = flatpickr($refs.input, config);
+                
+                // Log status
+                $refs.status.textContent = 'SUCCESS: Range DatePicker initialized without errors';
+                $refs.status.className = 'status success';
+            " @change="
+                // This simulates the exact code from the DatePicker template
+                const value = $event.target.value; 
+                if (value.split(' to ').length == 2 && typeof $wire !== 'undefined') { 
+                    console.log('Would call: $wire.set(model_name, value)');
+                } else if (value.split(' to ').length == 2) {
+                    console.log('Range complete but $wire not available - this is OK');
+                }
+            ">
+                <input x-ref="input" type="text" class="test-input" placeholder="Select date range">
+                <div x-ref="status" class="status">Initializing...</div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Test 3: Mock Livewire Context</h2>
+            <p>This simulates having Livewire available to test the positive case.</p>
+            
+            <div x-data="{instance: undefined}" x-init="
+                // Mock $wire for testing
+                window.$wire = {
+                    set: (key, value) => {
+                        console.log('Mock $wire.set called:', key, value);
+                        $refs.wireStatus.textContent = `Mock $wire.set called with: ${key} = ${value}`;
+                        $refs.wireStatus.className = 'status success';
+                    }
+                };
+                
+                const config = {
+                    dateFormat: 'Y-m-d H:i',
+                    altInput: true,
+                    altInputClass: ' ',
+                    clickOpens: true,
+                    defaultDate: null,
+                    plugins: [],
+                    disable: [],
+                    mode: 'range'
+                };
+                
+                instance = flatpickr($refs.input, config);
+                
+                $refs.status.textContent = 'SUCCESS: DatePicker with mock Livewire initialized';
+                $refs.status.className = 'status success';
+            " @change="
+                const value = $event.target.value; 
+                if (value.split(' to ').length == 2 && typeof $wire !== 'undefined') { 
+                    $wire.set('test_model', value);
+                }
+            ">
+                <input x-ref="input" type="text" class="test-input" placeholder="Select date range">
+                <div x-ref="status" class="status">Initializing...</div>
+                <div x-ref="wireStatus" class="status">Waiting for range selection...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global error handler to catch any JavaScript errors
+        window.addEventListener('error', function(e) {
+            console.error('JavaScript Error:', e.error);
+            
+            // Show error in the UI
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'status error';
+            errorDiv.textContent = `ERROR: ${e.error.message}`;
+            document.body.appendChild(errorDiv);
+        });
+        
+        // Check for unhandled promise rejections (like the original error)
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error('Unhandled Promise Rejection:', e.reason);
+            
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'status error';
+            errorDiv.textContent = `PROMISE ERROR: ${e.reason}`;
+            document.body.appendChild(errorDiv);
+        });
+        
+        console.log('Test page loaded. Check console for any errors.');
+    </script>
+</body>
+</html>

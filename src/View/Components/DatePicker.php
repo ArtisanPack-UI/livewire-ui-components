@@ -21,6 +21,7 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Arr;
 use Illuminate\View\Component;
+use ArtisanPack\LivewireUiComponents\Styling\ColorGenerator;
 /**
  * DatePicker Class
  *
@@ -42,6 +43,13 @@ class DatePicker extends Component
         public ?string $hintClass = 'fieldset-label',
         public ?bool $inline = false,
         public ?array $config = [],
+
+        // Theming
+        public ?string $color = null,
+        public ?string $colorAdjustment = null,
+        public ?string $theme = 'artisanpack',
+        public ?array $fontConfig = [],
+        public ?bool $darkModeSupport = true,
 
         // Slots
         public mixed $prepend = null,
@@ -115,9 +123,114 @@ class DatePicker extends Component
         $config = str_replace('"#disable#"', $disables, $config);
 
         // Sets default date as current bound model
-        $config = str_replace('"#model#"', '$wire.get("' . $this->modelName() . '")', $config);
+        $modelName = $this->modelName();
+        if ($modelName) {
+            $config = str_replace('"#model#"', '$wire.get("' . $modelName . '")', $config);
+        } else {
+            $config = str_replace('"#model#"', 'null', $config);
+        }
 
         return $config;
+    }
+
+    /**
+     * Get color-specific CSS classes using ColorGenerator.
+     *
+     * @return array
+     * @since 1.1.0
+     */
+    public function getColorClasses(): array
+    {
+        if (!$this->color) {
+            return [];
+        }
+
+        $colorGenerator = new ColorGenerator();
+        return $colorGenerator->resolveComponentColor(
+            $this->color, 
+            $this->colorAdjustment, 
+            'datepicker'
+        );
+    }
+
+    /**
+     * Get FlatPicker theme configuration.
+     *
+     * @return array
+     * @since 1.1.0
+     */
+    public function getFlatPickrThemeConfig(): array
+    {
+        $config = [];
+
+        if ($this->theme !== 'default') {
+            $config['theme'] = $this->theme;
+        }
+
+        return $config;
+    }
+
+    /**
+     * Generate CSS custom properties for theming.
+     *
+     * @return string
+     * @since 1.1.0
+     */
+    public function getCustomCSSVariables(): string
+    {
+        $colorClasses = $this->getColorClasses();
+        $fontClasses = $this->getFontClasses();
+        $variables = [];
+
+        // Color variables
+        if (isset($colorClasses['style'])) {
+            $variables[] = $colorClasses['style'];
+        }
+
+        // Font variables
+        foreach ($fontClasses as $property => $value) {
+            // Skip array values to prevent "Array to string conversion" errors
+            if (is_scalar($value) && $value !== null) {
+                $variables[] = "--artisanpack-datepicker-{$property}: {$value};";
+            }
+        }
+
+        return implode(' ', $variables);
+    }
+
+    /**
+     * Get font configuration classes.
+     *
+     * @return array
+     * @since 1.1.0
+     */
+    public function getFontClasses(): array
+    {
+        return array_merge([
+            'font-family' => 'inherit',
+            'font-size' => '0.875rem',
+            'font-weight' => '400',
+            'line-height' => '1.25rem',
+        ], $this->fontConfig);
+    }
+
+    /**
+     * Get theme data attributes for the calendar.
+     *
+     * @return array
+     * @since 1.1.0
+     */
+    public function getThemeAttributes(): array
+    {
+        $attributes = [
+            'data-theme' => $this->theme,
+        ];
+
+        if ($this->darkModeSupport) {
+            $attributes['data-dark-mode'] = 'supported';
+        }
+
+        return $attributes;
     }
 
     public function render(): View|Closure|string

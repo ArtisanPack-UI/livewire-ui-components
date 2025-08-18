@@ -12,13 +12,104 @@ The Alert component displays important messages or notifications to users in a p
 
 ## Examples
 
+### Color System
+
+#### Predefined Variants
+
+Use predefined color variants for consistent theming:
+
+```php
+<x-artisanpack-alert 
+    title="Info Alert" 
+    description="This is an informational message."
+    color="info"
+>
+</x-artisanpack-alert>
+
+<x-artisanpack-alert 
+    title="Success Alert" 
+    description="Operation completed successfully."
+    color="success"
+>
+</x-artisanpack-alert>
+
+<x-artisanpack-alert 
+    title="Warning Alert" 
+    description="Please review this warning."
+    color="warning"
+>
+</x-artisanpack-alert>
+
+<x-artisanpack-alert 
+    title="Error Alert" 
+    description="An error has occurred."
+    color="error"
+>
+</x-artisanpack-alert>
+```
+
+#### Tailwind Color Palette
+
+Use any Tailwind color with intensity levels:
+
+```php
+<x-artisanpack-alert 
+    title="Custom Blue" 
+    description="Using Tailwind blue-500 color."
+    color="blue-500"
+>
+</x-artisanpack-alert>
+
+<x-artisanpack-alert 
+    title="Custom Purple" 
+    description="Using Tailwind purple-600 color."
+    color="purple-600"
+>
+</x-artisanpack-alert>
+```
+
+#### Custom Hex Colors
+
+Use custom hex color codes:
+
+```php
+<x-artisanpack-alert 
+    title="Brand Alert" 
+    description="Using custom brand colors."
+    color="#4ecdc4"
+>
+</x-artisanpack-alert>
+```
+
+#### Color Adjustments
+
+Fine-tune the background appearance:
+
+```php
+<x-artisanpack-alert 
+    title="Subtle Alert" 
+    description="Very light background."
+    color="blue-500" 
+    color-adjustment="subtle"
+>
+</x-artisanpack-alert>
+
+<x-artisanpack-alert 
+    title="Transparent Alert" 
+    description="Transparent background with colored border."
+    color="green-500" 
+    color-adjustment="transparent"
+>
+</x-artisanpack-alert>
+```
+
 ### Alert with Title and Description
 
 ```php
 <x-artisanpack-alert 
     title="Update Available" 
     description="A new version of the application is available."
-    class="alert-info"
+    color="info"
 >
 </x-artisanpack-alert>
 ```
@@ -30,7 +121,7 @@ The Alert component displays important messages or notifications to users in a p
     title="Success" 
     description="Your changes have been saved."
     icon="o-check-circle" 
-    class="alert-success"
+    color="success"
 >
 </x-artisanpack-alert>
 ```
@@ -42,7 +133,7 @@ The Alert component displays important messages or notifications to users in a p
     title="Warning" 
     description="This action cannot be undone."
     icon="o-exclamation-triangle" 
-    class="alert-warning"
+    color="warning"
     dismissible
 >
 </x-artisanpack-alert>
@@ -55,7 +146,7 @@ The Alert component displays important messages or notifications to users in a p
     title="Error" 
     description="There was a problem processing your request."
     icon="o-x-circle" 
-    class="alert-error"
+    color="error"
     shadow
 >
 </x-artisanpack-alert>
@@ -94,6 +185,8 @@ The Alert component displays important messages or notifications to users in a p
 | `title` | string\|null | `null` | The title of the alert, displayed in bold |
 | `icon` | string\|null | `null` | The icon displayed at the beginning of the alert |
 | `description` | string\|null | `null` | A short description displayed under the title |
+| `color` | string\|null | `null` | Color variant, Tailwind color (e.g., 'red-500'), or hex code (e.g., '#ff0000') |
+| `color-adjustment` | string\|null | `null` | Background adjustment: 'lighter', 'darker', 'transparent', or 'subtle' |
 | `shadow` | boolean | `false` | Whether to apply a shadow effect to the alert |
 | `dismissible` | boolean | `false` | Whether the alert can be dismissed by the user |
 

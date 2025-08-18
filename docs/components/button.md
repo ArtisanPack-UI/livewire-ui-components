@@ -14,6 +14,10 @@ The Button component is a versatile interactive element used for triggering acti
 
 ### Button Colors
 
+#### Predefined Variants
+
+Use predefined color variants for consistent theming:
+
 ```php
 <x-artisanpack-button color="primary">Primary</x-artisanpack-button>
 <x-artisanpack-button color="secondary">Secondary</x-artisanpack-button>
@@ -22,6 +26,46 @@ The Button component is a versatile interactive element used for triggering acti
 <x-artisanpack-button color="success">Success</x-artisanpack-button>
 <x-artisanpack-button color="warning">Warning</x-artisanpack-button>
 <x-artisanpack-button color="error">Error</x-artisanpack-button>
+```
+
+#### Tailwind Color Palette
+
+Use any Tailwind color with intensity levels:
+
+```php
+<x-artisanpack-button color="red-500">Red 500</x-artisanpack-button>
+<x-artisanpack-button color="blue-600">Blue 600</x-artisanpack-button>
+<x-artisanpack-button color="green-400">Green 400</x-artisanpack-button>
+<x-artisanpack-button color="purple-700">Purple 700</x-artisanpack-button>
+<x-artisanpack-button color="yellow-300">Yellow 300</x-artisanpack-button>
+```
+
+#### Custom Hex Colors
+
+Use custom hex color codes:
+
+```php
+<x-artisanpack-button color="#ff6b6b">Custom Red</x-artisanpack-button>
+<x-artisanpack-button color="#4ecdc4">Brand Teal</x-artisanpack-button>
+<x-artisanpack-button color="#ffe66d">Special Yellow</x-artisanpack-button>
+```
+
+#### Color Adjustments
+
+Fine-tune the background appearance with color adjustments:
+
+```php
+<!-- Lighter background -->
+<x-artisanpack-button color="blue-500" color-adjustment="lighter">Lighter</x-artisanpack-button>
+
+<!-- Darker background -->
+<x-artisanpack-button color="blue-500" color-adjustment="darker">Darker</x-artisanpack-button>
+
+<!-- Transparent background -->
+<x-artisanpack-button color="blue-500" color-adjustment="transparent">Transparent</x-artisanpack-button>
+
+<!-- Subtle background -->
+<x-artisanpack-button color="blue-500" color-adjustment="subtle">Subtle</x-artisanpack-button>
 ```
 
 ### Button Sizes

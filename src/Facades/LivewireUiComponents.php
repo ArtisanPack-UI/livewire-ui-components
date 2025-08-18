@@ -31,6 +31,7 @@ class LivewireUiComponents extends Facade
      * Get the registered name of the component.
      *
      * @return string
+     * @since 1.0.0
      */
     protected static function getFacadeAccessor(): string
     {

@@ -1,0 +1,267 @@
+/**
+ * DatePicker Base Theme
+ * 
+ * Core FlatPicker overrides and CSS custom property definitions
+ * for ArtisanPack UI DatePicker theming system.
+ *
+ * @package ArtisanPack\LivewireUiComponents
+ * @since 1.1.0
+ */
+
+/* CSS Custom Properties for DatePicker Theming */
+.flatpickr-calendar[data-theme="artisanpack"] {
+    /* Base colors - will be overridden by component-specific variables */
+    --flatpickr-bg-color: #ffffff;
+    --flatpickr-text-color: #374151;
+    --flatpickr-border-color: #d1d5db;
+    --flatpickr-selected-bg: #3b82f6;
+    --flatpickr-selected-text: #ffffff;
+    --flatpickr-hover-bg: #f3f4f6;
+    --flatpickr-hover-text: #374151;
+    --flatpickr-today-bg: #fef3c7;
+    --flatpickr-today-text: #92400e;
+    --flatpickr-disabled-text: #9ca3af;
+    --flatpickr-arrow-color: #6b7280;
+    --flatpickr-arrow-hover: #374151;
+    
+    /* Typography */
+    --flatpickr-font-family: inherit;
+    --flatpickr-font-size: 0.875rem;
+    --flatpickr-font-weight: 400;
+    --flatpickr-line-height: 1.25rem;
+    --flatpickr-day-font-weight: 500;
+    --flatpickr-weekday-font-weight: 600;
+    --flatpickr-weekday-font-size: 0.75rem;
+    
+    /* Spacing and dimensions */
+    --flatpickr-cell-size: 2.25rem;
+    --flatpickr-border-radius: 0.375rem;
+    --flatpickr-calendar-padding: 1rem;
+}
+
+/* Main Calendar Container */
+.flatpickr-calendar[data-theme="artisanpack"] {
+    background-color: var(--flatpickr-bg-color);
+    color: var(--flatpickr-text-color);
+    border: 1px solid var(--flatpickr-border-color);
+    border-radius: var(--flatpickr-border-radius);
+    font-family: var(--flatpickr-font-family);
+    font-size: var(--flatpickr-font-size);
+    font-weight: var(--flatpickr-font-weight);
+    line-height: var(--flatpickr-line-height);
+    padding: var(--flatpickr-calendar-padding);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Header Section */
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-months {
+    background-color: transparent;
+    border-bottom: 1px solid var(--flatpickr-border-color);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-month {
+    background-color: transparent;
+    color: var(--flatpickr-text-color);
+    fill: var(--flatpickr-text-color);
+}
+
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-current-month {
+    font-weight: 600;
+    color: var(--flatpickr-text-color);
+}
+
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-current-month .flatpickr-monthDropdown-months {
+    background-color: var(--flatpickr-bg-color);
+    border: 1px solid var(--flatpickr-border-color);
+    border-radius: var(--flatpickr-border-radius);
+}
+
+.flatpickr-calendar[data-theme="artisanpack"] .numInputWrapper {
+    background-color: transparent;
+}
+
+.flatpickr-calendar[data-theme="artisanpack"] .numInput {
+    background-color: transparent;
+    color: var(--flatpickr-text-color);
+    border: none;
+    font-weight: 600;
+}
+
+/* Navigation Arrows */
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-prev-month,
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-next-month {
+    color: var(--flatpickr-arrow-color);
+    fill: var(--flatpickr-arrow-color);
+    border-radius: var(--flatpickr-border-radius);
+    padding: 0.375rem;
+    transition: all 0.15s ease;
+}
+
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-prev-month:hover,
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-next-month:hover {
+    color: var(--flatpickr-arrow-hover);
+    fill: var(--flatpickr-arrow-hover);
+    background-color: var(--flatpickr-hover-bg);
+}
+
+/* Weekday Labels */
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-weekdays {
+    background-color: transparent;
+    border-bottom: 1px solid var(--flatpickr-border-color);
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-weekday {
+    background-color: transparent;
+    color: var(--flatpickr-text-color);
+    font-weight: var(--flatpickr-weekday-font-weight);
+    font-size: var(--flatpickr-weekday-font-size);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Days Grid */
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-days {
+    background-color: transparent;
+}
+
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-day {
+    background-color: transparent;
+    color: var(--flatpickr-text-color);
+    border: none;
+    border-radius: var(--flatpickr-border-radius);
+    font-weight: var(--flatpickr-day-font-weight);
+    width: var(--flatpickr-cell-size);
+    height: var(--flatpickr-cell-size);
+    line-height: var(--flatpickr-cell-size);
+    margin: 1px;
+    transition: all 0.15s ease;
+}
+
+/* Day States */
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-day:hover,
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-day:focus {
+    background-color: var(--flatpickr-hover-bg);
+    color: var(--flatpickr-hover-text);
+    border-color: transparent;
+}
+
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-day.selected,
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-day.startRange,
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-day.endRange {
+    background-color: var(--flatpickr-selected-bg);
+    color: var(--flatpickr-selected-text);
+    border-color: var(--flatpickr-selected-bg);
+}
+
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-day.selected:hover,
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-day.startRange:hover,
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-day.endRange:hover {
+    background-color: var(--flatpickr-selected-bg);
+    color: var(--flatpickr-selected-text);
+}
+
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-day.today {
+    background-color: var(--flatpickr-today-bg);
+    color: var(--flatpickr-today-text);
+    font-weight: 600;
+}
+
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-day.today:hover {
+    background-color: var(--flatpickr-today-bg);
+    color: var(--flatpickr-today-text);
+}
+
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-day.today.selected {
+    background-color: var(--flatpickr-selected-bg);
+    color: var(--flatpickr-selected-text);
+}
+
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-day.disabled,
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-day.disabled:hover {
+    background-color: transparent;
+    color: var(--flatpickr-disabled-text);
+    cursor: not-allowed;
+}
+
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-day.nextMonthDay,
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-day.prevMonthDay {
+    color: var(--flatpickr-disabled-text);
+}
+
+/* Range Selection */
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-day.inRange {
+    background-color: var(--flatpickr-hover-bg);
+    color: var(--flatpickr-text-color);
+    border-radius: 0;
+}
+
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-day.inRange:hover {
+    background-color: var(--flatpickr-hover-bg);
+}
+
+/* Time Picker (if enabled) */
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-time {
+    background-color: var(--flatpickr-bg-color);
+    border-top: 1px solid var(--flatpickr-border-color);
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+}
+
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-time input {
+    background-color: transparent;
+    color: var(--flatpickr-text-color);
+    border: 1px solid var(--flatpickr-border-color);
+    border-radius: var(--flatpickr-border-radius);
+    font-weight: var(--flatpickr-font-weight);
+}
+
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-time .flatpickr-time-separator {
+    color: var(--flatpickr-text-color);
+}
+
+/* Animation */
+.flatpickr-calendar[data-theme="artisanpack"].open {
+    animation: flatpickr-fadeIn 0.2s ease;
+}
+
+.flatpickr-calendar[data-theme="artisanpack"].closed {
+    animation: flatpickr-fadeOut 0.2s ease;
+}
+
+@keyframes flatpickr-fadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(-10px) scale(0.95); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0) scale(1); 
+    }
+}
+
+@keyframes flatpickr-fadeOut {
+    from { 
+        opacity: 1; 
+        transform: translateY(0) scale(1); 
+    }
+    to { 
+        opacity: 0; 
+        transform: translateY(-10px) scale(0.95); 
+    }
+}
+
+/* Focus and accessibility */
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-day:focus {
+    outline: 2px solid var(--flatpickr-selected-bg);
+    outline-offset: -2px;
+}
+
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-prev-month:focus,
+.flatpickr-calendar[data-theme="artisanpack"] .flatpickr-next-month:focus {
+    outline: 2px solid var(--flatpickr-selected-bg);
+    outline-offset: -2px;
+}
