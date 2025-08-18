@@ -42,6 +42,48 @@ return [
             'class' => 'App\Support\Spotlight',
         ]
     ],
+    /**
+     * Icons configuration for components
+     */
+    'icons' => [
+        'list_item' => [
+            // Default list style icons
+            'bullet' => 'o-minus',
+            'checkmark' => 'o-check',
+            'arrow' => 'o-chevron-right',
+            'dot' => 'o-ellipsis-horizontal',
+            
+            // Status icons
+            'status' => [
+                'new' => 'o-sparkles',
+                'completed' => 'o-check-circle',
+                'error' => 'o-exclamation-triangle',
+                'warning' => 'o-exclamation-circle',
+                'info' => 'o-information-circle',
+            ],
+            
+            // Type icons
+            'type' => [
+                'user' => 'o-user',
+                'file' => 'o-document',
+                'folder' => 'o-folder',
+                'email' => 'o-envelope',
+                'notification' => 'o-bell',
+            ]
+        ],
+        
+        'loading' => [
+            // Custom loading icons (SVG-based)
+            'spinner' => 'o-arrow-path',
+            'dots' => null, // Keep CSS-based
+            'ring' => null, // Keep CSS-based
+            'custom_svg' => null, // Allow custom SVG content
+            
+            // Default loading type
+            'default_type' => 'css', // 'css' or 'svg'
+        ]
+    ],
+
 	/*
     |--------------------------------------------------------------------------
     | Theme Generation Settings

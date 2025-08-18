@@ -22,6 +22,114 @@ $user = [
 
 ## Examples
 
+### Icon Examples
+
+#### Basic List Icon with Icon Type
+
+```php
+<!-- Bullet point icon -->
+<x-artisanpack-list-item 
+    :item="$user"
+    value="name"
+    subValue="email"
+    iconType="bullet"
+/>
+
+<!-- Checkmark icon -->
+<x-artisanpack-list-item 
+    :item="$task"
+    value="title"
+    subValue="description"
+    iconType="checkmark"
+/>
+
+<!-- Arrow icon -->
+<x-artisanpack-list-item 
+    :item="$item"
+    value="name"
+    iconType="arrow"
+/>
+```
+
+#### Status Icons
+
+```php
+<!-- Completed status -->
+<x-artisanpack-list-item 
+    :item="$task"
+    value="title"
+    subValue="description"
+    iconStatus="completed"
+/>
+
+<!-- Error status -->
+<x-artisanpack-list-item 
+    :item="$errorItem"
+    value="message"
+    iconStatus="error"
+/>
+
+<!-- New status -->
+<x-artisanpack-list-item 
+    :item="$notification"
+    value="title"
+    subValue="time"
+    iconStatus="new"
+/>
+```
+
+#### Custom Icons
+
+```php
+<!-- Custom Heroicon -->
+<x-artisanpack-list-item 
+    :item="$file"
+    value="name"
+    subValue="size"
+    icon="heroicon-o-document-text"
+/>
+
+<!-- Custom icon with size -->
+<x-artisanpack-list-item 
+    :item="$user"
+    value="name"
+    subValue="email"
+    icon="heroicon-s-user-circle"
+    iconClass="w-6 h-6 text-primary"
+/>
+```
+
+#### Custom Icon Slot
+
+```php
+<x-artisanpack-list-item :item="$item" value="name" subValue="description">
+    <x-slot:iconSlot>
+        <div class="w-4 h-4 bg-primary rounded-full"></div>
+    </x-slot:iconSlot>
+</x-artisanpack-list-item>
+
+<!-- Custom SVG icon -->
+<x-artisanpack-list-item :item="$item" value="name">
+    <x-slot:iconSlot>
+        <svg class="w-4 h-4 text-success" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+        </svg>
+    </x-slot:iconSlot>
+</x-artisanpack-list-item>
+```
+
+#### Disabled Icons
+
+```php
+<!-- Disable icon completely -->
+<x-artisanpack-list-item 
+    :item="$user"
+    value="name"
+    subValue="email"
+    :noIcon="true"
+/>
+```
+
 ### Basic List Item
 
 ```php
@@ -82,8 +190,8 @@ $user = [
     subValue="email"
 >
     <x-slot:actions>
-        <x-artisanpack-button icon="o-pencil" class="btn-ghost btn-sm" wire:click="edit({{ $user['id'] }})" />
-        <x-artisanpack-button icon="o-trash" class="btn-ghost btn-sm text-error" wire:click="delete({{ $user['id'] }})" />
+        <x-artisanpack-button icon="heroicon-o-pencil" class="btn-ghost btn-sm" wire:click="edit({{ $user['id'] }})" />
+        <x-artisanpack-button icon="heroicon-o-trash" class="btn-ghost btn-sm text-error" wire:click="delete({{ $user['id'] }})" />
     </x-slot:actions>
 </x-artisanpack-list-item>
 ```
@@ -117,7 +225,7 @@ $user = [
     
     <x-slot:subValue>
         <div class="flex items-center gap-1">
-            <x-artisanpack-icon name="o-envelope" class="w-4 h-4" />
+            <x-artisanpack-icon name="heroicon-o-envelope" class="w-4 h-4" />
             <span>{{ $user['email'] }}</span>
         </div>
     </x-slot:subValue>
@@ -136,7 +244,7 @@ $user = [
             link="/users/{{ $user['id'] }}"
         >
             <x-slot:actions>
-                <x-artisanpack-button icon="o-ellipsis-vertical" class="btn-ghost btn-sm" />
+                <x-artisanpack-button icon="heroicon-o-ellipsis-vertical" class="btn-ghost btn-sm" />
             </x-slot:actions>
         </x-artisanpack-list-item>
     @endforeach
@@ -155,6 +263,11 @@ $user = [
 | `noSeparator` | boolean\|null | `false` | Whether to hide the separator line |
 | `noHover` | boolean\|null | `false` | Whether to disable the hover effect |
 | `link` | string\|null | `null` | Optional URL for making the item clickable |
+| `icon` | string\|null | `null` | Custom icon name (e.g., 'heroicon-o-user') |
+| `iconType` | string\|null | `null` | Predefined icon type ('bullet', 'checkmark', 'arrow', 'dot') |
+| `iconStatus` | string\|null | `null` | Status icon type ('new', 'completed', 'error', 'warning', 'info') |
+| `iconClass` | string | `'w-4 h-4'` | CSS classes for the icon |
+| `noIcon` | boolean\|null | `false` | Whether to disable icon display completely |
 
 ## Slots
 
@@ -164,6 +277,7 @@ $user = [
 | `value` | Custom content for the main content section |
 | `subValue` | Custom content for the secondary content section |
 | `actions` | Content for the actions section (typically buttons or links) |
+| `iconSlot` | Custom content for the icon section (overrides icon props) |
 
 ## Styling
 
@@ -189,6 +303,65 @@ The ListItem component follows accessibility best practices:
 - Maintains text truncation with ellipsis for long content
 - Includes hover states for interactive elements
 - Supports keyboard navigation when links are used
+
+## Configuration
+
+You can customize the default icons used by the ListItem component by publishing and modifying the configuration file:
+
+```bash
+php artisan vendor:publish --tag=artisanpack-config
+```
+
+Then edit `config/livewire-ui-components.php`:
+
+```php
+'icons' => [
+    'list_item' => [
+        // Default list style icons
+        'bullet' => 'heroicon-o-list-bullet',
+        'checkmark' => 'heroicon-o-check',
+        'arrow' => 'heroicon-o-chevron-right',
+        'dot' => 'heroicon-o-ellipsis-horizontal',
+        
+        // Status icons
+        'status' => [
+            'new' => 'heroicon-o-sparkles',
+            'completed' => 'heroicon-o-check-circle',
+            'error' => 'heroicon-o-exclamation-triangle',
+            'warning' => 'heroicon-o-exclamation-circle',
+            'info' => 'heroicon-o-information-circle',
+        ],
+        
+        // Type icons
+        'type' => [
+            'user' => 'heroicon-o-user',
+            'file' => 'heroicon-o-document',
+            'folder' => 'heroicon-o-folder',
+            'email' => 'heroicon-o-envelope',
+            'notification' => 'heroicon-o-bell',
+        ]
+    ],
+]
+```
+
+### Custom Icon Examples
+
+```php
+// Use a different bullet icon
+'bullet' => 'heroicon-s-minus',
+
+// Use custom icons for status
+'status' => [
+    'completed' => 'heroicon-s-check-circle',
+    'error' => 'heroicon-s-x-circle',
+],
+
+// Add custom type icons
+'type' => [
+    'task' => 'heroicon-o-clipboard-document-list',
+    'project' => 'heroicon-o-briefcase',
+]
+```
 
 ## Related Components
 
