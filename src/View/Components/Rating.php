@@ -34,9 +34,37 @@ class Rating extends Component
 
     public function __construct(
         public ?string $id = null,
-        public int $total = 5
+        public int $total = 5,
+
+        // NEW: Icon Props
+        public ?string $icon = 's-star',
+        public ?string $filledIcon = null,
+        public ?string $emptyIcon = null,
+
+        // NEW: Color Props
+        public ?string $color = 'warning',
+        public ?string $filledColor = null,
+        public ?string $emptyColor = 'gray-200',
+
+        // NEW: Additional Props (from documentation)
+        public ?string $size = 'md',
+        public bool $halfStars = false,
+        public bool $hoverEffect = false,
+        public bool $showValue = false,
+        public ?string $valueFormat = '{value}',
+        public bool $clearable = false,
+        public ?string $clearIcon = 'o-x-circle',
+        public bool $inlineLabel = false,
+        public bool $required = false,
+        public bool $disabled = false,
+        public bool $readonly = false,
+        public ?string $helper = null,
+        public ?string $error = null,
+        public ?string $label = null,
+        public ?string $name = null,
+        public float|int|null $value = 0,
     ) {
-        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+        $this->uuid = "artisanpack" . md5(serialize($this) . microtime(true) . mt_rand()) . $id;
     }
 
     public function modelName(): ?string
@@ -48,6 +76,7 @@ class Rating extends Component
     {
         return str($this->attributes->get('class'))->match('/(rating-(..))/');
     }
+
 
     public function render(): View|Closure|string
     {
