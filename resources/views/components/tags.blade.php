@@ -13,7 +13,7 @@
 
             // Fix weird issue when navigating back
             document.addEventListener('livewire:navigating', () => {
-                let elements = document.querySelectorAll('.mary-tags-element');
+                let elements = document.querySelectorAll('.artisanpack-tags-element');
                 elements.forEach(el =>  el.remove());
             });
         },
@@ -120,7 +120,7 @@
                         {{-- TAGS --}}
                         <span wire:key="tags-{{ $uuid }}">
                             <template :key="index" x-for="(tag, index) in tags">
-                                <span class="mary-tags-element cursor-pointer badge badge-soft m-0.5 !inline-block">
+                                <span class="artisanpack-tags-element cursor-pointer badge badge-soft m-0.5 !inline-block">
                                     <span x-text="tag"></span>
                                     <x-artisanpack-icon @click="remove(index)" x-show="!isReadonly && !isDisabled" name="o-x-mark" class="w-4 h-4 mb-0.5 hover:text-error" />
                                 </span>
