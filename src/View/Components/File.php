@@ -46,6 +46,11 @@ class File extends Component
         public ?array $cropConfig = [],
         public ?string $cropMimeType = "image/png",
 
+        // Drag and Drop
+        public ?bool $withDragDrop = false,
+        public ?string $dragDropText = "Drop files here",
+        public ?string $dragDropClass = null,
+
         // Validations
         public ?string $errorField = null,
         public ?string $errorClass = 'text-error',

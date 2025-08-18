@@ -105,6 +105,43 @@ $cropConfig = [
 />
 ```
 
+### Image Library with Drag and Drop
+
+```php
+<x-artisanpack-image-library 
+    wire:model="images" 
+    wire:library="productImages" 
+    label="Product Images"
+    :with-drag-drop="true"
+/>
+```
+
+### Image Library with Custom Drag and Drop Text
+
+```php
+<x-artisanpack-image-library 
+    wire:model="images" 
+    wire:library="productImages" 
+    label="Product Images"
+    :with-drag-drop="true"
+    drag-drop-text="Drop your images here"
+    drag-drop-multiple-text="Drop {count} images here"
+/>
+```
+
+### Image Library with Custom Drag and Drop Styling
+
+```php
+<x-artisanpack-image-library 
+    wire:model="images" 
+    wire:library="productImages" 
+    label="Product Images"
+    :with-drag-drop="true"
+    drag-drop-text="Drop images to upload"
+    drag-drop-class="border-info bg-info/10"
+/>
+```
+
 ## Livewire Component Integration
 
 To use the ImageLibrary component, you need to implement several methods in your Livewire component:
@@ -194,6 +231,10 @@ class ProductForm extends Component
 | `addFilesText` | string\|null | `"Add images"` | Text for the add files button |
 | `cropConfig` | array\|null | `[]` | Configuration options for the cropper |
 | `preview` | Collection | `new Collection()` | Collection of images to display in the preview area |
+| `withDragDrop` | boolean\|null | `false` | Whether to enable drag and drop functionality |
+| `dragDropText` | string\|null | `"Drop images here"` | Text displayed in the drag and drop overlay |
+| `dragDropMultipleText` | string\|null | `"Drop {count} images here"` | Text for multiple files with {count} placeholder |
+| `dragDropClass` | string\|null | `null` | Additional CSS classes for drag and drop styling |
 
 ## Wire Directives
 
