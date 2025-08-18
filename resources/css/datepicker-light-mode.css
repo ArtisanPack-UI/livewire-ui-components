@@ -1,0 +1,98 @@
+/**
+ * DatePicker Light Mode Theme
+ * 
+ * Light theme color variables for ArtisanPack UI DatePicker.
+ * These variables override the base theme for light mode appearance.
+ *
+ * @package ArtisanPack\LivewireUiComponents
+ * @since 1.1.0
+ */
+
+/* Light Mode Default Colors */
+.flatpickr-calendar[data-theme="artisanpack"] {
+    /* Light theme background and surfaces */
+    --flatpickr-bg-color: #ffffff;
+    --flatpickr-border-color: #e5e7eb;
+    
+    /* Light theme text colors */
+    --flatpickr-text-color: #374151;
+    --flatpickr-disabled-text: #9ca3af;
+    
+    /* Light theme interactive elements */
+    --flatpickr-hover-bg: #f9fafb;
+    --flatpickr-hover-text: #111827;
+    
+    /* Light theme selection colors (will be overridden by ColorGenerator) */
+    --flatpickr-selected-bg: #3b82f6;
+    --flatpickr-selected-text: #ffffff;
+    
+    /* Light theme today indicator */
+    --flatpickr-today-bg: #fef3c7;
+    --flatpickr-today-text: #92400e;
+    
+    /* Light theme navigation */
+    --flatpickr-arrow-color: #6b7280;
+    --flatpickr-arrow-hover: #374151;
+}
+
+/* Light Mode Variant Colors */
+.flatpickr-calendar[data-theme="artisanpack"][data-color="primary"] {
+    --flatpickr-selected-bg: #3b82f6;
+    --flatpickr-selected-text: #ffffff;
+}
+
+.flatpickr-calendar[data-theme="artisanpack"][data-color="secondary"] {
+    --flatpickr-selected-bg: #6b7280;
+    --flatpickr-selected-text: #ffffff;
+}
+
+.flatpickr-calendar[data-theme="artisanpack"][data-color="accent"] {
+    --flatpickr-selected-bg: #06b6d4;
+    --flatpickr-selected-text: #ffffff;
+}
+
+.flatpickr-calendar[data-theme="artisanpack"][data-color="success"] {
+    --flatpickr-selected-bg: #10b981;
+    --flatpickr-selected-text: #ffffff;
+}
+
+.flatpickr-calendar[data-theme="artisanpack"][data-color="warning"] {
+    --flatpickr-selected-bg: #f59e0b;
+    --flatpickr-selected-text: #ffffff;
+}
+
+.flatpickr-calendar[data-theme="artisanpack"][data-color="error"] {
+    --flatpickr-selected-bg: #ef4444;
+    --flatpickr-selected-text: #ffffff;
+}
+
+/* Light Mode Automatic Detection */
+@media (prefers-color-scheme: light) {
+    .flatpickr-calendar[data-theme="artisanpack"][data-dark-mode="supported"] {
+        /* Ensure light mode colors are applied when system prefers light */
+        --flatpickr-bg-color: #ffffff;
+        --flatpickr-text-color: #374151;
+        --flatpickr-border-color: #e5e7eb;
+        --flatpickr-hover-bg: #f9fafb;
+        --flatpickr-hover-text: #111827;
+        --flatpickr-disabled-text: #9ca3af;
+        --flatpickr-today-bg: #fef3c7;
+        --flatpickr-today-text: #92400e;
+        --flatpickr-arrow-color: #6b7280;
+        --flatpickr-arrow-hover: #374151;
+    }
+}
+
+/* Override dark mode if explicitly in light mode */
+.light .flatpickr-calendar[data-theme="artisanpack"] {
+    --flatpickr-bg-color: #ffffff;
+    --flatpickr-text-color: #374151;
+    --flatpickr-border-color: #e5e7eb;
+    --flatpickr-hover-bg: #f9fafb;
+    --flatpickr-hover-text: #111827;
+    --flatpickr-disabled-text: #9ca3af;
+    --flatpickr-today-bg: #fef3c7;
+    --flatpickr-today-text: #92400e;
+    --flatpickr-arrow-color: #6b7280;
+    --flatpickr-arrow-hover: #374151;
+}

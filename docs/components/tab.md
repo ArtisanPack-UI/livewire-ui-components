@@ -1,3 +1,7 @@
+---
+title: Tab Component
+---
+
 # Tab Component
 
 The Tab component represents an individual tab within a tabbed interface. It's designed to be used within the Tabs component to create a complete tabbed navigation system.

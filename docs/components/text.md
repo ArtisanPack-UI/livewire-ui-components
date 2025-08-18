@@ -1,3 +1,7 @@
+---
+title: Text Component
+---
+
 # Text Component
 
 The Text component is used to display paragraphs of text with customizable styling options. It provides a consistent way to style text content throughout your application.

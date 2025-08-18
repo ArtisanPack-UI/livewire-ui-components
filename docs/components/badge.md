@@ -1,6 +1,10 @@
+---
+title: Badge Component
+---
+
 # Badge Component
 
-The Badge component displays a small count, label, or status indicator.
+The Badge component displays a small count, label, or status indicator with flexible color customization options.
 
 ## Basic Usage
 
@@ -8,16 +12,60 @@ The Badge component displays a small count, label, or status indicator.
 <x-artisanpack-badge value="New" />
 ```
 
-## With Different Colors
+## Color System
+
+### Predefined Variants
+
+Use predefined color variants for consistent theming:
 
 ```blade
-<x-artisanpack-badge value="Primary" class="badge-primary" />
-<x-artisanpack-badge value="Secondary" class="badge-secondary" />
-<x-artisanpack-badge value="Accent" class="badge-accent" />
-<x-artisanpack-badge value="Info" class="badge-info" />
-<x-artisanpack-badge value="Success" class="badge-success" />
-<x-artisanpack-badge value="Warning" class="badge-warning" />
-<x-artisanpack-badge value="Error" class="badge-error" />
+<x-artisanpack-badge value="Primary" color="primary" />
+<x-artisanpack-badge value="Secondary" color="secondary" />
+<x-artisanpack-badge value="Accent" color="accent" />
+<x-artisanpack-badge value="Info" color="info" />
+<x-artisanpack-badge value="Success" color="success" />
+<x-artisanpack-badge value="Warning" color="warning" />
+<x-artisanpack-badge value="Error" color="error" />
+```
+
+### Tailwind Color Palette
+
+Use any Tailwind color with intensity levels:
+
+```blade
+<x-artisanpack-badge value="Red 500" color="red-500" />
+<x-artisanpack-badge value="Blue 600" color="blue-600" />
+<x-artisanpack-badge value="Green 400" color="green-400" />
+<x-artisanpack-badge value="Purple 700" color="purple-700" />
+<x-artisanpack-badge value="Yellow 300" color="yellow-300" />
+```
+
+### Custom Hex Colors
+
+Use custom hex color codes:
+
+```blade
+<x-artisanpack-badge value="Custom" color="#ff6b6b" />
+<x-artisanpack-badge value="Brand" color="#4ecdc4" />
+<x-artisanpack-badge value="Special" color="#ffe66d" />
+```
+
+### Color Adjustments
+
+Fine-tune the background appearance with color adjustments:
+
+```blade
+<!-- Lighter background -->
+<x-artisanpack-badge value="Lighter" color="blue-500" color-adjustment="lighter" />
+
+<!-- Darker background -->
+<x-artisanpack-badge value="Darker" color="blue-500" color-adjustment="darker" />
+
+<!-- Transparent background -->
+<x-artisanpack-badge value="Transparent" color="blue-500" color-adjustment="transparent" />
+
+<!-- Subtle background -->
+<x-artisanpack-badge value="Subtle" color="blue-500" color-adjustment="subtle" />
 ```
 
 ## With Different Sizes
@@ -53,6 +101,8 @@ The Badge component displays a small count, label, or status indicator.
 |------|------|---------|-------------|
 | id | string | null | Optional identifier for the badge |
 | value | string | null | Text content to display in the badge |
+| color | string | null | Color variant, Tailwind color (e.g., 'red-500'), or hex code (e.g., '#ff0000') |
+| color-adjustment | string | null | Background adjustment: 'lighter', 'darker', 'transparent', or 'subtle' |
 
 ## CSS Classes
 

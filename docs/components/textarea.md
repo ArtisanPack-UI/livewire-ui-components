@@ -1,3 +1,7 @@
+---
+title: Textarea Component
+---
+
 # Textarea Component
 
 The Textarea component is a form element that allows users to enter multi-line text input. It provides a user-friendly way to implement textarea inputs with various styling options and features.

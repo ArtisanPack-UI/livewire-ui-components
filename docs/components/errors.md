@@ -1,3 +1,7 @@
+---
+title: Errors Component
+---
+
 # Errors Component
 
 The Errors component provides a formatted way to display validation errors in your application. It automatically displays all validation errors or can be configured to show only specific ones.

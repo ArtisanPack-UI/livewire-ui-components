@@ -1,3 +1,7 @@
+---
+title: Separator Component
+---
+
 # Separator Component
 
 The Separator component provides both horizontal and vertical dividers with optional loading indicators, color customization, and image integration. It's useful for separating content sections and can serve as a visual indicator for loading states.

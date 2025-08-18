@@ -1,3 +1,7 @@
+---
+title: Step Component
+---
+
 # Step Component
 
 The Step component represents an individual step within a multi-step process or workflow. It's designed to be used within the Steps component to create a complete step indicator.

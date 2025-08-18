@@ -14,7 +14,7 @@
        @if($sidebar)
            <div
                x-data="{
-                   collapsed: {{ session('mary-sidebar-collapsed', 'false') }},
+                   collapsed: {{ session('artisanpack-sidebar-collapsed', 'false') }},
                    collapseText: '{{ $collapseText }}',
                    toggle() {
                        this.collapsed = !this.collapsed;

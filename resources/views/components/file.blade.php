@@ -9,6 +9,8 @@
        originalImageUrl: null,
        cropAfterChange: {{ json_encode($cropAfterChange) }},
        file: @entangle($attributes->wire('model')),
+       isDragOver: false,
+       dragCounter: 0,
        init () {
            this.imagePreview = this.$refs.preview?.querySelector('img')
            this.imageCrop = this.$refs.crop?.querySelector('img')
@@ -18,6 +20,89 @@
                if (value == 100 && this.cropAfterChange && !this.justCropped) {
                    this.crop()
                }
+           })
+
+           @if($withDragDrop)
+           this.initDragDrop()
+           @endif
+       },
+       initDragDrop() {
+           // Prevent default drag behaviors
+           ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+               document.addEventListener(eventName, (e) => {
+                   e.preventDefault()
+                   e.stopPropagation()
+               }, false)
+           })
+       },
+       handleDragEnter(e) {
+           e.preventDefault()
+           e.stopPropagation()
+           this.dragCounter++
+           if (this.dragCounter === 1) {
+               this.isDragOver = true
+           }
+       },
+       handleDragOver(e) {
+           e.preventDefault()
+           e.stopPropagation()
+           e.dataTransfer.dropEffect = 'copy'
+       },
+       handleDragLeave(e) {
+           e.preventDefault()
+           e.stopPropagation()
+           this.dragCounter--
+           if (this.dragCounter === 0) {
+               this.isDragOver = false
+           }
+       },
+       handleDrop(e) {
+           e.preventDefault()
+           e.stopPropagation()
+           this.isDragOver = false
+           this.dragCounter = 0
+
+           const files = e.dataTransfer.files
+           if (files.length > 0) {
+               this.processDroppedFiles(files)
+           }
+       },
+       processDroppedFiles(files) {
+           if (this.processing) {
+               return
+           }
+
+           const file = files[0] // Take first file for single file component
+
+           // Validate file type if accept attribute is present
+           const acceptAttr = this.$refs.file.getAttribute('accept')
+           if (acceptAttr && !this.isValidFileType(file, acceptAttr)) {
+               alert('File type not supported')
+               return
+           }
+
+           // Set the file to the input element
+           const dt = new DataTransfer()
+           dt.items.add(file)
+           this.$refs.file.files = dt.files
+
+           // Trigger the change event to process the file
+           this.refreshImage()
+       },
+       isValidFileType(file, acceptAttr) {
+           const acceptedTypes = acceptAttr.split(',').map(type => type.trim())
+
+           return acceptedTypes.some(type => {
+               if (type.startsWith('.')) {
+                   return file.name.toLowerCase().endsWith(type.toLowerCase())
+               } else if (type.includes('/')) {
+                   if (type.endsWith('/*')) {
+                       return file.type.startsWith(type.slice(0, -1))
+                   } else {
+                       return file.type === type
+                   }
+               }
+               return false
            })
        },
        get processing () {
@@ -76,8 +161,37 @@
 
    x-on:livewire-upload-progress="progress = $event.detail.progress;"
 
+   @if($withDragDrop)
+   @dragenter="handleDragEnter($event)"
+   @dragover.prevent="handleDragOver($event)"
+   @dragleave="handleDragLeave($event)"
+   @drop.prevent="handleDrop($event)"
+   :class="isDragOver && 'border-primary bg-primary/10 {{ $dragDropClass }}'"
+   {{ $attributes->whereStartsWith('class')->class([
+       'relative border-2 border-dashed border-base-300 rounded-lg transition-all duration-200'
+   ]) }}
+   @else
    {{ $attributes->whereStartsWith('class') }}
+   @endif
 >
+   @if($withDragDrop)
+   {{-- Drag and Drop Overlay --}}
+   <div
+       x-show="isDragOver"
+       x-transition
+       class="absolute inset-0 flex items-center justify-center bg-base-100/90 rounded-lg z-10"
+       role="presentation"
+       aria-hidden="true"
+   >
+       <div class="text-center">
+           <svg class="mx-auto h-12 w-12 text-primary mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+           </svg>
+           <p class="text-lg font-medium text-primary">{{ $dragDropText }}</p>
+       </div>
+   </div>
+   @endif
+
    <fieldset class="fieldset py-0">
        {{-- STANDARD LABEL --}}
        @if($label)
@@ -140,13 +254,13 @@
 
            <!-- CROP MODAL -->
            <div @click.prevent="" x-ref="crop" wire:ignore>
-               <x-mary-modal id="maryCrop{{ $uuid }}" x-ref="maryCrop" :title="$cropTitleText" separator class="backdrop-blur-sm" persistent @keydown.window.esc.prevent="" without-trap-focus>
+               <x-artisanpack-modal id="maryCrop{{ $uuid }}" x-ref="maryCrop" :title="$cropTitleText" separator class="backdrop-blur-sm" persistent @keydown.window.esc.prevent="" without-trap-focus>
                    <img src="" />
                    <x-slot:actions>
                        <x-artisanpack-button :label="$cropCancelText" @click="close()" />
-                       <x-artisanpack-button :label="$cropSaveText" class="btn-primary" @click="save()" ::disabled="processing" />
+                       <x-artisanpack-button :label="$cropSaveText" class="btn-primary" @click="save()" x-bind:disabled="processing" />
                    </x-slot:actions>
-               </x-mary-modal>
+               </x-artisanpack-modal>
            </div>
        @endif
 

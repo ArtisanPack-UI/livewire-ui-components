@@ -1,3 +1,7 @@
+---
+title: Customization
+---
+
 # Customization
 
 ArtisanPack UI Livewire Components is designed to be highly customizable, allowing you to adapt the components to match your application's design requirements. This guide covers the various ways you can customize the package.

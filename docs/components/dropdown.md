@@ -1,3 +1,7 @@
+---
+title: Dropdown Component
+---
+
 # Dropdown Component
 
 The Dropdown component provides a toggleable menu that appears when a user clicks on a trigger element. It's useful for navigation menus, action menus, and other contextual options.

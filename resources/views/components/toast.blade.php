@@ -17,7 +17,30 @@
             x-classes="alert alert-success alert-warning alert-error alert-info top-10 end-10 toast toast-top toast-bottom toast-center toast-end toast-middle toast-start"
             @click="show = false"
         >
-            <div class="alert gap-2" :class="toast.css">
+            <div 
+                @php
+                    $colorClasses = $getColorClasses();
+                    $baseClasses = ['alert', 'gap-2'];
+                    
+                    // Handle new color system
+                    if (!empty($colorClasses)) {
+                        // Add color classes from new system
+                        foreach ($colorClasses as $type => $class) {
+                            if ($type === 'style' && $class) {
+                                // Handle inline styles for hex colors - will be merged below
+                                $toastStyle = $class;
+                            } elseif ($type !== 'style' && $class) {
+                                $baseClasses[] = $class;
+                            }
+                        }
+                    }
+                    
+                    $baseClassString = implode(' ', $baseClasses);
+                @endphp
+                class="{{ $baseClassString }}" 
+                @if(isset($toastStyle)) style="{{ $toastStyle }}" @endif
+                :class="toast.css"
+            >
                 <div x-html="toast.icon" class="hidden sm:inline-block"></div>
                 <div class="grid">
                     <div x-html="toast.title" class="font-bold"></div>

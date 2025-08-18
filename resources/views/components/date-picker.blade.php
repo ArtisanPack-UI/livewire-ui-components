@@ -1,7 +1,11 @@
 <div wire:key="datepicker-{{ rand() }}">
     @php
         // We need this extra step to support models arrays. Ex: wire:model="emails.0"  , wire:model="emails.1"
-        $uuid = $uuid . $modelName()
+        $uuid = $uuid . ($modelName() ?? '');
+        
+        // Get theming data
+        $customCSSVariables = $getCustomCSSVariables();
+        $themeAttributes = $getThemeAttributes();
     @endphp
 
     <fieldset class="fieldset py-0">
@@ -52,12 +56,40 @@
                     {{-- INPUT --}}
                     <div
                         x-data="{instance: undefined}"
-                        x-init="instance = flatpickr($refs.input, {{ $setup() }});"
-                        @if(isset($config["mode"]) && $config["mode"] == "range" && $attributes->get('live'))
-                            @change="const value = $event.target.value; if(value.split(instance.l10n.rangeSeparator).length == 2) { $wire.set('{{ $modelName() }}', value) };"
+                        x-init="
+                            const config = {{ $setup() }};
+                            
+                            // Apply theme configuration
+                            config.onReady = function(selectedDates, dateStr, instance) {
+                                if (instance.calendarContainer) {
+                                    @foreach($themeAttributes as $attr => $value)
+                                        instance.calendarContainer.setAttribute('{{ $attr }}', '{{ $value }}');
+                                    @endforeach
+                                    
+                                    @if($color)
+                                        instance.calendarContainer.setAttribute('data-color', '{{ $color }}');
+                                    @endif
+                                    
+                                    @if($colorAdjustment)
+                                        instance.calendarContainer.setAttribute('data-color-adjustment', '{{ $colorAdjustment }}');
+                                    @endif
+                                    
+                                    @if($customCSSVariables)
+                                        instance.calendarContainer.style.cssText = '{{ $customCSSVariables }}' + (instance.calendarContainer.style.cssText || '');
+                                    @endif
+                                }
+                            };
+                            
+                            instance = flatpickr($refs.input, config);
+                        "
+                        @if(isset($config["mode"]) && $config["mode"] == "range" && $attributes->get('live') && $modelName())
+                            @change="const value = $event.target.value; if(value.split(instance.l10n.rangeSeparator).length == 2 && typeof $wire !== 'undefined') { $wire.set('{{ $modelName() }}', value) };"
                         @endif
                         x-on:livewire:navigating.window="instance.destroy();"
                         class="w-full"
+                        @if($customCSSVariables)
+                            style="{{ $customCSSVariables }}"
+                        @endif
                     >
                         <input x-ref="input" {{ $attributes->merge(['type' => 'date']) }} />
                     </div>

@@ -1,3 +1,7 @@
+---
+title: Drawer Component
+---
+
 # Drawer Component
 
 The Drawer component provides a sliding panel that appears from the side of the screen. It's useful for navigation menus, filters, forms, and other secondary content that doesn't need to be visible at all times.

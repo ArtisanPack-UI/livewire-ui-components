@@ -1,3 +1,7 @@
+---
+title: Icon Component
+---
+
 # Icon Component
 
 The Icon component provides an easy way to display SVG icons in your application. It supports Heroicons out of the box and can be extended to use custom icons.

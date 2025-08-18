@@ -1,3 +1,7 @@
+---
+title: Custom Components
+---
+
 # Custom Components
 
 This guide explains how to create custom components that integrate with ArtisanPack UI Livewire Components. You'll learn how to extend existing components, create wrapper components, and build entirely new components that follow the same design patterns.

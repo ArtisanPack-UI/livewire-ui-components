@@ -1,3 +1,7 @@
+---
+title: Avatar Component
+---
+
 # Avatar Component
 
 The Avatar component displays a user's profile picture with optional title and subtitle text.
@@ -12,6 +16,59 @@ The Avatar component displays a user's profile picture with optional title and s
 
 ```blade
 <x-artisanpack-avatar placeholder="JD" alt="John Doe" />
+```
+
+## Color System
+
+### Predefined Variants
+
+Use predefined color variants for avatar backgrounds:
+
+```blade
+<x-artisanpack-avatar placeholder="JD" alt="John Doe" color="primary" />
+<x-artisanpack-avatar placeholder="SM" alt="Sarah Miller" color="secondary" />
+<x-artisanpack-avatar placeholder="AB" alt="Alex Brown" color="accent" />
+<x-artisanpack-avatar placeholder="LJ" alt="Lisa Johnson" color="info" />
+<x-artisanpack-avatar placeholder="MW" alt="Mike Wilson" color="success" />
+<x-artisanpack-avatar placeholder="ER" alt="Emily Rodriguez" color="warning" />
+<x-artisanpack-avatar placeholder="CT" alt="Chris Taylor" color="error" />
+```
+
+### Tailwind Color Palette
+
+Use any Tailwind color with intensity levels:
+
+```blade
+<x-artisanpack-avatar placeholder="JD" alt="John Doe" color="blue-500" />
+<x-artisanpack-avatar placeholder="SM" alt="Sarah Miller" color="purple-600" />
+<x-artisanpack-avatar placeholder="AB" alt="Alex Brown" color="green-400" />
+<x-artisanpack-avatar placeholder="LJ" alt="Lisa Johnson" color="red-500" />
+<x-artisanpack-avatar placeholder="MW" alt="Mike Wilson" color="yellow-300" />
+```
+
+### Custom Hex Colors
+
+Use custom hex color codes:
+
+```blade
+<x-artisanpack-avatar placeholder="JD" alt="John Doe" color="#ff6b6b" />
+<x-artisanpack-avatar placeholder="SM" alt="Sarah Miller" color="#4ecdc4" />
+<x-artisanpack-avatar placeholder="AB" alt="Alex Brown" color="#ffe66d" />
+```
+
+### Color Adjustments
+
+Fine-tune the background appearance:
+
+```blade
+<!-- Lighter background -->
+<x-artisanpack-avatar placeholder="JD" alt="John Doe" color="blue-500" color-adjustment="lighter" />
+
+<!-- Darker background -->
+<x-artisanpack-avatar placeholder="SM" alt="Sarah Miller" color="blue-500" color-adjustment="darker" />
+
+<!-- Subtle background -->
+<x-artisanpack-avatar placeholder="AB" alt="Alex Brown" color="blue-500" color-adjustment="subtle" />
 ```
 
 ## With Title and Subtitle
@@ -65,6 +122,8 @@ The Avatar component displays a user's profile picture with optional title and s
 | placeholder | string | '' | Text to display when no image is provided |
 | title | string | null | Title text displayed beside the avatar |
 | subtitle | string | null | Subtitle text displayed beside the avatar |
+| color | string | null | Color variant, Tailwind color (e.g., 'red-500'), or hex code (e.g., '#ff0000') |
+| color-adjustment | string | null | Background adjustment: 'lighter', 'darker', 'transparent', or 'subtle' |
 
 ## Slots
 

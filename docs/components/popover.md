@@ -1,3 +1,7 @@
+---
+title: Popover Component
+---
+
 # Popover Component
 
 The Popover component displays additional content when hovering over a trigger element. It's useful for providing contextual information, tooltips, or additional options without requiring a click or taking up permanent space in the UI.

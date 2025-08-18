@@ -1,3 +1,7 @@
+---
+title: Code Component
+---
+
 # Code Component
 
 The Code component provides a powerful code editor with syntax highlighting, autocompletion, and theme support. It's built on top of the Ace editor and integrates with Livewire for two-way data binding.

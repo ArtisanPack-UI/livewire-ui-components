@@ -1,3 +1,7 @@
+---
+title: MenuSub Component
+---
+
 # MenuSub Component
 
 The MenuSub component provides a way to create nested submenus within a menu. It allows for organizing menu items into collapsible sections, creating a hierarchical navigation structure.

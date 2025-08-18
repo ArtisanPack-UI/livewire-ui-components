@@ -56,6 +56,7 @@ use ArtisanPack\LivewireUiComponents\View\Components\Separator;
 use ArtisanPack\LivewireUiComponents\View\Components\Icon;
 use ArtisanPack\LivewireUiComponents\View\Components\ImageGallery;
 use ArtisanPack\LivewireUiComponents\View\Components\ImageLibrary;
+use ArtisanPack\LivewireUiComponents\View\Components\ImageSlider;
 use ArtisanPack\LivewireUiComponents\View\Components\Input;
 use ArtisanPack\LivewireUiComponents\View\Components\Kbd;
 use ArtisanPack\LivewireUiComponents\View\Components\ListItem;
@@ -130,7 +131,12 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
 
 		$this->publishes([
 			__DIR__.'/../resources/js' => public_path('vendor/artisanpack-ui/js'),
+			__DIR__.'/../resources/css' => public_path('vendor/artisanpack-ui/css'),
 		], 'artisanpack-assets');
+
+		$this->publishes([
+			__DIR__.'/../config/livewire-ui-components.php' => config_path('livewire-ui-components.php'),
+		], 'artisanpack-config');
 
 
 		// Publishing is only necessary when using the CLI.
@@ -200,6 +206,7 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         Blade::component($prefix . 'icon', Icon::class);
         Blade::component($prefix . 'image-gallery', ImageGallery::class);
         Blade::component($prefix . 'image-library', ImageLibrary::class);
+        Blade::component($prefix . 'image-slider', ImageSlider::class);
         Blade::component($prefix . 'input', Input::class);
         Blade::component($prefix . 'kbd', Kbd::class);
         Blade::component($prefix . 'list-item', ListItem::class);

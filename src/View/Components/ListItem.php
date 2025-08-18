@@ -43,10 +43,41 @@ class ListItem extends Component
         public ?bool $noHover = false,
         public ?string $link = null,
 
+        // New icon props
+        public ?string $icon = null,           // Custom icon name
+        public ?string $iconType = null,       // 'bullet', 'checkmark', 'arrow', 'dot'
+        public ?string $iconStatus = null,     // 'new', 'completed', 'error', 'warning', 'info'
+        public ?string $iconClass = 'w-4 h-4', // Icon classes
+        public ?bool $noIcon = false,          // Disable icon completely
+
         // Slots
         public mixed $actions = null,
+        public mixed $iconSlot = null,         // Custom icon slot
     ) {
         $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+    }
+
+    public function getIcon(): ?string
+    {
+        // Priority: custom icon > iconType > iconStatus > null
+        if ($this->icon) {
+            return $this->icon;
+        }
+        
+        if ($this->iconType) {
+            return config("livewire-ui-components.icons.list_item.{$this->iconType}");
+        }
+        
+        if ($this->iconStatus) {
+            return config("livewire-ui-components.icons.list_item.status.{$this->iconStatus}");
+        }
+        
+        return null;
+    }
+
+    public function shouldShowIcon(): bool
+    {
+        return !$this->noIcon && ($this->getIcon() || $this->iconSlot);
     }
 
     public function render(): View|Closure|string

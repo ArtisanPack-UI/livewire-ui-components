@@ -1,3 +1,7 @@
+---
+title: Table Component
+---
+
 # Table Component
 
 The Table component is a powerful data display element for presenting structured information in rows and columns. It supports sorting, pagination, and various styling options.

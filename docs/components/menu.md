@@ -1,3 +1,7 @@
+---
+title: Menu Component
+---
+
 # Menu Component
 
 The Menu component provides a vertical navigation menu with support for titles, separators, and nested submenus.

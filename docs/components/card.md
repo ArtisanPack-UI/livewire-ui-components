@@ -1,3 +1,7 @@
+---
+title: Card Component
+---
+
 # Card Component
 
 The Card component is a versatile container for displaying content in a clean, organized format. It supports headers, footers, and various styling options.

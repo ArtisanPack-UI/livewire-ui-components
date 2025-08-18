@@ -1,3 +1,7 @@
+---
+title: Choices Component
+---
+
 # Choices Component
 
 The Choices component is an advanced form element that provides a searchable, multi-select dropdown interface. It offers enhanced functionality over the standard select component, including search capabilities, tagging, and remote data loading.

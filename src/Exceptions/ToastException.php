@@ -30,22 +30,75 @@ use Illuminate\Support\Facades\Blade;
 
 class ToastException extends Exception
 {
+    /**
+     * The type of toast (info, success, error, warning).
+     *
+     * @var string
+     */
     protected string $type = 'info';
 
+    /**
+     * The toast title.
+     *
+     * @var string|null
+     */
     protected ?string $title = null;
 
+    /**
+     * The toast description.
+     *
+     * @var string|null
+     */
     protected ?string $description = null;
 
+    /**
+     * The position of the toast on screen.
+     *
+     * @var string
+     */
     protected string $position = 'toast-top toast-end';
 
+    /**
+     * The icon to display in the toast.
+     *
+     * @var string
+     */
     protected string $icon = 'o-information-circle';
 
+    /**
+     * The CSS classes for styling the toast.
+     *
+     * @var string
+     */
     protected string $css = 'alert-info';
 
+    /**
+     * The timeout duration in milliseconds.
+     *
+     * @var int
+     */
     protected int $timeout = 3000;
 
+    /**
+     * Whether to prevent the default exception handling.
+     *
+     * @var bool
+     */
     protected bool $preventDefault = true;
 
+    /**
+     * Create a typed toast message exception.
+     *
+     * @param string $type The toast type (info, success, error, warning)
+     * @param string $title The toast title
+     * @param string|null $description The toast description
+     * @param string $position The toast position on screen
+     * @param string $icon The icon to display
+     * @param string $css The CSS classes for styling
+     * @param int $timeout The timeout duration in milliseconds
+     * @return self
+     * @since 1.0.0
+     */
     public static function typedMessage(
         string $type,
         string $title,
@@ -68,6 +121,18 @@ class ToastException extends Exception
         return $instance;
     }
 
+    /**
+     * Create an info toast message exception.
+     *
+     * @param string $title The toast title
+     * @param string|null $description The toast description
+     * @param string $position The toast position on screen
+     * @param string $icon The icon to display
+     * @param string $css The CSS classes for styling
+     * @param int $timeout The timeout duration in milliseconds
+     * @return self
+     * @since 1.0.0
+     */
     public static function info(
         string $title,
         string $description = null,
@@ -87,6 +152,18 @@ class ToastException extends Exception
         );
     }
 
+    /**
+     * Create a success toast message exception.
+     *
+     * @param string $title The toast title
+     * @param string|null $description The toast description
+     * @param string $position The toast position on screen
+     * @param string $icon The icon to display
+     * @param string $css The CSS classes for styling
+     * @param int $timeout The timeout duration in milliseconds
+     * @return self
+     * @since 1.0.0
+     */
     public static function success(
         string $title,
         string $description = null,
@@ -106,6 +183,18 @@ class ToastException extends Exception
         );
     }
 
+    /**
+     * Create an error toast message exception.
+     *
+     * @param string $title The toast title
+     * @param string|null $description The toast description
+     * @param string $position The toast position on screen
+     * @param string $icon The icon to display
+     * @param string $css The CSS classes for styling
+     * @param int $timeout The timeout duration in milliseconds
+     * @return self
+     * @since 1.0.0
+     */
     public static function error(
         string $title,
         string $description = null,
@@ -125,6 +214,18 @@ class ToastException extends Exception
         );
     }
 
+    /**
+     * Create a warning toast message exception.
+     *
+     * @param string $title The toast title
+     * @param string|null $description The toast description
+     * @param string $position The toast position on screen
+     * @param string $icon The icon to display
+     * @param string $css The CSS classes for styling
+     * @param int $timeout The timeout duration in milliseconds
+     * @return self
+     * @since 1.0.0
+     */
     public static function warning(
         string $title,
         string $description = null,
@@ -144,6 +245,12 @@ class ToastException extends Exception
         );
     }
 
+    /**
+     * Allow default exception handling to proceed.
+     *
+     * @return self
+     * @since 1.0.0
+     */
     public function permitDefault(): self
     {
         $this->preventDefault = false;
@@ -151,6 +258,13 @@ class ToastException extends Exception
         return $this;
     }
 
+    /**
+     * Render the exception as a JSON response for Livewire requests.
+     *
+     * @param Request $request The incoming request
+     * @return JsonResponse|false JSON response for Livewire requests, false otherwise
+     * @since 1.0.0
+     */
     public function render(Request $request): JsonResponse|false
     {
         if ($request->hasHeader('x-livewire')) {

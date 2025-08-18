@@ -1,3 +1,7 @@
+---
+title: Chart Component
+---
+
 # Chart Component
 
 The Chart component provides a wrapper for Chart.js, allowing you to easily create interactive charts in your Laravel application.

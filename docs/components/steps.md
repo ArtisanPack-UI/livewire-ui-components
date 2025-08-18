@@ -1,3 +1,7 @@
+---
+title: Steps Component
+---
+
 # Steps Component
 
 The Steps component provides a visual representation of progress through a sequence of steps or stages. It's ideal for multi-step forms, wizards, onboarding flows, and any process that involves a series of actions.

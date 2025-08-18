@@ -1,5 +1,20 @@
 # ArtisanPack UI Livewire UI Components
 
+## [0.6.0] - 2025-08-18
+- Updated rating component functionality and accessibility.
+- Added image slider and image gallery components.
+- Updated carousel component with customizable icons and accessibility improvements.
+- Added support for vertical tabs.
+- Added customization options for stat component.
+- Added search functionality for tags component.
+- Added pagination component options.
+- Added drag-and-drop upload functionality for file and image library components.
+- Added custom icon support for ListItem and Loading components.
+- Added color and theme support for datepicker component.
+- Added color variants for avatar, alert, badge, button and toast components.
+- Added button component variants.
+- Repository cleanup and documentation improvements.
+
 ## [0.5.0] - 2025-08-10
 - Added random color generator functionality.
 - Added icon options for accordion and collapse components.

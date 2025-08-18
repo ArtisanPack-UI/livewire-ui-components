@@ -1,3 +1,7 @@
+---
+title: Collapse Component
+---
+
 # Collapse Component
 
 The Collapse component provides a way to toggle the visibility of content, creating expandable and collapsible sections. It's useful for FAQs, accordion menus, and reducing visual clutter in information-dense interfaces.

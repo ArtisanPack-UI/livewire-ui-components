@@ -1,32 +1,14 @@
-<div
-    x-data="{
-        init() {
-            const lightbox = new PhotoSwipeLightbox({
-                gallery: '#gallery-{{ $uuid }}',
-                children: 'a',
-                showHideAnimationType: 'fade',
-                pswpModule: PhotoSwipe
-            });
-
-            lightbox.init();
-        }
-    }"
->
-    <div id="gallery-{{ $uuid }}" {{ $attributes->class("pswp-gallery pswp-gallery--single-column carousel") }} >
-        @foreach($images as $image)
-            <a
-                class="carousel-item"
-                href="{{ $image }}"
-                target="_blank"
-                data-pswp-width="200"
-                data-pswp-height="200"
-            >
+<div class="w-full">
+    <!-- Simple Gallery Grid -->
+    <div class="grid {{ $getGapClass() }} {{ $getGridColumnClasses() }}">
+        @foreach($images as $index => $image)
+            <div class="group relative overflow-hidden rounded-lg {{ $getAspectRatioClass() }}">
                 <img
-                    src="{{ $image }}"
-                    class="object-cover hover:opacity-70"
-                    onload="this.parentNode.setAttribute('data-pswp-width', this.naturalWidth); this.parentNode.setAttribute('data-pswp-height', this.naturalHeight)"
+                    src="{{ is_string($image) ? $image : ($image['url'] ?? $image['src'] ?? '') }}"
+                    alt="Image {{ $index + 1 }}"
+                    class="w-full h-full object-cover transition-all duration-300 group-hover:scale-105"
                 />
-            </a>
+            </div>
         @endforeach
     </div>
 </div>

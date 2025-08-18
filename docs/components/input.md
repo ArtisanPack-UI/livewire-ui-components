@@ -1,3 +1,7 @@
+---
+title: Input Component
+---
+
 # Input Component
 
 The Input component is a versatile form element for collecting user text input. It supports various input types, validation, and integrates seamlessly with Livewire.

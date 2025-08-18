@@ -1,3 +1,7 @@
+---
+title: Calendar Component
+---
+
 # Calendar Component
 
 The Calendar component is a flexible, responsive calendar solution that supports multiple views, event display, and color schemes.

@@ -1,3 +1,7 @@
+---
+title: Tags Component
+---
+
 # Tags Component
 
 The Tags component is a form element that allows users to create and manage multiple tags or labels. It provides an intuitive interface for adding, editing, and removing tags, with support for validation, suggestions, and customization.

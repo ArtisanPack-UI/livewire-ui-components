@@ -1,27 +1,60 @@
+@php
+    $sizeClasses = $sizeClasses();
+    $layoutClasses = $layoutClasses();
+@endphp
+
 <div
-    {{ $attributes->class(["bg-base-100 rounded-lg px-5 py-4  w-full", "lg:tooltip $tooltipPosition" => $tooltip]) }}
+    {{ $attributes->class([
+        "bg-base-100 rounded-lg w-full",
+        $sizeClasses['container'],
+        "lg:tooltip $tooltipPosition" => $tooltip
+    ]) }}
 
     @if($tooltip)
         data-tip="{{ $tooltip }}"
     @endif
 >
-    <div class="flex items-center gap-3">
-        @if($icon)
-            <div class="  {{ $color }}">
-                <x-artisanpack-icon :name="$icon" class="w-9 h-9" />
+    <div class="{{ $layoutClasses['container'] }}">
+        {{-- Icon First (left/top) --}}
+        @if($icon && $shouldRenderIconFirst())
+            <div class="{{ $color }}">
+                <x-artisanpack-icon :name="$icon" :class="$sizeClasses['icon']" />
             </div>
         @endif
 
-        <div class="text-left rtl:text-right">
-            @if($title)
-                <div class="text-xs text-base-content/50 whitespace-nowrap">{{ $title }}</div>
+        <div class="{{ $layoutClasses['content'] }}">
+            {{-- Title First (top position) --}}
+            @if($title && $shouldRenderTitleFirst())
+                <div class="text-base-content/50 whitespace-nowrap {{ $sizeClasses['title'] }}">
+                    {{ $title }}
+                </div>
             @endif
 
-            <div class="font-black text-xl">{{ $value ?? $slot }}</div>
+            {{-- Value/Slot --}}
+            <div class="font-black {{ $sizeClasses['value'] }}">
+                {{ $value ?? $slot }}
+            </div>
 
+            {{-- Title Last (bottom position) --}}
+            @if($title && !$shouldRenderTitleFirst())
+                <div class="text-base-content/50 whitespace-nowrap {{ $sizeClasses['title'] }}">
+                    {{ $title }}
+                </div>
+            @endif
+
+            {{-- Description --}}
             @if($description)
-                <div class="stat-desc">{{ $description }}</div>
+                <div class="stat-desc {{ $sizeClasses['description'] }}">
+                    {{ $description }}
+                </div>
             @endif
         </div>
+
+        {{-- Icon Last (right/bottom) --}}
+        @if($icon && !$shouldRenderIconFirst())
+            <div class="{{ $color }}">
+                <x-artisanpack-icon :name="$icon" :class="$sizeClasses['icon']" />
+            </div>
+        @endif
     </div>
 </div>

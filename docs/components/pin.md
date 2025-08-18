@@ -1,3 +1,7 @@
+---
+title: Pin Component
+---
+
 # Pin Component
 
 The Pin component is a specialized form element designed for entering PIN codes, verification codes, or any other short numeric or alphanumeric sequences. It provides a user-friendly interface with individual input fields for each character, automatic focus management, and validation capabilities.

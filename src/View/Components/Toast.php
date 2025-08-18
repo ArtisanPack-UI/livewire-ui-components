@@ -20,6 +20,7 @@ namespace ArtisanPack\LivewireUiComponents\View\Components;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
+use ArtisanPack\LivewireUiComponents\Styling\ColorGenerator;
 /**
  * Toast Class
  *
@@ -31,8 +32,34 @@ use Illuminate\View\Component;
 class Toast extends Component
 {
     public function __construct(
-        public string $position = 'toast-top toast-end'
+        public string $position = 'toast-top toast-end',
+        public ?string $color = null,
+        public ?string $colorAdjustment = null,
     ) {
+    }
+
+    /**
+     * Get color-specific CSS classes using ColorGenerator.
+     *
+     * @return array
+     * @since 1.1.0
+     */
+    public function getColorClasses(): array
+    {
+        if (!$this->color) {
+            return [];
+        }
+
+        $colorGenerator = new ColorGenerator();
+        
+        // Use ColorGenerator for color resolution
+        $colorClasses = $colorGenerator->resolveComponentColor(
+            $this->color, 
+            $this->colorAdjustment, 
+            'toast'
+        );
+        
+        return $colorClasses;
     }
 
     public function render(): View|Closure|string

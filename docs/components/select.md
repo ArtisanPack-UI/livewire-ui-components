@@ -1,3 +1,7 @@
+---
+title: Select Component
+---
+
 # Select Component
 
 The Select component is a form element that allows users to choose one option from a dropdown list. It provides a user-friendly way to implement select inputs with various styling options and features.

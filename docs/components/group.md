@@ -1,3 +1,7 @@
+---
+title: Group Component
+---
+
 # Group Component
 
 The Group component provides a way to create a group of radio buttons styled as a button group. It's useful for selecting a single option from a small set of choices in a compact, visually appealing format.

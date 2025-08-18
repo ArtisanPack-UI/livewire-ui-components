@@ -1,6 +1,31 @@
 <div class="flex items-center gap-3">
     <div class="avatar @if(empty($image)) avatar-placeholder @endif">
-        <div {{ $attributes->class(["w-7 rounded-full", "bg-neutral text-neutral-content" => empty($image)]) }}>
+        <div 
+            @php
+                $colorClasses = $getColorClasses();
+                $baseClasses = ["w-7", "rounded-full"];
+                
+                // Handle placeholder styling
+                if (empty($image)) {
+                    if (!empty($colorClasses)) {
+                        // Use new color system for placeholder
+                        foreach ($colorClasses as $type => $class) {
+                            if ($type === 'style' && $class) {
+                                // Handle inline styles for hex colors
+                                $attributes = $attributes->merge(['style' => $class]);
+                            } elseif ($type !== 'style' && $class) {
+                                $baseClasses[] = $class;
+                            }
+                        }
+                    } else {
+                        // Fall back to default neutral styling
+                        $baseClasses[] = "bg-neutral";
+                        $baseClasses[] = "text-neutral-content";
+                    }
+                }
+            @endphp
+            {{ $attributes->class($baseClasses) }}
+        >
             @if(empty($image))
                 <span class="text-xs" alt="{{ $alt }}">{{ $placeholder }}</span>
             @else

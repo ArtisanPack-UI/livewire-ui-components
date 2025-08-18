@@ -1,3 +1,7 @@
+---
+title: Tabs Component
+---
+
 # Tabs Component
 
 The Tabs component provides a way to organize content into multiple sections that can be displayed one at a time. It's ideal for interfaces where users need to switch between related content without navigating to a different page.
@@ -175,14 +179,178 @@ The Tabs component provides a way to organize content into multiple sections tha
 </div>
 ```
 
+### Vertical Tabs
+
+The tabs component supports vertical orientations, allowing tab navigation to be positioned on the left or right side of the content.
+
+#### Vertical Left Tabs
+
+```php
+<x-artisanpack-tabs orientation="vertical-left">
+    <x-artisanpack-tab name="dashboard" label="Dashboard">
+        <div class="p-4">
+            <h3 class="text-lg font-bold">Dashboard</h3>
+            <p>Main dashboard content with charts and widgets.</p>
+        </div>
+    </x-artisanpack-tab>
+    
+    <x-artisanpack-tab name="analytics" label="Analytics">
+        <div class="p-4">
+            <h3 class="text-lg font-bold">Analytics</h3>
+            <p>Analytics and reporting data.</p>
+        </div>
+    </x-artisanpack-tab>
+    
+    <x-artisanpack-tab name="reports" label="Reports">
+        <div class="p-4">
+            <h3 class="text-lg font-bold">Reports</h3>
+            <p>Generated reports and exports.</p>
+        </div>
+    </x-artisanpack-tab>
+</x-artisanpack-tabs>
+```
+
+#### Vertical Right Tabs
+
+```php
+<x-artisanpack-tabs orientation="vertical-right">
+    <x-artisanpack-tab name="messages" label="Messages">
+        <div class="p-4">
+            <h3 class="text-lg font-bold">Messages</h3>
+            <p>Your messages and conversations.</p>
+        </div>
+    </x-artisanpack-tab>
+    
+    <x-artisanpack-tab name="notifications" label="Notifications">
+        <div class="p-4">
+            <h3 class="text-lg font-bold">Notifications</h3>
+            <p>Recent notifications and alerts.</p>
+        </div>
+    </x-artisanpack-tab>
+    
+    <x-artisanpack-tab name="history" label="History">
+        <div class="p-4">
+            <h3 class="text-lg font-bold">History</h3>
+            <p>Activity history and logs.</p>
+        </div>
+    </x-artisanpack-tab>
+</x-artisanpack-tabs>
+```
+
+#### Vertical Tabs with Custom Styling
+
+```php
+<!-- Custom vertical-left tabs -->
+<x-artisanpack-tabs 
+    orientation="vertical-left"
+    vertical-tabs-class="relative w-full flex flex-col lg:flex-row"
+    vertical-label-class="font-bold px-4 py-3"
+    vertical-active-class="bg-primary text-primary-content border-r-4 border-primary"
+    vertical-label-div-class="border-r-2 border-base-300 flex flex-col min-w-60">
+    
+    <x-artisanpack-tab name="tab1" label="Custom Tab 1">
+        <div class="p-6">
+            <h3 class="text-xl font-bold">Custom Styled Content</h3>
+            <p>This tab uses custom styling classes.</p>
+        </div>
+    </x-artisanpack-tab>
+    
+    <x-artisanpack-tab name="tab2" label="Custom Tab 2">
+        <div class="p-6">
+            <h3 class="text-xl font-bold">Another Custom Tab</h3>
+            <p>Each tab can have different content and styling.</p>
+        </div>
+    </x-artisanpack-tab>
+</x-artisanpack-tabs>
+```
+
+#### Responsive Vertical Tabs
+
+Vertical tabs automatically adapt to mobile devices, stacking vertically on small screens and displaying horizontally on larger screens.
+
+```php
+<div class="h-96"> <!-- Fixed height container recommended for vertical tabs -->
+    <x-artisanpack-tabs orientation="vertical-left">
+        <x-artisanpack-tab name="mobile-tab1" label="Mobile Friendly">
+            <div class="p-4">
+                <h3 class="text-lg font-bold">Responsive Design</h3>
+                <p>On mobile: tabs display horizontally at the top.</p>
+                <p>On desktop: tabs display vertically on the left.</p>
+            </div>
+        </x-artisanpack-tab>
+        
+        <x-artisanpack-tab name="mobile-tab2" label="Adaptive Layout">
+            <div class="p-4">
+                <h3 class="text-lg font-bold">Adaptive Behavior</h3>
+                <p>The layout automatically adjusts based on screen size.</p>
+            </div>
+        </x-artisanpack-tab>
+    </x-artisanpack-tabs>
+</div>
+```
+
+#### Vertical Tabs with Icons
+
+```php
+<x-artisanpack-tabs orientation="vertical-left">
+    <x-artisanpack-tab name="home" label="Home" icon="home">
+        <div class="p-4">
+            <h3 class="text-lg font-bold">Home</h3>
+            <p>Welcome to the home page.</p>
+        </div>
+    </x-artisanpack-tab>
+    
+    <x-artisanpack-tab name="settings" label="Settings" icon="cog">
+        <div class="p-4">
+            <h3 class="text-lg font-bold">Settings</h3>
+            <p>Manage your preferences.</p>
+        </div>
+    </x-artisanpack-tab>
+    
+    <x-artisanpack-tab name="profile" label="Profile" icon="user">
+        <div class="p-4">
+            <h3 class="text-lg font-bold">Profile</h3>
+            <p>View and edit your profile.</p>
+        </div>
+    </x-artisanpack-tab>
+</x-artisanpack-tabs>
+```
+
 ## Props
+
+### Basic Props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `style` | string | `null` | Tab style (`null` for default, `lifted`, `boxed`) |
-| `size` | string | `md` | Size of the tabs (`xs`, `sm`, `md`, `lg`) |
 | `id` | string | `null` | Optional ID for the tabs container |
-| `remember` | boolean | `false` | Whether to remember the active tab in local storage |
+| `selected` | string | `null` | Pre-selected tab name |
+| `orientation` | string | `horizontal` | Tab orientation (`horizontal`, `vertical-left`, `vertical-right`) |
+
+### Horizontal Layout Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `labelClass` | string | `font-semibold pb-1` | CSS classes for horizontal tab labels |
+| `activeClass` | string | `border-b-[length:var(--border)] border-b-base-content/50` | CSS classes for active horizontal tabs |
+| `labelDivClass` | string | `border-b-[length:var(--border)] border-b-base-content/10 flex overflow-x-auto` | CSS classes for horizontal label container |
+| `tabsClass` | string | `relative w-full` | CSS classes for horizontal tabs container |
+
+### Vertical Layout Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `verticalTabsClass` | string | `relative w-full flex flex-col md:flex-row` | CSS classes for vertical tabs container |
+| `verticalLabelClass` | string | `font-semibold px-3 py-2 md:pr-1 md:pl-1 md:py-2` | CSS classes for vertical tab labels |
+| `verticalActiveClass` | string | `border-b-[length:var(--border)] border-b-base-content/50 md:border-b-0 md:border-r-[length:var(--border)] md:border-r-base-content/50` | CSS classes for active vertical-left tabs |
+| `verticalLabelDivClass` | string | `border-b-[length:var(--border)] border-b-base-content/10 flex overflow-x-auto md:border-b-0 md:border-r-[length:var(--border)] md:border-r-base-content/10 md:flex-col md:overflow-y-auto md:min-w-48` | CSS classes for vertical-left label container |
+| `verticalContentClass` | string | `flex-1 pt-4 md:pt-0` | CSS classes for vertical content area |
+
+### Vertical Right Layout Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `verticalRightActiveClass` | string | `border-b-[length:var(--border)] border-b-base-content/50 md:border-b-0 md:border-l-[length:var(--border)] md:border-l-base-content/50` | CSS classes for active vertical-right tabs |
+| `verticalRightLabelDivClass` | string | `border-b-[length:var(--border)] border-b-base-content/10 flex overflow-x-auto md:border-b-0 md:border-l-[length:var(--border)] md:border-l-base-content/10 md:flex-col md:overflow-y-auto md:min-w-48` | CSS classes for vertical-right label container |
 
 ## Slots
 

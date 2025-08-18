@@ -1,3 +1,7 @@
+---
+title: SelectGroup Component
+---
+
 # SelectGroup Component
 
 The SelectGroup component is used to group related select options together with a label, providing better organization and visual hierarchy in select dropdowns.

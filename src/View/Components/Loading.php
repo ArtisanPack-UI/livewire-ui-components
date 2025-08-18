@@ -34,8 +34,37 @@ class Loading extends Component
 
     public function __construct(
         public ?string $id = null,
+        
+        // New props
+        public ?string $type = null,           // 'css', 'svg', 'custom'
+        public ?string $icon = null,           // Custom icon name for SVG type
+        public ?string $customSvg = null,      // Custom SVG content
+        public ?bool $animated = true,         // Enable/disable animation
     ) {
         $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+    }
+
+    public function getLoadingType(): string
+    {
+        if ($this->type) {
+            return $this->type;
+        }
+        
+        return config('livewire-ui-components.icons.loading.default_type', 'css');
+    }
+
+    public function getLoadingIcon(): ?string
+    {
+        if ($this->icon) {
+            return $this->icon;
+        }
+        
+        return config('livewire-ui-components.icons.loading.spinner');
+    }
+
+    public function shouldUseSvg(): bool
+    {
+        return $this->getLoadingType() === 'svg' || $this->icon || $this->customSvg;
     }
 
     public function render(): View|Closure|string

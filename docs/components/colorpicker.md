@@ -1,3 +1,7 @@
+---
+title: Colorpicker Component
+---
+
 # Colorpicker Component
 
 The Colorpicker component is a form element that provides an interactive interface for selecting colors. It offers various color selection modes, format options, and integrates seamlessly with Livewire for handling color inputs.
