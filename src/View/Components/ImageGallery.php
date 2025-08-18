@@ -34,7 +34,7 @@ class ImageGallery extends Component
     public function __construct(
         public array $images,                           // Required: Array of image URLs or objects
         public ?string $id = null,                     // Optional: Custom ID
-        public array $columns = [                      // Responsive columns
+        public int|array $columns = [                  // Responsive columns or single integer
             'default' => 1,
             'sm' => 2,
             'md' => 3,
@@ -51,6 +51,18 @@ class ImageGallery extends Component
         public int $itemsPerPage = 0,                  // 0 = no pagination
         public string $loadingStyle = 'skeleton'       // skeleton|spinner|fade
     ) {
+        // Convert integer columns to array format
+        if (is_int($this->columns)) {
+            $cols = $this->columns;
+            $this->columns = [
+                'default' => 1,
+                'sm' => min(2, $cols),
+                'md' => min(3, $cols),
+                'lg' => min(4, $cols),
+                'xl' => $cols
+            ];
+        }
+        
         $this->uuid = "artisanpack-gallery-" . md5(serialize($this)) . ($id ? "-{$id}" : '');
     }
 
