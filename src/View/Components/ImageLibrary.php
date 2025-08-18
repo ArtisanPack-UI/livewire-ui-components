@@ -51,6 +51,12 @@ class ImageLibrary extends Component
         public ?array $cropConfig = [],
         public Collection $preview = new Collection(),
 
+        // Drag and Drop
+        public ?bool $withDragDrop = false,
+        public ?string $dragDropText = "Drop images here",
+        public ?string $dragDropMultipleText = "Drop {count} images here",
+        public ?string $dragDropClass = null,
+
     ) {
         $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
     }

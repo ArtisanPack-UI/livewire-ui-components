@@ -113,7 +113,29 @@ The File component is a form element that provides an enhanced file upload inter
 ```php
 <x-artisanpack-file 
     label="Drop Files Here" 
-    with-drag-drop
+    :with-drag-drop="true"
+/>
+```
+
+### File Upload with Custom Drag and Drop Text
+
+```php
+<x-artisanpack-file 
+    label="Document Upload" 
+    :with-drag-drop="true"
+    drag-drop-text="Drop your document here"
+/>
+```
+
+### File Upload with Custom Drag and Drop Styling
+
+```php
+<x-artisanpack-file 
+    label="Image Upload" 
+    :with-drag-drop="true"
+    drag-drop-text="Drop image here"
+    drag-drop-class="border-success bg-success/20"
+    accept="image/*"
 />
 ```
 
@@ -196,6 +218,8 @@ The File component is a form element that provides an enhanced file upload inter
 | `button-class` | string | `null` | Additional classes for the button |
 | `with-preview` | boolean | `false` | Whether to show a preview of the selected file(s) |
 | `with-drag-drop` | boolean | `false` | Whether to enable drag and drop functionality |
+| `drag-drop-text` | string | `'Drop files here'` | Text displayed in the drag and drop overlay |
+| `drag-drop-class` | string | `null` | Additional CSS classes for drag and drop styling |
 | `with-progress` | boolean | `false` | Whether to show a progress indicator during upload (requires Livewire) |
 | `max-file-size` | integer | `null` | Maximum file size in kilobytes |
 | `validate` | boolean | `false` | Whether to enable client-side validation |
