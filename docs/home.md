@@ -87,6 +87,7 @@ For a complete list of components, see the [Components Overview](components/inde
 
 ## Resources
 
+- **AI Guidelines**: [AI Guidelines](ai-guidelines.md) - Guidelines for creating reusable, performant, and accessible Livewire components
 - **Repository**: [GitLab Repository](https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components)
 - **Issues**: [GitLab Issues](https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components/-/issues)
 - **Support**: For support, please open an issue on GitLab or contact the maintainer at [me@jacobmartella.com](mailto:me@jacobmartella.com)
