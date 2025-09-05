@@ -261,6 +261,6 @@ The Toggle component follows accessibility best practices:
 
 ## Related Components
 
-- [Form](form.md) - Container for form elements
-- [Checkbox](checkbox.md) - Checkbox input
-- [ThemeToggle](theme-toggle.md) - Specialized toggle for theme switching
+- [Form](form) - Container for form elements
+- [Checkbox](checkbox) - Checkbox input
+- [ThemeToggle](theme-toggle) - Specialized toggle for theme switching

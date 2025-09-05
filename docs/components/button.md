@@ -242,6 +242,6 @@ The Button component follows accessibility best practices:
 
 ## Related Components
 
-- [Form](form.md) - Container for form elements
-- [Input](input.md) - Text input field
-- [Icon](icon.md) - SVG icon display
+- [Form](form) - Container for form elements
+- [Input](input) - Text input field
+- [Icon](icon) - SVG icon display

@@ -268,6 +268,6 @@ The Colorpicker component follows accessibility best practices:
 
 ## Related Components
 
-- [Form](form.md) - Container for form elements
-- [Input](input.md) - Standard text input
-- [ThemeToggle](theme-toggle.md) - Specialized toggle for theme switching
+- [Form](form) - Container for form elements
+- [Input](input) - Standard text input
+- [ThemeToggle](theme-toggle) - Specialized toggle for theme switching

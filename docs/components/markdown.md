@@ -221,6 +221,6 @@ The Markdown component follows accessibility best practices:
 
 ## Related Components
 
-- [Textarea](textarea.md) - Simple text area input
-- [Editor](editor.md) - Rich text editor
-- [Code](code.md) - Code editor with syntax highlighting
+- [Textarea](textarea) - Simple text area input
+- [Editor](editor) - Rich text editor
+- [Code](code) - Code editor with syntax highlighting

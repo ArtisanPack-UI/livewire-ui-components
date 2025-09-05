@@ -176,6 +176,6 @@ The Code component follows accessibility best practices:
 
 ## Related Components
 
-- [Textarea](textarea.md) - Simple text area input
-- [Markdown](markdown.md) - Markdown editor
-- [Editor](editor.md) - Rich text editor
+- [Textarea](textarea) - Simple text area input
+- [Markdown](markdown) - Markdown editor
+- [Editor](editor) - Rich text editor

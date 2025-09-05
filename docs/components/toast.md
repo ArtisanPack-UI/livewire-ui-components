@@ -198,6 +198,6 @@ The Toast component follows accessibility best practices:
 
 ## Related Components
 
-- [Alert](alert.md) - Static alert messages
-- [Modal](modal.md) - Dialog boxes for important interactions
-- [Icon](icon.md) - SVG icon display
+- [Alert](alert) - Static alert messages
+- [Modal](modal) - Dialog boxes for important interactions
+- [Icon](icon) - SVG icon display

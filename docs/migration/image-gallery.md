@@ -402,8 +402,8 @@ The new components include smart lazy loading:
 If you encounter issues during migration:
 
 1. Check the component documentation:
-   - [ImageSlider Documentation](../components/image-slider.md)
-   - [ImageGallery Documentation](../components/image-gallery.md)
+   - [ImageSlider Documentation](../components/image-slider)
+   - [ImageGallery Documentation](../components/image-gallery)
 
 2. Review your PhotoSwipe integration
 3. Test with simple examples before complex implementations

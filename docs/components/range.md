@@ -280,6 +280,6 @@ The Range component follows accessibility best practices:
 
 ## Related Components
 
-- [Form](form.md) - Container for form elements
-- [Input](input.md) - Standard text input
-- [Slider](slider.md) - Advanced slider component with additional features
+- [Form](form) - Container for form elements
+- [Input](input) - Standard text input
+- [Slider](slider) - Advanced slider component with additional features

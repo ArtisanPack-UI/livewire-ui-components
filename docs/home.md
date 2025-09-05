@@ -45,7 +45,7 @@ composer require artisanpack-ui/livewire-ui-components
 php artisan livewire-ui-components:install
 ```
 
-For detailed installation instructions, see the [Installation Guide](installation.md).
+For detailed installation instructions, see the [Installation Guide](installation).
 
 ### Basic Usage Example
 
@@ -68,26 +68,25 @@ For detailed installation instructions, see the [Installation Guide](installatio
 ArtisanPack UI Livewire Components includes a wide range of components for various use cases:
 
 ### Form Components
-- [Input](components/input.md) - Text input fields
-- [Checkbox](components/checkbox.md) - Checkbox inputs
-- [Select](components/select.md) - Dropdown select menus
-- [Button](components/button.md) - Various button styles
+- [Input](components/input) - Text input fields
+- [Checkbox](components/checkbox) - Checkbox inputs
+- [Select](components/select) - Dropdown select menus
+- [Button](components/button) - Various button styles
 
 ### Layout Components
-- [Card](components/card.md) - Content containers
-- [Modal](components/modal.md) - Modal dialogs
-- [Tabs](components/tabs.md) - Tabbed interfaces
+- [Card](components/card) - Content containers
+- [Modal](components/modal) - Modal dialogs
+- [Tabs](components/tabs) - Tabbed interfaces
 
 ### Data Display Components
-- [Table](components/table.md) - Data tables
-- [Chart](components/chart.md) - Data visualization
-- [Pagination](components/pagination.md) - Page navigation
+- [Table](components/table) - Data tables
+- [Chart](components/chart) - Data visualization
+- [Pagination](components/pagination) - Page navigation
 
-For a complete list of components, see the [Components Overview](components/index.md).
+For a complete list of components, see the [Components Overview](components).
 
 ## Resources
 
-- **AI Guidelines**: [AI Guidelines](ai-guidelines.md) - Guidelines for creating reusable, performant, and accessible Livewire components
 - **Repository**: [GitLab Repository](https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components)
 - **Issues**: [GitLab Issues](https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components/-/issues)
 - **Support**: For support, please open an issue on GitLab or contact the maintainer at [me@jacobmartella.com](mailto:me@jacobmartella.com)

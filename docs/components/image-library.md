@@ -286,6 +286,6 @@ The ImageLibrary component follows accessibility best practices:
 
 ## Related Components
 
-- [ImageGallery](image-gallery.md) - Component for displaying images in a gallery format
-- [File](file.md) - Single file upload component
-- [Modal](modal.md) - Used for the crop dialog
+- [ImageGallery](image-gallery) - Component for displaying images in a gallery format
+- [File](file) - Single file upload component
+- [Modal](modal) - Used for the crop dialog

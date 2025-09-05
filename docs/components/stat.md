@@ -352,6 +352,6 @@ If you're upgrading from a previous version that used slot-based API, here's how
 
 ## Related Components
 
-- [Card](card.md) - Container for content with similar styling
-- [Progress](progress.md) - Visual indicator of progress
-- [Chart](chart.md) - More complex data visualization
+- [Card](card) - Container for content with similar styling
+- [Progress](progress) - Visual indicator of progress
+- [Chart](chart) - More complex data visualization

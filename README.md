@@ -2,33 +2,90 @@
 
 ArtisanPack UI Livewire UI Components is a comprehensive set of UI components for Livewire powered by daisyUI and Tailwind CSS. This package provides a collection of beautiful, responsive, and customizable components to accelerate your Laravel application development.
 
-## Features
+## 🚀 Quick Start
 
-- **TALL Stack Integration**: Built specifically for the TALL stack (Tailwind CSS, Alpine.js, Laravel, Livewire)
-- **daisyUI Powered**: Leverages the beautiful daisyUI component library
-- **Livewire 3 Compatible**: Fully compatible with Livewire 3
-- **Customizable**: Easily adapt components to match your application's design
-- **Comprehensive**: Includes a wide range of UI components for various use cases
-
-## Installation
-
-You can install the package via composer:
+### Installation
 
 ```bash
+# Install the package
 composer require artisanpack-ui/livewire-ui-components
+
+# Run the interactive installer
+php artisan livewire-ui-components:install
+
+# Compile your assets
+npm run dev
 ```
 
-## Usage
-
-After installation, you can use the components in your Livewire views:
+### Basic Usage
 
 ```blade
-<x-artisanpack-artisanpack-button>Click Me</x-artisanpack-button>
+<!-- Simple button -->
+<x-artisanpack-button>Click Me</x-artisanpack-button>
+
+<!-- Card with header and footer -->
+<x-artisanpack-card>
+    <x-slot:header>
+        <h3 class="text-lg font-bold">Card Title</h3>
+    </x-slot:header>
+    
+    <p>Card content goes here.</p>
+    
+    <x-slot:footer>
+        <x-artisanpack-button color="primary">Action</x-artisanpack-button>
+    </x-slot:footer>
+</x-artisanpack-card>
 ```
 
-## Documentation
+## ✨ Key Features
 
-Comprehensive documentation is available in our [Documentation Wiki](https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components/-/wikis/home). The wiki contains detailed information about all available components, their properties, and usage examples.
+- **🎯 70+ Pre-built Components**: From simple inputs to complex data tables and charts
+- **⚡ TALL Stack Integration**: Built specifically for Tailwind CSS, Alpine.js, Laravel, and Livewire
+- **🎨 DaisyUI Powered**: Leverages the beautiful daisyUI component library for consistent styling
+- **🔧 Livewire 3 Compatible**: Fully compatible with the latest version of Livewire
+- **🎨 Customizable Theming**: Generate custom color themes with a simple Artisan command
+- **📱 Responsive Design**: All components are fully responsive out of the box
+- **♿ Accessibility Focused**: Components designed with accessibility best practices
+- **📚 Comprehensive Documentation**: Detailed documentation with examples for every component
+
+## 🧩 Component Categories
+
+### 📝 Form Components
+Input, Button, Checkbox, Select, DatePicker, File Upload, Rich Text Editor, and more.
+
+### 🏗️ Layout Components  
+Card, Modal, Tabs, Accordion, Drawer, Dropdown, and structural elements.
+
+### 🧭 Navigation Components
+Menu, Breadcrumbs, Pagination, Spotlight Search, and navigation helpers.
+
+### 📊 Data Display Components
+Table, Chart, Calendar, Avatar, Badge, Progress indicators, and data visualization.
+
+### 💬 Feedback Components
+Alert, Toast, Loading states, and user feedback elements.
+
+### 🛠️ Utility Components
+Icon, Theme Toggle, Carousel, and various utility components.
+
+## 📖 Documentation
+
+Comprehensive documentation is available in our [Documentation Wiki](https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components/-/wikis/home):
+
+- **[Installation Guide](https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components/-/wikis/installation)** - Detailed setup instructions
+- **[Components Overview](https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components/-/wikis/components)** - Complete component reference
+- **[Customization Guide](https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components/-/wikis/customization)** - Theming and customization options
+- **[Advanced Topics](https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components/-/wikis/advanced)** - Color system, custom components, and more
+
+## 🎨 Theming
+
+Generate custom themes to match your brand:
+
+```bash
+php artisan artisanpack:generate-theme
+```
+
+This interactive command helps you create custom color schemes that work across all components.
 
 ## Acknowledgements
 

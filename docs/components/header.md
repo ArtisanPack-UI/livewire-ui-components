@@ -192,6 +192,6 @@ The Header component follows accessibility best practices:
 
 ## Related Components
 
-- [Card](card.md) - Content container that often uses headers
-- [Button](button.md) - Used in the actions slot
-- [Icon](icon.md) - Used for the header icon
+- [Card](card) - Content container that often uses headers
+- [Button](button) - Used in the actions slot
+- [Icon](icon) - Used for the header icon

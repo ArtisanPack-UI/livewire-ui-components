@@ -117,6 +117,6 @@ The Heading component follows accessibility best practices:
 
 ## Related Components
 
-- [Subheading](subheading.md) - For secondary headings or subtitles
-- [Text](text.md) - For paragraph text
-- [Link](link.md) - For hyperlinks
+- [Subheading](subheading) - For secondary headings or subtitles
+- [Text](text) - For paragraph text
+- [Link](link) - For hyperlinks

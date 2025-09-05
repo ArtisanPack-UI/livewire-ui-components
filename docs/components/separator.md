@@ -170,6 +170,6 @@ The Separator component follows accessibility best practices:
 
 ## Related Components
 
-- [Card](card.md) - Content container that often uses separators
-- [Loading](loading.md) - Dedicated loading indicator component
-- [Progress](progress.md) - Standalone progress indicator
+- [Card](card) - Content container that often uses separators
+- [Loading](loading) - Dedicated loading indicator component
+- [Progress](progress) - Standalone progress indicator

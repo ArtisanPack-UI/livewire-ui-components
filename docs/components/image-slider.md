@@ -347,9 +347,9 @@ The ImageSlider component supports:
 
 ## Related Components
 
-- [ImageGallery](image-gallery.md) - Grid-based image display
-- [Carousel](carousel.md) - Generic content carousel
-- [Modal](modal.md) - Modal dialogs for image viewing
+- [ImageGallery](image-gallery) - Grid-based image display
+- [Carousel](carousel) - Generic content carousel
+- [Modal](modal) - Modal dialogs for image viewing
 
 ## Migration from ImageGallery
 
@@ -363,4 +363,4 @@ If you're migrating from the old ImageGallery component that was carousel-based:
 <x-image-slider :images="$images" :with-arrows="true" :with-indicators="true" />
 ```
 
-See the [Migration Guide](../migration/image-gallery.md) for detailed migration instructions.
+See the [Migration Guide](../migration/image-gallery) for detailed migration instructions.

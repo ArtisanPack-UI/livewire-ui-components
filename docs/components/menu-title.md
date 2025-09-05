@@ -124,7 +124,7 @@ The MenuTitle component follows accessibility best practices:
 
 ## Related Components
 
-- [Menu](menu.md) - Container for menu items and titles
-- [MenuItem](menu-item.md) - Individual menu item
-- [MenuSeparator](menu-separator.md) - Separator between menu items
-- [MenuSub](menu-sub.md) - Submenu container
+- [Menu](menu) - Container for menu items and titles
+- [MenuItem](menu-item) - Individual menu item
+- [MenuSeparator](menu-separator) - Separator between menu items
+- [MenuSub](menu-sub) - Submenu container

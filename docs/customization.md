@@ -124,7 +124,7 @@ The easiest way to customize the styling is to use the theme generator command:
 php artisan artisanpack:generate-theme --primary=blue --secondary=slate --accent=amber
 ```
 
-See the [Generating Color Themes](generating-themes.md) guide for more details.
+See the [Generating Color Themes](generating-themes) guide for more details.
 
 #### Customizing DaisyUI Theme Variables
 
