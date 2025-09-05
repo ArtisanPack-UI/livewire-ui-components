@@ -221,6 +221,6 @@ The Editor component follows accessibility best practices:
 
 ## Related Components
 
-- [Textarea](textarea.md) - Simple text area input
-- [Markdown](markdown.md) - Markdown editor
-- [Code](code.md) - Code editor with syntax highlighting
+- [Textarea](textarea) - Simple text area input
+- [Markdown](markdown) - Markdown editor
+- [Code](code) - Code editor with syntax highlighting

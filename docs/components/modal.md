@@ -287,6 +287,6 @@ The Modal component follows accessibility best practices:
 
 ## Related Components
 
-- [Drawer](drawer.md) - Side panel that slides in from the edge of the screen
-- [Dropdown](dropdown.md) - Dropdown menu for navigation or actions
-- [Popover](popover.md) - Small overlay for additional information or controls
+- [Drawer](drawer) - Side panel that slides in from the edge of the screen
+- [Dropdown](dropdown) - Dropdown menu for navigation or actions
+- [Popover](popover) - Small overlay for additional information or controls

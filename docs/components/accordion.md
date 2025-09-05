@@ -271,5 +271,5 @@ The Accordion component follows accessibility best practices:
 
 ## Related Components
 
-- [Collapse](collapse.md) - Individual collapsible content container used within accordions
-- [Card](card.md) - Content container that can include collapsible sections
+- [Collapse](collapse) - Individual collapsible content container used within accordions
+- [Card](card) - Content container that can include collapsible sections

@@ -156,7 +156,7 @@ The Link component follows accessibility best practices:
 
 ## Related Components
 
-- [Button](button.md) - For action buttons
-- [Text](text.md) - For paragraph text
-- [Heading](heading.md) - For headings
-- [Subheading](subheading.md) - For subheadings
+- [Button](button) - For action buttons
+- [Text](text) - For paragraph text
+- [Heading](heading) - For headings
+- [Subheading](subheading) - For subheadings

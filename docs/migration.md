@@ -19,7 +19,7 @@ Migration guides provide step-by-step instructions for updating your code when b
 
 ### Component Migrations
 
-- [**ImageGallery Component Migration**](image-gallery.md) - Guide for migrating from the old carousel-based ImageGallery component to the new ImageSlider and grid-based ImageGallery components
+- [**ImageGallery Component Migration**](image-gallery) - Guide for migrating from the old carousel-based ImageGallery component to the new ImageSlider and grid-based ImageGallery components
 
 ## Migration Best Practices
 

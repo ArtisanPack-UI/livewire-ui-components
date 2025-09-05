@@ -369,6 +369,6 @@ Then edit `config/livewire-ui-components.php`:
 
 ## Related Components
 
-- [Avatar](avatar.md) - User avatar display
-- [Button](button.md) - Used in the actions slot
-- [Icon](icon.md) - Can be used in custom content
+- [Avatar](avatar) - User avatar display
+- [Button](button) - Used in the actions slot
+- [Icon](icon) - Can be used in custom content

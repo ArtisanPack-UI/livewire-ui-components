@@ -115,7 +115,7 @@ The MenuSeparator component follows accessibility best practices:
 
 ## Related Components
 
-- [Menu](menu.md) - Container for menu items
-- [MenuItem](menu-item.md) - Individual menu item
-- [MenuSub](menu-sub.md) - Submenu container
-- [MenuTitle](menu-title.md) - Title for a group of menu items
+- [Menu](menu) - Container for menu items
+- [MenuItem](menu-item) - Individual menu item
+- [MenuSub](menu-sub) - Submenu container
+- [MenuTitle](menu-title) - Title for a group of menu items

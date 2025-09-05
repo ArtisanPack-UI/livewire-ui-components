@@ -232,6 +232,6 @@ The Radio component follows accessibility best practices:
 
 ## Related Components
 
-- [Form](form.md) - Container for form elements
-- [Checkbox](checkbox.md) - Checkbox input
-- [Select](select.md) - Dropdown select input
+- [Form](form) - Container for form elements
+- [Checkbox](checkbox) - Checkbox input
+- [Select](select) - Dropdown select input

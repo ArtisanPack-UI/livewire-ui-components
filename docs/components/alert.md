@@ -232,6 +232,6 @@ The Alert component follows accessibility best practices:
 
 ## Related Components
 
-- [Toast](toast.md) - Temporary notifications
-- [Modal](modal.md) - Dialog boxes for important interactions
-- [Icon](icon.md) - SVG icon display
+- [Toast](toast) - Temporary notifications
+- [Modal](modal) - Dialog boxes for important interactions
+- [Icon](icon) - SVG icon display

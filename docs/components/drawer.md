@@ -169,6 +169,6 @@ The Drawer component follows accessibility best practices:
 
 ## Related Components
 
-- [Modal](modal.md) - Dialog box that appears in the center of the screen
-- [Card](card.md) - Content container used within the drawer
-- [Sidebar](sidebar.md) - Permanent or collapsible side navigation
+- [Modal](modal) - Dialog box that appears in the center of the screen
+- [Card](card) - Content container used within the drawer
+- [Sidebar](sidebar) - Permanent or collapsible side navigation

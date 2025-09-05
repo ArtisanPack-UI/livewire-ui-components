@@ -311,6 +311,6 @@ The Table component follows accessibility best practices:
 
 ## Related Components
 
-- [Pagination](pagination.md) - Pagination controls
-- [Button](button.md) - Interactive button element
-- [Checkbox](checkbox.md) - Checkbox input for row selection
+- [Pagination](pagination) - Pagination controls
+- [Button](button) - Interactive button element
+- [Checkbox](checkbox) - Checkbox input for row selection

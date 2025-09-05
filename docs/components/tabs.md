@@ -400,6 +400,6 @@ For better accessibility:
 
 ## Related Components
 
-- [Tab](tab.md) - Individual tab component used within Tabs
-- [Accordion](accordion.md) - Alternative way to organize content in collapsible sections
-- [Card](card.md) - Container for content with similar styling
+- [Tab](tab) - Individual tab component used within Tabs
+- [Accordion](accordion) - Alternative way to organize content in collapsible sections
+- [Card](card) - Container for content with similar styling

@@ -12,7 +12,7 @@ ArtisanPack UI Livewire Components is designed to be highly customizable and ext
 
 ## Topics Covered
 
-### [Component Prefixing](component-prefixing.md)
+### [Component Prefixing](component-prefixing)
 
 Learn how to use component prefixing to avoid naming collisions with other packages or your own components. This is especially useful when integrating ArtisanPack UI with existing UI libraries or starter kits like Jetstream or Breeze.
 
@@ -22,7 +22,7 @@ Topics covered:
 - When to use prefixing
 - Handling prefix changes
 
-### [Custom Components](custom-components.md)
+### [Custom Components](custom-components)
 
 Discover how to create your own custom components that integrate with ArtisanPack UI. This includes extending existing components, creating wrapper components, and building entirely new components that follow the same design patterns.
 
@@ -231,4 +231,4 @@ When using Livewire, optimize updates by using `wire:key` to help Livewire track
 
 ## Next Steps
 
-Explore the detailed guides on [Component Prefixing](component-prefixing.md) and [Custom Components](custom-components.md) to learn more about advanced customization options.
+Explore the detailed guides on [Component Prefixing](component-prefixing) and [Custom Components](custom-components) to learn more about advanced customization options.

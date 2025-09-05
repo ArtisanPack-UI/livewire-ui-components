@@ -179,6 +179,6 @@ The Collapse component follows accessibility best practices:
 
 ## Related Components
 
-- [Accordion](accordion.md) - Container for a group of collapses where only one can be open at a time
-- [Card](card.md) - Content container that can include collapsible sections
-- [Tab](tab.md) - Alternative way to organize content into selectable sections
+- [Accordion](accordion) - Container for a group of collapses where only one can be open at a time
+- [Card](card) - Content container that can include collapsible sections
+- [Tab](tab) - Alternative way to organize content into selectable sections

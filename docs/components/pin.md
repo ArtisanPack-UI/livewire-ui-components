@@ -262,6 +262,6 @@ The Pin component follows accessibility best practices:
 
 ## Related Components
 
-- [Form](form.md) - Container for form elements
-- [Input](input.md) - Standard text input
-- [Password](password.md) - Password input component
+- [Form](form) - Container for form elements
+- [Input](input) - Standard text input
+- [Password](password) - Password input component
