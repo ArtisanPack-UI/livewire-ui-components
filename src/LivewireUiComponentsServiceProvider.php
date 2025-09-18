@@ -74,6 +74,7 @@ use ArtisanPack\LivewireUiComponents\View\Components\Pagination;
 use ArtisanPack\LivewireUiComponents\View\Components\Password;
 use ArtisanPack\LivewireUiComponents\View\Components\Pin;
 use ArtisanPack\LivewireUiComponents\View\Components\Popover;
+use ArtisanPack\LivewireUiComponents\View\Components\Profile;
 use ArtisanPack\LivewireUiComponents\View\Components\Progress;
 use ArtisanPack\LivewireUiComponents\View\Components\ProgressRadial;
 use ArtisanPack\LivewireUiComponents\View\Components\Radio;
@@ -224,6 +225,7 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         Blade::component($prefix . 'password', Password::class);
         Blade::component($prefix . 'pin', Pin::class);
         Blade::component($prefix . 'popover', Popover::class);
+        Blade::component($prefix . 'profile', Profile::class);
         Blade::component($prefix . 'progress', Progress::class);
         Blade::component($prefix . 'progress-radial', ProgressRadial::class);
         Blade::component($prefix . 'radio', Radio::class);
