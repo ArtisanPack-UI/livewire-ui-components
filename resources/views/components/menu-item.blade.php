@@ -30,7 +30,7 @@
     }
 @endphp
 
-<li @class(['menu-disabled' => $disabled])>
+<li @class(['menu-disabled' => $disabled, 'artisanpack-menu-item'])>
     <a
         {{ $attributes->class($classes)->merge($extraAttributes) }}
 
