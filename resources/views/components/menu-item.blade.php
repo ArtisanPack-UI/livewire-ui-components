@@ -52,17 +52,19 @@
         @endif
     >
         {{-- ICON --}}
-        <div class="w-5">
-            @if($spinner)
-                <span wire:loading wire:target="{{ $spinnerTarget() }}" class="loading loading-spinner w-5 h-5"></span>
-            @endif
+        @if($icon || $spinner)
+            <div class="w-5">
+                @if($spinner)
+                    <span wire:loading wire:target="{{ $spinnerTarget() }}" class="loading loading-spinner w-5 h-5"></span>
+                @endif
 
-            @if($icon)
-                <span class="block py-0.5" @if($spinner) wire:loading.class="hidden" wire:target="{{ $spinnerTarget() }}" @endif>
-                    <x-artisanpack-icon :name="$icon" @class(['mb-0.5', $iconClasses]) />
-                </span>
-            @endif
-        </div>
+                @if($icon)
+                    <span class="block py-0.5" @if($spinner) wire:loading.class="hidden" wire:target="{{ $spinnerTarget() }}" @endif>
+                        <x-artisanpack-icon :name="$icon" @class(['mb-0.5', $iconClasses]) />
+                    </span>
+                @endif
+            </div>
+        @endif
 
         @if($title || $slot->isNotEmpty())
             <span class="artisanpack-hideable whitespace-nowrap truncate flex-1">
