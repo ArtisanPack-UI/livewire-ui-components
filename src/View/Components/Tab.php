@@ -21,6 +21,7 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\View\Component;
+
 /**
  * Tab Class
  *
@@ -28,11 +29,24 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-
 class Tab extends Component
 {
     public string $uuid;
 
+    /**
+     * Creates a new component instance.
+     *
+     * @since 1.0.0
+     *
+     * @param string|null $id             The component ID.
+     * @param string|null $name           The name of the tab.
+     * @param string|null $label          The label for the tab.
+     * @param string|null $icon           The icon for the tab.
+     * @param bool        $disabled       Whether the tab is disabled.
+     * @param bool        $hidden         Whether the tab is hidden.
+     * @param string|null $contentClasses Custom CSS classes for the tab content panel. Overrides default padding.
+     * @return void
+     */
     public function __construct(
         public ?string $id = null,
         public ?string $name = null,
@@ -40,10 +54,19 @@ class Tab extends Component
         public ?string $icon = null,
         public bool $disabled = false,
         public bool $hidden = false,
+        public ?string $contentClasses = null
     ) {
         $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
     }
 
+    /**
+     * Renders the tab label with an optional icon.
+     *
+     * @since 1.0.0
+     *
+     * @param  string $label The label text.
+     * @return string
+     */
     public function tabLabel(string $label): string
     {
         $fromLabel = $this->label ? $this->label : $label;
@@ -72,6 +95,13 @@ class Tab extends Component
         ");
     }
 
+    /**
+     * Get the view / contents that represent the component.
+     *
+     * @since 1.0.0
+     *
+     * @return \Illuminate\Contracts\View\View|\Closure|string
+     */
     public function render(): View|Closure|string
     {
         return view('livewire-ui-components::components.tab');
