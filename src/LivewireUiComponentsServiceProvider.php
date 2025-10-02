@@ -124,6 +124,15 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+		$this->mergeConfiguration();
+
+		if ($this->app->runningInConsole()) {
+			// Tag the package's config file for our scaffold command to find.
+			$this->publishes([
+								 __DIR__ . '/../config/livewire-ui-components.php' => config_path('artisanpack/livewire-ui-components.php'),
+							 ], 'artisanpack-package-config');
+		}
+
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'livewire-ui-components');
         $this->registerComponents();
         $this->registerBladeDirectives();
@@ -134,11 +143,6 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
 			__DIR__.'/../resources/js' => public_path('vendor/artisanpack-ui/js'),
 			__DIR__.'/../resources/css' => public_path('vendor/artisanpack-ui/css'),
 		], 'artisanpack-assets');
-
-		$this->publishes([
-			__DIR__.'/../config/livewire-ui-components.php' => config_path('livewire-ui-components.php'),
-		], 'artisanpack-config');
-
 
 		// Publishing is only necessary when using the CLI.
         if ($this->app->runningInConsole()) {
@@ -160,7 +164,7 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         // Just rename <x-icon> provided by BladeUI Icons to <x-svg> to not collide with ours
         Blade::component('BladeUI\Icons\Components\Icon', 'svg');
 
-        $prefix = config('livewire-ui-components.prefix');
+        $prefix = config( 'artisanpack.livewire-ui-components.prefix');
 
         // No matter if components has custom prefix or not,
         // we also register below alias to avoid naming collision,
@@ -326,7 +330,7 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->mergeConfigFrom(__DIR__ . '/../config/livewire-ui-components.php', 'livewire-ui-components');
+        $this->mergeConfigFrom(__DIR__ . '/../config/livewire-ui-components.php', 'artisanpack-livewire-ui-components-temp');
 
         // Register the service the package provides.
         $this->app->singleton('livewire-ui-components', function ($app) {
@@ -363,4 +367,28 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
 
         $this->commands([LivewireUiComponentsInstallCommand::class, LivewireUiComponentsBootcampCommand::class, GenerateThemeCss::class,]);
     }
+
+	/**
+	 * Merges the package's default configuration with the user's customizations.
+	 *
+	 * This method ensures that the user's settings in `config/artisanpack.php`
+	 * take precedence over the package's default values.
+	 *
+	 * @since 2.0.0
+	 * @return void
+	 */
+	protected function mergeConfiguration(): void
+	{
+		// Get the package's default configuration.
+		$packageDefaults = config('artisanpack-livewire-ui-components-temp', []);
+
+		// Get the user's custom configuration from config/artisanpack.php.
+		$userConfig = config('artisanpack.livewire-ui-components', []);
+
+		// Merge them, with the user's config overwriting the defaults.
+		$mergedConfig = array_replace_recursive($packageDefaults, $userConfig);
+
+		// Set the final, correctly merged configuration.
+		config(['artisanpack.livewire-ui-components' => $mergedConfig]);
+	}
 }
