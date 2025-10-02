@@ -141,7 +141,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Blade::directive('ui', function ($expression) {
-            $prefix = config( 'artisanpack.livewire-ui-components.livewire-ui-components.prefix');
+            $prefix = config( 'artisanpack.livewire-ui-components.prefix');
             return "<?php echo '<x-{$prefix}' . {$expression}; ?>";
         });
     }
