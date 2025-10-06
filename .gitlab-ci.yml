@@ -8,7 +8,13 @@
 stages:
   - build
   - test
+  - integration
+  - browser
+  - accessibility
+  - performance
+  - coverage
   - code-style
+  - security
   - release
 sast:
   stage: test
@@ -35,7 +41,8 @@ build:vendors:
     - rm -rf vendor
     - composer install --no-interaction --prefer-dist --optimize-autoloader
 
-tests:
+# Unit Tests
+unit-tests:
   stage: test
   dependencies:
     - build:vendors
@@ -50,8 +57,236 @@ tests:
       prefix: v1
     policy: pull
   image: php:8.2
+  parallel: 4
   script:
-    - ./vendor/bin/pest --ci
+    - ./vendor/bin/pest tests/Unit --ci --coverage --coverage-clover=coverage-unit.xml --parallel
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage-unit.xml
+    paths:
+      - coverage-unit.xml
+    expire_in: 1 week
+
+# Feature Tests
+feature-tests:
+  stage: test
+  dependencies:
+    - build:vendors
+  only:
+    refs:
+      - merge_requests
+      - push
+  cache:
+    key:
+      files:
+        - composer.lock
+      prefix: v1
+    policy: pull
+  image: php:8.2
+  parallel: 2
+  script:
+    - ./vendor/bin/pest tests/Feature --ci --coverage --coverage-clover=coverage-feature.xml --parallel
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage-feature.xml
+    paths:
+      - coverage-feature.xml
+    expire_in: 1 week
+
+# Integration Tests
+integration-tests:
+  stage: integration
+  dependencies:
+    - build:vendors
+  only:
+    refs:
+      - merge_requests
+      - push
+  cache:
+    key:
+      files:
+        - composer.lock
+      prefix: v1
+    policy: pull
+  image: php:8.2
+  parallel: 2
+  script:
+    - ./vendor/bin/pest tests/Integration --ci --coverage --coverage-clover=coverage-integration.xml --parallel
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage-integration.xml
+    paths:
+      - coverage-integration.xml
+    expire_in: 1 week
+
+# Browser Tests with Dusk
+browser-tests:
+  stage: browser
+  dependencies:
+    - build:vendors
+  only:
+    refs:
+      - merge_requests
+      - push
+  cache:
+    key:
+      files:
+        - composer.lock
+      prefix: v1
+    policy: pull
+  image: php:8.2
+  services:
+    - selenium/standalone-chrome:latest
+  variables:
+    DUSK_DRIVER_URL: "http://selenium-standalone-chrome:4444/wd/hub"
+    DUSK_HEADLESS_DISABLED: 0
+  script:
+    - apt-get update -qq && apt-get install -y -qq git curl libzip-dev unzip
+    - ./vendor/bin/pest tests/Browser --ci --coverage --coverage-clover=coverage-browser.xml
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage-browser.xml
+    paths:
+      - coverage-browser.xml
+      - tests/Browser/screenshots/
+    expire_in: 1 week
+    when: always
+
+# Accessibility Tests
+accessibility-tests:
+  stage: accessibility
+  dependencies:
+    - build:vendors
+  only:
+    refs:
+      - merge_requests
+      - push
+  cache:
+    key:
+      files:
+        - composer.lock
+      prefix: v1
+    policy: pull
+  image: php:8.2
+  services:
+    - selenium/standalone-chrome:latest
+  variables:
+    DUSK_DRIVER_URL: "http://selenium-standalone-chrome:4444/wd/hub"
+  script:
+    - apt-get update -qq && apt-get install -y -qq git curl libzip-dev unzip nodejs npm
+    - npm install -g axe-core @axe-core/cli
+    - ./vendor/bin/pest tests/Accessibility --ci
+  artifacts:
+    paths:
+      - accessibility-report.json
+    expire_in: 1 week
+    when: always
+  allow_failure: false
+
+# Performance Tests
+performance-tests:
+  stage: performance
+  dependencies:
+    - build:vendors
+  only:
+    refs:
+      - merge_requests
+      - push
+  cache:
+    key:
+      files:
+        - composer.lock
+      prefix: v1
+    policy: pull
+  image: php:8.2
+  script:
+    - ./vendor/bin/pest tests/Performance --ci
+  artifacts:
+    paths:
+      - performance-report.json
+    expire_in: 1 week
+    when: always
+
+# Test Coverage Analysis
+coverage-analysis:
+  stage: coverage
+  dependencies:
+    - unit-tests
+    - feature-tests
+    - integration-tests
+    - browser-tests
+  only:
+    refs:
+      - merge_requests
+      - push
+  image: php:8.2
+  script:
+    - apt-get update -qq && apt-get install -y -qq git curl libzip-dev unzip
+    - ./vendor/bin/pest --coverage --coverage-html=coverage-html --coverage-clover=coverage-combined.xml --min=95
+  coverage: '/^\s*Lines:\s*\d+.\d+\%/'
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage-combined.xml
+    paths:
+      - coverage-html/
+      - coverage-combined.xml
+    expire_in: 1 week
+  allow_failure: false
+
+# Mutation Testing
+mutation-tests:
+  stage: coverage
+  dependencies:
+    - build:vendors
+  only:
+    refs:
+      - merge_requests
+      - push
+  cache:
+    key:
+      files:
+        - composer.lock
+      prefix: v1
+    policy: pull
+  image: php:8.2
+  script:
+    - ./vendor/bin/infection --threads=4 --min-msi=80 --min-covered-msi=90
+  artifacts:
+    paths:
+      - infection.log
+    expire_in: 1 week
+    when: always
+  allow_failure: true
+
+# Static Analysis
+static-analysis:
+  stage: code-style
+  dependencies:
+    - build:vendors
+  only:
+    refs:
+      - merge_requests
+      - push
+  cache:
+    key:
+      files:
+        - composer.lock
+    policy: pull
+  image: php:8.2
+  script:
+    - ./vendor/bin/phpstan analyse src --level=8 --no-progress
+    - ./vendor/bin/rector process --dry-run --no-progress-bar
+  allow_failure: true
 
 code-style:
   stage: code-style
