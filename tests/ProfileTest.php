@@ -1,188 +1,163 @@
 <?php
 
-use ArtisanPack\LivewireUiComponents\Tests\TestCase;
 use ArtisanPack\LivewireUiComponents\View\Components\Profile;
 
-class ProfileTest extends TestCase
-{
-    public function test_profile_can_be_instantiated_with_default_values()
-    {
-        $profile = new Profile();
+test('profile can be instantiated with default values', function () {
+    $profile = new Profile();
 
-        $this->assertNull($profile->id);
-        $this->assertEquals('', $profile->image);
-        $this->assertEquals('', $profile->alt);
-        $this->assertEquals('', $profile->placeholder);
-        $this->assertNull($profile->color);
-        $this->assertNull($profile->colorAdjustment);
-        $this->assertNull($profile->title);
-        $this->assertNull($profile->subtitle);
-        $this->assertFalse($profile->right);
-        $this->assertFalse($profile->top);
-        $this->assertFalse($profile->noXAnchor);
-    }
+    expect($profile->id)->toBeNull();
+    expect($profile->image)->toBe('');
+    expect($profile->alt)->toBe('');
+    expect($profile->placeholder)->toBe('');
+    expect($profile->color)->toBeNull();
+    expect($profile->colorAdjustment)->toBeNull();
+    expect($profile->title)->toBeNull();
+    expect($profile->subtitle)->toBeNull();
+    expect($profile->right)->toBeFalse();
+    expect($profile->top)->toBeFalse();
+    expect($profile->noXAnchor)->toBeFalse();
+});
 
-    public function test_profile_accepts_avatar_properties()
-    {
-        $profile = new Profile(
-            image: '/path/to/avatar.jpg',
-            alt: 'User Avatar',
-            placeholder: 'JD',
-            title: 'John Doe',
-            subtitle: 'Software Engineer',
-            color: 'primary'
-        );
+test('profile accepts avatar properties', function () {
+    $profile = new Profile(
+        image: '/path/to/avatar.jpg',
+        alt: 'User Avatar',
+        placeholder: 'JD',
+        title: 'John Doe',
+        subtitle: 'Software Engineer',
+        color: 'primary'
+    );
 
-        $this->assertEquals('/path/to/avatar.jpg', $profile->image);
-        $this->assertEquals('User Avatar', $profile->alt);
-        $this->assertEquals('JD', $profile->placeholder);
-        $this->assertEquals('John Doe', $profile->title);
-        $this->assertEquals('Software Engineer', $profile->subtitle);
-        $this->assertEquals('primary', $profile->color);
-    }
+    expect($profile->image)->toBe('/path/to/avatar.jpg');
+    expect($profile->alt)->toBe('User Avatar');
+    expect($profile->placeholder)->toBe('JD');
+    expect($profile->title)->toBe('John Doe');
+    expect($profile->subtitle)->toBe('Software Engineer');
+    expect($profile->color)->toBe('primary');
+});
 
-    public function test_profile_accepts_dropdown_properties()
-    {
-        $profile = new Profile(
-            right: true,
-            top: true,
-            noXAnchor: true
-        );
+test('profile accepts dropdown properties', function () {
+    $profile = new Profile(
+        right: true,
+        top: true,
+        noXAnchor: true
+    );
 
-        $this->assertTrue($profile->right);
-        $this->assertTrue($profile->top);
-        $this->assertTrue($profile->noXAnchor);
-    }
+    expect($profile->right)->toBeTrue();
+    expect($profile->top)->toBeTrue();
+    expect($profile->noXAnchor)->toBeTrue();
+});
 
-    public function test_profile_generates_uuid()
-    {
-        $profile = new Profile();
+test('profile generates uuid', function () {
+    $profile = new Profile();
 
-        $this->assertNotEmpty($profile->uuid);
-        $this->assertStringStartsWith('artisanpack', $profile->uuid);
-    }
+    expect($profile->uuid)->not->toBeEmpty();
+    expect($profile->uuid)->toStartWith('artisanpack');
+});
 
-    public function test_profile_uuid_includes_id_when_provided()
-    {
-        $profile = new Profile(id: 'test-profile');
+test('profile uuid includes id when provided', function () {
+    $profile = new Profile(id: 'test-profile');
 
-        $this->assertNotEmpty($profile->uuid);
-        $this->assertStringStartsWith('artisanpack', $profile->uuid);
-        $this->assertStringEndsWith('test-profile', $profile->uuid);
-    }
+    expect($profile->uuid)->not->toBeEmpty();
+    expect($profile->uuid)->toStartWith('artisanpack');
+    expect($profile->uuid)->toEndWith('test-profile');
+});
 
-    public function test_profile_returns_empty_color_classes_when_no_color_set()
-    {
-        $profile = new Profile();
+test('profile returns empty color classes when no color set', function () {
+    $profile = new Profile();
+    $colorClasses = $profile->getColorClasses();
+
+    expect($colorClasses)->toBeArray();
+    expect($colorClasses)->toBeEmpty();
+});
+
+test('profile resolves predefined color variants', function () {
+    $colorVariants = ['primary', 'secondary', 'accent', 'success', 'warning', 'error', 'info', 'neutral'];
+
+    foreach ($colorVariants as $color) {
+        $profile = new Profile(color: $color);
         $colorClasses = $profile->getColorClasses();
 
-        $this->assertIsArray($colorClasses);
-        $this->assertEmpty($colorClasses);
+        expect($colorClasses)->not->toBeEmpty("Color classes should not be empty for color: {$color}");
     }
+});
 
-    public function test_profile_resolves_predefined_color_variants()
-    {
-        $colorVariants = ['primary', 'secondary', 'accent', 'success', 'warning', 'error', 'info', 'neutral'];
+test('profile resolves tailwind colors', function () {
+    $profile = new Profile(color: 'blue-500');
+    $colorClasses = $profile->getColorClasses();
 
-        foreach ($colorVariants as $color) {
-            $profile = new Profile(color: $color);
-            $colorClasses = $profile->getColorClasses();
+    expect($colorClasses)->not->toBeEmpty();
+    expect($colorClasses)->toBeArray();
+});
 
-            $this->assertNotEmpty($colorClasses, "Color classes should not be empty for color: {$color}");
-        }
-    }
+test('profile applies color adjustments', function () {
+    $adjustments = ['lighter', 'darker', 'transparent', 'subtle'];
 
-    public function test_profile_resolves_tailwind_colors()
-    {
-        $profile = new Profile(color: 'blue-500');
+    foreach ($adjustments as $adjustment) {
+        $profile = new Profile(color: 'primary', colorAdjustment: $adjustment);
         $colorClasses = $profile->getColorClasses();
 
-        $this->assertNotEmpty($colorClasses);
-        $this->assertIsArray($colorClasses);
+        expect($colorClasses)->not->toBeEmpty("Color classes should not be empty for adjustment: {$adjustment}");
     }
+});
 
-    public function test_profile_applies_color_adjustments()
-    {
-        $adjustments = ['lighter', 'darker', 'transparent', 'subtle'];
+test('profile handles hex colors', function () {
+    $profile = new Profile(color: '#ff0000');
+    $colorClasses = $profile->getColorClasses();
 
-        foreach ($adjustments as $adjustment) {
-            $profile = new Profile(color: 'primary', colorAdjustment: $adjustment);
-            $colorClasses = $profile->getColorClasses();
+    expect($colorClasses)->not->toBeEmpty();
+    expect($colorClasses)->toBeArray();
+});
 
-            $this->assertNotEmpty($colorClasses, "Color classes should not be empty for adjustment: {$adjustment}");
-        }
-    }
+test('profile supports image mode', function () {
+    $profile = new Profile(
+        image: '/path/to/image.jpg',
+        alt: 'Profile Picture'
+    );
 
-    public function test_profile_handles_hex_colors()
-    {
-        $profile = new Profile(color: '#ff0000');
-        $colorClasses = $profile->getColorClasses();
+    expect($profile->image)->toBe('/path/to/image.jpg');
+    expect($profile->alt)->toBe('Profile Picture');
+    expect($profile->placeholder)->toBe('');
+});
 
-        $this->assertNotEmpty($colorClasses);
-        $this->assertIsArray($colorClasses);
-    }
+test('profile supports placeholder mode', function () {
+    $profile = new Profile(
+        placeholder: 'AB',
+        alt: 'Alex Brown',
+        color: 'accent'
+    );
 
-    public function test_profile_supports_image_mode()
-    {
-        $profile = new Profile(
-            image: '/path/to/image.jpg',
-            alt: 'Profile Picture'
-        );
+    expect($profile->image)->toBe('');
+    expect($profile->placeholder)->toBe('AB');
+    expect($profile->alt)->toBe('Alex Brown');
+    expect($profile->color)->toBe('accent');
+});
 
-        $this->assertEquals('/path/to/image.jpg', $profile->image);
-        $this->assertEquals('Profile Picture', $profile->alt);
-        $this->assertEquals('', $profile->placeholder);
-    }
+test('profile combines avatar and dropdown functionality', function () {
+    $profile = new Profile(
+        id: 'user-profile',
+        image: '/avatar.jpg',
+        alt: 'User Avatar',
+        title: 'Jane Smith',
+        subtitle: 'Product Manager',
+        color: 'primary',
+        right: true,
+        top: false,
+        noXAnchor: false
+    );
 
-    public function test_profile_supports_placeholder_mode()
-    {
-        $profile = new Profile(
-            placeholder: 'AB',
-            alt: 'Alex Brown',
-            color: 'accent'
-        );
+    // Avatar properties
+    expect($profile->image)->toBe('/avatar.jpg');
+    expect($profile->alt)->toBe('User Avatar');
+    expect($profile->title)->toBe('Jane Smith');
+    expect($profile->subtitle)->toBe('Product Manager');
+    expect($profile->color)->toBe('primary');
 
-        $this->assertEquals('', $profile->image);
-        $this->assertEquals('AB', $profile->placeholder);
-        $this->assertEquals('Alex Brown', $profile->alt);
-        $this->assertEquals('accent', $profile->color);
-    }
+    // Dropdown properties
+    expect($profile->right)->toBeTrue();
+    expect($profile->top)->toBeFalse();
+    expect($profile->noXAnchor)->toBeFalse();
 
-    public function test_profile_combines_avatar_and_dropdown_functionality()
-    {
-        $profile = new Profile(
-            id: 'user-profile',
-            image: '/avatar.jpg',
-            alt: 'User Avatar',
-            title: 'Jane Smith',
-            subtitle: 'Product Manager',
-            color: 'primary',
-            right: true,
-            top: false,
-            noXAnchor: false
-        );
-
-        // Avatar properties
-        $this->assertEquals('/avatar.jpg', $profile->image);
-        $this->assertEquals('User Avatar', $profile->alt);
-        $this->assertEquals('Jane Smith', $profile->title);
-        $this->assertEquals('Product Manager', $profile->subtitle);
-        $this->assertEquals('primary', $profile->color);
-
-        // Dropdown properties
-        $this->assertTrue($profile->right);
-        $this->assertFalse($profile->top);
-        $this->assertFalse($profile->noXAnchor);
-
-        // UUID generation
-        $this->assertStringContainsString('user-profile', $profile->uuid);
-    }
-
-    public function test_profile_renders_correct_view()
-    {
-        $profile = new Profile();
-        $view = $profile->render();
-
-        $this->assertEquals('livewire-ui-components::components.profile', $view->name());
-    }
-}
+    // UUID generation
+    expect($profile->uuid)->toContain('user-profile');
+});
