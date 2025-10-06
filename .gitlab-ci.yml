@@ -5,15 +5,71 @@
 # Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
 # Note that environment variables can be set in several places
 # See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
-
 stages:
+  - build
   - test
-  - release # Add a new 'release' stage
-
+  - code-style
+  - release
 sast:
   stage: test
 include:
   - template: Security/SAST.gitlab-ci.yml
+
+build:vendors:
+  stage: build
+  artifacts:
+    untracked: true
+  only:
+    refs:
+      - merge_requests
+      - push
+  cache:
+    key:
+      files:
+        - composer.lock
+      prefix: v1
+    policy: pull-push
+  image: composer:2
+  script:
+    - echo "Forcing a clean vendor directory..."
+    - rm -rf vendor
+    - composer install --no-interaction --prefer-dist --optimize-autoloader
+
+tests:
+  stage: test
+  dependencies:
+    - build:vendors
+  only:
+    refs:
+      - merge_requests
+      - push
+  cache:
+    key:
+      files:
+        - composer.lock
+      prefix: v1
+    policy: pull
+  image: php:8.2
+  script:
+    - ./vendor/bin/pest --ci
+
+code-style:
+  stage: code-style
+  dependencies:
+    - build:vendors
+  only:
+    refs:
+      - merge_requests
+      - push
+  cache:
+    key:
+      files:
+        - composer.lock
+    policy: pull
+  image: php:8.2
+  allow_failure: true
+  script:
+    - ./vendor/bin/phpcs --standard=ArtisanPackUIStandard src
 
 # Job 1: Prepare the release description from CHANGELOG.md
 prepare_release_description:
