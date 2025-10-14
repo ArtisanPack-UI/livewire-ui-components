@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accessibility Test for Dropdowns</title>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-content { display: none; position: absolute; background-color: white; min-width: 160px; box-shadow: 0px 8px 16px rgba(0,0,0,0.2); z-index: 1; border: 1px solid #ccc; }
+        .dropdown-content.show { display: block; }
+        .menu { list-style: none; margin: 0; padding: 8px; }
+        .menu li { padding: 8px 12px; cursor: pointer; }
+        .menu li:hover { background-color: #f1f1f1; }
+        .btn { padding: 8px 16px; background-color: #007bff; color: white; border: none; cursor: pointer; }
+        .avatar { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background-color: #6c757d; color: white; }
+    </style>
+</head>
+<body>
+    <h1>Accessibility Test for Dropdown Components</h1>
+    
+    <h2>Current Implementation (Issue Reproduction)</h2>
+    
+    <!-- Profile Dropdown (current implementation) -->
+    <h3>Profile Component</h3>
+    <details x-data="{open: false}" @click.outside="open = false" :open="open" class="dropdown">
+        <summary x-ref="button" @click.prevent="open = !open" class="cursor-pointer">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div class="avatar">
+                    <span>JD</span>
+                </div>
+                <div>
+                    <div style="font-weight: bold;">John Doe</div>
+                    <div style="font-size: 0.8em; color: #666;">Admin</div>
+                </div>
+            </div>
+        </summary>
+        <ul class="dropdown-content menu">
+            <li><a href="#profile">Profile</a></li>
+            <li><a href="#settings">Settings</a></li>
+            <li><a href="#logout">Logout</a></li>
+        </ul>
+    </details>
+
+    <!-- Regular Dropdown (current implementation) -->
+    <h3>Dropdown Component</h3>
+    <details x-data="{open: false}" @click.outside="open = false" :open="open" class="dropdown">
+        <summary x-ref="button" @click.prevent="open = !open" class="btn">
+            Actions
+        </summary>
+        <ul class="dropdown-content menu">
+            <li><a href="#edit">Edit</a></li>
+            <li><a href="#delete">Delete</a></li>
+            <li><a href="#share">Share</a></li>
+        </ul>
+    </details>
+
+    <br><br>
+    
+    <h2>Instructions for Testing</h2>
+    <p>1. Try pressing Tab to navigate to each dropdown trigger</p>
+    <p>2. Press Enter to open the dropdown - it opens but focus doesn't move inside</p>
+    <p>3. Try using arrow keys to navigate within the dropdown - doesn't work</p>
+    <p>4. Press Escape to close - doesn't work</p>
+    <p>5. Click outside to close - this works</p>
+    
+    <h2>Expected Accessible Behavior</h2>
+    <ul>
+        <li>Dropdowns should open/close with Enter and Space keys</li>
+        <li>When opened, focus should move to first menu item</li>
+        <li>Arrow keys should navigate between menu items</li>
+        <li>Escape should close dropdown and return focus to trigger</li>
+        <li>Tab should close dropdown and move to next focusable element</li>
+        <li>ARIA attributes should indicate state and relationships</li>
+    </ul>
+</body>
+</html>

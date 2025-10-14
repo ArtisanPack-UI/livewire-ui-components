@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Updated Accessibility Test for Dropdowns</title>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-content { display: none; position: absolute; background-color: white; min-width: 160px; box-shadow: 0px 8px 16px rgba(0,0,0,0.2); z-index: 1; border: 1px solid #ccc; }
+        .dropdown-content.show { display: block; }
+        .menu { list-style: none; margin: 0; padding: 8px; }
+        .menu li { padding: 8px 12px; cursor: pointer; }
+        .menu li:hover, .menu li:focus { background-color: #f1f1f1; outline: 2px solid #007bff; }
+        .menu a { text-decoration: none; color: #333; display: block; }
+        .menu a:focus { outline: 2px solid #007bff; }
+        .btn { padding: 8px 16px; background-color: #007bff; color: white; border: none; cursor: pointer; }
+        .btn:focus { outline: 2px solid #0056b3; }
+        .avatar { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background-color: #6c757d; color: white; }
+        .cursor-pointer { cursor: pointer; }
+        .cursor-pointer:focus { outline: 2px solid #007bff; }
+        summary { list-style: none; }
+        summary::-webkit-details-marker { display: none; }
+        details[open] ul { display: block; }
+    </style>
+</head>
+<body>
+    <h1>Updated Accessibility Test for Dropdown Components</h1>
+    
+    <h2>Fixed Implementation (After Accessibility Updates)</h2>
+    
+    <!-- Profile Dropdown (updated implementation) -->
+    <h3>Profile Component (Fixed)</h3>
+    <details 
+        x-data="{
+            open: false,
+            focusedIndex: -1,
+            init() {
+                this.$refs.menu.setAttribute('role', 'menu');
+                this.$refs.button.setAttribute('aria-haspopup', 'true');
+                this.$refs.button.setAttribute('aria-expanded', this.open.toString());
+            },
+            toggleDropdown() {
+                this.open = !this.open;
+                this.$refs.button.setAttribute('aria-expanded', this.open.toString());
+                if (this.open) {
+                    this.$nextTick(() => {
+                        const firstItem = this.$refs.menu.querySelector('[role=menuitem]');
+                        if (firstItem) {
+                            firstItem.focus();
+                            this.focusedIndex = 0;
+                        }
+                    });
+                } else {
+                    this.focusedIndex = -1;
+                }
+            },
+            closeDropdown() {
+                this.open = false;
+                this.$refs.button.setAttribute('aria-expanded', 'false');
+                this.$refs.button.focus();
+                this.focusedIndex = -1;
+            },
+            navigateItems(direction) {
+                const items = this.$refs.menu.querySelectorAll('[role=menuitem]');
+                if (items.length === 0) return;
+                
+                if (direction === 'down') {
+                    this.focusedIndex = (this.focusedIndex + 1) % items.length;
+                } else if (direction === 'up') {
+                    this.focusedIndex = this.focusedIndex <= 0 ? items.length - 1 : this.focusedIndex - 1;
+                }
+                items[this.focusedIndex].focus();
+            }
+        }"
+        @click.outside="closeDropdown()"
+        @keydown.escape="closeDropdown()"
+        :open="open"
+        class="dropdown"
+    >
+        <summary 
+            x-ref="button" 
+            @click.prevent="toggleDropdown()"
+            @keydown.enter.prevent="toggleDropdown()"
+            @keydown.space.prevent="toggleDropdown()"
+            @keydown.arrow-down.prevent="if (open) navigateItems('down')"
+            @keydown.arrow-up.prevent="if (open) navigateItems('up')"
+            role="button"
+            tabindex="0"
+            id="profile-button-test"
+            class="cursor-pointer"
+        >
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div class="avatar">
+                    <span>JD</span>
+                </div>
+                <div>
+                    <div style="font-weight: bold;">John Doe</div>
+                    <div style="font-size: 0.8em; color: #666;">Admin</div>
+                </div>
+            </div>
+        </summary>
+        <ul 
+            x-ref="menu"
+            class="dropdown-content menu"
+            @click="closeDropdown()"
+            @keydown.arrow-down.prevent="navigateItems('down')"
+            @keydown.arrow-up.prevent="navigateItems('up')"
+            @keydown.escape.prevent="closeDropdown()"
+            @keydown.tab="closeDropdown()"
+            role="menu"
+            aria-labelledby="profile-button-test"
+        >
+            <li><a href="#profile" role="menuitem" tabindex="-1">Profile</a></li>
+            <li><a href="#settings" role="menuitem" tabindex="-1">Settings</a></li>
+            <li><a href="#logout" role="menuitem" tabindex="-1">Logout</a></li>
+        </ul>
+    </details>
+
+    <br><br>
+
+    <!-- Regular Dropdown (updated implementation) -->
+    <h3>Dropdown Component (Fixed)</h3>
+    <details 
+        x-data="{
+            open: false,
+            focusedIndex: -1,
+            init() {
+                this.$refs.menu.setAttribute('role', 'menu');
+                this.$refs.button.setAttribute('aria-haspopup', 'true');
+                this.$refs.button.setAttribute('aria-expanded', this.open.toString());
+            },
+            toggleDropdown() {
+                this.open = !this.open;
+                this.$refs.button.setAttribute('aria-expanded', this.open.toString());
+                if (this.open) {
+                    this.$nextTick(() => {
+                        const firstItem = this.$refs.menu.querySelector('[role=menuitem]');
+                        if (firstItem) {
+                            firstItem.focus();
+                            this.focusedIndex = 0;
+                        }
+                    });
+                } else {
+                    this.focusedIndex = -1;
+                }
+            },
+            closeDropdown() {
+                this.open = false;
+                this.$refs.button.setAttribute('aria-expanded', 'false');
+                this.$refs.button.focus();
+                this.focusedIndex = -1;
+            },
+            navigateItems(direction) {
+                const items = this.$refs.menu.querySelectorAll('[role=menuitem]');
+                if (items.length === 0) return;
+                
+                if (direction === 'down') {
+                    this.focusedIndex = (this.focusedIndex + 1) % items.length;
+                } else if (direction === 'up') {
+                    this.focusedIndex = this.focusedIndex <= 0 ? items.length - 1 : this.focusedIndex - 1;
+                }
+                items[this.focusedIndex].focus();
+            }
+        }"
+        @click.outside="closeDropdown()"
+        @keydown.escape="closeDropdown()"
+        :open="open"
+        class="dropdown"
+    >
+        <summary 
+            x-ref="button" 
+            @click.prevent="toggleDropdown()"
+            @keydown.enter.prevent="toggleDropdown()"
+            @keydown.space.prevent="toggleDropdown()"
+            @keydown.arrow-down.prevent="if (open) navigateItems('down')"
+            @keydown.arrow-up.prevent="if (open) navigateItems('up')"
+            role="button"
+            tabindex="0"
+            id="dropdown-button-test"
+            class="btn"
+        >
+            Actions
+        </summary>
+        <ul 
+            x-ref="menu"
+            class="dropdown-content menu"
+            @click="closeDropdown()"
+            @keydown.arrow-down.prevent="navigateItems('down')"
+            @keydown.arrow-up.prevent="navigateItems('up')"
+            @keydown.escape.prevent="closeDropdown()"
+            @keydown.tab="closeDropdown()"
+            role="menu"
+            aria-labelledby="dropdown-button-test"
+        >
+            <li><a href="#edit" role="menuitem" tabindex="-1">Edit</a></li>
+            <li><a href="#delete" role="menuitem" tabindex="-1">Delete</a></li>
+            <li><a href="#share" role="menuitem" tabindex="-1">Share</a></li>
+        </ul>
+    </details>
+
+    <br><br>
+    
+    <h2>Test Instructions</h2>
+    <p><strong>✅ Expected Accessible Behavior (Now Working):</strong></p>
+    <ul>
+        <li><strong>Tab navigation:</strong> Press Tab to navigate to each dropdown trigger</li>
+        <li><strong>Open/Close:</strong> Press Enter or Space to open/close dropdowns</li>
+        <li><strong>Focus management:</strong> When opened, focus moves to first menu item automatically</li>
+        <li><strong>Arrow navigation:</strong> Use Up/Down arrow keys to navigate between menu items</li>
+        <li><strong>Escape key:</strong> Press Escape to close dropdown and return focus to trigger</li>
+        <li><strong>Tab from menu:</strong> Press Tab from menu item to close dropdown and move to next element</li>
+        <li><strong>Click functionality:</strong> Clicking still works as expected</li>
+        <li><strong>ARIA attributes:</strong> Screen readers will announce proper roles and states</li>
+    </ul>
+
+    <h2>ARIA Attributes Added</h2>
+    <ul>
+        <li><code>role="button"</code> on triggers</li>
+        <li><code>aria-haspopup="true"</code> on triggers</li>
+        <li><code>aria-expanded="true/false"</code> on triggers (dynamic)</li>
+        <li><code>role="menu"</code> on dropdown lists</li>
+        <li><code>role="menuitem"</code> on menu links</li>
+        <li><code>aria-labelledby</code> linking menu to trigger</li>
+        <li><code>tabindex="-1"</code> on menu items (managed by JavaScript)</li>
+    </ul>
+</body>
+</html>
