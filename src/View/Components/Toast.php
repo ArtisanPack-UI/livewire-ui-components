@@ -82,6 +82,6 @@ class Toast extends Component
 	 */
 	public function render(): View|Closure|string
 	{
-		return view( 'artisanpack::components.toast' );
+		return view( 'livewire-ui-components::components.toast' );
 	}
 }

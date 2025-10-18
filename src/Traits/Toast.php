@@ -138,17 +138,17 @@ trait Toast
 	 * @param string|null $redirectTo  Optional URL to redirect to after displaying the toast.
 	 * @return mixed
 	 */
-publicA function error(
-	string $title,
-	?string $description = null,
-	?string $position = null,
-	string $icon = 'o-x-circle',
-	string $css = 'alert-error',
-	?int $duration = null,
-	?string $redirectTo = null
-) {
-	return $this->toast( 'error', $title, $description, $position, $icon, $css, $duration, $redirectTo );
-}
+	public function error(
+		string $title,
+		?string $description = null,
+		?string $position = null,
+		string $icon = 'o-x-circle',
+		string $css = 'alert-error',
+		?int $duration = null,
+		?string $redirectTo = null
+	) {
+		return $this->toast( 'error', $title, $description, $position, $icon, $css, $duration, $redirectTo );
+	}
 
 	/**
 	 * Display an info toast notification.
