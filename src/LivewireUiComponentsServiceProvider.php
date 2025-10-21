@@ -20,6 +20,7 @@ use Arr;
 use ArtisanPack\LivewireUiComponents\Console\Commands\GenerateThemeCss;
 use ArtisanPack\LivewireUiComponents\View\Components\CheckboxGroup;
 use ArtisanPack\LivewireUiComponents\View\Components\EventModalContent;
+use ArtisanPack\LivewireUiComponents\View\Components\Fieldset;
 use ArtisanPack\LivewireUiComponents\View\Components\RadioGroup;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
@@ -204,6 +205,7 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         Blade::component($prefix . 'editor', Editor::class);
         Blade::component($prefix . 'errors', Errors::class);
         Blade::component($prefix . 'file', File::class);
+		Blade::component($prefix . 'fieldset', Fieldset::class);
         Blade::component($prefix . 'form', Form::class);
         Blade::component($prefix . 'select-group', SelectGroup::class);
         Blade::component($prefix . 'header', Header::class);
