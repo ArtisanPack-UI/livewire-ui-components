@@ -19,13 +19,11 @@
 >
     <div class="modal-box {{ $boxClass }}">
         @if(!$persistent)
-            <form method="dialog" tabindex="-1">
-                @if ($id)
-                    <x-artisanpack-button class="btn-circle btn-sm btn-ghost absolute end-2 top-2 z-[999]" icon="o-x-mark" type="submit" tabindex="-1" />
-                @else
-                    <x-artisanpack-button class="btn-circle btn-sm btn-ghost absolute end-2 top-2 z-[999]" icon="o-x-mark" @click="$wire.{{ $attributes->wire('model')->value() }} = false" tabindex="-1" />
-                @endif
-            </form>
+            @if ($id)
+                <x-artisanpack-button class="btn-circle btn-sm btn-ghost absolute end-2 top-2 z-[999]" icon="o-x-mark" type="button" onclick="document.getElementById('{{ $id }}').close()" tabindex="-1" />
+            @else
+                <x-artisanpack-button class="btn-circle btn-sm btn-ghost absolute end-2 top-2 z-[999]" icon="o-x-mark" type="button" @click="$wire.{{ $attributes->wire('model')->value() }} = false" tabindex="-1" />
+            @endif
         @endif
 
         @if($title)
@@ -48,12 +46,12 @@
     </div>
 
     @if(!$persistent)
-        <form class="modal-backdrop" method="dialog">
+        <div class="modal-backdrop">
             @if ($id)
-                <button type="submit">close</button>
+                <button type="button" onclick="document.getElementById('{{ $id }}').close()">close</button>
             @else
                 <button @click="$wire.{{ $attributes->wire('model')->value() }} = false" type="button">close</button>
             @endif
-        </form>
+        </div>
     @endif
 </dialog>
