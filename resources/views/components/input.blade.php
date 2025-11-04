@@ -1,10 +1,10 @@
-<div @click.stop>
+<div @click.stop class="w-full">
     @php
         // We need this extra step to support models arrays. Ex: wire:model="emails.0"  , wire:model="emails.1"
         $uuid = $uuid . $modelName()
     @endphp
 
-    <fieldset class="fieldset py-0">
+    <fieldset class="fieldset py-0 gap-0">
         {{--
           ***** SEMANTIC FIX *****
           Changed from <legend> to <label> as requested.
