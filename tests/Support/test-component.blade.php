@@ -1,0 +1,1 @@
+<x-dynamic-component :component="$uiComponent" v-bind="$uiProps" />
