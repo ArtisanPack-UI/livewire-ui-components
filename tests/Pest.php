@@ -11,7 +11,7 @@
 |
 */
 
-uses(ArtisanPack\LivewireUiComponents\Tests\TestCase::class)->in('Feature', 'Unit');
+uses(ArtisanPack\LivewireUiComponents\Tests\TestCase::class)->in('Feature', 'Unit', 'Integration', 'Accessibility', 'Performance');
 
 /*
 |--------------------------------------------------------------------------

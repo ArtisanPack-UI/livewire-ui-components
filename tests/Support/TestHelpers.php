@@ -128,14 +128,24 @@ class TestHelpers
     public static function measureRenderingPerformance(Component $component, int $iterations = 100): array
     {
         $times = [];
-        
+
         for ($i = 0; $i < $iterations; $i++) {
-            $start = microtime(true);
-            $component->render()->render();
-            $end = microtime(true);
-            $times[] = ($end - $start) * 1000; // Convert to milliseconds
+            try {
+                $start = microtime(true);
+                $component->render()->render();
+                $end = microtime(true);
+                $times[] = ($end - $start) * 1000; // Convert to milliseconds
+            } catch (\Illuminate\View\ViewException | \Error $e) {
+                // Skip iterations that fail due to missing slots or context
+                if (str_contains($e->getMessage(), 'Undefined variable') ||
+                    str_contains($e->getMessage(), 'Undefined array key') ||
+                    str_contains($e->getMessage(), 'Call to a member function')) {
+                    throw new \RuntimeException('Component requires slots or additional context for rendering', 0, $e);
+                }
+                throw $e;
+            }
         }
-        
+
         return [
             'iterations' => $iterations,
             'total_time' => array_sum($times),

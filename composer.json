@@ -90,7 +90,8 @@
         }
     },
     "scripts": {
-        "test": "pest"
+        "test": "pest",
+        "test local coverage": "herd coverage ./vendor/bin/pest --coverage-html coverage-report"
     },
     "config": {
         "allow-plugins": {

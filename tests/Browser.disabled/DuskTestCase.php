@@ -86,7 +86,7 @@ abstract class DuskTestCase extends BaseDuskTestCase
     /**
      * Test component at different screen sizes for responsive design.
      */
-    protected function testResponsiveComponent(callable $testCallback, array $breakpoints = null): void
+    protected function testResponsiveComponent(callable $testCallback, ?array $breakpoints = null): void
     {
         $breakpoints = $breakpoints ?: TestHelpers::responsiveBreakpoints();
 
@@ -219,7 +219,7 @@ abstract class DuskTestCase extends BaseDuskTestCase
     /**
      * Test component with various user interactions.
      */
-    protected function testUserInteractions(string $selector, array $interactions = null): void
+    protected function testUserInteractions(string $selector, ?array $interactions = null): void
     {
         $interactions = $interactions ?: [
             'click', 'hover', 'focus', 'blur', 'doubleClick'
