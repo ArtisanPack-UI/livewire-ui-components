@@ -87,6 +87,121 @@ php artisan artisanpack:generate-theme
 
 This interactive command helps you create custom color schemes that work across all components.
 
+## 🚀 Migration Guide: Upgrading to Version 1.0.0
+
+Version 1.0.0 introduces standardized naming for all Blade components to improve consistency and developer experience. The previously duplicated prefix (artisanpack-artisanpack-) has been removed.
+
+What has changed?
+
+All components have been migrated from the <x-artisanpack-artisanpack-{name}> syntax to the correct <x-artisanpack-{name}> syntax.
+
+Before (v0.7.0 and earlier):
+
+HTML
+<x-artisanpack-artisanpack-button>Click Me</x-artisanpack-artisanpack-button>
+
+<x-artisanpack-artisanpack-input wire:model="name" />
+After (v1.0.0+):
+
+HTML
+<x-artisanpack-button>Click Me</x-artisanpack-button>
+
+<x-artisanpack-input wire:model="name" />
+How to Upgrade
+
+Update Your composer.json: Update the artisanpack/livewire-ui-components version constraint to ^1.0.
+
+Run composer update.
+
+Update Your Blade Files: We highly recommend performing a project-wide search-and-replace for artisanpack-artisanpack- and replacing it with artisanpack-.
+
+Backwards compatibility has been maintained for this version. Your application will not break immediately, but the old artisanpack-artisanpack- component names are considered deprecated and will be removed in a future major release (e.g., v2.0). We strongly advise updating your templates to the new, cleaner syntax.
+
+
+***
+
+### ✅ Implement Automated Testing
+
+This is the unit test file we discussed previously. It ensures that both the new, correct names and the old, deprecated names are registered, preventing future regressions.
+
+#### File: `tests/Unit/ComponentRegistrationTest.php`
+
+```php
+<?php
+/**
+ * Unit test for component registration.
+ *
+ * This test ensures that all UI components are registered with their correct
+ * standardized names and that deprecated aliases remain for backwards
+ * compatibility.
+ *
+ * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
+ *
+ * @package    ArtisanPack\LivewireUiComponents\Tests\Unit
+ * @since      1.0.0
+ */
+
+namespace Tests\Unit;
+
+use Illuminate\Support\Facades\Blade;
+use Tests\TestCase;
+
+/**
+ * Verifies component registration and naming conventions.
+ *
+ * @since 1.0.0
+ */
+class ComponentRegistrationTest extends TestCase
+{
+	/**
+	 * Test that new, standardized component names are registered correctly.
+	 *
+	 * This test iterates through all expected components and asserts that
+	 * the <x-artisanpack-{name}> syntax is registered.
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function test_new_component_names_are_registered(): void
+	{
+		$registeredComponents = array_keys( Blade::getClassComponentAliases() );
+		$components           = config( 'artisanpack.livewire-ui-components.components', [] );
+		$prefix               = config( 'artisanpack.livewire-ui-components.prefix', 'artisanpack' );
+
+		foreach ( array_keys( $components ) as $alias ) {
+			$this->assertContains(
+				$prefix . '-' . $alias,
+				$registeredComponents,
+				"Component [{$prefix}-{$alias}] is not registered."
+			);
+		}
+	}
+
+	/**
+	 * Test that deprecated component aliases are registered for backwards compatibility.
+	 *
+	 * This test ensures that the old <x-artisanpack-artisanpack-{name}> syntax
+	 * is still available to prevent breaking changes for existing users.
+	 *
+	 * @since 1.0.0
+	 * @return void
+	 */
+	public function test_deprecated_aliases_are_registered(): void
+	{
+		$registeredComponents = array_keys( Blade::getClassComponentAliases() );
+		$components           = config( 'artisanpack.livewire-ui-components.components', [] );
+
+		foreach ( array_keys( $components ) as $alias ) {
+			$this->assertContains(
+				'artisanpack-artisanpack-' . $alias,
+				$registeredComponents,
+				"Deprecated alias [artisanpack-artisanpack-{$alias}] is not registered."
+			);
+		}
+	}
+}
+```
+
 ## Acknowledgements
 
 ArtisanPack UI Livewire UI Components is a fork of the excellent [MaryUI](https://github.com/robsontenorio/mary) library, created by Robson Tenorio and contributors.
