@@ -20,7 +20,9 @@
       "Bash(done)",
       "Bash(basename:*)",
       "Bash(timeout 120 composer test:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(composer update:*)",
+      "Bash(composer config:*)"
     ],
     "deny": [],
     "ask": []
