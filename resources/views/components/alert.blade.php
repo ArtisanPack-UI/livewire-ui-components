@@ -1,15 +1,18 @@
 <div
     wire:key="{{ $uuid }}"
+    role="alert"
+    aria-live="polite"
+    aria-atomic="true"
     {{ $attributes->whereDoesntStartWith('class') }}
     @php
         $colorClasses = $getColorClasses();
         $baseClasses = ['alert', 'rounded-md'];
-        
+
         // Add shadow class if needed
         if ($shadow) {
             $baseClasses[] = 'shadow-md';
         }
-        
+
         // Handle new color system
         if (!empty($colorClasses)) {
             // Add color classes from new system
@@ -44,6 +47,11 @@
     </div>
 
     @if($dismissible)
-        <x-artisanpack-button icon="o-x-mark" @click="show = false" class="btn-xs btn-circle btn-ghost static self-start end-0" />
+        <x-artisanpack-button
+            icon="o-x-mark"
+            @click="show = false"
+            class="btn-xs btn-circle btn-ghost static self-start end-0"
+            aria-label="Dismiss alert"
+        />
     @endif
 </div>

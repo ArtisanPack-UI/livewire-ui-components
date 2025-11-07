@@ -1,6 +1,6 @@
 @if($vertical)
     {{-- Vertical Separator --}}
-    <div class="flex flex-col items-center h-full">
+    <div class="flex flex-col items-center h-full" role="separator" aria-orientation="vertical">
         @if($image)
             <div class="flex-1 w-[2px] {{ $getColorClasses() }}"
                  @if(str_starts_with($color ?? '', '#')) style="border-color: {{ $color }}" @endif></div>
@@ -25,7 +25,7 @@
     </div>
 @else
     {{-- Horizontal Separator --}}
-    <div class="relative my-5">
+    <div class="relative my-5" role="separator" aria-orientation="horizontal">
         @if($image)
             <div class="flex items-center">
                 <div class="flex-1 h-[2px] border-t-[length:var(--border)] {{ $getColorClasses() }}"

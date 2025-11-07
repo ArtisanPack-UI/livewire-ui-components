@@ -65,20 +65,21 @@
             <tr x-ref="headers">
                 <!-- CHECKALL -->
                 @if($selectable)
-                    <th class="w-1" wire:key="{{ $uuid }}-checkall-{{ implode(',', $getAllIds()) }}">
+                    <th class="w-1" scope="col" wire:key="{{ $uuid }}-checkall-{{ implode(',', $getAllIds()) }}">
                         <input
                             id="checkAll-{{ $uuid }}"
                             type="checkbox"
                             class="checkbox checkbox-sm"
                             x-ref="mainCheckbox"
                             x-bind:disabled="pageIds.length === 0"
-                            @click="toggleCheckAll($el.checked)" />
+                            @click="toggleCheckAll($el.checked)"
+                            aria-label="Select all rows" />
                     </th>
                 @endif
 
                 <!-- EXPAND EXTRA HEADER -->
                 @if($expandable)
-                    <th class="w-1"></th>
+                    <th class="w-1" scope="col"><span class="sr-only">Expand</span></th>
                 @endif
 
                 @foreach($headers as $header)
@@ -92,10 +93,21 @@
                     @endphp
 
                     <th
+                        scope="col"
                         class="@if($isSortable($header)) cursor-pointer hover:bg-base-200 @endif {{ $header['class'] ?? ' ' }}"
-
+                        @if($isSortable($header))
+                            @if($isSortedBy($header))
+                                aria-sort="{{ $getSort($header)['direction'] === 'asc' ? 'ascending' : 'descending' }}"
+                            @else
+                                aria-sort="none"
+                            @endif
+                        @endif
                         @if($sortBy && $isSortable($header))
                             @click="$wire.set('sortBy', {column: '{{ $getSort($header)['column'] }}', direction: '{{ $getSort($header)['direction'] }}' })"
+                            role="button"
+                            tabindex="0"
+                            @keydown.enter="$wire.set('sortBy', {column: '{{ $getSort($header)['column'] }}', direction: '{{ $getSort($header)['direction'] }}' })"
+                            @keydown.space.prevent="$wire.set('sortBy', {column: '{{ $getSort($header)['column'] }}', direction: '{{ $getSort($header)['direction'] }}' })"
                         @endif
                     >
                         {{ isset(${"header_".$temp_key}) ? ${"header_".$temp_key}($header) : $header['label'] }}
@@ -132,7 +144,8 @@
                                 class="checkbox checkbox-sm"
                                 value="{{ data_get($row, $selectableKey) }}"
                                 x-model{{ $selectableModifier() }}="selection"
-                                @click.stop="toggleCheck($el.checked, {{ json_encode($row) }})" />
+                                @click.stop="toggleCheck($el.checked, {{ json_encode($row) }})"
+                                aria-label="Select row" />
                         </td>
                     @endif
 
@@ -140,11 +153,19 @@
                     @if($expandable)
                         <td class="w-1 pe-0 py-0">
                             @if(data_get($row, $expandableCondition))
-                                <x-artisanpack-icon
-                                    name="o-chevron-down"
-                                    ::class="isExpanded({{ $getKeyValue($row, 'expandableKey') }}) || '-rotate-90 !text-current'"
-                                    class="cursor-pointer p-2 w-8 h-8 bg-base-300 rounded-lg"
-                                    @click="toggleExpand({{ $getKeyValue($row, 'expandableKey') }});" />
+                                <button
+                                    type="button"
+                                    @click="toggleExpand({{ $getKeyValue($row, 'expandableKey') }});"
+                                    :aria-expanded="isExpanded({{ $getKeyValue($row, 'expandableKey') }}).toString()"
+                                    aria-label="Toggle row details"
+                                    class="cursor-pointer p-2 w-8 h-8 bg-base-300 rounded-lg inline-flex items-center justify-center"
+                                >
+                                    <x-artisanpack-icon
+                                        name="o-chevron-down"
+                                        ::class="isExpanded({{ $getKeyValue($row, 'expandableKey') }}) || '-rotate-90 !text-current'"
+                                        class="w-4 h-4"
+                                        aria-hidden="true" />
+                                </button>
                             @endif
                         </td>
                     @endif

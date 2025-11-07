@@ -1,6 +1,6 @@
 <div>
     @if ($errors->any())
-        <div {{ $attributes->class(["alert alert-error rounded rounded-sm"]) }} >
+        <div {{ $attributes->class(["alert alert-error rounded rounded-sm"]) }} role="alert" aria-live="assertive" aria-atomic="true">
             <div class="grid gap-3">
                 <div class="flex gap-2">
                     @if($title)

@@ -50,9 +50,14 @@
                     @if($icon)
                         <x-artisanpack-icon :name="$icon" class="pointer-events-none w-4 h-4 opacity-40" />
                     @elseif($placeToggleLeft())
-                        <x-artisanpack-button x-on:click="hidden = !hidden" class="btn-ghost btn-xs btn-circle -m-1">
-                            <x-artisanpack-icon name="{{ $passwordIcon }}" x-show="hidden" class="w-4 h-4 opacity-40" />
-                            <x-artisanpack-icon name="{{ $passwordVisibleIcon }}" x-show="!hidden" x-cloak class="w-4 h-4 opacity-40" />
+                        <x-artisanpack-button
+                            x-on:click="hidden = !hidden"
+                            class="btn-ghost btn-xs btn-circle -m-1"
+                            x-bind:aria-label="hidden ? 'Show password' : 'Hide password'"
+                            type="button"
+                        >
+                            <x-artisanpack-icon name="{{ $passwordIcon }}" x-show="hidden" class="w-4 h-4 opacity-40" aria-hidden="true" />
+                            <x-artisanpack-icon name="{{ $passwordVisibleIcon }}" x-show="!hidden" x-cloak class="w-4 h-4 opacity-40" aria-hidden="true" />
                         </x-artisanpack-button>
                     @endif
 
@@ -64,6 +69,16 @@
 
                         @if($attributes->has('autofocus') && $attributes->get('autofocus') == true)
                             autofocus
+                        @endif
+
+                        @if($attributes->get('required'))
+                            aria-required="true"
+                        @endif
+                        @if($errorFieldName() && $errors->has($errorFieldName()) && !$omitError)
+                            aria-invalid="true"
+                            aria-describedby="{{ $uuid }}-error @if($hint) {{ $uuid }}-hint @endif"
+                        @elseif($hint)
+                            aria-describedby="{{ $uuid }}-hint"
                         @endif
 
                         {{ $attributes->except('type')->merge() }}
@@ -78,9 +93,14 @@
                     @if($iconRight)
                         <x-artisanpack-icon :name="$iconRight" @class(["pointer-events-none w-4 h-4 opacity-40", "!end-10" => $clearable]) />
                     @elseif($placeToggleRight())
-                        <x-artisanpack-button x-on:click="hidden = !hidden" @class(["btn-ghost btn-xs btn-circle -m-1", "!end-9" => $clearable])>
-                            <x-artisanpack-icon name="{{ $passwordIcon }}" x-show="hidden" class="w-4 h-4 opacity-40" />
-                            <x-artisanpack-icon name="{{ $passwordVisibleIcon }}" x-show="!hidden" x-cloak class="w-4 h-4 opacity-40" />
+                        <x-artisanpack-button
+                            x-on:click="hidden = !hidden"
+                            @class(["btn-ghost btn-xs btn-circle -m-1", "!end-9" => $clearable])
+                            x-bind:aria-label="hidden ? 'Show password' : 'Hide password'"
+                            type="button"
+                        >
+                            <x-artisanpack-icon name="{{ $passwordIcon }}" x-show="hidden" class="w-4 h-4 opacity-40" aria-hidden="true" />
+                            <x-artisanpack-icon name="{{ $passwordVisibleIcon }}" x-show="!hidden" x-cloak class="w-4 h-4 opacity-40" aria-hidden="true" />
                         </x-artisanpack-button>
                     @endif
 
@@ -99,18 +119,20 @@
 
         {{-- HINT --}}
         @if($hint)
-            <div class="{{ $hintClass }}" x-classes="fieldset-label">{{ $hint }}</div>
+            <div id="{{ $uuid }}-hint" class="{{ $hintClass }}" x-classes="fieldset-label">{{ $hint }}</div>
         @endif
 
         {{-- ERROR --}}
         @if(!$omitError && $errors->has($errorFieldName()))
-            @foreach($errors->get($errorFieldName()) as $message)
-                @foreach(Arr::wrap($message) as $line)
-                    <div class="{{ $errorClass }}" x-class="text-error">{{ $line }}</div>
+            <div id="{{ $uuid }}-error" role="alert" aria-live="polite">
+                @foreach($errors->get($errorFieldName()) as $message)
+                    @foreach(Arr::wrap($message) as $line)
+                        <div class="{{ $errorClass }}" x-class="text-error">{{ $line }}</div>
+                        @break($firstErrorOnly)
+                    @endforeach
                     @break($firstErrorOnly)
                 @endforeach
-                @break($firstErrorOnly)
-            @endforeach
+            </div>
         @endif
     </fieldset>
 </div>

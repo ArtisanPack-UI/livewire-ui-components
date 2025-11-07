@@ -30,4 +30,8 @@
     @if($iconRight)
         <x-artisanpack-icon :name="$iconRight" />
     @endif
+
+    @if($external)
+        <span class="sr-only">(opens in new window)</span>
+    @endif
 </a>

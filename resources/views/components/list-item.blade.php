@@ -29,7 +29,7 @@
             <div class="py-3">
                 <div class="avatar">
                     <div class="w-11 rounded-full">
-                        <img src="{{ data_get($item, $avatar) }}" />
+                        <img src="{{ data_get($item, $avatar) }}" alt="{{ data_get($item, $value) ?? 'Avatar' }}" />
                     </div>
                 </div>
             </div>

@@ -15,6 +15,13 @@
         "
 ></a>
 
-<div x-show="selected === '{{ $name }}'" role="tabpanel" {{ $attributes->class(['tab-content', $contentClasses ?? 'py-5 px-1']) }}>
+<div
+    x-show="selected === '{{ $name }}'"
+    role="tabpanel"
+    id="tabpanel-{{ $name }}"
+    aria-labelledby="tab-{{ $name }}"
+    :tabindex="selected === '{{ $name }}' ? '0' : '-1'"
+    {{ $attributes->class(['tab-content', $contentClasses ?? 'py-5 px-1']) }}
+>
     {{ $slot }}
 </div>

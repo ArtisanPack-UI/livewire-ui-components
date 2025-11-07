@@ -1,10 +1,10 @@
 <div class="flex items-center gap-3">
     <div class="avatar @if(empty($image)) avatar-placeholder @endif">
-        <div 
+        <div
             @php
                 $colorClasses = $getColorClasses();
                 $baseClasses = ["w-7", "rounded-full"];
-                
+
                 // Handle placeholder styling
                 if (empty($image)) {
                     if (!empty($colorClasses)) {
@@ -25,9 +25,13 @@
                 }
             @endphp
             {{ $attributes->class($baseClasses) }}
+            @if(empty($image))
+                role="img"
+                aria-label="{{ $alt }}"
+            @endif
         >
             @if(empty($image))
-                <span class="text-xs" alt="{{ $alt }}">{{ $placeholder }}</span>
+                <span class="text-xs" aria-hidden="true">{{ $placeholder }}</span>
             @else
                 <img src="{{ $image }}" alt="{{ $alt }}" />
             @endif

@@ -1,4 +1,4 @@
-<div {{ $attributes->class(["bg-base-100 border-base-content/10 border-b-[length:var(--border)]", "sticky top-0 z-10" => $sticky]) }}>
+<nav {{ $attributes->class(["bg-base-100 border-base-content/10 border-b-[length:var(--border)]", "sticky top-0 z-10" => $sticky]) }} aria-label="{{ $attributes->get('aria-label') ?? 'Main navigation' }}">
     <div @class(["flex items-center px-6 py-3",  "max-w-screen-2xl mx-auto" => !$fullWidth])>
         <div {{ $brand?->attributes->class(["flex-1 flex items-center"]) }}>
             {{ $brand }}
@@ -7,4 +7,4 @@
             {{ $actions }}
         </div>
     </div>
-</div>
+</nav>

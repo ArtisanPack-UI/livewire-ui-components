@@ -27,11 +27,11 @@
                 ])>
 
                 @if($withAnchor)
-                    <a href="#{{ $anchor }}">
+                    <a href="#{{ $anchor }}" aria-label="Jump to {{ is_string($title) ? $title : '' }}">
                         @endif
 
                         @if($icon)
-                            <x-artisanpack-icon name="{{ $icon }}" class="{{ $iconClasses }}" />
+                            <x-artisanpack-icon name="{{ $icon }}" class="{{ $iconClasses }}" aria-hidden="true" />
                         @endif
 
                         <span @class(["ml-2" => $icon])>{{ $title }}</span>
@@ -66,11 +66,11 @@
         <hr class="border-t-[length:var(--border)] border-base-content/10 mt-3" />
 
         @if($progressIndicator)
-            <div class="h-0.5 -mt-4 mb-4">
+            <div class="h-0.5 -mt-4 mb-4" role="status" aria-live="polite" aria-label="Loading progress">
                 <progress
                     class="progress {{ $progressIndicatorClass }} w-full h-[var(--border)]"
                     wire:loading
-
+                    aria-label="Loading"
                     @if($progressTarget())
                         wire:target="{{ $progressTarget() }}"
                     @endif></progress>

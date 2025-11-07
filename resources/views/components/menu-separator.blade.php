@@ -1,4 +1,4 @@
-<hr class="my-3 border-t-[length:var(--border)] border-base-content/10"/>
+<hr class="my-3 border-t-[length:var(--border)] border-base-content/10" role="separator"/>
 
 @if($title)
     <li {{ $attributes->class(["menu-title text-inherit uppercase"]) }}>

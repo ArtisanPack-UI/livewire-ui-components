@@ -1,4 +1,5 @@
-<ul {{ $attributes->merge(['class' => 'flex items-center']) }} wire:key="{{ $uuid }}">
+<nav aria-label="Breadcrumb" wire:key="{{ $uuid }}">
+<ul {{ $attributes->merge(['class' => 'flex items-center']) }}>
     @foreach($items as $element)
 
         {{-- Tooltip --}}
@@ -11,9 +12,9 @@
         >
 
             @if ($element['link'] ?? null)
-                <a href="{{ $element['link'] }}" @if(!$noWireNavigate) wire:navigate @endif @class([$linkItemClass])>
+                <a href="{{ $element['link'] }}" @if(!$noWireNavigate) wire:navigate @endif @class([$linkItemClass]) @if($loop->last) aria-current="page" @endif>
             @else
-                <span @class([$textItemClass])>
+                <span @class([$textItemClass]) @if($loop->last) aria-current="page" @endif>
             @endif
 
                 {{-- Icon --}}
@@ -44,7 +45,8 @@
                 "sm:!block" => !$loop->last && $loop->count > 1
              ])
         >
-            <x-artisanpack-icon :name="$separator" @class([$separatorClass]) />
+            <x-artisanpack-icon :name="$separator" @class([$separatorClass]) aria-hidden="true" />
         </span>
     @endforeach
 </ul>
+</nav>

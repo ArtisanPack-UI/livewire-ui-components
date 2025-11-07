@@ -4,8 +4,9 @@
         focusedIndex: -1,
         init() {
             this.$refs.menu.setAttribute('role', 'menu');
-            this.$refs.button.setAttribute('aria-haspopup', 'true');
+            this.$refs.button.setAttribute('aria-haspopup', 'menu');
             this.$refs.button.setAttribute('aria-expanded', this.open.toString());
+            this.$refs.button.setAttribute('aria-controls', 'dropdown-menu-{{ $uuid }}');
         },
         toggleDropdown(event) {
             if (event) {
@@ -40,6 +41,10 @@
                 this.focusedIndex = (this.focusedIndex + 1) % items.length;
             } else if (direction === 'up') {
                 this.focusedIndex = this.focusedIndex <= 0 ? items.length - 1 : this.focusedIndex - 1;
+            } else if (direction === 'home') {
+                this.focusedIndex = 0;
+            } else if (direction === 'end') {
+                this.focusedIndex = items.length - 1;
             }
             items[this.focusedIndex].focus();
         }
@@ -92,6 +97,7 @@
 
     <ul
         x-ref="menu"
+        id="dropdown-menu-{{ $uuid }}"
         @class([
             'p-2','shadow','menu','z-[1]','border-[length:var(--border)]','border-base-content/10','bg-base-100', 'rounded-box','w-auto','min-w-max',
             'dropdown-content' => $noXAnchor,
@@ -101,6 +107,8 @@
         @keydown.arrow-up.prevent="navigateItems('up')"
         @keydown.escape.prevent="closeDropdown()"
         @keydown.tab="closeDropdown()"
+        @keydown.home.prevent="navigateItems('home')"
+        @keydown.end.prevent="navigateItems('end')"
         role="menu"
         aria-labelledby="dropdown-button-{{ $uuid }}"
         @if(!$noXAnchor)

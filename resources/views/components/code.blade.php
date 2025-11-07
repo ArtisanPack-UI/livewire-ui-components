@@ -1,9 +1,16 @@
 <div>
     @if($label)
-        <div class="text-xs font-semibold mt-5 mb-3">{{ $label }}</div>
+        <label for="{{ $id }}" class="text-xs font-semibold mt-5 mb-3 block">{{ $label }}</label>
     @endif
 
-    <div {{ $attributes->whereStartsWith('class')->class(["textarea w-full p-0", "textarea-error" => $errors->has($modelName())]) }} >
+    <div {{ $attributes->whereStartsWith('class')->class(["textarea w-full p-0", "textarea-error" => $errors->has($modelName())]) }}
+         role="application"
+         aria-label="{{ $label ?? 'Code editor' }}"
+         @if($errors->has($modelName()))
+             aria-invalid="true"
+             aria-describedby="{{ $id }}-error"
+         @endif
+    >
         <div
             wire:ignore
             x-data="{
@@ -62,7 +69,7 @@
     </div>
 
     @error($modelName())
-        <div class="text-error text-xs mt-3">{{ $message }}</div>
+        <div id="{{ $id }}-error" class="text-error text-xs mt-3" role="alert">{{ $message }}</div>
     @enderror
 
     @if($hint)

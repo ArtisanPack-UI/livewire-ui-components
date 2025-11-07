@@ -1,8 +1,9 @@
-<div 
+<div
+    role="status"
     @php
         $colorClasses = $getColorClasses();
         $baseClasses = ['badge'];
-        
+
         // Handle new color system
         if (!empty($colorClasses)) {
             // Add color classes from new system

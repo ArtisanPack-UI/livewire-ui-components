@@ -85,6 +85,15 @@
                                 @if($attributes->has('autofocus') && $attributes->get('autofocus') == true)
                                     autofocus
                                 @endif
+                                @if($attributes->get('required'))
+                                    aria-required="true"
+                                @endif
+                                @if($errorFieldName() && $errors->has($errorFieldName()) && !$omitError)
+                                    aria-invalid="true"
+                                    aria-describedby="{{ $uuid }}-error @if($hint) {{ $uuid }}-hint @endif"
+                                @elseif($hint)
+                                    aria-describedby="{{ $uuid }}-hint"
+                                @endif
                                 x-ref="myInput"
                                 :value="amount"
                                 x-on:input="$nextTick(() => $wire.set('{{ $modelName() }}', Currency.getUnmasked(), {{ json_encode($attributes->wire('model')->hasModifier('live')) }}))"
@@ -110,6 +119,15 @@
                             @if($attributes->has('autofocus') && $attributes->get('autofocus') == true)
                                 autofocus
                             @endif
+                            @if($attributes->get('required'))
+                                aria-required="true"
+                            @endif
+                            @if($errorFieldName() && $errors->has($errorFieldName()) && !$omitError)
+                                aria-invalid="true"
+                                aria-describedby="{{ $uuid }}-error @if($hint) {{ $uuid }}-hint @endif"
+                            @elseif($hint)
+                                aria-describedby="{{ $uuid }}-hint"
+                            @endif
                             @mousedown="$nextTick(() => $el.focus())"
                             {{
 								$attributes
@@ -124,7 +142,14 @@
 
                     {{-- CLEAR ICON  --}}
                     @if($clearable)
-                        <x-artisanpack-icon x-on:click="$wire.set('{{ $modelName() }}', '', {{ json_encode($attributes->wire('model')->hasModifier('live')) }})"  name="o-x-mark" class="cursor-pointer w-4 h-4 opacity-40"/>
+                        <x-artisanpack-icon
+                            x-on:click="$wire.set('{{ $modelName() }}', '', {{ json_encode($attributes->wire('model')->hasModifier('live')) }})"
+                            name="o-x-mark"
+                            class="cursor-pointer w-4 h-4 opacity-40"
+                            role="button"
+                            tabindex="0"
+                            aria-label="Clear input"
+                        />
                     @endif
 
                     {{-- ICON RIGHT --}}
@@ -147,18 +172,20 @@
 
         {{-- ERROR --}}
         @if(!$omitError && $errors->has($errorFieldName()))
-            @foreach($errors->get($errorFieldName()) as $message)
-                @foreach(Arr::wrap($message) as $line)
-                    <div class="{{ $errorClass }}" x-class="text-error">{{ $line }}</div>
+            <div id="{{ $uuid }}-error" role="alert" aria-live="polite">
+                @foreach($errors->get($errorFieldName()) as $message)
+                    @foreach(Arr::wrap($message) as $line)
+                        <div class="{{ $errorClass }}" x-class="text-error">{{ $line }}</div>
+                        @break($firstErrorOnly)
+                    @endforeach
                     @break($firstErrorOnly)
                 @endforeach
-                @break($firstErrorOnly)
-            @endforeach
+            </div>
         @endif
 
         {{-- HINT --}}
         @if($hint)
-            <div class="{{ $hintClass }}" x-classes="fieldset-label">{{ $hint }}</div>
+            <div id="{{ $uuid }}-hint" class="{{ $hintClass }}" x-classes="fieldset-label">{{ $hint }}</div>
         @endif
     </fieldset>
 </div>
