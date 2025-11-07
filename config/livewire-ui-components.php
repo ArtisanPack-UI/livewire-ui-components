@@ -95,4 +95,109 @@ return [
     |
     */
 	'theme_output_path' => resource_path('css/artisanpack-ui-theme.css'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Accessibility Settings
+    |--------------------------------------------------------------------------
+    |
+    | Configure accessibility features to ensure WCAG 2.1 AA compliance.
+    | These settings control various accessibility enhancements across all
+    | components including keyboard navigation, screen reader support, and
+    | visual accessibility features.
+    |
+    */
+    'accessibility' => [
+        /**
+         * Enable accessibility features globally
+         * Set to false to disable all accessibility enhancements
+         */
+        'enabled' => env('ACCESSIBILITY_ENABLED', true),
+
+        /**
+         * High contrast mode support
+         * When enabled, components adapt to system high contrast preferences
+         */
+        'high_contrast' => env('ACCESSIBILITY_HIGH_CONTRAST', true),
+
+        /**
+         * Reduced motion support
+         * When enabled, respects prefers-reduced-motion user preferences
+         */
+        'reduced_motion' => env('ACCESSIBILITY_REDUCED_MOTION', true),
+
+        /**
+         * Minimum color contrast ratio (WCAG AA = 4.5:1 for normal text)
+         * Used for automated contrast validation
+         */
+        'min_contrast_ratio' => 4.5,
+
+        /**
+         * Minimum color contrast ratio for large text (WCAG AA = 3:1)
+         * Large text is defined as 18pt+ or 14pt+ bold
+         */
+        'min_contrast_ratio_large' => 3.0,
+
+        /**
+         * Focus indicator settings
+         * Customize the appearance of focus indicators for keyboard navigation
+         */
+        'focus_indicator' => [
+            'width' => '2px',
+            'color' => 'var(--primary)',
+            'offset' => '2px',
+            'style' => 'solid',
+        ],
+
+        /**
+         * Screen reader preferences
+         * Configure screen reader behavior and announcements
+         */
+        'screen_reader' => [
+            'announce_changes' => true,
+            'live_regions' => true,
+            'announce_navigation' => true,
+        ],
+
+        /**
+         * Keyboard navigation settings
+         * Configure keyboard navigation behavior
+         */
+        'keyboard' => [
+            'enabled' => true,
+            'show_hints' => env('ACCESSIBILITY_KEYBOARD_HINTS', true),
+            'allow_shortcuts' => true,
+        ],
+
+        /**
+         * Focus management settings
+         * Configure focus behavior for modals, dialogs, and other components
+         */
+        'focus_management' => [
+            'trap_in_modals' => true,
+            'restore_on_close' => true,
+            'auto_focus_first' => true,
+            'skip_links' => true,
+        ],
+
+        /**
+         * ARIA attributes
+         * Configure default ARIA attribute behavior
+         */
+        'aria' => [
+            'auto_generate_ids' => true,
+            'verbose_labels' => false,
+            'announce_errors' => true,
+        ],
+
+        /**
+         * Testing and validation
+         * Configure accessibility testing features
+         */
+        'testing' => [
+            'validate_contrast' => env('ACCESSIBILITY_VALIDATE_CONTRAST', false),
+            'strict_mode' => env('ACCESSIBILITY_STRICT_MODE', false),
+            'log_violations' => env('ACCESSIBILITY_LOG_VIOLATIONS', false),
+        ],
+    ],
 ];

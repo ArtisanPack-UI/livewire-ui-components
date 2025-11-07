@@ -164,12 +164,22 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
 
 		$this->loadRoutesFrom( __DIR__ . '/../routes/web.php' );
 
+		// Publish all assets (CSS & JS)
 		$this->publishes(
 			[
 				__DIR__ . '/../resources/js'  => public_path( 'vendor/artisanpack-ui/js' ),
 				__DIR__ . '/../resources/css' => public_path( 'vendor/artisanpack-ui/css' ),
 			],
 			'artisanpack-assets'
+		);
+
+		// Publish accessibility assets separately for granular control
+		$this->publishes(
+			[
+				__DIR__ . '/../resources/css/accessibility.css' => public_path( 'vendor/artisanpack-ui/css/accessibility.css' ),
+				__DIR__ . '/../resources/js/accessibility.js'   => public_path( 'vendor/artisanpack-ui/js/accessibility.js' ),
+			],
+			'artisanpack-accessibility'
 		);
 
 		// Publishing is only necessary when using the CLI.

@@ -1,0 +1,588 @@
+/**
+ * Accessibility Utilities
+ *
+ * CSS utilities for WCAG 2.1 AA compliant accessibility features.
+ * Includes focus management, screen reader utilities, high contrast mode,
+ * and reduced motion support.
+ *
+ * @package ArtisanPack\LivewireUiComponents
+ */
+
+/* ============================================================================
+   Focus Management
+   ============================================================================ */
+
+/**
+ * Default focus visible styles
+ * Provides clear focus indicators for keyboard navigation
+ */
+.focus-visible:focus,
+*:focus-visible {
+    outline: var(--focus-width, 2px) var(--focus-style, solid) var(--focus-color, var(--primary, #3b82f6));
+    outline-offset: var(--focus-offset, 2px);
+    border-radius: var(--rounded-btn, 0.5rem);
+}
+
+/**
+ * Focus ring utility class
+ * Alternative focus indicator using Tailwind ring utilities
+ */
+.focus-ring {
+    @apply ring-2 ring-primary ring-offset-2 ring-offset-base-100;
+}
+
+/**
+ * Enhanced focus for high visibility
+ */
+.focus-visible-enhanced:focus,
+.focus-visible-enhanced:focus-visible {
+    outline: 3px solid var(--focus-color, var(--primary, #3b82f6));
+    outline-offset: 3px;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
+}
+
+/**
+ * Remove focus for mouse users while maintaining keyboard focus
+ */
+.focus-visible:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/**
+ * Focus within - highlight container when child has focus
+ */
+.focus-within-highlight:focus-within {
+    @apply ring-2 ring-primary/50 ring-offset-1;
+}
+
+/* ============================================================================
+   Skip Links
+   ============================================================================ */
+
+/**
+ * Skip to main content link
+ * Hidden by default, visible on keyboard focus
+ */
+.skip-link {
+    position: absolute;
+    top: -100%;
+    left: 0;
+    @apply bg-primary text-primary-content px-4 py-2 z-[9999] font-medium rounded-br-lg;
+    transition: top 0.3s ease-in-out;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+    top: 0;
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
+/**
+ * Multiple skip links container
+ */
+.skip-links {
+    @apply absolute top-0 left-0 z-[9999];
+}
+
+.skip-links a {
+    @apply skip-link;
+}
+
+/* ============================================================================
+   Screen Reader Utilities
+   ============================================================================ */
+
+/**
+ * Screen reader only text
+ * Visually hidden but available to screen readers
+ */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/**
+ * Screen reader only that becomes visible on focus
+ * Useful for skip links and keyboard navigation hints
+ */
+.sr-only-focusable:not(:focus):not(:focus-within) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+.sr-only-focusable:focus,
+.sr-only-focusable:focus-within {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: inherit;
+    margin: inherit;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+}
+
+/**
+ * Hide from screen readers but keep visible
+ */
+.aria-hidden {
+    speak: none;
+}
+
+/* ============================================================================
+   Live Regions
+   ============================================================================ */
+
+/**
+ * ARIA live region
+ * Announces dynamic content changes to screen readers
+ */
+[aria-live="polite"],
+[aria-live="assertive"],
+[role="status"],
+[role="alert"] {
+    @apply sr-only;
+}
+
+/**
+ * Visual live region
+ * Shows announcements visually as well
+ */
+.live-region-visual {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    @apply p-4 bg-base-100 shadow-lg rounded-lg border border-base-300 z-[9999];
+    max-width: 400px;
+    animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* ============================================================================
+   High Contrast Mode Support
+   ============================================================================ */
+
+/**
+ * High contrast mode adaptations
+ * Enhances visibility for users with low vision
+ */
+@media (prefers-contrast: high) {
+    :root {
+        --focus-width: 3px;
+        --border-width: 2px;
+    }
+
+    /* Increase border visibility */
+    .btn,
+    .input,
+    .select,
+    .textarea,
+    .card,
+    .modal-box,
+    .dropdown-content {
+        @apply border-2;
+    }
+
+    /* Enhance focus indicators */
+    *:focus-visible {
+        outline-width: 3px;
+        outline-offset: 3px;
+    }
+
+    /* Increase icon stroke width */
+    svg {
+        stroke-width: 2;
+    }
+
+    /* Improve text contrast */
+    body {
+        font-weight: 500;
+    }
+}
+
+/**
+ * Windows High Contrast Mode support
+ */
+@media screen and (-ms-high-contrast: active) {
+    /* Ensure focus is visible in Windows HCM */
+    *:focus {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+    }
+
+    /* Ensure icons are visible */
+    svg {
+        fill: currentColor;
+        stroke: currentColor;
+    }
+}
+
+/* ============================================================================
+   Reduced Motion Support
+   ============================================================================ */
+
+/**
+ * Respect user's reduced motion preference
+ * Disables or reduces animations for users with vestibular disorders
+ */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    /* Keep essential animations but make them instant */
+    .loading,
+    .loading-spinner,
+    .skeleton {
+        animation: none !important;
+    }
+
+    /* Remove parallax effects */
+    [data-parallax] {
+        transform: none !important;
+    }
+}
+
+/**
+ * Allow users to opt-in to animations even with reduced motion
+ */
+@media (prefers-reduced-motion: reduce) {
+    .allow-motion,
+    .force-motion {
+        animation-duration: inherit !important;
+        transition-duration: inherit !important;
+    }
+}
+
+/* ============================================================================
+   Keyboard Navigation Indicators
+   ============================================================================ */
+
+/**
+ * Highlight elements during keyboard navigation
+ */
+[data-keyboard-focused="true"],
+.keyboard-focused {
+    @apply ring-2 ring-primary ring-offset-2;
+}
+
+/**
+ * Keyboard shortcut hint badge
+ */
+.keyboard-hint {
+    @apply inline-flex items-center px-2 py-1 text-xs font-mono bg-base-200 text-base-content rounded border border-base-300;
+    margin-left: 0.5rem;
+}
+
+/**
+ * Keyboard navigation help overlay
+ */
+.keyboard-help-overlay {
+    position: fixed;
+    inset: 0;
+    @apply bg-black/50 z-[9999] flex items-center justify-center p-4;
+}
+
+.keyboard-help-content {
+    @apply bg-base-100 rounded-lg shadow-2xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto;
+}
+
+.keyboard-help-list {
+    @apply space-y-3;
+}
+
+.keyboard-help-item {
+    @apply flex items-center justify-between p-3 rounded-lg bg-base-200;
+}
+
+.keyboard-help-key {
+    @apply inline-flex items-center px-3 py-1 font-mono text-sm bg-base-300 text-base-content rounded border border-base-content/20;
+    min-width: 3rem;
+    justify-content: center;
+}
+
+/* ============================================================================
+   Form Accessibility
+   ============================================================================ */
+
+/**
+ * Required field indicator
+ */
+.required-indicator::after {
+    content: " *";
+    @apply text-error;
+}
+
+/**
+ * Error state indicators
+ */
+[aria-invalid="true"],
+.input-error {
+    @apply border-error ring-2 ring-error/20;
+}
+
+[aria-invalid="true"]:focus,
+.input-error:focus {
+    @apply ring-error;
+}
+
+/**
+ * Error message styling
+ */
+.error-message {
+    @apply text-error text-sm mt-1;
+}
+
+[role="alert"].error-message {
+    @apply font-medium;
+}
+
+/**
+ * Help text association
+ */
+.help-text,
+[id*="-help"],
+[id*="-hint"] {
+    @apply text-sm text-base-content/70 mt-1;
+}
+
+/* ============================================================================
+   Interactive Elements
+   ============================================================================ */
+
+/**
+ * Disabled state visibility
+ */
+[disabled],
+[aria-disabled="true"] {
+    @apply cursor-not-allowed opacity-60;
+}
+
+/**
+ * Loading state
+ */
+[aria-busy="true"] {
+    @apply cursor-wait;
+}
+
+/**
+ * Pressed/Selected state for toggle buttons
+ */
+[aria-pressed="true"],
+[aria-selected="true"] {
+    @apply bg-primary text-primary-content;
+}
+
+/**
+ * Expanded/Collapsed state indicators
+ */
+[aria-expanded="false"] .expanded-indicator {
+    @apply hidden;
+}
+
+[aria-expanded="true"] .collapsed-indicator {
+    @apply hidden;
+}
+
+/* ============================================================================
+   Modal & Dialog Accessibility
+   ============================================================================ */
+
+/**
+ * Inert content when modal is open
+ */
+[inert] {
+    pointer-events: none;
+    user-select: none;
+}
+
+/**
+ * Modal backdrop
+ */
+.modal-backdrop {
+    @apply fixed inset-0 bg-black/50 z-[9998];
+}
+
+/**
+ * Focus trap indicator (development only)
+ */
+.focus-trap-active {
+    outline: 2px dashed orange;
+    outline-offset: 4px;
+}
+
+/* ============================================================================
+   Color Contrast Helpers
+   ============================================================================ */
+
+/**
+ * Ensure sufficient contrast for text
+ */
+.contrast-safe-text {
+    color: color-contrast(var(--bg-color) vs black, white);
+}
+
+/**
+ * Warning for insufficient contrast (development)
+ */
+.contrast-warning {
+    outline: 2px dashed red;
+    outline-offset: 2px;
+}
+
+.contrast-warning::after {
+    content: "⚠️ Low Contrast";
+    @apply absolute top-0 right-0 bg-error text-error-content text-xs px-2 py-1 rounded-bl;
+}
+
+/* ============================================================================
+   Touch Target Sizing
+   ============================================================================ */
+
+/**
+ * Ensure minimum touch target size (44x44px minimum per WCAG)
+ */
+.touch-target {
+    min-width: 44px;
+    min-height: 44px;
+    @apply inline-flex items-center justify-center;
+}
+
+/**
+ * Touch target wrapper for small elements
+ */
+.touch-target-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.touch-target-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 44px;
+    min-height: 44px;
+}
+
+/* ============================================================================
+   Responsive Typography for Accessibility
+   ============================================================================ */
+
+/**
+ * Ensure text remains readable when zoomed
+ */
+html {
+    font-size: 16px;
+}
+
+@media (max-width: 640px) {
+    html {
+        font-size: 14px;
+    }
+}
+
+/**
+ * Prevent text from becoming too large
+ */
+@media (min-width: 1920px) {
+    html {
+        font-size: 18px;
+    }
+}
+
+/**
+ * Accessible line height for readability
+ */
+body {
+    line-height: 1.5;
+}
+
+p, li, td, dd {
+    line-height: 1.6;
+}
+
+/* ============================================================================
+   Print Accessibility
+   ============================================================================ */
+
+@media print {
+    /* Show skip links URLs in print */
+    .skip-link::after {
+        content: " (" attr(href) ")";
+    }
+
+    /* Ensure focus indicators are visible in print */
+    *:focus {
+        outline: 2px solid black;
+    }
+
+    /* Show ARIA labels in print */
+    [aria-label]::after {
+        content: " [" attr(aria-label) "]";
+        font-weight: normal;
+        font-size: 0.8em;
+    }
+}
+
+/* ============================================================================
+   Development & Debug Helpers
+   ============================================================================ */
+
+/**
+ * Highlight accessibility issues in development
+ */
+[data-a11y-debug="true"] [aria-hidden="true"]:not([tabindex="-1"]) {
+    outline: 2px dashed orange !important;
+}
+
+[data-a11y-debug="true"] [role]:not([aria-label]):not([aria-labelledby]) {
+    outline: 2px dashed red !important;
+}
+
+[data-a11y-debug="true"] button:not([aria-label]):not([aria-labelledby]):empty {
+    outline: 2px dashed red !important;
+}
+
+/**
+ * Show focus order in debug mode
+ */
+[data-a11y-debug="true"] [tabindex]::before {
+    content: attr(tabindex);
+    position: absolute;
+    top: -1rem;
+    left: 0;
+    @apply bg-primary text-primary-content text-xs px-2 py-1 rounded;
+    z-index: 9999;
+}

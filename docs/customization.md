@@ -4,7 +4,8 @@ title: Customization
 
 # Customization
 
-ArtisanPack UI Livewire Components is designed to be highly customizable, allowing you to adapt the components to match your application's design requirements. This guide covers the various ways you can customize the package.
+ArtisanPack UI Livewire Components is designed to be highly customizable, allowing you to adapt the components to match
+your application's design requirements. This guide covers the various ways you can customize the package.
 
 ## Configuration Options
 
@@ -54,7 +55,8 @@ return [
 
 ### Component Prefixing
 
-The `prefix` option allows you to add a prefix to all component names to avoid naming collisions with other packages or your own components.
+The `prefix` option allows you to add a prefix to all component names to avoid naming collisions with other packages or
+your own components.
 
 For example, with the default prefix of `'artisanpack-'`, you would use components like this:
 
@@ -90,7 +92,8 @@ Then you can use components without a prefix:
 
 ### Route Prefixing
 
-Some components like Spotlight and Editor make network requests to internal routes. The `route_prefix` option allows you to add a prefix to these routes.
+Some components like Spotlight and Editor make network requests to internal routes. The `route_prefix` option allows you
+to add a prefix to these routes.
 
 For example, with the default empty prefix, the routes would be:
 
@@ -114,7 +117,8 @@ This is useful when you need to avoid route conflicts with other packages or you
 
 ### Working with DaisyUI Themes
 
-ArtisanPack UI Livewire Components is built on top of DaisyUI, which provides a powerful theming system. You can customize the appearance of components by modifying the DaisyUI theme variables.
+ArtisanPack UI Livewire Components is built on top of DaisyUI, which provides a powerful theming system. You can
+customize the appearance of components by modifying the DaisyUI theme variables.
 
 #### Using the Theme Generator
 
@@ -168,7 +172,8 @@ You can also directly modify the DaisyUI theme variables in your CSS:
 
 ### Overriding Default Styles
 
-You can override the default styles of components by adding your own CSS rules. It's recommended to add these rules after importing the ArtisanPack UI theme:
+You can override the default styles of components by adding your own CSS rules. It's recommended to add these rules
+after importing the ArtisanPack UI theme:
 
 ```css
 /* resources/css/app.css */
@@ -212,7 +217,8 @@ Modifying these variables will affect all components that use them.
 
 ### Extending Components
 
-You can extend ArtisanPack UI components to add your own functionality or modify their behavior. To extend a component, create a new component class that extends the original component:
+You can extend ArtisanPack UI components to add your own functionality or modify their behavior. To extend a component,
+create a new component class that extends the original component:
 
 ```php
 <?php
@@ -253,7 +259,8 @@ class AppServiceProvider extends ServiceProvider
 
 ### Slot Usage
 
-Most ArtisanPack UI components support slots, which allow you to insert custom content into specific parts of the component. For example, the Card component has `header`, `footer`, and default slots:
+Most ArtisanPack UI components support slots, which allow you to insert custom content into specific parts of the
+component. For example, the Card component has `header`, `footer`, and default slots:
 
 ```php
 <x-artisanpack-card>
@@ -275,7 +282,8 @@ Refer to the documentation for each component to see which slots are available.
 
 ### Attribute Passing
 
-ArtisanPack UI components automatically merge attributes passed to them with their default attributes. This allows you to add classes, data attributes, or event listeners to components:
+ArtisanPack UI components automatically merge attributes passed to them with their default attributes. This allows you
+to add classes, data attributes, or event listeners to components:
 
 ```php
 <x-artisanpack-button 
@@ -299,7 +307,8 @@ You can also override default attributes by passing your own values:
 
 ### Creating Custom Components
 
-You can create your own components that integrate with ArtisanPack UI. Here's an example of creating a custom card component:
+You can create your own components that integrate with ArtisanPack UI. Here's an example of creating a custom card
+component:
 
 ```php
 <?php
@@ -356,7 +365,8 @@ Then use it in your views:
 
 ### Integrating with Existing UI Systems
 
-If you're integrating ArtisanPack UI with an existing UI system, you may need to adapt the components to match your design system. Here are some strategies:
+If you're integrating ArtisanPack UI with an existing UI system, you may need to adapt the components to match your
+design system. Here are some strategies:
 
 1. **Use component prefixing** to avoid naming collisions
 2. **Create wrapper components** that adapt ArtisanPack UI components to your design system
@@ -422,7 +432,7 @@ class AppButton extends Component
 This allows you to use your own component API while leveraging ArtisanPack UI components internally:
 
 ```php
-<x-app-button variant="danger" size="lg">
+<x-app-button variant="error" size="lg">
     Delete
 </x-app-button>
 ```
