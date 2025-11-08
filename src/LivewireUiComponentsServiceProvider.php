@@ -66,6 +66,7 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
 		'dropdown'         => \ArtisanPack\LivewireUiComponents\View\Components\Dropdown::class,
 		'editor'           => \ArtisanPack\LivewireUiComponents\View\Components\Editor::class,
 		'errors'           => \ArtisanPack\LivewireUiComponents\View\Components\Errors::class,
+		'fieldset'         => \ArtisanPack\LivewireUiComponents\View\Components\Fieldset::class,
 		'file'             => \ArtisanPack\LivewireUiComponents\View\Components\File::class,
 		'form'             => \ArtisanPack\LivewireUiComponents\View\Components\Form::class,
 		'group'            => \ArtisanPack\LivewireUiComponents\View\Components\Group::class,

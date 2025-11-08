@@ -22,7 +22,8 @@
       "Bash(timeout 120 composer test:*)",
       "Bash(git checkout:*)",
       "Bash(composer update:*)",
-      "Bash(composer config:*)"
+      "Bash(composer config:*)",
+      "Bash(vendor/bin/pest:*)"
     ],
     "deny": [],
     "ask": []

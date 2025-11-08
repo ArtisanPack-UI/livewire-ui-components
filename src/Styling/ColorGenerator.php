@@ -537,29 +537,39 @@ class ColorGenerator
 		}
 
 		[$colorName, $intensity] = explode('-', $variantToTailwind[$variant]);
-		
+
 		// Generate darker versions for hover/focus (same logic as getTailwindClasses)
 		$hoverIntensity = min(950, (int)$intensity + 100);
 		$focusIntensity = min(950, (int)$intensity + 100);
-		
+
 		$hoverHex = $this->tailwindColorToHex($colorName, $hoverIntensity);
 		$focusHex = $this->tailwindColorToHex($colorName, $focusIntensity);
-		
+
 		$hoverProperty = '--artisanpack-variant-hover-color';
 		$focusProperty = '--artisanpack-variant-focus-color';
-		
+		$hoverTextProperty = '--artisanpack-variant-hover-text';
+		$focusTextProperty = '--artisanpack-variant-focus-text';
+
 		if ($hoverHex) {
-			$classes['style'] = isset($classes['style']) 
-				? $classes['style'] . " {$hoverProperty}: {$hoverHex};" 
-				: "{$hoverProperty}: {$hoverHex};";
-			$classes['hover'] = 'hover:[background-color:var(--artisanpack-variant-hover-color)]';
+			// Calculate contrasting text color for hover state
+			$hoverTextColor = $this->getContrastingTextForHex($hoverHex);
+			$hoverTextHex = $hoverTextColor === 'text-black' ? '#000000' : '#ffffff';
+
+			$classes['style'] = isset($classes['style'])
+				? $classes['style'] . " {$hoverProperty}: {$hoverHex}; {$hoverTextProperty}: {$hoverTextHex};"
+				: "{$hoverProperty}: {$hoverHex}; {$hoverTextProperty}: {$hoverTextHex};";
+			$classes['hover'] = 'hover:bg-[var(--artisanpack-variant-hover-color)] hover:text-[var(--artisanpack-variant-hover-text)]';
 		}
-		
+
 		if ($focusHex) {
-			$classes['style'] = isset($classes['style']) 
-				? $classes['style'] . " {$focusProperty}: {$focusHex};" 
-				: (isset($classes['style']) ? $classes['style'] : '') . " {$focusProperty}: {$focusHex};";
-			$classes['focus'] = 'focus:[background-color:var(--artisanpack-variant-focus-color)]';
+			// Calculate contrasting text color for focus state
+			$focusTextColor = $this->getContrastingTextForHex($focusHex);
+			$focusTextHex = $focusTextColor === 'text-black' ? '#000000' : '#ffffff';
+
+			$classes['style'] = isset($classes['style'])
+				? $classes['style'] . " {$focusProperty}: {$focusHex}; {$focusTextProperty}: {$focusTextHex};"
+				: "{$focusProperty}: {$focusHex}; {$focusTextProperty}: {$focusTextHex};";
+			$classes['focus'] = 'focus:bg-[var(--artisanpack-variant-focus-color)] focus:text-[var(--artisanpack-variant-focus-text)]';
 		}
 	}
 
@@ -575,10 +585,10 @@ class ColorGenerator
 	protected function getTailwindClasses(string $colorWithIntensity, ?string $adjustment): array
 	{
 		[$colorName, $intensity] = explode('-', $colorWithIntensity);
-		
+
 		// Convert Tailwind color to hex for JIT compatibility
 		$hexColor = $this->tailwindColorToHex($colorName, (int)$intensity);
-		
+
 		if (!$hexColor) {
 			// Fallback to original dynamic classes if color conversion fails
 			return [
@@ -587,34 +597,44 @@ class ColorGenerator
 				'text' => $this->getContrastingTextClass($colorName, (int)$intensity),
 			];
 		}
-		
+
 		$classes = [];
-		
+
 		// Use CSS custom properties for JIT compatibility
 		$customProperty = '--artisanpack-tailwind-color';
 		$hoverProperty = '--artisanpack-tailwind-hover-color';
 		$focusProperty = '--artisanpack-tailwind-focus-color';
-		
+		$hoverTextProperty = '--artisanpack-tailwind-hover-text';
+		$focusTextProperty = '--artisanpack-tailwind-focus-text';
+
 		$classes['style'] = "{$customProperty}: {$hexColor};";
-		$classes['bg'] = '[background-color:var(--artisanpack-tailwind-color)]';
-		$classes['border'] = '[border-color:var(--artisanpack-tailwind-color)]';
+		$classes['bg'] = 'bg-[var(--artisanpack-tailwind-color)]';
+		$classes['border'] = 'border-[var(--artisanpack-tailwind-color)]';
 		$classes['text'] = $this->getContrastingTextForHex($hexColor);
 
 		// Generate hover and focus states (slightly darker)
 		$hoverIntensity = min(950, (int)$intensity + 100);
 		$focusIntensity = min(950, (int)$intensity + 100);
-		
+
 		$hoverHex = $this->tailwindColorToHex($colorName, $hoverIntensity);
 		$focusHex = $this->tailwindColorToHex($colorName, $focusIntensity);
-		
+
 		if ($hoverHex) {
-			$classes['style'] .= " {$hoverProperty}: {$hoverHex};";
-			$classes['hover'] = 'hover:[background-color:var(--artisanpack-tailwind-hover-color)]';
+			// Calculate contrasting text color for hover state
+			$hoverTextColor = $this->getContrastingTextForHex($hoverHex);
+			$hoverTextHex = $hoverTextColor === 'text-black' ? '#000000' : '#ffffff';
+
+			$classes['style'] .= " {$hoverProperty}: {$hoverHex}; {$hoverTextProperty}: {$hoverTextHex};";
+			$classes['hover'] = 'hover:bg-[var(--artisanpack-tailwind-hover-color)] hover:text-[var(--artisanpack-tailwind-hover-text)]';
 		}
-		
+
 		if ($focusHex) {
-			$classes['style'] .= " {$focusProperty}: {$focusHex};";
-			$classes['focus'] = 'focus:[background-color:var(--artisanpack-tailwind-focus-color)]';
+			// Calculate contrasting text color for focus state
+			$focusTextColor = $this->getContrastingTextForHex($focusHex);
+			$focusTextHex = $focusTextColor === 'text-black' ? '#000000' : '#ffffff';
+
+			$classes['style'] .= " {$focusProperty}: {$focusHex}; {$focusTextProperty}: {$focusTextHex};";
+			$classes['focus'] = 'focus:bg-[var(--artisanpack-tailwind-focus-color)] focus:text-[var(--artisanpack-tailwind-focus-text)]';
 		}
 
 		// Apply adjustments if specified
@@ -637,29 +657,39 @@ class ColorGenerator
 	protected function getHexClasses(string $hex, ?string $adjustment): array
 	{
 		$classes = [];
-		
+
 		// Use CSS custom properties for hex colors
 		$customProperty = '--artisanpack-custom-color';
 		$hoverProperty = '--artisanpack-custom-hover-color';
 		$focusProperty = '--artisanpack-custom-focus-color';
-		
+		$hoverTextProperty = '--artisanpack-custom-hover-text';
+		$focusTextProperty = '--artisanpack-custom-focus-text';
+
 		$classes['style'] = "{$customProperty}: {$hex};";
-		$classes['bg'] = '[background-color:var(--artisanpack-custom-color)]';
-		$classes['border'] = '[border-color:var(--artisanpack-custom-color)]';
+		$classes['bg'] = 'bg-[var(--artisanpack-custom-color)]';
+		$classes['border'] = 'border-[var(--artisanpack-custom-color)]';
 		$classes['text'] = $this->getContrastingTextForHex($hex);
 
 		// Generate hover and focus states (slightly darker)
 		$hoverHex = $this->adjustHexBrightness($hex, -0.2); // 20% darker
 		$focusHex = $this->adjustHexBrightness($hex, -0.2); // 20% darker
-		
+
 		if ($hoverHex) {
-			$classes['style'] .= " {$hoverProperty}: {$hoverHex};";
-			$classes['hover'] = 'hover:[background-color:var(--artisanpack-custom-hover-color)]';
+			// Calculate contrasting text color for hover state
+			$hoverTextColor = $this->getContrastingTextForHex($hoverHex);
+			$hoverTextHex = $hoverTextColor === 'text-black' ? '#000000' : '#ffffff';
+
+			$classes['style'] .= " {$hoverProperty}: {$hoverHex}; {$hoverTextProperty}: {$hoverTextHex};";
+			$classes['hover'] = 'hover:bg-[var(--artisanpack-custom-hover-color)] hover:text-[var(--artisanpack-custom-hover-text)]';
 		}
-		
+
 		if ($focusHex) {
-			$classes['style'] .= " {$focusProperty}: {$focusHex};";
-			$classes['focus'] = 'focus:[background-color:var(--artisanpack-custom-focus-color)]';
+			// Calculate contrasting text color for focus state
+			$focusTextColor = $this->getContrastingTextForHex($focusHex);
+			$focusTextHex = $focusTextColor === 'text-black' ? '#000000' : '#ffffff';
+
+			$classes['style'] .= " {$focusProperty}: {$focusHex}; {$focusTextProperty}: {$focusTextHex};";
+			$classes['focus'] = 'focus:bg-[var(--artisanpack-custom-focus-color)] focus:text-[var(--artisanpack-custom-focus-text)]';
 		}
 
 		// Apply adjustments if specified
@@ -721,7 +751,7 @@ class ColorGenerator
 				$adjustedHex = $this->tailwindColorToHex($colorName, $bgIntensity);
 				if ($adjustedHex) {
 					$classes['style'] = "--artisanpack-tailwind-color: {$adjustedHex};";
-					$classes['bg'] = '[background-color:var(--artisanpack-tailwind-color)]';
+					$classes['bg'] = 'bg-[var(--artisanpack-tailwind-color)]';
 					$classes['text'] = $this->getContrastingTextForHex($adjustedHex);
 				}
 				break;
@@ -731,7 +761,7 @@ class ColorGenerator
 				$adjustedHex = $this->tailwindColorToHex($colorName, $bgIntensity);
 				if ($adjustedHex) {
 					$classes['style'] = "--artisanpack-tailwind-color: {$adjustedHex};";
-					$classes['bg'] = '[background-color:var(--artisanpack-tailwind-color)]';
+					$classes['bg'] = 'bg-[var(--artisanpack-tailwind-color)]';
 					$classes['text'] = $this->getContrastingTextForHex($adjustedHex);
 				}
 				break;
@@ -748,7 +778,7 @@ class ColorGenerator
 				$adjustedHex = $this->tailwindColorToHex($colorName, 50);
 				if ($adjustedHex) {
 					$classes['style'] = "--artisanpack-tailwind-color: {$adjustedHex};";
-					$classes['bg'] = '[background-color:var(--artisanpack-tailwind-color)]';
+					$classes['bg'] = 'bg-[var(--artisanpack-tailwind-color)]';
 					$classes['text'] = $this->getContrastingTextForHex($adjustedHex);
 				}
 				break;

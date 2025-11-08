@@ -60,6 +60,7 @@ class Button extends Component
      * @param string|null $variant        Button variant (for backward compatibility).
      * @param string|null $color          Color variant, Tailwind color, or hex code.
      * @param string|null $colorAdjustment Background adjustment (lighter, darker, transparent, subtle).
+     * @param string|null $size           Button size (xs, sm, md, lg, xl).
      * @since 1.0.0
      */
     public function __construct(
@@ -81,6 +82,7 @@ class Button extends Component
         public ?string $variant = 'primary',
         public ?string $color = null,
         public ?string $colorAdjustment = null,
+        public ?string $size = 'md',
         public string $uuid = '',
         public string $tooltipPosition = 'lg:tooltip-top',
     ) {
@@ -124,11 +126,47 @@ class Button extends Component
             'success',
             'warning',
             'error',
+            'info',
+            'neutral',
             'ghost',
             'outline'
         ];
 
         return in_array($variant, $supportedVariants) ? $variant : 'primary';
+    }
+
+    /**
+     * Validate and return a supported size.
+     *
+     * @param string|null $size
+     * @return string
+     * @since 0.7.0
+     */
+    private function validateSize(?string $size): string
+    {
+        $supportedSizes = ['xs', 'sm', 'md', 'lg', 'xl'];
+
+        return in_array($size, $supportedSizes) ? $size : 'md';
+    }
+
+    /**
+     * Get size-specific CSS classes.
+     *
+     * @return string
+     * @since 0.7.0
+     */
+    public function getSizeClasses(): string
+    {
+        $validatedSize = $this->validateSize($this->size);
+
+        return match($validatedSize) {
+            'xs' => 'btn-xs',
+            'sm' => 'btn-sm',
+            'md' => 'btn-md',
+            'lg' => 'btn-lg',
+            'xl' => 'btn-lg', // DaisyUI doesn't have btn-xl, use btn-lg
+            default => 'btn-md',
+        };
     }
 
     /**
@@ -172,6 +210,8 @@ class Button extends Component
             'success' => 'btn-success',
             'warning' => 'btn-warning',
             'error' => 'btn-error',
+            'info' => 'btn-info',
+            'neutral' => 'btn-neutral',
             'ghost' => 'btn-ghost',
             'outline' => 'btn-outline',
             default => 'btn-primary',
@@ -194,11 +234,13 @@ class Button extends Component
             'success' => 'btn-success',
             'warning' => 'btn-warning',
             'error' => 'btn-error',
+            'info' => 'btn-info',
+            'neutral' => 'btn-neutral',
             'ghost' => 'btn-ghost',
             'outline' => 'btn-outline',
             default => 'btn-primary',
         };
-        
+
         return ['btn' => $variantClass];
     }
 
