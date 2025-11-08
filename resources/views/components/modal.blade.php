@@ -32,7 +32,7 @@
                     $dispatch('open');
                     // Focus first focusable element
                     $nextTick(() => {
-                        const firstFocusable = $el.querySelector('button:not([tabindex=\"-1\"]), [href], input, select, textarea, [tabindex]:not([tabindex=\"-1\"])');
+                        const firstFocusable = $el.querySelector('button:not([tabindex=\'-1\']), [href], input, select, textarea, [tabindex]:not([tabindex=\'-1\'])');
                         if (firstFocusable) {
                             firstFocusable.focus();
                         }

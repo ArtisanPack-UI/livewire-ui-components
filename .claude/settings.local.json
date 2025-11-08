@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(do grep -q \"## Accessibility\" \"$file\")",
-      "Bash(xargs:*)"
+      "Bash(xargs:*)",
+      "Bash(php artisan:*)",
+      "Bash(php artisan cache:clear:*)",
+      "Bash(git log:*)"
     ],
     "deny": [],
     "ask": []

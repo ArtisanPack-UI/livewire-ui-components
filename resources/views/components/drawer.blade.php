@@ -35,7 +35,7 @@
                 $nextTick(() => {
                     const drawer = $refs.drawerContent;
                     if (drawer) {
-                        const firstFocusable = drawer.querySelector('button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex=\"-1\"])');
+                        const firstFocusable = drawer.querySelector('button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex=\'-1\'])');
                         if (firstFocusable) {
                             firstFocusable.focus();
                         }
