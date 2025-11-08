@@ -123,3 +123,144 @@ Each search result should be an object with the following properties:
 | link | string | URL to navigate to when the result is clicked |
 | icon | string | Optional HTML string for an icon |
 | avatar | string | Optional URL to an avatar image (used if icon is not provided) |
+
+## Accessibility
+
+The Spotlight component is designed with accessibility in mind and follows WCAG 2.1 AA standards.
+
+### ARIA Attributes
+
+The Spotlight component supports the following accessibility attributes:
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| `role` | string | Set to "dialog" or "combobox" for proper semantics |
+| `aria-label` | string | Labels the search input ("Search commands") |
+| `aria-describedby` | string | References keyboard shortcut hints |
+| `aria-expanded` | boolean | Indicates if results dropdown is open |
+| `aria-activedescendant` | string | Identifies the currently focused result |
+| `aria-modal` | boolean | Set to "true" when spotlight is open |
+
+### Semantic HTML
+
+- Uses `<dialog>` or `role="dialog"` for modal semantics
+- Search input is properly labeled with `<label>` or `aria-label`
+- Results list uses `role="listbox"` with `role="option"` items
+- Focus is trapped within the spotlight when open
+
+### Screen Reader Behavior
+
+- Spotlight opening is announced to screen readers
+- Search input label is announced when focused
+- Number of results is announced when search completes
+- Currently focused result is announced as user navigates
+- Keyboard shortcut is discoverable and announced
+
+### Keyboard Support
+
+| Key | Action |
+|-----|--------|
+| Cmd/Ctrl+K | Open spotlight (default shortcut) |
+| Escape | Close spotlight |
+| Arrow Down | Navigate to next result |
+| Arrow Up | Navigate to previous result |
+| Enter | Activate selected result |
+| Tab | Move between input and results |
+| Home | Jump to first result |
+| End | Jump to last result |
+
+### Focus Management
+
+- Focus moves to search input when spotlight opens
+- Focus is trapped within spotlight modal
+- Focus returns to trigger element when closed
+- Selected result is visually highlighted
+- Keyboard navigation through results is circular
+
+### Example: Accessible Spotlight
+
+```blade
+<x-artisanpack-spotlight
+    shortcut="ctrl.k"
+    search-text="Search commands (Ctrl+K)"
+    no-results-text="No commands found. Try different keywords."
+    aria-label="Command palette"
+/>
+```
+
+### Color Contrast
+
+- Search input text: 4.5:1 minimum contrast ratio
+- Result text: 4.5:1 minimum contrast ratio
+- Selected result: Clear visual indicator with 3:1 contrast
+- Keyboard shortcuts: Sufficient contrast for visibility
+
+### Live Region Updates
+
+- Results update announcements use `aria-live="polite"`
+- "Loading" state is announced
+- "No results" message is announced
+- Result count is announced (e.g., "5 results found")
+
+### Best Practices
+
+1. **Discoverable shortcut**: Display keyboard shortcut prominently
+2. **Clear placeholder**: Use descriptive search placeholder text
+3. **Announce results**: Use aria-live for result count updates
+4. **Result descriptions**: Provide helpful descriptions for each result
+5. **Focus management**: Always trap and restore focus properly
+
+### Common Accessibility Issues to Avoid
+
+❌ **Don't**: Auto-focus input without user action
+```blade
+<!-- Opening spotlight automatically on page load -->
+<x-artisanpack-spotlight :open="true" />
+```
+
+✅ **Do**: Open via user-triggered keyboard shortcut
+```blade
+<x-artisanpack-spotlight shortcut="ctrl.k" />
+<p>Press <kbd>Ctrl+K</kbd> to search</p>
+```
+
+❌ **Don't**: Results without descriptions
+```blade
+[
+    ['name' => 'Dashboard', 'link' => '/dashboard'],
+    ['name' => 'Users', 'link' => '/users'],
+]
+```
+
+✅ **Do**: Include descriptive information
+```blade
+[
+    ['name' => 'Dashboard', 'description' => 'View overview and statistics', 'link' => '/dashboard'],
+    ['name' => 'Users', 'description' => 'Manage user accounts', 'link' => '/users'],
+]
+```
+
+❌ **Don't**: Generic "no results" message
+```blade
+<x-artisanpack-spotlight no-results-text="Nothing" />
+```
+
+✅ **Do**: Helpful "no results" message
+```blade
+<x-artisanpack-spotlight
+    no-results-text="No results found. Try different search terms or check spelling."
+/>
+```
+
+### Testing
+
+Run accessibility tests:
+```bash
+php artisan test --filter SpotlightAccessibilityTest
+```
+
+### Additional Resources
+
+- [WAI-ARIA Combobox Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/)
+- [WAI-ARIA Dialog Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/)
+- [Accessibility Guidelines](../accessibility/guidelines.md)

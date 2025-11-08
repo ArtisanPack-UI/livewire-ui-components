@@ -89,3 +89,53 @@ The component accepts all standard HTML attributes, including CSS classes. The c
 - `progress-info`, `progress-success`, `progress-warning`, `progress-error`: State colors
 
 You can also customize the height of the progress bar using standard Tailwind height classes like `h-1`, `h-2`, etc.
+
+
+## Accessibility
+
+The Progress component is designed with accessibility in mind and follows WCAG 2.1 AA standards.
+
+### Semantic HTML
+
+- Uses appropriate semantic HTML elements
+- Maintains proper document structure
+- Decorative elements are hidden from screen readers
+
+### Screen Reader Behavior
+
+- Component content is announced appropriately
+- Semantic meaning is preserved
+- Visual styling does not affect accessibility
+
+### Color Contrast
+
+- All text meets WCAG AA color contrast requirements (4.5:1 minimum)
+- Visual indicators have sufficient contrast
+
+### Best Practices
+
+1. **Use semantic HTML**: Leverage native elements when possible
+2. **Proper hierarchy**: Maintain logical document structure
+3. **Sufficient contrast**: Ensure all content is readable
+4. **Decorative vs informative**: Mark decorative elements appropriately
+
+### Example: Accessible Progress
+
+```blade
+<x-artisanpack-progress>
+    Accessible content
+</x-artisanpack-progress>
+```
+
+### Testing
+
+Run accessibility tests:
+```bash
+php artisan test --filter ProgressAccessibilityTest
+```
+
+### Additional Resources
+
+- [WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
+- [Accessibility Guidelines](../accessibility/guidelines.md)
+

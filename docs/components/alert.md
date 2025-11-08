@@ -223,12 +223,118 @@ The Alert component uses DaisyUI's alert component under the hood, which provide
 
 ## Accessibility
 
-The Alert component follows accessibility best practices:
+The Alert component is designed with accessibility in mind and follows WCAG 2.1 AA standards.
 
-- Uses appropriate semantic HTML
-- Includes ARIA attributes for screen readers
-- Provides sufficient color contrast for all alert types
-- Dismissible alerts can be closed with keyboard navigation
+### ARIA Attributes
+
+The Alert component supports the following accessibility attributes:
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| `role` | string | Set to "alert" or "status" depending on urgency |
+| `aria-live` | string | Automatically set to "polite" or "assertive" |
+| `aria-atomic` | boolean | Set to "true" for complete message announcement |
+| `aria-label` | string | Provides accessible label for the alert |
+
+### Semantic HTML
+
+- Uses semantic HTML structure with proper heading hierarchy
+- Icon elements are decorative and hidden from screen readers with `aria-hidden="true"`
+- Dismissible alerts use proper button elements with accessible labels
+
+### Screen Reader Behavior
+
+- Alert messages are announced to screen readers automatically
+- Success/info alerts use `aria-live="polite"` (announced when user is idle)
+- Warning/error alerts use `aria-live="assertive"` (announced immediately)
+- Alert title and description are both announced
+- Dismiss button announces as "Close alert" or "Dismiss"
+
+### Keyboard Support
+
+| Key | Action |
+|-----|--------|
+| Tab | Move focus to dismiss button (if dismissible) |
+| Enter / Space | Dismiss the alert (when dismiss button is focused) |
+| Escape | Dismiss the alert (if dismissible) |
+
+### Color Contrast
+
+All alert variants meet WCAG AA color contrast requirements:
+- Info alerts: 4.5:1 contrast ratio
+- Success alerts: 4.5:1 contrast ratio
+- Warning alerts: 4.5:1 contrast ratio
+- Error alerts: 4.5:1 contrast ratio
+- Text is never conveyed by color alone
+
+### Example: Accessible Alert
+
+```php
+<x-artisanpack-alert
+    title="Success"
+    description="Your changes have been saved successfully."
+    icon="o-check-circle"
+    color="success"
+    role="status"
+    aria-live="polite"
+    dismissible
+>
+</x-artisanpack-alert>
+```
+
+### Best Practices
+
+1. **Use appropriate severity**: Match the color/icon to the message importance
+2. **Provide clear messages**: Write concise, actionable alert text
+3. **Include helpful icons**: Visual indicators support understanding
+4. **Don't rely on color alone**: Always include text and/or icons
+5. **Use role appropriately**: Use "alert" for urgent messages, "status" for less critical updates
+
+### Common Accessibility Issues to Avoid
+
+❌ **Don't**: Use alerts without clear messaging
+```php
+<x-artisanpack-alert color="error">Error!</x-artisanpack-alert>
+```
+
+✅ **Do**: Provide descriptive messages
+```php
+<x-artisanpack-alert
+    title="Error"
+    description="Failed to save your changes. Please try again."
+    color="error"
+>
+</x-artisanpack-alert>
+```
+
+❌ **Don't**: Convey information through color only
+```php
+<x-artisanpack-alert color="success">Saved</x-artisanpack-alert>
+```
+
+✅ **Do**: Include text and icons
+```php
+<x-artisanpack-alert
+    title="Success"
+    description="Your changes have been saved."
+    icon="o-check-circle"
+    color="success"
+>
+</x-artisanpack-alert>
+```
+
+### Testing
+
+Run accessibility tests:
+```bash
+php artisan test --filter AlertAccessibilityTest
+```
+
+### Additional Resources
+
+- [WCAG 2.1 Alert Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/alert/)
+- [MDN ARIA: alert role](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/alert_role)
+- [Accessibility Guidelines](../accessibility/guidelines.md)
 
 ## Related Components
 

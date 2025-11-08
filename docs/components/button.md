@@ -233,12 +233,124 @@ The Button component uses DaisyUI's button component under the hood, which provi
 
 ## Accessibility
 
-The Button component follows accessibility best practices:
+The Button component is designed with accessibility in mind and follows WCAG 2.1 AA standards.
 
-- Uses the appropriate HTML element (`<button>` or `<a>`) based on usage
-- Includes proper ARIA attributes when in loading or disabled states
-- Maintains focus styles for keyboard navigation
-- Ensures adequate color contrast for all button variants
+### ARIA Attributes
+
+The Button component supports the following accessibility attributes:
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| `aria-label` | string | Provides an accessible label when button text is not sufficient |
+| `aria-describedby` | string | References element(s) that describe the button |
+| `aria-disabled` | boolean | Indicates button is disabled (automatically set) |
+| `aria-busy` | boolean | Indicates button is processing (when `loading` is active) |
+
+### Keyboard Support
+
+| Key | Action |
+|-----|--------|
+| Enter / Space | Activates the button |
+| Tab | Moves focus to/from the button |
+
+### Screen Reader Behavior
+
+- Button label is announced
+- Disabled state is announced
+- Loading/busy state is announced
+- Icon-only buttons must have `aria-label`
+
+### Semantic HTML
+
+- Uses native `<button>` element for button actions
+- Uses `<a>` element with `role="button"` for navigation (when `href` is set)
+- Automatically sets `type="button"` to prevent form submission
+- Disabled buttons receive `aria-disabled="true"` attribute
+
+### Focus Management
+
+- Clear focus indicators are visible when using keyboard navigation
+- Focus is maintained properly during state changes
+- Disabled buttons cannot receive focus (tabindex="-1")
+
+### Example: Accessible Icon Button
+
+```php
+<x-artisanpack-button circle aria-label="Delete item" color="error">
+    <x-artisanpack-icon name="heroicon-o-trash" class="w-5 h-5" />
+</x-artisanpack-button>
+```
+
+This ensures screen readers announce "Delete item, button" instead of just announcing the icon or having no label.
+
+### Example: Button with Description
+
+```php
+<x-artisanpack-button
+    aria-label="Save changes"
+    aria-describedby="save-description"
+>
+    Save
+</x-artisanpack-button>
+
+<span id="save-description" class="sr-only">
+    This will save your changes to the database and cannot be undone
+</span>
+```
+
+### Color Contrast
+
+All button variants meet WCAG AA color contrast requirements:
+- Primary buttons: 4.5:1 contrast ratio
+- Secondary buttons: 4.5:1 contrast ratio
+- Error buttons: 4.5:1 contrast ratio
+
+### Testing
+
+Run accessibility tests:
+```bash
+php artisan test --filter ButtonAccessibilityTest
+```
+
+### Best Practices
+
+1. **Always provide text or aria-label**: Never create a button with only an icon without an accessible label
+2. **Use semantic types**: Set appropriate `type` attribute for form buttons
+3. **Indicate loading states**: Use `loading` and `aria-busy` for async operations
+4. **Use links for navigation**: Use `href` prop when navigating, not `@click` handlers
+5. **Clear button labels**: Use descriptive text that indicates what the button does
+
+### Common Accessibility Issues to Avoid
+
+❌ **Don't**: Create icon-only buttons without labels
+```php
+<x-artisanpack-button circle>
+    <x-artisanpack-icon name="heroicon-o-trash" class="w-5 h-5" />
+</x-artisanpack-button>
+```
+
+✅ **Do**: Always provide an accessible label
+```php
+<x-artisanpack-button circle aria-label="Delete">
+    <x-artisanpack-icon name="heroicon-o-trash" class="w-5 h-5" />
+</x-artisanpack-button>
+```
+
+❌ **Don't**: Use divs styled as buttons
+```php
+<div class="btn" @click="doSomething()">Click</div>
+```
+
+✅ **Do**: Use the Button component
+```php
+<x-artisanpack-button @click="doSomething()">Click</x-artisanpack-button>
+```
+
+### Additional Resources
+
+- [WCAG 2.1 Button Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/button/)
+- [MDN Button Element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button)
+- [Accessibility Guidelines](../accessibility/guidelines.md)
 
 ## Related Components
 

@@ -181,3 +181,46 @@ class DynamicChartExample extends Component
 - You need to include Chart.js in your application for this component to work.
 - You can customize the chart's appearance by applying CSS classes to the component.
 - The chart's height is determined by its container, so make sure to set an appropriate height using CSS.
+
+
+## Accessibility
+
+The Chart component is designed with accessibility in mind and follows WCAG 2.1 AA standards.
+
+### ARIA Attributes
+
+The Chart component uses appropriate ARIA attributes to ensure screen reader compatibility and follows WAI-ARIA authoring practices.
+
+### Keyboard Navigation
+
+All interactive elements are fully keyboard accessible following standard keyboard interaction patterns.
+
+### Screen Reader Support
+
+The component provides proper announcements and context for screen reader users, including state changes and dynamic updates.
+
+### Color Contrast
+
+All visual elements meet WCAG AA color contrast requirements with a minimum ratio of 4.5:1 for text and 3:1 for UI components.
+
+### Best Practices
+
+1. Use semantic HTML and ARIA attributes appropriately
+2. Ensure all functionality is keyboard accessible
+3. Provide clear labels and instructions
+4. Test with screen readers and keyboard-only navigation
+5. Maintain sufficient color contrast
+
+### Testing
+
+Run accessibility tests:
+```bash
+php artisan test --filter ChartAccessibilityTest
+```
+
+### Additional Resources
+
+- [WAI-ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/)
+- [WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
+- [Accessibility Guidelines](../accessibility/guidelines.md)
+

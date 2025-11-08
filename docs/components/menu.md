@@ -124,3 +124,101 @@ The Menu component provides a vertical navigation menu with support for titles, 
 | title | string | null | Text for the title |
 | icon | string | null | Icon for the title |
 | iconClasses | string | null | CSS classes for the icon |
+
+
+## Accessibility
+
+The Menu component is designed with accessibility in mind and follows WCAG 2.1 AA standards.
+
+### ARIA Attributes
+
+The Menu component supports the following accessibility attributes:
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| `role` | string | Defines the component role for assistive technologies |
+| `aria-label` | string | Provides accessible label for the component |
+| `aria-expanded` | boolean | Indicates expanded/collapsed state (automatically managed) |
+| `aria-controls` | string | References controlled element IDs |
+| `aria-hidden` | boolean | Hides from screen readers when not visible |
+
+### Semantic HTML
+
+- Uses appropriate semantic elements
+- Maintains logical heading hierarchy
+- Proper focus management with focus trap when needed
+- Clear visual focus indicators
+
+### Screen Reader Behavior
+
+- Component role and state are announced
+- State changes are announced to users
+- Keyboard shortcuts are discoverable
+- Content is accessible when expanded
+
+### Keyboard Support
+
+| Key | Action |
+|-----|--------|
+| Enter/Space | Activate/toggle component |
+| Escape | Close/collapse component |
+| Tab | Navigate to next focusable element |
+| Arrow Keys | Navigate within component (when applicable) |
+
+### Focus Management
+
+- Focus is trapped within modal/drawer when open
+- Focus returns to trigger element when closed
+- First focusable element receives focus when opened
+- Focus is clearly visible at all times
+
+### Example: Accessible Menu
+
+```blade
+<x-artisanpack-menu
+    aria-label="Descriptive label for Menu"
+    role="dialog"
+>
+    <!-- Content -->
+</x-artisanpack-menu>
+```
+
+### Color Contrast
+
+- All text meets 4.5:1 minimum contrast ratio
+- Interactive elements have 3:1 contrast
+- Focus indicators are clearly visible
+
+### Best Practices
+
+1. **Clear labels**: Provide descriptive aria-labels
+2. **Keyboard accessible**: All functionality available via keyboard
+3. **Focus management**: Trap and restore focus appropriately
+4. **Announce changes**: Use aria-live for dynamic updates
+5. **Escape closes**: Always allow Escape key to dismiss
+
+### Common Accessibility Issues to Avoid
+
+❌ **Don't**: Auto-open without user action
+```blade
+<x-artisanpack-menu :open="true" />
+```
+
+✅ **Do**: Open in response to user interaction
+```blade
+<x-artisanpack-button @click="open = true">Open Menu</x-artisanpack-button>
+<x-artisanpack-menu x-show="open" />
+```
+
+### Testing
+
+Run accessibility tests:
+```bash
+php artisan test --filter MenuAccessibilityTest
+```
+
+### Additional Resources
+
+- [WAI-ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/)
+- [Accessibility Guidelines](../accessibility/guidelines.md)
+

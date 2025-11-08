@@ -115,3 +115,132 @@ The component accepts all standard HTML attributes, including CSS classes. The c
 - `badge-lg`, `badge-md`, `badge-sm`, `badge-xs`: Size variations
 
 You can combine these classes to create different badge styles.
+
+## Accessibility
+
+The Badge component is designed with accessibility in mind and follows WCAG 2.1 AA standards.
+
+### ARIA Attributes
+
+The Badge component supports the following accessibility attributes:
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| `role` | string | Typically "status" for informational badges |
+| `aria-label` | string | Provides context when badge text alone isn't sufficient |
+| `aria-live` | string | Set to "polite" for dynamic badge updates |
+| `aria-hidden` | boolean | Set to "true" for purely decorative badges |
+
+### Semantic HTML
+
+- Badges are inline elements that supplement existing content
+- Use `<span>` elements with appropriate ARIA roles
+- Badge content should be concise and meaningful
+
+### Screen Reader Behavior
+
+- **Informational badges**: Announced as supplementary information
+- **Status badges**: Announced with role="status" for state changes
+- **Count badges**: Announced with proper context (e.g., "5 notifications")
+- **Decorative badges**: Hidden from screen readers with `aria-hidden="true"`
+
+### Color Contrast
+
+All badge variants meet WCAG AA color contrast requirements:
+- Badge text: 4.5:1 minimum contrast ratio with background
+- Badge border: 3:1 minimum contrast ratio (for outline variants)
+- Information is never conveyed by color alone
+
+### Example: Accessible Status Badge
+
+```blade
+<div>
+    <span>Order Status:</span>
+    <x-artisanpack-badge
+        value="Shipped"
+        color="success"
+        role="status"
+        aria-label="Order status: Shipped"
+    />
+</div>
+```
+
+### Example: Accessible Count Badge
+
+```blade
+<button aria-label="Notifications: 5 unread">
+    Notifications
+    <x-artisanpack-badge value="5" color="error" aria-label="5 unread" />
+</button>
+```
+
+### Example: Decorative Badge
+
+```blade
+<!-- When badge duplicates visible text -->
+<h2>
+    Premium Plan
+    <x-artisanpack-badge value="Premium" color="primary" aria-hidden="true" />
+</h2>
+```
+
+### Best Practices
+
+1. **Provide context**: Don't rely solely on badge color to convey meaning
+2. **Use with labels**: Always pair badges with descriptive text
+3. **Meaningful text**: Badge content should be self-explanatory
+4. **Status updates**: Use `aria-live` for dynamic badge changes
+5. **Avoid redundancy**: Use `aria-hidden` when badge duplicates visible content
+
+### Common Accessibility Issues to Avoid
+
+❌ **Don't**: Rely on color alone
+```blade
+<x-artisanpack-badge value="●" color="success" />
+<x-artisanpack-badge value="●" color="error" />
+<!-- No way to distinguish without seeing colors -->
+```
+
+✅ **Do**: Use descriptive text
+```blade
+<x-artisanpack-badge value="Active" color="success" />
+<x-artisanpack-badge value="Inactive" color="error" />
+```
+
+❌ **Don't**: Use badges without context
+```blade
+<x-artisanpack-badge value="5" color="error" />
+<!-- 5 what? Users don't know -->
+```
+
+✅ **Do**: Provide context
+```blade
+<button aria-label="Messages: 5 unread">
+    Messages
+    <x-artisanpack-badge value="5" color="error" />
+</button>
+```
+
+❌ **Don't**: Use unclear abbreviations
+```blade
+<x-artisanpack-badge value="VIP" />
+<!-- Not everyone knows what VIP means in your context -->
+```
+
+✅ **Do**: Provide aria-label for clarity
+```blade
+<x-artisanpack-badge value="VIP" aria-label="Very Important Person" />
+```
+
+### Testing
+
+Run accessibility tests:
+```bash
+php artisan test --filter BadgeAccessibilityTest
+```
+
+### Additional Resources
+
+- [WCAG 2.1 Use of Color](https://www.w3.org/WAI/WCAG21/quickref/#use-of-color)
+- [MDN ARIA: status role](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/status_role)
+- [Accessibility Guidelines](../accessibility/guidelines.md)
