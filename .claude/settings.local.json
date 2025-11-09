@@ -23,7 +23,8 @@
       "Bash(git checkout:*)",
       "Bash(composer update:*)",
       "Bash(composer config:*)",
-      "Bash(vendor/bin/pest:*)"
+      "Bash(vendor/bin/pest:*)",
+      "WebFetch(domain:developer.wordpress.org)"
     ],
     "deny": [],
     "ask": []

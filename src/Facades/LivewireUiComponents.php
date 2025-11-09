@@ -17,24 +17,25 @@
 namespace ArtisanPack\LivewireUiComponents\Facades;
 
 use Illuminate\Support\Facades\Facade;
+
 /**
- * ArtisanPack Class
+ * LivewireUiComponents Facade Class
  *
- * Provides functionality for the ArtisanPack component.
+ * Provides a static interface to the LivewireUiComponents service.
  *
  * @since 1.0.0
  */
-
 class LivewireUiComponents extends Facade
 {
-    /**
-     * Get the registered name of the component.
-     *
-     * @return string
-     * @since 1.0.0
-     */
-    protected static function getFacadeAccessor(): string
-    {
-        return 'livewireuicomponents';
-    }
+	/**
+	 * Get the registered name of the component.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string
+	 */
+	protected static function getFacadeAccessor(): string
+	{
+		return 'livewireuicomponents';
+	}
 }

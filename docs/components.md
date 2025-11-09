@@ -80,12 +80,14 @@ Many components share common props and slots:
 |-----------|-------------|---------------|
 | [Button](button) | Interactive button element | [View Docs](button) |
 | [Checkbox](checkbox) | Checkbox input | [View Docs](checkbox) |
+| [CheckboxGroup](checkbox-group) | Group of checkbox inputs | [View Docs](checkbox-group) |
 | [Choices](choices) | Multi-select dropdown with search | [View Docs](choices) |
 | [ChoicesOffline](choices-offline) | Offline version of Choices | [View Docs](choices-offline) |
 | [Colorpicker](colorpicker) | Color selection input | [View Docs](colorpicker) |
-| [DatePicker](datepicker) | Date selection input | [View Docs](datepicker) |
-| [DateTime](datetime) | Date and time selection input | [View Docs](datetime) |
+| [DatePicker](date-picker) | Date selection input | [View Docs](date-picker) |
+| [DateTime](date-time) | Date and time selection input | [View Docs](date-time) |
 | [Editor](editor) | Rich text editor | [View Docs](editor) |
+| [Fieldset](fieldset) | Styled container for form fields | [View Docs](fieldset) |
 | [File](file) | File upload input | [View Docs](file) |
 | [Form](form) | Form container with validation | [View Docs](form) |
 | [Group](group) | Group of form elements | [View Docs](group) |
@@ -93,6 +95,7 @@ Many components share common props and slots:
 | [Password](password) | Password input with toggle | [View Docs](password) |
 | [Pin](pin) | PIN code input | [View Docs](pin) |
 | [Radio](radio) | Radio button input | [View Docs](radio) |
+| [RadioGroup](radio-group) | Group of radio button inputs | [View Docs](radio-group) |
 | [Range](range) | Range slider input | [View Docs](range) |
 | [Rating](rating) | Star rating input | [View Docs](rating) |
 | [Select](select) | Dropdown select input | [View Docs](select) |
@@ -143,18 +146,24 @@ Many components share common props and slots:
 | [Chart](chart) | Data visualization charts | [View Docs](chart) |
 | [Code](code) | Code display with syntax highlighting | [View Docs](code) |
 | [Diff](diff) | Text difference display | [View Docs](diff) |
+| [EventModalContent](event-modal-content) | Calendar event modal content | [View Docs](event-modal-content) |
+| [Heading](heading) | Styled heading text | [View Docs](heading) |
 | [ImageGallery](image-gallery) | Image gallery display | [View Docs](image-gallery) |
 | [ImageLibrary](image-library) | Image library/picker | [View Docs](image-library) |
 | [ImageSlider](image-slider) | Image slider/carousel component | [View Docs](image-slider) |
 | [Kbd](kbd) | Keyboard key display | [View Docs](kbd) |
+| [Link](link) | Styled link element | [View Docs](link) |
 | [ListItem](list-item) | List item with various layouts | [View Docs](list-item) |
 | [Markdown](markdown) | Markdown content display | [View Docs](markdown) |
+| [Profile](profile) | User profile display | [View Docs](profile) |
 | [Progress](progress) | Progress bar | [View Docs](progress) |
 | [ProgressRadial](progress-radial) | Radial progress indicator | [View Docs](progress-radial) |
 | [Stat](stat) | Statistics display | [View Docs](stat) |
 | [Steps](steps) | Step indicator | [View Docs](steps) |
 | [Step](step) | Individual step for Steps component | [View Docs](step) |
+| [Subheading](subheading) | Styled subheading text | [View Docs](subheading) |
 | [Table](table) | Data table | [View Docs](table) |
+| [Text](text) | Styled text component | [View Docs](text) |
 | [TimelineItem](timeline-item) | Timeline item display | [View Docs](timeline-item) |
 
 ### Feedback Components

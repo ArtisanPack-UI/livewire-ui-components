@@ -40,7 +40,8 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
 	 * This array is the single source of truth for all Blade components.
 	 *
 	 * @since 1.0.0
-	 * @var   array
+	 *
+	 * @var array
 	 */
 	protected array $bladeComponents = [
 		'accordion'        => \ArtisanPack\LivewireUiComponents\View\Components\Accordion::class,
@@ -129,7 +130,8 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
 	 * This array is the single source of truth for all Livewire components.
 	 *
 	 * @since 1.0.0
-	 * @var   array
+	 *
+	 * @var array
 	 */
 	protected array $livewireComponents = [
 		'calendar'            => \ArtisanPack\LivewireUiComponents\View\Components\Calendar::class,
@@ -142,8 +144,9 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
 	 * This method is called after all other service providers have been registered,
 	 * meaning you have access to all other services that have been registered by the framework.
 	 *
+	 * @since 1.0.0
+	 *
 	 * @return void
-	 * @since  1.0.0
 	 */
 	public function boot(): void
 	{
@@ -186,8 +189,9 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
 	 * aliases for backwards compatibility. It respects the custom prefix
 	 * set in the package's configuration file.
 	 *
+	 * @since 1.0.0
+	 *
 	 * @return void
-	 * @since  1.0.0
 	 */
 	public function registerComponents()
 	{
@@ -217,8 +221,9 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
 	/**
 	 * Register all Blade directives provided by the package.
 	 *
+	 * @since 1.0.0
+	 *
 	 * @return void
-	 * @since  1.0.0
 	 */
 	public function registerBladeDirectives(): void
 	{
@@ -228,8 +233,9 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
 	/**
 	 * Register the @scope Blade directive for scoped slots.
 	 *
+	 * @since 1.0.0
+	 *
 	 * @return void
-	 * @since  1.0.0
 	 */
 	public function registerScopeDirective(): void
 	{
@@ -281,8 +287,9 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
 	 * This method is called before the boot method and registers
 	 * the package's services in the service container.
 	 *
+	 * @since 1.0.0
+	 *
 	 * @return void
-	 * @since  1.0.0
 	 */
 	public function register(): void
 	{
@@ -300,8 +307,9 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
 	/**
 	 * Get the services provided by the provider.
 	 *
+	 * @since 1.0.0
+	 *
 	 * @return array The array of provided services.
-	 * @since  1.0.0
 	 */
 	public function provides()
 	{
@@ -314,8 +322,9 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
 	 * This method is called when the application is running in the console
 	 * and handles publishing assets and registering commands.
 	 *
+	 * @since 1.0.0
+	 *
 	 * @return void
-	 * @since  1.0.0
 	 */
 	protected function bootForConsole(): void
 	{
@@ -340,7 +349,8 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
 	 * This method ensures that the user's settings in `config/artisanpack.php`
 	 * take precedence over the package's default values.
 	 *
-	 * @since  2.0.0
+	 * @since 1.0.0
+	 *
 	 * @return void
 	 */
 	protected function mergeConfiguration(): void

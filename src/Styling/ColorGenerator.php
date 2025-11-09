@@ -28,7 +28,8 @@ class ColorGenerator
 	 * Predefined Tailwind CSS-like color palettes (base 500 hex value).
 	 *
 	 * @since 1.0.0
-	 * @var   array
+	 *
+	 * @var array
 	 */
 	protected array $tailwindColorBases = [
 		'sky'     => '#0ea5e9',
@@ -60,8 +61,9 @@ class ColorGenerator
 	 * Default DaisyUI color theme variables.
 	 *
 	 * @since 1.0.0
-	 * @var   array
-	 * @link  https://daisyui.com/docs/colors/
+	 *
+	 * @var array
+	 * @link https://daisyui.com/docs/colors/
 	 */
 	protected array $daisyUiColorDefaults = [
 		'primary'           => '#3b82f6', // blue-500
@@ -89,9 +91,10 @@ class ColorGenerator
 	/**
 	 * Default DaisyUI dark mode color theme variables.
 	 *
-	 * @since 1.0.2
-	 * @var   array
-	 * @link  https://daisyui.com/docs/colors/
+	 * @since 1.0.0
+	 *
+	 * @var array
+	 * @link https://daisyui.com/docs/colors/
 	 */
 	protected array $daisyUiDarkColorDefaults = [
 		'neutral'           => '#191D24',
@@ -114,10 +117,11 @@ class ColorGenerator
 	 * Default DaisyUI utility and component variables.
 	 *
 	 * @since 1.0.0
-	 * @var   array
-	 * @link  https://daisyui.com/docs/utilities/
+	 *
+	 * @var array
+	 * @link https://daisyui.com/docs/utilities/
 	 */
-    protected array $daisyUiUtilityDefaults = [
+	protected array $daisyUiUtilityDefaults = [
         '--rounded-box'    => '1rem',
         '--rounded-btn'    => '0.5rem',
         '--rounded-badge'  => '1.9rem',
@@ -129,14 +133,16 @@ class ColorGenerator
         '--tab-radius'     => '0.5rem',
     ];
 
-    /**
-     * Default DaisyUI component-specific variables.
-     * These are applied to component classes, not :root.
-     *
-     * @since 1.0.1
-     * @var array
-     */
-    protected array $daisyUiComponentDefaults = [
+	/**
+	 * Default DaisyUI component-specific variables.
+	 *
+	 * These are applied to component classes, not :root.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @var array
+	 */
+	protected array $daisyUiComponentDefaults = [
         'Alert' => [
             'selector' => '.alert',
             'variables' => [
@@ -215,7 +221,7 @@ class ColorGenerator
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param  string $colorInput The name of the Tailwind color (e.g., 'sky') or a hex code.
+	 * @param string $colorInput The name of the Tailwind color (e.g., 'sky') or a hex code.
 	 * @return string The hex code for the base color.
 	 * @throws InvalidArgumentException If the color name is not found or hex is invalid.
 	 */
@@ -240,7 +246,7 @@ class ColorGenerator
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param  string $baseHex The base hex color (e.g., '#3B82F6').
+	 * @param string $baseHex The base hex color (e.g., '#3B82F6').
 	 * @return array An associative array of color shades (50, 100, ..., 900).
 	 */
 	public function generateTailwindShades( string $baseHex ): array
@@ -272,9 +278,9 @@ class ColorGenerator
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param  string $primaryColor  The name or hex of the primary color.
-	 * @param  string $secondaryColor The name or hex of the secondary color.
-	 * @param  string $accentColor   The name or hex of the accent color.
+	 * @param string $primaryColor   The name or hex of the primary color.
+	 * @param string $secondaryColor The name or hex of the secondary color.
+	 * @param string $accentColor    The name or hex of the accent color.
 	 * @return string The full CSS content for the theme file.
 	 */
 	public function generateThemeCss( string $primaryColor, string $secondaryColor, string $accentColor ): string
@@ -352,23 +358,23 @@ class ColorGenerator
 
 	/**
 	 * Component Color Resolution Methods
-	 * 
+	 *
 	 * The following methods provide color resolution and CSS class generation
 	 * for individual components, supporting predefined variants, Tailwind colors,
 	 * and custom hex codes with background adjustments.
-	 * 
-	 * @since 1.1.0
+	 *
+	 * @since 1.0.0
 	 */
 
 	/**
 	 * Resolves a color input to appropriate CSS classes for component usage.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 *
-	 * @param  string|null $color The color input (variant, tailwind color, or hex)
-	 * @param  string|null $adjustment Background adjustment (lighter, darker, transparent, subtle)
-	 * @param  string $component The component name for context
-	 * @return array Array of CSS classes [background, border, text]
+	 * @param string|null $color      The color input (variant, tailwind color, or hex).
+	 * @param string|null $adjustment Optional. Background adjustment (lighter, darker, transparent, subtle). Default null.
+	 * @param string      $component  Optional. The component name for context. Default 'generic'.
+	 * @return array Array of CSS classes [background, border, text].
 	 */
 	public function resolveComponentColor(?string $color, ?string $adjustment = null, string $component = 'generic'): array
 	{
@@ -408,7 +414,7 @@ class ColorGenerator
 	/**
 	 * Checks if a color input is a predefined variant.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 *
 	 * @param  string $color
 	 * @return bool
@@ -422,7 +428,7 @@ class ColorGenerator
 	/**
 	 * Checks if a color input is a Tailwind color with intensity (e.g., 'red-500').
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 *
 	 * @param  string $color
 	 * @return bool
@@ -436,7 +442,7 @@ class ColorGenerator
 	/**
 	 * Checks if a color input is a Tailwind color name (e.g., 'red').
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 *
 	 * @param  string $color
 	 * @return bool
@@ -449,7 +455,7 @@ class ColorGenerator
 	/**
 	 * Checks if a color input is a valid hex color.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 *
 	 * @param  string $color
 	 * @return bool
@@ -462,7 +468,7 @@ class ColorGenerator
 	/**
 	 * Gets CSS classes for predefined variants.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 *
 	 * @param  string $variant
 	 * @param  string|null $adjustment
@@ -507,7 +513,7 @@ class ColorGenerator
 	/**
 	 * Adds hover and focus states for variant colors.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 *
 	 * @param  array $classes
 	 * @param  string $variant
@@ -576,7 +582,7 @@ class ColorGenerator
 	/**
 	 * Gets CSS classes for Tailwind colors using JIT-compatible approach.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 *
 	 * @param  string $colorWithIntensity
 	 * @param  string|null $adjustment
@@ -648,7 +654,7 @@ class ColorGenerator
 	/**
 	 * Gets CSS classes for hex colors using custom properties.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 *
 	 * @param  string $hex
 	 * @param  string|null $adjustment
@@ -703,7 +709,7 @@ class ColorGenerator
 	/**
 	 * Applies adjustment to variant-based classes.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 *
 	 * @param  array $classes
 	 * @param  string $variant
@@ -735,7 +741,7 @@ class ColorGenerator
 	/**
 	 * Applies adjustment to Tailwind-based classes using JIT-compatible approach.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 *
 	 * @param  array $classes
 	 * @param  string $colorName
@@ -790,7 +796,7 @@ class ColorGenerator
 	/**
 	 * Applies adjustment to hex-based classes.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 *
 	 * @param  array $classes
 	 * @param  string $hex
@@ -827,7 +833,7 @@ class ColorGenerator
 	/**
 	 * Gets contrasting text class for Tailwind colors using JIT-compatible approach.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 *
 	 * @param  string $colorName
 	 * @param  int $intensity
@@ -853,7 +859,7 @@ class ColorGenerator
 	/**
 	 * Gets contrasting text for hex colors.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 *
 	 * @param  string $hex
 	 * @return string
@@ -874,7 +880,7 @@ class ColorGenerator
 	/**
 	 * Converts Tailwind color name and intensity to hex value.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 *
 	 * @param  string $colorName
 	 * @param  int $intensity
@@ -1001,7 +1007,7 @@ class ColorGenerator
 	/**
 	 * Adjusts hex color brightness.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 *
 	 * @param  string $hex
 	 * @param  float $percent
@@ -1025,7 +1031,7 @@ class ColorGenerator
 	/**
 	 * Resolves DatePicker-specific colors and generates appropriate CSS custom properties.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 *
 	 * @param  string $color The color input (variant, tailwind color, or hex)
 	 * @param  string|null $adjustment Background adjustment (lighter, darker, transparent, subtle)
@@ -1074,7 +1080,7 @@ class ColorGenerator
 	/**
 	 * Gets the base hex color for a variant.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 *
 	 * @param  string $variant
 	 * @return string|null
@@ -1098,7 +1104,7 @@ class ColorGenerator
 	/**
 	 * Applies DatePicker-specific color adjustments.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 *
 	 * @param  string $color Base hex color
 	 * @param  string $adjustment Adjustment type

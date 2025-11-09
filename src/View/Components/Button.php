@@ -32,37 +32,42 @@ use ArtisanPack\LivewireUiComponents\Styling\ColorGenerator;
  */
 class Button extends Component
 {
-    /**
-     * The resolved color for the button (either from color prop or variant).
-     *
-     * @var string|null
-     */
-    public ?string $resolvedColor = null;
+	/**
+	 * The resolved color for the button (either from color prop or variant).
+	 *
+	 * @since 1.0.0
+	 *
+	 * @var string|null
+	 */
+	public ?string $resolvedColor = null;
 
-    /**
-     * Constructor for the Button component.
-     *
-     * @param string|null $id             Optional ID for the button.
-     * @param string|null $label          Optional text label for the button.
-     * @param string|null $icon           Optional icon to display before the label.
-     * @param string|null $iconRight      Optional icon to display after the label.
-     * @param string|null $spinner        Optional spinner target for loading states.
-     * @param string|null $link           Optional URL to convert the button to a link.
-     * @param bool|null   $external       Whether the link should open in a new tab.
-     * @param bool|null   $noWireNavigate Disable wire:navigate for links.
-     * @param bool|null   $responsive     Whether the button should be responsive.
-     * @param string|null $badge          Optional badge text to display.
-     * @param string|null $badgeClasses   Optional CSS classes for the badge.
-     * @param string|null $tooltip        Optional tooltip text.
-     * @param string|null $tooltipLeft    Optional tooltip text (left position).
-     * @param string|null $tooltipRight   Optional tooltip text (right position).
-     * @param string|null $tooltipBottom  Optional tooltip text (bottom position).
-     * @param string|null $variant        Button variant (for backward compatibility).
-     * @param string|null $color          Color variant, Tailwind color, or hex code.
-     * @param string|null $colorAdjustment Background adjustment (lighter, darker, transparent, subtle).
-     * @param string|null $size           Button size (xs, sm, md, lg, xl).
-     * @since 1.0.0
-     */
+	/**
+	 * Constructor for the Button component.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string|null $id              Optional. ID for the button. Default null.
+	 * @param string|null $label           Optional. Text label for the button. Default null.
+	 * @param string|null $icon            Optional. Icon to display before the label. Default null.
+	 * @param string|null $iconRight       Optional. Icon to display after the label. Default null.
+	 * @param string|null $spinner         Optional. Spinner target for loading states. Default null.
+	 * @param string|null $link            Optional. URL to convert the button to a link. Default null.
+	 * @param bool|null   $external        Optional. Whether the link should open in a new tab. Default false.
+	 * @param bool|null   $noWireNavigate  Optional. Disable wire:navigate for links. Default false.
+	 * @param bool|null   $responsive      Optional. Whether the button should be responsive. Default false.
+	 * @param string|null $badge           Optional. Badge text to display. Default null.
+	 * @param string|null $badgeClasses    Optional. CSS classes for the badge. Default null.
+	 * @param string|null $tooltip         Optional. Tooltip text. Default null.
+	 * @param string|null $tooltipLeft     Optional. Tooltip text (left position). Default null.
+	 * @param string|null $tooltipRight    Optional. Tooltip text (right position). Default null.
+	 * @param string|null $tooltipBottom   Optional. Tooltip text (bottom position). Default null.
+	 * @param string|null $variant         Optional. Button variant (for backward compatibility). Default 'primary'.
+	 * @param string|null $color           Optional. Color variant, Tailwind color, or hex code. Default null.
+	 * @param string|null $colorAdjustment Optional. Background adjustment (lighter, darker, transparent, subtle). Default null.
+	 * @param string|null $size            Optional. Button size (xs, sm, md, lg, xl). Default 'md'.
+	 * @param string      $uuid            Optional. UUID for the button. Default ''.
+	 * @param string      $tooltipPosition Optional. Tooltip position. Default 'lg:tooltip-top'.
+	 */
     public function __construct(
         public ?string $id = null,
         public ?string $label = null,
@@ -110,14 +115,15 @@ class Button extends Component
         }
     }
 
-    /**
-     * Validate and return a supported variant.
-     *
-     * @param string|null $variant
-     * @return string
-     * @since 1.0.0
-     */
-    private function validateVariant(?string $variant): string
+	/**
+	 * Validate and return a supported variant.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string|null $variant The variant to validate.
+	 * @return string The validated variant.
+	 */
+	private function validateVariant(?string $variant): string
     {
         $supportedVariants = [
             'primary',
@@ -135,14 +141,15 @@ class Button extends Component
         return in_array($variant, $supportedVariants) ? $variant : 'primary';
     }
 
-    /**
-     * Validate and return a supported size.
-     *
-     * @param string|null $size
-     * @return string
-     * @since 0.7.0
-     */
-    private function validateSize(?string $size): string
+	/**
+	 * Validate and return a supported size.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string|null $size The size to validate.
+	 * @return string The validated size.
+	 */
+	private function validateSize(?string $size): string
     {
         $supportedSizes = ['xs', 'sm', 'md', 'lg', 'xl'];
 
@@ -153,7 +160,7 @@ class Button extends Component
      * Get size-specific CSS classes.
      *
      * @return string
-     * @since 0.7.0
+     * @since 1.0.0
      */
     public function getSizeClasses(): string
     {
@@ -223,7 +230,7 @@ class Button extends Component
      *
      * @param string $color
      * @return array
-     * @since 1.1.0
+     * @since 1.0.0
      */
     protected function getFallbackVariantClasses(string $color): array
     {

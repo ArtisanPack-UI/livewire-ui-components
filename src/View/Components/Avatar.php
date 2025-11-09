@@ -64,7 +64,7 @@ class Avatar extends Component
      * Get color-specific CSS classes using ColorGenerator.
      *
      * @return array
-     * @since 1.1.0
+     * @since 1.0.0
      */
     public function getColorClasses(): array
     {
