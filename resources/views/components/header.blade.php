@@ -1,21 +1,46 @@
+@props([
+    'title' => null,
+    'subtitle' => null,
+    'separator' => false,
+    'progressIndicator' => null,
+    'progressIndicatorClass' => 'progress-primary',
+    'withAnchor' => false,
+    'size' => 'text-2xl',
+    'level' => 2, // Default to <h2>
+    'icon' => null,
+    'iconClasses' => null,
+    'middle' => null,
+    'actions' => null,
+    'anchor' => ''
+])
+
 <div id="{{ $anchor }}" {{ $attributes->class(["mb-10", "mary-header-anchor" => $withAnchor]) }}>
     <div class="flex flex-wrap gap-5 justify-between items-center">
         <div>
-            <div @class(["flex", "items-center", "$size font-extrabold", is_string($title) ? '' : $title?->attributes->get('class') ]) >
+            {{-- This is the changed part: from <div> to <h{{ $level }}> --}}
+            <h{{ $level }} @class([
+                    "flex",
+                    "items-center",
+                    $size,
+                    "font-extrabold",
+                    is_string($title) ? '' : $title?->attributes->get('class')
+                ])>
+
                 @if($withAnchor)
                     <a href="#{{ $anchor }}">
-                @endif
+                        @endif
 
-                @if($icon)
-                    <x-artisanpack-icon name="{{ $icon }}" class="{{ $iconClasses }}" />
-                @endif
+                        @if($icon)
+                            <x-artisanpack-icon name="{{ $icon }}" class="{{ $iconClasses }}" />
+                        @endif
 
-                <span @class(["ml-2" => $icon])>{{ $title }}</span>
+                        <span @class(["ml-2" => $icon])>{{ $title }}</span>
 
-                @if($withAnchor)
+                        @if($withAnchor)
                     </a>
                 @endif
-            </div>
+            </h{{ $level }}>
+            {{-- End of changed part --}}
 
             @if($subtitle)
                 <div @class(["text-base-content/50 text-sm mt-1", is_string($subtitle) ? '' : $subtitle?->attributes->get('class') ]) >
@@ -48,7 +73,7 @@
 
                     @if($progressTarget())
                         wire:target="{{ $progressTarget() }}"
-                     @endif></progress>
+                    @endif></progress>
             </div>
         @endif
     @endif

@@ -72,14 +72,52 @@ Fine-tune the background appearance with color adjustments:
 <x-artisanpack-button color="blue-500" color-adjustment="subtle">Subtle</x-artisanpack-button>
 ```
 
+#### Hover States & Color Contrast
+
+The button component automatically generates accessible hover states that maintain proper color contrast:
+
+- **Automatic Hover Colors:** When you hover over a button, the background color automatically darkens for a clear visual feedback
+- **Smart Text Color:** The text color automatically adjusts on hover to maintain WCAG AA compliance (4.5:1 contrast ratio)
+- **Smooth Transitions:** All color changes use optimized CSS transitions for a polished user experience
+
+```php
+<!-- Light background button: text stays dark on hover -->
+<x-artisanpack-button color="yellow-300">
+    Hover to see contrast maintained
+</x-artisanpack-button>
+
+<!-- Dark background button: text stays white on hover -->
+<x-artisanpack-button color="blue-700">
+    Hover to see contrast maintained
+</x-artisanpack-button>
+```
+
+This works automatically for all color types:
+- **Predefined variants** (primary, secondary, accent, etc.)
+- **Tailwind colors** (blue-500, red-600, etc.)
+- **Custom hex colors** (#ff6b6b, #4ecdc4, etc.)
+- **Color adjustments** (lighter, darker, subtle, transparent)
+
 ### Button Sizes
+
+The button component supports five different sizes that control the overall button dimensions:
 
 ```php
 <x-artisanpack-button size="xs">Extra Small</x-artisanpack-button>
 <x-artisanpack-button size="sm">Small</x-artisanpack-button>
-<x-artisanpack-button size="md">Medium</x-artisanpack-button>
+<x-artisanpack-button size="md">Medium (Default)</x-artisanpack-button>
 <x-artisanpack-button size="lg">Large</x-artisanpack-button>
 <x-artisanpack-button size="xl">Extra Large</x-artisanpack-button>
+```
+
+**Note:** The `xl` size is mapped to `lg` in DaisyUI. If you need a true extra-large size, you can add custom CSS classes.
+
+You can combine sizes with any color variant:
+
+```php
+<x-artisanpack-button size="lg" color="primary">Large Primary</x-artisanpack-button>
+<x-artisanpack-button size="sm" color="blue-500">Small Blue</x-artisanpack-button>
+<x-artisanpack-button size="xs" color="#ff6b6b">Tiny Custom</x-artisanpack-button>
 ```
 
 ### Button Variants
@@ -177,20 +215,24 @@ Fine-tune the background appearance with color adjustments:
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `type` | string | `'button'` | HTML button type (`button`, `submit`, `reset`) |
-| `color` | string | `'primary'` | Button color (`primary`, `secondary`, `accent`, `info`, `success`, `warning`, `error`, `neutral`) |
-| `size` | string | `'md'` | Button size (`xs`, `sm`, `md`, `lg`, `xl`) |
-| `outline` | boolean | `false` | Whether to display as an outline button |
-| `ghost` | boolean | `false` | Whether to display as a ghost button (transparent background) |
-| `link` | boolean | `false` | Whether to display as a link button (no background or border) |
-| `circle` | boolean | `false` | Whether to display as a circle button (equal width and height) |
-| `square` | boolean | `false` | Whether to display as a square button (equal width and height but with small border radius) |
-| `block` | boolean | `false` | Whether the button should take up the full width of its container |
-| `disabled` | boolean | `false` | Whether the button is disabled |
-| `loading` | boolean | `false` | Whether to show a loading indicator |
-| `active` | boolean | `false` | Whether the button is in an active state |
-| `href` | string | `null` | URL to navigate to when clicked (renders as an `<a>` tag) |
-| `target` | string | `null` | Target attribute for the link (only used when `href` is set) |
-| `rel` | string | `null` | Rel attribute for the link (only used when `href` is set) |
+| `color` | string | `null` | Button color - accepts predefined variants, Tailwind colors, or hex codes |
+| `variant` | string | `'primary'` | Legacy variant prop (use `color` instead) - Options: `primary`, `secondary`, `accent`, `info`, `success`, `warning`, `error`, `neutral`, `ghost`, `outline` |
+| `colorAdjustment` | string | `null` | Background adjustment (`lighter`, `darker`, `transparent`, `subtle`) |
+| `size` | string | `'md'` | Button size (`xs`, `sm`, `md`, `lg`, `xl`) - Note: `xl` maps to `lg` |
+| `label` | string | `null` | Optional text label for the button |
+| `icon` | string | `null` | Icon to display before the label |
+| `iconRight` | string | `null` | Icon to display after the label |
+| `spinner` | string | `null` | Spinner target for loading states |
+| `link` | string | `null` | URL to convert the button to a link (renders as `<a>` tag) |
+| `external` | boolean | `false` | Whether the link should open in a new tab |
+| `noWireNavigate` | boolean | `false` | Disable wire:navigate for links |
+| `responsive` | boolean | `false` | Whether the button label should be responsive |
+| `badge` | string | `null` | Badge text to display |
+| `badgeClasses` | string | `null` | CSS classes for the badge |
+| `tooltip` | string | `null` | Tooltip text |
+| `tooltipLeft` | string | `null` | Tooltip text (left position) |
+| `tooltipRight` | string | `null` | Tooltip text (right position) |
+| `tooltipBottom` | string | `null` | Tooltip text (bottom position) |
 
 ## Slots
 
@@ -233,12 +275,50 @@ The Button component uses DaisyUI's button component under the hood, which provi
 
 ## Accessibility
 
-The Button component follows accessibility best practices:
+The Button component follows accessibility best practices and includes built-in accessibility features:
 
+### Semantic HTML
 - Uses the appropriate HTML element (`<button>` or `<a>`) based on usage
 - Includes proper ARIA attributes when in loading or disabled states
+
+### Keyboard Navigation
 - Maintains focus styles for keyboard navigation
-- Ensures adequate color contrast for all button variants
+- Supports standard keyboard interactions (Enter, Space)
+- Focus states automatically adjust text color for contrast
+
+### Color Contrast (WCAG AA Compliance)
+- **Base State:** All button colors automatically calculate contrasting text colors to meet WCAG AA standards (4.5:1 contrast ratio for normal text)
+- **Hover State:** When hovering, both background and text colors adjust together to maintain proper contrast
+- **Focus State:** Focus indicators maintain the same high contrast standards
+
+The component achieves this through:
+- Automatic brightness calculation for all color inputs
+- Dynamic text color selection (black or white) based on background luminance
+- Hover state generation that recalculates text color for the darkened background
+
+### Example: Color Contrast in Action
+
+```php
+<!-- Light background (yellow-300): Uses dark text on base AND hover -->
+<x-artisanpack-button color="yellow-300">
+    Always Readable
+</x-artisanpack-button>
+
+<!-- Medium background (blue-500): Uses white text on base AND hover -->
+<x-artisanpack-button color="blue-500">
+    Always Readable
+</x-artisanpack-button>
+
+<!-- Dark background (gray-800): Uses white text on base AND hover -->
+<x-artisanpack-button color="gray-800">
+    Always Readable
+</x-artisanpack-button>
+```
+
+### Performance Optimizations
+- Uses `transition-colors` instead of `transition-all` for smoother, more efficient animations
+- Leverages CSS custom properties for dynamic color generation
+- Minimizes layout shifts during state changes
 
 ## Related Components
 

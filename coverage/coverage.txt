@@ -1,0 +1,160 @@
+
+
+Code Coverage Report:
+  2025-11-06 20:24:32
+
+ Summary:
+  Classes: 24.72% (22/89)
+  Methods: 44.39% (174/392)
+  Lines:   40.52% (769/1898)
+
+ArtisanPack\LivewireUiComponents\LivewireUiComponentsServiceProvider
+  Methods:  62.50% ( 5/ 8)   Lines:  90.37% (122/135)
+ArtisanPack\LivewireUiComponents\Styling\ColorGenerator
+  Methods:  18.18% ( 4/22)   Lines:  36.39% (151/415)
+ArtisanPack\LivewireUiComponents\View\Components\Accordion
+  Methods: 100.00% ( 2/ 2)   Lines: 100.00% (  4/  4)
+ArtisanPack\LivewireUiComponents\View\Components\Alert
+  Methods:  66.67% ( 2/ 3)   Lines:  41.67% (  5/ 12)
+ArtisanPack\LivewireUiComponents\View\Components\Avatar
+  Methods:  66.67% ( 2/ 3)   Lines:  36.36% (  4/ 11)
+ArtisanPack\LivewireUiComponents\View\Components\Badge
+  Methods:  66.67% ( 2/ 3)   Lines:  36.36% (  4/ 11)
+ArtisanPack\LivewireUiComponents\View\Components\Breadcrumbs
+  Methods:  50.00% ( 2/ 4)   Lines:  28.57% (  2/  7)
+ArtisanPack\LivewireUiComponents\View\Components\Button
+  Methods:  42.86% ( 3/ 7)   Lines:  62.50% ( 35/ 56)
+ArtisanPack\LivewireUiComponents\View\Components\Card
+  Methods:  66.67% ( 2/ 3)   Lines:  87.50% (  7/  8)
+ArtisanPack\LivewireUiComponents\View\Components\Carousel
+  Methods:  25.00% ( 1/ 4)   Lines:   5.26% (  1/ 19)
+ArtisanPack\LivewireUiComponents\View\Components\Chart
+  Methods: 100.00% ( 2/ 2)   Lines: 100.00% (  2/  2)
+ArtisanPack\LivewireUiComponents\View\Components\Checkbox
+  Methods:  50.00% ( 2/ 4)   Lines:  50.00% (  2/  4)
+ArtisanPack\LivewireUiComponents\View\Components\CheckboxGroup
+  Methods:  50.00% ( 2/ 4)   Lines:  50.00% (  2/  4)
+ArtisanPack\LivewireUiComponents\View\Components\Choices
+  Methods:  12.50% ( 1/ 8)   Lines:  23.08% (  3/ 13)
+ArtisanPack\LivewireUiComponents\View\Components\ChoicesOffline
+  Methods:  12.50% ( 1/ 8)   Lines:  23.08% (  3/ 13)
+ArtisanPack\LivewireUiComponents\View\Components\Code
+  Methods:  66.67% ( 2/ 3)   Lines:  66.67% (  2/  3)
+ArtisanPack\LivewireUiComponents\View\Components\Collapse
+  Methods: 100.00% ( 2/ 2)   Lines: 100.00% (  3/  3)
+ArtisanPack\LivewireUiComponents\View\Components\Colorpicker
+  Methods:  33.33% ( 2/ 6)   Lines:  33.33% (  2/  6)
+ArtisanPack\LivewireUiComponents\View\Components\DatePicker
+  Methods:  41.67% ( 5/12)   Lines:  42.42% ( 28/ 66)
+ArtisanPack\LivewireUiComponents\View\Components\DateTime
+  Methods:  50.00% ( 2/ 4)   Lines:  50.00% (  2/  4)
+ArtisanPack\LivewireUiComponents\View\Components\Diff
+  Methods: 100.00% ( 4/ 4)   Lines: 100.00% ( 11/ 11)
+ArtisanPack\LivewireUiComponents\View\Components\Drawer
+  Methods:  50.00% ( 2/ 4)   Lines:  50.00% (  2/  4)
+ArtisanPack\LivewireUiComponents\View\Components\Dropdown
+  Methods: 100.00% ( 2/ 2)   Lines: 100.00% (  2/  2)
+ArtisanPack\LivewireUiComponents\View\Components\Editor
+  Methods:  60.00% ( 3/ 5)   Lines:  88.89% ( 16/ 18)
+ArtisanPack\LivewireUiComponents\View\Components\Errors
+  Methods: 100.00% ( 2/ 2)   Lines: 100.00% (  2/  2)
+ArtisanPack\LivewireUiComponents\View\Components\File
+  Methods:  60.00% ( 3/ 5)   Lines:  77.78% (  7/  9)
+ArtisanPack\LivewireUiComponents\View\Components\Form
+  Methods: 100.00% ( 2/ 2)   Lines: 100.00% (  2/  2)
+ArtisanPack\LivewireUiComponents\View\Components\Group
+  Methods:  50.00% ( 2/ 4)   Lines:  50.00% (  2/  4)
+ArtisanPack\LivewireUiComponents\View\Components\Header
+  Methods:  66.67% ( 2/ 3)   Lines:  80.00% (  4/  5)
+ArtisanPack\LivewireUiComponents\View\Components\Heading
+  Methods:  50.00% ( 2/ 4)   Lines:  57.14% ( 12/ 21)
+ArtisanPack\LivewireUiComponents\View\Components\Icon
+  Methods:  25.00% ( 1/ 4)   Lines:  33.33% (  2/  6)
+ArtisanPack\LivewireUiComponents\View\Components\ImageGallery
+  Methods:  83.33% ( 5/ 6)   Lines:  78.95% ( 30/ 38)
+ArtisanPack\LivewireUiComponents\View\Components\ImageLibrary
+  Methods:  50.00% ( 3/ 6)   Lines:  72.73% (  8/ 11)
+ArtisanPack\LivewireUiComponents\View\Components\ImageSlider
+  Methods: 100.00% ( 4/ 4)   Lines: 100.00% ( 16/ 16)
+ArtisanPack\LivewireUiComponents\View\Components\Input
+  Methods:  42.86% ( 3/ 7)   Lines:  66.67% (  8/ 12)
+ArtisanPack\LivewireUiComponents\View\Components\Kbd
+  Methods: 100.00% ( 2/ 2)   Lines: 100.00% (  2/  2)
+ArtisanPack\LivewireUiComponents\View\Components\Link
+  Methods:  50.00% ( 2/ 4)   Lines:  78.57% ( 11/ 14)
+ArtisanPack\LivewireUiComponents\View\Components\Loading
+  Methods:  60.00% ( 3/ 5)   Lines:  77.78% (  7/  9)
+ArtisanPack\LivewireUiComponents\View\Components\Main
+  Methods: 100.00% ( 2/ 2)   Lines: 100.00% (  2/  2)
+ArtisanPack\LivewireUiComponents\View\Components\Markdown
+  Methods:  60.00% ( 3/ 5)   Lines:  94.44% ( 34/ 36)
+ArtisanPack\LivewireUiComponents\View\Components\Menu
+  Methods: 100.00% ( 2/ 2)   Lines: 100.00% (  2/  2)
+ArtisanPack\LivewireUiComponents\View\Components\MenuItem
+  Methods:   0.00% ( 0/ 4)   Lines:  65.62% ( 21/ 32)
+ArtisanPack\LivewireUiComponents\View\Components\MenuSeparator
+  Methods: 100.00% ( 2/ 2)   Lines: 100.00% (  2/  2)
+ArtisanPack\LivewireUiComponents\View\Components\MenuSub
+  Methods:   0.00% ( 0/ 2)   Lines:  85.00% ( 17/ 20)
+ArtisanPack\LivewireUiComponents\View\Components\MenuTitle
+  Methods: 100.00% ( 2/ 2)   Lines: 100.00% (  2/  2)
+ArtisanPack\LivewireUiComponents\View\Components\Modal
+  Methods: 100.00% ( 2/ 2)   Lines: 100.00% (  2/  2)
+ArtisanPack\LivewireUiComponents\View\Components\Nav
+  Methods: 100.00% ( 2/ 2)   Lines: 100.00% (  2/  2)
+ArtisanPack\LivewireUiComponents\View\Components\Pagination
+  Methods:  71.43% ( 5/ 7)   Lines:  80.95% ( 17/ 21)
+ArtisanPack\LivewireUiComponents\View\Components\Password
+  Methods:  50.00% ( 3/ 6)   Lines:  72.73% (  8/ 11)
+ArtisanPack\LivewireUiComponents\View\Components\Popover
+  Methods: 100.00% ( 2/ 2)   Lines: 100.00% (  2/  2)
+ArtisanPack\LivewireUiComponents\View\Components\Profile
+  Methods:  66.67% ( 2/ 3)   Lines:  36.36% (  4/ 11)
+ArtisanPack\LivewireUiComponents\View\Components\Progress
+  Methods: 100.00% ( 2/ 2)   Lines: 100.00% (  2/  2)
+ArtisanPack\LivewireUiComponents\View\Components\ProgressRadial
+  Methods: 100.00% ( 2/ 2)   Lines: 100.00% (  2/  2)
+ArtisanPack\LivewireUiComponents\View\Components\Radio
+  Methods:  50.00% ( 2/ 4)   Lines:  50.00% (  2/  4)
+ArtisanPack\LivewireUiComponents\View\Components\RadioGroup
+  Methods:  50.00% ( 2/ 4)   Lines:  50.00% (  2/  4)
+ArtisanPack\LivewireUiComponents\View\Components\Range
+  Methods:  50.00% ( 2/ 4)   Lines:  50.00% (  2/  4)
+ArtisanPack\LivewireUiComponents\View\Components\Rating
+  Methods:  50.00% ( 2/ 4)   Lines:  50.00% (  2/  4)
+ArtisanPack\LivewireUiComponents\View\Components\Select
+  Methods:  50.00% ( 2/ 4)   Lines:  50.00% (  2/  4)
+ArtisanPack\LivewireUiComponents\View\Components\SelectGroup
+  Methods:  50.00% ( 2/ 4)   Lines:  50.00% (  2/  4)
+ArtisanPack\LivewireUiComponents\View\Components\Separator
+  Methods:  40.00% ( 2/ 5)   Lines:  20.00% (  8/ 40)
+ArtisanPack\LivewireUiComponents\View\Components\Signature
+  Methods:  60.00% ( 3/ 5)   Lines:  60.00% (  3/  5)
+ArtisanPack\LivewireUiComponents\View\Components\Spotlight
+  Methods: 100.00% ( 2/ 2)   Lines: 100.00% (  4/  4)
+ArtisanPack\LivewireUiComponents\View\Components\Stat
+  Methods:  66.67% ( 4/ 6)   Lines:  49.15% ( 29/ 59)
+ArtisanPack\LivewireUiComponents\View\Components\Steps
+  Methods: 100.00% ( 2/ 2)   Lines: 100.00% (  2/  2)
+ArtisanPack\LivewireUiComponents\View\Components\Subheading
+  Methods:  50.00% ( 2/ 4)   Lines:  70.00% (  7/ 10)
+ArtisanPack\LivewireUiComponents\View\Components\Swap
+  Methods: 100.00% ( 2/ 2)   Lines: 100.00% (  2/  2)
+ArtisanPack\LivewireUiComponents\View\Components\Tab
+  Methods:  66.67% ( 2/ 3)   Lines:  15.38% (  2/ 13)
+ArtisanPack\LivewireUiComponents\View\Components\Tabs
+  Methods:  62.50% ( 5/ 8)   Lines:  60.47% ( 26/ 43)
+ArtisanPack\LivewireUiComponents\View\Components\Tags
+  Methods:  30.00% ( 3/10)   Lines:  36.84% (  7/ 19)
+ArtisanPack\LivewireUiComponents\View\Components\Text
+  Methods:  40.00% ( 2/ 5)   Lines:  69.23% (  9/ 13)
+ArtisanPack\LivewireUiComponents\View\Components\Textarea
+  Methods:  50.00% ( 2/ 4)   Lines:  50.00% (  2/  4)
+ArtisanPack\LivewireUiComponents\View\Components\ThemeToggle
+  Methods: 100.00% ( 2/ 2)   Lines: 100.00% (  2/  2)
+ArtisanPack\LivewireUiComponents\View\Components\TimelineItem
+  Methods:  50.00% ( 1/ 2)   Lines:  50.00% (  1/  2)
+ArtisanPack\LivewireUiComponents\View\Components\Toast
+  Methods:  66.67% ( 2/ 3)   Lines:  36.36% (  4/ 11)
+ArtisanPack\LivewireUiComponents\View\Components\Toggle
+  Methods:  50.00% ( 2/ 4)   Lines:  50.00% (  2/  4)

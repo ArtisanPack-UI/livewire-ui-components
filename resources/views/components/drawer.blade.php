@@ -23,23 +23,29 @@
         x-trap="open" x-bind:inert="!open"
     @endif
 
+    {{-- ADD: Dynamic event listeners based on props --}}
+    @if($openOn)
+        x-on:{{ $openOn }}.window="open = true"
+    @endif
+
+    @if($closeOn)
+        x-on:{{ $closeOn }}.window="close()"
+    @endif
+
     @class(["drawer absolute z-50", "drawer-end" => $right])
 
     {{ $attributes->whereStartsWith('@') }}
 >
-    <!-- Toggle visibility  -->
     <input
         id="{{ $id() }}"
         x-model="open"
         x-ref="checkbox"
         type="checkbox"
-        class="drawer-toggle" />
+        class="drawer-toggle"/>
 
-    <div class="drawer-side" >
-        <!-- Overlay effect , click outside -->
+    <div class="drawer-side">
         <label for="{{ $id() }}" class="drawer-overlay"></label>
 
-        <!-- Content -->
         <x-artisanpack-card
             :title="$title"
             :subtitle="$subtitle"
@@ -49,7 +55,7 @@
         >
             @if($withCloseButton)
                 <x-slot:menu>
-                    <x-artisanpack-button icon="o-x-mark" class="btn-ghost btn-sm btn-circle" @click="close()" />
+                    <x-artisanpack-button icon="o-x-mark" class="btn-ghost btn-sm btn-circle" @click="close()"/>
                 </x-slot:menu>
             @endif
 

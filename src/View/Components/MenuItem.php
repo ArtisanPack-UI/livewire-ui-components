@@ -56,7 +56,8 @@ class MenuItem extends Component
 		public ?bool $hidden = false,
 		public ?bool $disabled = false,
 		public ?bool $exact = false,
-		public ?string $bgColor = null
+		public ?string $bgColor = null,
+		public ?string $role = 'menuitem'
 	) {
 		$this->uuid = "artisanpack" . md5(serialize($this)) . $id;
 

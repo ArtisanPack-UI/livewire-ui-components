@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Country;
-use App\Models\User;
+use Modules\Users\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;

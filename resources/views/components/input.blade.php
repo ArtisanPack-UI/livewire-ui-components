@@ -1,25 +1,37 @@
-<div>
+<div @click.stop class="w-full">
     @php
         // We need this extra step to support models arrays. Ex: wire:model="emails.0"  , wire:model="emails.1"
         $uuid = $uuid . $modelName()
     @endphp
 
-    <fieldset class="fieldset py-0">
-        {{-- STANDARD LABEL --}}
+    <fieldset class="fieldset py-0 gap-0">
+        {{--
+          ***** SEMANTIC FIX *****
+          Changed from <legend> to <label> as requested.
+          This is now the one true label for the input.
+        --}}
         @if($label && !$inline)
-            <legend class="fieldset-legend mb-0.5">
+            <label for="{{ $uuid }}" class="fieldset-legend mb-0.5">
                 {{ $label }}
 
                 @if($attributes->get('required'))
                     <span class="text-error">*</span>
                 @endif
-            </legend>
+            </label>
         @endif
 
-        <label @class(["floating-label" => $label && $inline])>
-            {{-- FLOATING LABEL--}}
+        {{--
+          ***** PREVIOUS FIX *****
+          This wrapper was changed from <label> to <div>.
+          This stops the click event from bubbling up and blurring the input.
+        --}}
+        <div @class(["floating-label" => $label && $inline])>
+            {{-- FLOATING LABEL (for inline variant) --}}
             @if ($label && $inline)
-                <span class="font-semibold">{{ $label }}</span>
+                {{--
+                  This also needs to be a <label for> to be accessible.
+                --}}
+                <label for="{{ $uuid }}" class="font-semibold">{{ $label }}</label>
             @endif
 
             <div @class(["w-full", "join" => $prepend || $append])>
@@ -28,21 +40,26 @@
                     {{ $prepend }}
                 @endif
 
-                {{-- THE LABEL THAT HOLDS THE INPUT --}}
-                <label
-                    @if($isDisabled())
-                        disabled
+                {{--
+                  ***** THE FINAL FIX IS HERE *****
+                  @mousedown.stop prevents the click event from bubbling up
+                  to the drag-and-drop library, stopping the focus-steal.
+                --}}
+                <div
+                    @click.outside="$event.stopPropagation()"
+                @if($isDisabled())
+                    disabled
                     @endif
 
                     {{
-                        $attributes->whereStartsWith('class')->class([
-                            "input w-full",
-                            "join-item" => $prepend || $append,
-                            "border-dashed" => $isReadonly(),
-                            "!input-error" => $errorFieldName() && $errors->has($errorFieldName()) && !$omitError
-                        ])
-                    }}
-                 >
+						$attributes->whereStartsWith('class')->class([
+							"input w-full",
+							"join-item" => $prepend || $append,
+							"border-dashed" => $isReadonly(),
+							"!input-error" => $errorFieldName() && $errors->has($errorFieldName()) && !$omitError
+						])
+					}}
+                >
                     {{-- PREFIX --}}
                     @if($prefix)
                         <span class="label">{{ $prefix }}</span>
@@ -53,43 +70,57 @@
                         <x-artisanpack-icon :name="$icon" class="pointer-events-none w-4 h-4 opacity-40" />
                     @endif
 
-                    {{-- MONEY SETUP --}}
+                    {{--
+                      Restructured @if($money) block (from previous fix)
+                    --}}
                     @if($money)
                         <div
                             class="w-full"
-                            x-data="{ amount: $wire.get('{{ $modelName() }}') }" x-init="$nextTick(() => new Currency($refs.myInput, {{ $moneySettings() }}))"
+                            x-data="{ amount: $wire.get('{{ $modelName() }}') }" x-init="$nextTick(() => new Currency($refs->myInput, {{ $moneySettings() }}))"
                         >
-                    @endif
-
-                        {{-- INPUT --}}
-                        <input
-                            id="{{ $uuid }}"
-                            placeholder="{{ $attributes->get('placeholder') }} "
-
-                            @if($attributes->has('autofocus') && $attributes->get('autofocus') == true)
-                                autofocus
-                            @endif
-
-                            @if($money)
+                            {{-- INPUT (Money Version) --}}
+                            <input
+                                id="{{ $uuid }}"
+                                placeholder="{{ $attributes->get('placeholder') }} "
+                                @if($attributes->has('autofocus') && $attributes->get('autofocus') == true)
+                                    autofocus
+                                @endif
                                 x-ref="myInput"
                                 :value="amount"
                                 x-on:input="$nextTick(() => $wire.set('{{ $modelName() }}', Currency.getUnmasked(), {{ json_encode($attributes->wire('model')->hasModifier('live')) }}))"
                                 x-on:blur="$nextTick(() => $wire.set('{{ $modelName() }}', Currency.getUnmasked(), {{ json_encode($attributes->wire('model')->hasModifier('blur')) }}))"
                                 inputmode="numeric"
-                            @endif
-
-                            {{
-                                $attributes
-                                    ->merge(['type' => 'text'])
-                                    ->except($money ? ['wire:model', 'wire:model.live', 'wire:model.blur'] : '')
-                            }}
-                        />
-
-                    {{-- HIDDEN MONEY INPUT + END MONEY SETUP --}}
-                    @if($money)
+                                @mousedown="$nextTick(() => $el.focus())"
+                                {{
+									$attributes
+										->merge(['type' => 'text'])
+										->except(['wire:model', 'wire:model.live', 'wire:model.blur'])
+										->except('class')
+										->class('grow')
+								}}
+                            />
+                            {{-- HIDDEN MONEY INPUT --}}
                             <input type="hidden" {{ $attributes->wire('model') }} />
                         </div>
+                    @else
+                        {{-- INPUT (Normal Version) --}}
+                        <input
+                            id="{{ $uuid }}"
+                            placeholder="{{ $attributes->get('placeholder') }} "
+                            @if($attributes->has('autofocus') && $attributes->get('autofocus') == true)
+                                autofocus
+                            @endif
+                            @mousedown="$nextTick(() => $el.focus())"
+                            {{
+								$attributes
+									->merge(['type' => 'text'])
+									->except('class')
+									->class('grow')
+							}}
+                        />
                     @endif
+                    {{-- ***** END OF @if($money) BLOCK ***** --}}
+
 
                     {{-- CLEAR ICON  --}}
                     @if($clearable)
@@ -105,14 +136,14 @@
                     @if($suffix)
                         <span class="label">{{ $suffix }}</span>
                     @endif
-                </label>
+                </div> {{-- /div.input --}}
 
                 {{-- APPEND --}}
                 @if($append)
                     {{ $append }}
                 @endif
             </div>
-        </label>
+        </div> {{-- /div wrapper --}}
 
         {{-- ERROR --}}
         @if(!$omitError && $errors->has($errorFieldName()))

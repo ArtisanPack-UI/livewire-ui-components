@@ -7,8 +7,9 @@
                         id="{{ $uuid }}"
                         type="checkbox"
                         class="sr-only peer"
+                        @checked($value == true || $value === 1 || $value === '1') {{-- [CHANGED] Added @checked --}}
                         {{
-                            $attributes->whereDoesntStartWith("id")
+                            $attributes->whereDoesntStartWith(["id", "checked"])
                          }}
                     />
                     <div class="{{ $cardClass }} peer-checked:border-primary peer-checked:bg-primary/10 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed">
@@ -50,15 +51,16 @@
                     <input
                         id="{{ $uuid }}"
                         type="checkbox"
+                        @checked($value == true || $value === 1 || $value === '1') {{-- [CHANGED] Added @checked --}}
                         {{
-                            $attributes->whereDoesntStartWith("id")
+                            $attributes->whereDoesntStartWith(["id", "checked"])
                                 ->class(["order-2" => $right])
                                 ->merge(["class" => "checkbox"])
                          }}
                     />
 
                     {{-- LABEL --}}
-                     <div @class(["order-1" => $right])>
+                    <div @class(["order-1" => $right])>
                         <div class="text-sm font-medium">
                             {{ $label }}
 

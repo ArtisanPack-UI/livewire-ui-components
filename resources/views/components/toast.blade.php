@@ -1,27 +1,41 @@
 <div>
-    @persist('mary-toaster')
+    @persist('artisanpack-toaster')
     <div
         x-cloak
-        x-data="{ show: false, timer: '', toast: ''}"
-        @mary-toast.window="
+        x-data="{
+            show: false,
+            timer: '',
+            toast: '',
+            defaultDuration: {{ $duration }}
+        }"
+        @artisanpack-toast.window="
                         clearTimeout(timer);
-                        toast = $event.detail.toast
+                        toast = $event.detail.toast;
                         setTimeout(() => show = true, 100);
-                        timer = setTimeout(() => show = false, $event.detail.toast.timeout);
+
+                        // Use event duration if provided (is not null), otherwise use the component's default duration.
+                        let an_duration = toast.duration !== null ? toast.duration : defaultDuration;
+
+                        // Only set a timer to hide if the final duration is greater than 0.
+                        if (an_duration > 0) {
+                            timer = setTimeout(() => show = false, an_duration);
+                        }
                         "
     >
         <div
+            role="alert"
+            aria-atomic="true"
             class="toast !whitespace-normal rounded-md fixed cursor-pointer z-[999]"
             :class="toast.position || '{{ $position }}'"
             x-show="show"
             x-classes="alert alert-success alert-warning alert-error alert-info top-10 end-10 toast toast-top toast-bottom toast-center toast-end toast-middle toast-start"
             @click="show = false"
         >
-            <div 
+            <div
                 @php
                     $colorClasses = $getColorClasses();
                     $baseClasses = ['alert', 'gap-2'];
-                    
+
                     // Handle new color system
                     if (!empty($colorClasses)) {
                         // Add color classes from new system
@@ -34,10 +48,10 @@
                             }
                         }
                     }
-                    
+
                     $baseClassString = implode(' ', $baseClasses);
                 @endphp
-                class="{{ $baseClassString }}" 
+                class="{{ $baseClassString }}"
                 @if(isset($toastStyle)) style="{{ $toastStyle }}" @endif
                 :class="toast.css"
             >
@@ -52,7 +66,7 @@
 
     <script>
         window.toast = function(payload){
-            window.dispatchEvent(new CustomEvent('mary-toast', {detail: payload}))
+            window.dispatchEvent(new CustomEvent('artisanpack-toast', {detail: payload}))
         }
 
         document.addEventListener('livewire:init', () => {

@@ -61,7 +61,7 @@ class GenerateThemeCss extends Command
 			$cssContent = $colorGenerator->generateThemeCss( $primaryColor, $secondaryColor, $accentColor );
 
 			// Use the path from the published config file.
-			$outputPath = config( 'livewire-ui-components.theme_output_path' );
+			$outputPath = config( 'artisanpack.livewire-ui-components.theme_output_path' );
 
 			if ( ! $outputPath ) {
 				$this->error( '❌ Output path is not defined. Please publish the configuration file.' );

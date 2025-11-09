@@ -4,14 +4,14 @@
  *
  * This file contains the Drawer class for the ArtisanPack UI Livewire UI Components package.
  *
+ * @since      1.0.0
+ * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
+ * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
+ * @copyright  2023 Jacob Martella
+ * @license    MIT
  * @package    ArtisanPack\LivewireUiComponents\View
  * @subpackage Components
  * @author     Jacob Martella
- * @copyright  2023 Jacob Martella
- * @license    MIT
- * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
- * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
- * @since      1.0.0
  */
 
 
@@ -21,6 +21,7 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 use Livewire\WireDirective;
+
 /**
  * Drawer Class
  *
@@ -28,7 +29,6 @@ use Livewire\WireDirective;
  *
  * @since 1.0.0
  */
-
 class Drawer extends Component
 {
     public string $uuid;
@@ -42,25 +42,28 @@ class Drawer extends Component
         public ?bool $withCloseButton = false,
         public ?bool $closeOnEscape = false,
         public ?bool $withoutTrapFocus = false,
+        public ?string $openOn = null,   // <-- ADD: Event name to listen for to open.
+        public ?string $closeOn = null,  // <-- ADD: Event name to listen for to close.
 
         //Slots
         public ?string $actions = null
-    ) {
-        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+    )
+    {
+        $this->uuid = "artisanpack" . md5( serialize( $this ) ) . $id;
     }
 
     public function id(): string
     {
-        return $this->id ?? $this->attributes?->wire('model')->value();
+        return $this->id ?? $this->attributes?->wire( 'model' )->value();
     }
 
     public function modelName(): WireDirective
     {
-        return $this->attributes->wire('model');
+        return $this->attributes->wire( 'model' );
     }
 
-    public function render(): View
+    public function render(): View | Closure | string
     {
-        return view('livewire-ui-components::components.drawer');
+        return view( 'livewire-ui-components::components.drawer' );
     }
 }

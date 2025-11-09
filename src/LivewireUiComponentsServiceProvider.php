@@ -17,90 +17,12 @@
 namespace ArtisanPack\LivewireUiComponents;
 
 use Arr;
+use ArtisanPack\LivewireUiComponents\Console\Commands\GenerateIdeHelperCommand;
 use ArtisanPack\LivewireUiComponents\Console\Commands\GenerateThemeCss;
-use ArtisanPack\LivewireUiComponents\View\Components\CheckboxGroup;
-use ArtisanPack\LivewireUiComponents\View\Components\EventModalContent;
-use ArtisanPack\LivewireUiComponents\View\Components\RadioGroup;
-use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\ServiceProvider;
 use ArtisanPack\LivewireUiComponents\Console\Commands\LivewireUiComponentsBootcampCommand;
 use ArtisanPack\LivewireUiComponents\Console\Commands\LivewireUiComponentsInstallCommand;
-use ArtisanPack\LivewireUiComponents\View\Components\Accordion;
-use ArtisanPack\LivewireUiComponents\View\Components\Alert;
-use ArtisanPack\LivewireUiComponents\View\Components\Avatar;
-use ArtisanPack\LivewireUiComponents\View\Components\Badge;
-use ArtisanPack\LivewireUiComponents\View\Components\Breadcrumbs;
-use ArtisanPack\LivewireUiComponents\View\Components\Button;
-use ArtisanPack\LivewireUiComponents\View\Components\Calendar;
-use ArtisanPack\LivewireUiComponents\View\Components\Card;
-use ArtisanPack\LivewireUiComponents\View\Components\Carousel;
-use ArtisanPack\LivewireUiComponents\View\Components\Chart;
-use ArtisanPack\LivewireUiComponents\View\Components\Checkbox;
-use ArtisanPack\LivewireUiComponents\View\Components\Choices;
-use ArtisanPack\LivewireUiComponents\View\Components\ChoicesOffline;
-use ArtisanPack\LivewireUiComponents\View\Components\Code;
-use ArtisanPack\LivewireUiComponents\View\Components\Collapse;
-use ArtisanPack\LivewireUiComponents\View\Components\Colorpicker;
-use ArtisanPack\LivewireUiComponents\View\Components\DatePicker;
-use ArtisanPack\LivewireUiComponents\View\Components\DateTime;
-use ArtisanPack\LivewireUiComponents\View\Components\Diff;
-use ArtisanPack\LivewireUiComponents\View\Components\Drawer;
-use ArtisanPack\LivewireUiComponents\View\Components\Dropdown;
-use ArtisanPack\LivewireUiComponents\View\Components\Editor;
-use ArtisanPack\LivewireUiComponents\View\Components\Errors;
-use ArtisanPack\LivewireUiComponents\View\Components\File;
-use ArtisanPack\LivewireUiComponents\View\Components\Form;
-use ArtisanPack\LivewireUiComponents\View\Components\Group;
-use ArtisanPack\LivewireUiComponents\View\Components\Header;
-use ArtisanPack\LivewireUiComponents\View\Components\Separator;
-use ArtisanPack\LivewireUiComponents\View\Components\Icon;
-use ArtisanPack\LivewireUiComponents\View\Components\ImageGallery;
-use ArtisanPack\LivewireUiComponents\View\Components\ImageLibrary;
-use ArtisanPack\LivewireUiComponents\View\Components\ImageSlider;
-use ArtisanPack\LivewireUiComponents\View\Components\Input;
-use ArtisanPack\LivewireUiComponents\View\Components\Kbd;
-use ArtisanPack\LivewireUiComponents\View\Components\ListItem;
-use ArtisanPack\LivewireUiComponents\View\Components\Loading;
-use ArtisanPack\LivewireUiComponents\View\Components\Main;
-use ArtisanPack\LivewireUiComponents\View\Components\Markdown;
-use ArtisanPack\LivewireUiComponents\View\Components\Menu;
-use ArtisanPack\LivewireUiComponents\View\Components\MenuItem;
-use ArtisanPack\LivewireUiComponents\View\Components\MenuSeparator;
-use ArtisanPack\LivewireUiComponents\View\Components\MenuSub;
-use ArtisanPack\LivewireUiComponents\View\Components\MenuTitle;
-use ArtisanPack\LivewireUiComponents\View\Components\Modal;
-use ArtisanPack\LivewireUiComponents\View\Components\Nav;
-use ArtisanPack\LivewireUiComponents\View\Components\Pagination;
-use ArtisanPack\LivewireUiComponents\View\Components\Password;
-use ArtisanPack\LivewireUiComponents\View\Components\Pin;
-use ArtisanPack\LivewireUiComponents\View\Components\Popover;
-use ArtisanPack\LivewireUiComponents\View\Components\Progress;
-use ArtisanPack\LivewireUiComponents\View\Components\ProgressRadial;
-use ArtisanPack\LivewireUiComponents\View\Components\Radio;
-use ArtisanPack\LivewireUiComponents\View\Components\Range;
-use ArtisanPack\LivewireUiComponents\View\Components\Rating;
-use ArtisanPack\LivewireUiComponents\View\Components\Select;
-use ArtisanPack\LivewireUiComponents\View\Components\SelectGroup;
-use ArtisanPack\LivewireUiComponents\View\Components\Signature;
-use ArtisanPack\LivewireUiComponents\View\Components\Spotlight;
-use ArtisanPack\LivewireUiComponents\View\Components\Stat;
-use ArtisanPack\LivewireUiComponents\View\Components\Step;
-use ArtisanPack\LivewireUiComponents\View\Components\Steps;
-use ArtisanPack\LivewireUiComponents\View\Components\Swap;
-use ArtisanPack\LivewireUiComponents\View\Components\Tab;
-use ArtisanPack\LivewireUiComponents\View\Components\Table;
-use ArtisanPack\LivewireUiComponents\View\Components\Tabs;
-use ArtisanPack\LivewireUiComponents\View\Components\Tags;
-use ArtisanPack\LivewireUiComponents\View\Components\Textarea;
-use ArtisanPack\LivewireUiComponents\View\Components\ThemeToggle;
-use ArtisanPack\LivewireUiComponents\View\Components\TimelineItem;
-use ArtisanPack\LivewireUiComponents\View\Components\Toast;
-use ArtisanPack\LivewireUiComponents\View\Components\Toggle;
-use ArtisanPack\LivewireUiComponents\View\Components\Heading;
-use ArtisanPack\LivewireUiComponents\View\Components\Subheading;
-use ArtisanPack\LivewireUiComponents\View\Components\Text;
-use ArtisanPack\LivewireUiComponents\View\Components\Link;
-use Laravel\Prompts\Concerns\Events;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
 
 /**
@@ -112,253 +34,327 @@ use Livewire\Livewire;
  */
 class LivewireUiComponentsServiceProvider extends ServiceProvider
 {
-    /**
-     * Perform post-registration booting of services.
-     *
-     * This method is called after all other service providers have been registered,
-     * meaning you have access to all other services that have been registered by the framework.
-     *
-     * @return void
-     * @since 1.0.0
-     */
-    public function boot(): void
-    {
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'livewire-ui-components');
-        $this->registerComponents();
-        $this->registerBladeDirectives();
+	/**
+	 * An array of the Blade components this package provides.
+	 *
+	 * This array is the single source of truth for all Blade components.
+	 *
+	 * @since 1.0.0
+	 * @var   array
+	 */
+	protected array $bladeComponents = [
+		'accordion'        => \ArtisanPack\LivewireUiComponents\View\Components\Accordion::class,
+		'alert'            => \ArtisanPack\LivewireUiComponents\View\Components\Alert::class,
+		'avatar'           => \ArtisanPack\LivewireUiComponents\View\Components\Avatar::class,
+		'badge'            => \ArtisanPack\LivewireUiComponents\View\Components\Badge::class,
+		'breadcrumbs'      => \ArtisanPack\LivewireUiComponents\View\Components\Breadcrumbs::class,
+		'button'           => \ArtisanPack\LivewireUiComponents\View\Components\Button::class,
+		'card'             => \ArtisanPack\LivewireUiComponents\View\Components\Card::class,
+		'carousel'         => \ArtisanPack\LivewireUiComponents\View\Components\Carousel::class,
+		'chart'            => \ArtisanPack\LivewireUiComponents\View\Components\Chart::class,
+		'checkbox'         => \ArtisanPack\LivewireUiComponents\View\Components\Checkbox::class,
+		'checkbox-group'   => \ArtisanPack\LivewireUiComponents\View\Components\CheckboxGroup::class,
+		'choices'          => \ArtisanPack\LivewireUiComponents\View\Components\Choices::class,
+		'choices-offline'  => \ArtisanPack\LivewireUiComponents\View\Components\ChoicesOffline::class,
+		'code'             => \ArtisanPack\LivewireUiComponents\View\Components\Code::class,
+		'collapse'         => \ArtisanPack\LivewireUiComponents\View\Components\Collapse::class,
+		'colorpicker'      => \ArtisanPack\LivewireUiComponents\View\Components\Colorpicker::class,
+		'datepicker'       => \ArtisanPack\LivewireUiComponents\View\Components\DatePicker::class,
+		'datetime'         => \ArtisanPack\LivewireUiComponents\View\Components\DateTime::class,
+		'diff'             => \ArtisanPack\LivewireUiComponents\View\Components\Diff::class,
+		'drawer'           => \ArtisanPack\LivewireUiComponents\View\Components\Drawer::class,
+		'dropdown'         => \ArtisanPack\LivewireUiComponents\View\Components\Dropdown::class,
+		'editor'           => \ArtisanPack\LivewireUiComponents\View\Components\Editor::class,
+		'errors'           => \ArtisanPack\LivewireUiComponents\View\Components\Errors::class,
+		'fieldset'         => \ArtisanPack\LivewireUiComponents\View\Components\Fieldset::class,
+		'file'             => \ArtisanPack\LivewireUiComponents\View\Components\File::class,
+		'form'             => \ArtisanPack\LivewireUiComponents\View\Components\Form::class,
+		'group'            => \ArtisanPack\LivewireUiComponents\View\Components\Group::class,
+		'header'           => \ArtisanPack\LivewireUiComponents\View\Components\Header::class,
+		'heading'          => \ArtisanPack\LivewireUiComponents\View\Components\Heading::class,
+		'icon'             => \ArtisanPack\LivewireUiComponents\View\Components\Icon::class,
+		'image-gallery'    => \ArtisanPack\LivewireUiComponents\View\Components\ImageGallery::class,
+		'image-library'    => \ArtisanPack\LivewireUiComponents\View\Components\ImageLibrary::class,
+		'image-slider'     => \ArtisanPack\LivewireUiComponents\View\Components\ImageSlider::class,
+		'input'            => \ArtisanPack\LivewireUiComponents\View\Components\Input::class,
+		'kbd'              => \ArtisanPack\LivewireUiComponents\View\Components\Kbd::class,
+		'link'             => \ArtisanPack\LivewireUiComponents\View\Components\Link::class,
+		'list-item'        => \ArtisanPack\LivewireUiComponents\View\Components\ListItem::class,
+		'loading'          => \ArtisanPack\LivewireUiComponents\View\Components\Loading::class,
+		'main'             => \ArtisanPack\LivewireUiComponents\View\Components\Main::class,
+		'markdown'         => \ArtisanPack\LivewireUiComponents\View\Components\Markdown::class,
+		'menu'             => \ArtisanPack\LivewireUiComponents\View\Components\Menu::class,
+		'menu-item'        => \ArtisanPack\LivewireUiComponents\View\Components\MenuItem::class,
+		'menu-separator'   => \ArtisanPack\LivewireUiComponents\View\Components\MenuSeparator::class,
+		'menu-sub'         => \ArtisanPack\LivewireUiComponents\View\Components\MenuSub::class,
+		'menu-title'       => \ArtisanPack\LivewireUiComponents\View\Components\MenuTitle::class,
+		'modal'            => \ArtisanPack\LivewireUiComponents\View\Components\Modal::class,
+		'nav'              => \ArtisanPack\LivewireUiComponents\View\Components\Nav::class,
+		'pagination'       => \ArtisanPack\LivewireUiComponents\View\Components\Pagination::class,
+		'password'         => \ArtisanPack\LivewireUiComponents\View\Components\Password::class,
+		'pin'              => \ArtisanPack\LivewireUiComponents\View\Components\Pin::class,
+		'popover'          => \ArtisanPack\LivewireUiComponents\View\Components\Popover::class,
+		'profile'          => \ArtisanPack\LivewireUiComponents\View\Components\Profile::class,
+		'progress'         => \ArtisanPack\LivewireUiComponents\View\Components\Progress::class,
+		'progress-radial'  => \ArtisanPack\LivewireUiComponents\View\Components\ProgressRadial::class,
+		'radio'            => \ArtisanPack\LivewireUiComponents\View\Components\Radio::class,
+		'radio-group'      => \ArtisanPack\LivewireUiComponents\View\Components\RadioGroup::class,
+		'range'            => \ArtisanPack\LivewireUiComponents\View\Components\Range::class,
+		'rating'           => \ArtisanPack\LivewireUiComponents\View\Components\Rating::class,
+		'select'           => \ArtisanPack\LivewireUiComponents\View\Components\Select::class,
+		'select-group'     => \ArtisanPack\LivewireUiComponents\View\Components\SelectGroup::class,
+		'separator'        => \ArtisanPack\LivewireUiComponents\View\Components\Separator::class,
+		'signature'        => \ArtisanPack\LivewireUiComponents\View\Components\Signature::class,
+		'spotlight'        => \ArtisanPack\LivewireUiComponents\View\Components\Spotlight::class,
+		'stat'             => \ArtisanPack\LivewireUiComponents\View\Components\Stat::class,
+		'step'             => \ArtisanPack\LivewireUiComponents\View\Components\Step::class,
+		'steps'            => \ArtisanPack\LivewireUiComponents\View\Components\Steps::class,
+		'subheading'       => \ArtisanPack\LivewireUiComponents\View\Components\Subheading::class,
+		'swap'             => \ArtisanPack\LivewireUiComponents\View\Components\Swap::class,
+		'tab'              => \ArtisanPack\LivewireUiComponents\View\Components\Tab::class,
+		'table'            => \ArtisanPack\LivewireUiComponents\View\Components\Table::class,
+		'tabs'             => \ArtisanPack\LivewireUiComponents\View\Components\Tabs::class,
+		'tags'             => \ArtisanPack\LivewireUiComponents\View\Components\Tags::class,
+		'text'             => \ArtisanPack\LivewireUiComponents\View\Components\Text::class,
+		'textarea'         => \ArtisanPack\LivewireUiComponents\View\Components\Textarea::class,
+		'theme-toggle'     => \ArtisanPack\LivewireUiComponents\View\Components\ThemeToggle::class,
+		'timeline-item'    => \ArtisanPack\LivewireUiComponents\View\Components\TimelineItem::class,
+		'toast'            => \ArtisanPack\LivewireUiComponents\View\Components\Toast::class,
+		'toggle'           => \ArtisanPack\LivewireUiComponents\View\Components\Toggle::class,
+	];
 
-		$this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
+	/**
+	 * An array of the Livewire components this package provides.
+	 *
+	 * This array is the single source of truth for all Livewire components.
+	 *
+	 * @since 1.0.0
+	 * @var   array
+	 */
+	protected array $livewireComponents = [
+		'calendar'            => \ArtisanPack\LivewireUiComponents\View\Components\Calendar::class,
+		'event-modal-content' => \ArtisanPack\LivewireUiComponents\View\Components\EventModalContent::class,
+	];
 
-		$this->publishes([
-			__DIR__.'/../resources/js' => public_path('vendor/artisanpack-ui/js'),
-			__DIR__.'/../resources/css' => public_path('vendor/artisanpack-ui/css'),
-		], 'artisanpack-assets');
+	/**
+	 * Perform post-registration booting of services.
+	 *
+	 * This method is called after all other service providers have been registered,
+	 * meaning you have access to all other services that have been registered by the framework.
+	 *
+	 * @return void
+	 * @since  1.0.0
+	 */
+	public function boot(): void
+	{
+		$this->mergeConfiguration();
 
-		$this->publishes([
-			__DIR__.'/../config/livewire-ui-components.php' => config_path('livewire-ui-components.php'),
-		], 'artisanpack-config');
+		if ( $this->app->runningInConsole() ) {
+			// Tag the package's config file for our scaffold command to find.
+			$this->publishes(
+				[
+					__DIR__ . '/../config/livewire-ui-components.php' => config_path( 'artisanpack/livewire-ui-components.php' ),
+				],
+				'artisanpack-package-config'
+			);
+		}
 
+		$this->loadViewsFrom( __DIR__ . '/../resources/views', 'livewire-ui-components' );
+		$this->registerComponents();
+		$this->registerBladeDirectives();
+
+		$this->loadRoutesFrom( __DIR__ . '/../routes/web.php' );
+
+		$this->publishes(
+			[
+				__DIR__ . '/../resources/js'  => public_path( 'vendor/artisanpack-ui/js' ),
+				__DIR__ . '/../resources/css' => public_path( 'vendor/artisanpack-ui/css' ),
+			],
+			'artisanpack-assets'
+		);
 
 		// Publishing is only necessary when using the CLI.
-        if ($this->app->runningInConsole()) {
-            $this->bootForConsole();
-        }
-    }
-
-    /**
-     * Register all Blade components provided by the package.
-     *
-     * This method registers both aliased components and prefixed components
-     * based on the package configuration.
-     *
-     * @return void
-     * @since 1.0.0
-     */
-    public function registerComponents()
-    {
-        // Just rename <x-icon> provided by BladeUI Icons to <x-svg> to not collide with ours
-        Blade::component('BladeUI\Icons\Components\Icon', 'svg');
-
-        $prefix = config('livewire-ui-components.prefix');
-
-        // No matter if components has custom prefix or not,
-        // we also register below alias to avoid naming collision,
-        // because they are used inside some Mary's components itself.
-        Blade::component($prefix . 'button', Button::class);
-        Blade::component($prefix . 'card', Card::class);
-        Blade::component($prefix . 'icon', Icon::class);
-        Blade::component($prefix . 'input', Input::class);
-        Blade::component($prefix . 'list-item', ListItem::class);
-        Blade::component($prefix . 'modal', Modal::class);
-        Blade::component($prefix . 'menu', Menu::class);
-        Blade::component($prefix . 'menu-item', MenuItem::class);
-        Blade::component($prefix . 'header', Header::class);
-        Blade::component($prefix . 'pagination', Pagination::class);
-
-        // Blade
-        Blade::component($prefix . 'accordion', Accordion::class);
-        Blade::component($prefix . 'alert', Alert::class);
-        Blade::component($prefix . 'avatar', Avatar::class);
-        Blade::component($prefix . 'badge', Badge::class);
-        Blade::component($prefix . 'breadcrumbs', Breadcrumbs::class);
-        Blade::component($prefix . 'button', Button::class);
-        Blade::component($prefix . 'card', Card::class);
-        Blade::component($prefix . 'chart', Chart::class);
-        Blade::component($prefix . 'checkbox', Checkbox::class);
-		Blade::component($prefix . 'checkbox-group', CheckboxGroup::class);
-        Blade::component($prefix . 'choices', Choices::class);
-        Blade::component($prefix . 'choices-offline', ChoicesOffline::class);
-        Blade::component($prefix . 'code', Code::class);
-        Blade::component($prefix . 'collapse', Collapse::class);
-        Blade::component($prefix . 'colorpicker', Colorpicker::class);
-        Blade::component($prefix . 'datepicker', DatePicker::class);
-        Blade::component($prefix . 'datetime', DateTime::class);
-        Blade::component($prefix . 'diff', Diff::class);
-        Blade::component($prefix . 'drawer', Drawer::class);
-        Blade::component($prefix . 'dropdown', Dropdown::class);
-        Blade::component($prefix . 'editor', Editor::class);
-        Blade::component($prefix . 'errors', Errors::class);
-        Blade::component($prefix . 'file', File::class);
-        Blade::component($prefix . 'form', Form::class);
-        Blade::component($prefix . 'select-group', SelectGroup::class);
-        Blade::component($prefix . 'header', Header::class);
-        Blade::component($prefix . 'separator', Separator::class);
-        Blade::component($prefix . 'icon', Icon::class);
-        Blade::component($prefix . 'image-gallery', ImageGallery::class);
-        Blade::component($prefix . 'image-library', ImageLibrary::class);
-        Blade::component($prefix . 'image-slider', ImageSlider::class);
-        Blade::component($prefix . 'input', Input::class);
-        Blade::component($prefix . 'kbd', Kbd::class);
-        Blade::component($prefix . 'list-item', ListItem::class);
-        Blade::component($prefix . 'loading', Loading::class);
-        Blade::component($prefix . 'markdown', Markdown::class);
-        Blade::component($prefix . 'modal', Modal::class);
-        Blade::component($prefix . 'menu', Menu::class);
-        Blade::component($prefix . 'menu-item', MenuItem::class);
-        Blade::component($prefix . 'menu-separator', MenuSeparator::class);
-        Blade::component($prefix . 'menu-sub', MenuSub::class);
-        Blade::component($prefix . 'menu-title', MenuTitle::class);
-        Blade::component($prefix . 'main', Main::class);
-        Blade::component($prefix . 'nav', Nav::class);
-        Blade::component($prefix . 'pagination', Pagination::class);
-        Blade::component($prefix . 'password', Password::class);
-        Blade::component($prefix . 'pin', Pin::class);
-        Blade::component($prefix . 'popover', Popover::class);
-        Blade::component($prefix . 'progress', Progress::class);
-        Blade::component($prefix . 'progress-radial', ProgressRadial::class);
-        Blade::component($prefix . 'radio', Radio::class);
-		Blade::component($prefix . 'radio-group', RadioGroup::class);
-        Blade::component($prefix . 'group', Group::class);
-        Blade::component($prefix . 'range', Range::class);
-        Blade::component($prefix . 'rating', Rating::class);
-        Blade::component($prefix . 'select', Select::class);
-        Blade::component($prefix . 'signature', Signature::class);
-        Blade::component($prefix . 'spotlight', Spotlight::class);
-        Blade::component($prefix . 'stat', Stat::class);
-        Blade::component($prefix . 'steps', Steps::class);
-        Blade::component($prefix . 'step', Step::class);
-        Blade::component($prefix . 'swap', Swap::class);
-        Blade::component($prefix . 'table', Table::class);
-        Blade::component($prefix . 'tab', Tab::class);
-        Blade::component($prefix . 'tabs', Tabs::class);
-        Blade::component($prefix . 'tags', Tags::class);
-        Blade::component($prefix . 'textarea', Textarea::class);
-        Blade::component($prefix . 'timeline-item', TimelineItem::class);
-        Blade::component($prefix . 'theme-toggle', ThemeToggle::class);
-        Blade::component($prefix . 'toast', Toast::class);
-        Blade::component($prefix . 'toggle', Toggle::class);
-        Blade::component($prefix . 'carousel', Carousel::class);
-        Blade::component($prefix . 'heading', Heading::class);
-        Blade::component($prefix . 'subheading', Subheading::class);
-        Blade::component($prefix . 'text', Text::class);
-        Blade::component($prefix . 'link', Link::class);
-
-		// Livewire Components
-		Livewire::component($prefix . 'calendar', Calendar::class);
-		Livewire::component('event-modal-content', EventModalContent::class);
+		if ( $this->app->runningInConsole() ) {
+			$this->bootForConsole();
+		}
 	}
 
-    /**
-     * Register all Blade directives provided by the package.
-     *
-     * @return void
-     * @since 1.0.0
-     */
-    public function registerBladeDirectives(): void
-    {
-        $this->registerScopeDirective();
-    }
+	/**
+	 * Register all Blade components provided by the package.
+	 *
+	 * This method registers both standardized components and their deprecated
+	 * aliases for backwards compatibility. It respects the custom prefix
+	 * set in the package's configuration file.
+	 *
+	 * @return void
+	 * @since  1.0.0
+	 */
+	public function registerComponents()
+	{
+		// Rename <x-icon> from BladeUI Icons to prevent collision.
+		Blade::component( 'BladeUI\Icons\Components\Icon', 'svg' );
 
-    /**
-     * Register the @scope Blade directive for scoped slots.
-     *
-     * @return void
-     * @since 1.0.0
-     */
-    public function registerScopeDirective(): void
-    {
-        /**
-         * All credits from this blade directive goes to Konrad Kalemba.
-         * Just copied and modified for my very specific use case.
-         *
-         * https://github.com/konradkalemba/blade-components-scoped-slots
-         */
-        Blade::directive('scope', function ($expression) {
-            // Split the expression by `top-level` commas (not in parentheses)
-            $directiveArguments = preg_split("/,(?![^\(\(]*[\)\)])/", $expression);
-            $directiveArguments = array_map('trim', $directiveArguments);
+		// Get the user-defined prefix from the config, defaulting to 'artisanpack'.
+		$prefix = config( 'artisanpack.livewire-ui-components.prefix', 'artisanpack' );
 
-            [$name, $functionArguments] = $directiveArguments;
+		// Register all Blade components.
+		foreach ( $this->bladeComponents as $alias => $class ) {
+			// Build the component name with prefix (e.g., 'artisanpack-button').
+			// If prefix is empty, just use the alias.
+			$newName = $prefix ? $prefix . '-' . $alias : $alias;
 
-            // Build function "uses" to inject extra external variables
-            $uses = Arr::except(array_flip($directiveArguments), [$name, $functionArguments]);
-            $uses = array_flip($uses);
-            array_push($uses, '$__env');
-            array_push($uses, '$__bladeCompiler');
-            $uses = implode(',', $uses);
+			// Register the component with the correct name.
+			Blade::component( $class, $newName );
+		}
 
-            /**
-             *  Slot names can`t contains dot , eg: `user.city`.
-             *  So we convert `user.city` to `user___city`
-             *
-             *  Later, on component it will be replaced back.
-             */
-            $name = str_replace('.', '___', $name);
+		// Register all Livewire components.
+		foreach ( $this->livewireComponents as $alias => $class ) {
+			$componentName = $prefix ? $prefix . '-' . $alias : $alias;
+			Livewire::component( $componentName, $class );
+		}
+	}
 
-            return "<?php \$__bladeCompiler = \$__bladeCompiler ?? null; \$loop = null; \$__env->slot({$name}, function({$functionArguments}) use ({$uses}) { \$loop = (object) \$__env->getLoopStack()[0] ?>";
-        });
+	/**
+	 * Register all Blade directives provided by the package.
+	 *
+	 * @return void
+	 * @since  1.0.0
+	 */
+	public function registerBladeDirectives(): void
+	{
+		$this->registerScopeDirective();
+	}
 
-        Blade::directive('endscope', function () {
-            return '<?php }); ?>';
-        });
-    }
+	/**
+	 * Register the @scope Blade directive for scoped slots.
+	 *
+	 * @return void
+	 * @since  1.0.0
+	 */
+	public function registerScopeDirective(): void
+	{
+		/**
+		 * All credits from this blade directive goes to Konrad Kalemba.
+		 * Just copied and modified for my very specific use case.
+		 *
+		 * https://github.com/konradkalemba/blade-components-scoped-slots
+		 */
+		Blade::directive(
+			'scope',
+			function ( $expression ) {
+				// Split the expression by `top-level` commas (not in parentheses).
+				$directiveArguments = preg_split( "/,(?![^\(\(]*[\)\)])/", $expression );
+				$directiveArguments = array_map( 'trim', $directiveArguments );
 
-    /**
-     * Register any package services.
-     *
-     * This method is called before the boot method and registers
-     * the package's services in the service container.
-     *
-     * @return void
-     * @since 1.0.0
-     */
-    public function register(): void
-    {
-        $this->mergeConfigFrom(__DIR__ . '/../config/livewire-ui-components.php', 'livewire-ui-components');
+				[$name, $functionArguments] = $directiveArguments;
 
-        // Register the service the package provides.
-        $this->app->singleton('livewire-ui-components', function ($app) {
-            return new LivewireUiComponents();
-        });
-    }
+				// Build function "uses" to inject extra external variables.
+				$uses = Arr::except( array_flip( $directiveArguments ), [ $name, $functionArguments ] );
+				$uses = array_flip( $uses );
+				array_push( $uses, '$__env' );
+				array_push( $uses, '$__bladeCompiler' );
+				$uses = implode( ',', $uses );
 
-    /**
-     * Get the services provided by the provider.
-     *
-     * @return array The array of provided services.
-     * @since 1.0.0
-     */
-    public function provides()
-    {
-        return ['livewire-ui-components'];
-    }
+				/**
+				 * Slot names can`t contains dot , eg: `user.city`.
+				 * So we convert `user.city` to `user___city`
+				 *
+				 * Later, on component it will be replaced back.
+				 */
+				$name = str_replace( '.', '___', $name );
 
-    /**
-     * Console-specific booting.
-     *
-     * This method is called when the application is running in the console
-     * and handles publishing assets and registering commands.
-     *
-     * @return void
-     * @since 1.0.0
-     */
-    protected function bootForConsole(): void
-    {
-        // Publishing the configuration file.
-        $this->publishes([
-            __DIR__ . '/../config/livewire-ui-components.php' => config_path('livewire-ui-components.php'),
-        ], 'livewire-ui-components.config');
+				return "<?php \$__bladeCompiler = \$__bladeCompiler ?? null; \$loop = null; \$__env->slot({$name}, function({$functionArguments}) use ({$uses}) { \$loop = (object) \$__env->getLoopStack()[0] ?>";
+			}
+		);
 
-        $this->commands([LivewireUiComponentsInstallCommand::class, LivewireUiComponentsBootcampCommand::class, GenerateThemeCss::class,]);
-    }
+		Blade::directive(
+			'endscope',
+			function () {
+				return '<?php }); ?>';
+			}
+		);
+	}
+
+	/**
+	 * Register any package services.
+	 *
+	 * This method is called before the boot method and registers
+	 * the package's services in the service container.
+	 *
+	 * @return void
+	 * @since  1.0.0
+	 */
+	public function register(): void
+	{
+		$this->mergeConfigFrom( __DIR__ . '/../config/livewire-ui-components.php', 'artisanpack-livewire-ui-components-temp' );
+
+		// Register the service the package provides.
+		$this->app->singleton(
+			'livewire-ui-components',
+			function ( $app ) {
+				return new LivewireUiComponents();
+			}
+		);
+	}
+
+	/**
+	 * Get the services provided by the provider.
+	 *
+	 * @return array The array of provided services.
+	 * @since  1.0.0
+	 */
+	public function provides()
+	{
+		return [ 'livewire-ui-components' ];
+	}
+
+	/**
+	 * Console-specific booting.
+	 *
+	 * This method is called when the application is running in the console
+	 * and handles publishing assets and registering commands.
+	 *
+	 * @return void
+	 * @since  1.0.0
+	 */
+	protected function bootForConsole(): void
+	{
+		// Publishing the configuration file.
+		$this->publishes(
+			[
+				__DIR__ . '/../config/livewire-ui-components.php' => config_path( 'livewire-ui-components.php' ),
+			],
+			'livewire-ui-components.config'
+		);
+
+		$this->commands( [ LivewireUiComponentsInstallCommand::class,
+							 LivewireUiComponentsBootcampCommand::class,
+							 GenerateThemeCss::class,
+							 GenerateIdeHelperCommand::class,
+							 ] );
+	}
+
+	/**
+	 * Merges the package's default configuration with the user's customizations.
+	 *
+	 * This method ensures that the user's settings in `config/artisanpack.php`
+	 * take precedence over the package's default values.
+	 *
+	 * @since  2.0.0
+	 * @return void
+	 */
+	protected function mergeConfiguration(): void
+	{
+		// Get the package's default configuration.
+		$packageDefaults = config( 'artisanpack-livewire-ui-components-temp', [] );
+
+		// Get the user's custom configuration from config/artisanpack.php.
+		$userConfig = config( 'artisanpack.livewire-ui-components', [] );
+
+		// Merge them, with the user's config overwriting the defaults.
+		$mergedConfig = array_replace_recursive( $packageDefaults, $userConfig );
+
+		// Set the final, correctly merged configuration.
+		config( [ 'artisanpack.livewire-ui-components' => $mergedConfig ] );
+	}
 }
