@@ -14,13 +14,13 @@
  * @since      1.0.0
  */
 
-
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 use ArtisanPack\LivewireUiComponents\Styling\ColorGenerator;
+
 /**
  * Toast Class
  *
@@ -28,42 +28,60 @@ use ArtisanPack\LivewireUiComponents\Styling\ColorGenerator;
  *
  * @since 1.0.0
  */
-
 class Toast extends Component
 {
-    public function __construct(
-        public string $position = 'toast-top toast-end',
-        public ?string $color = null,
-        public ?string $colorAdjustment = null,
-    ) {
-    }
+	/**
+	 * Create a new component instance.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string   $position        The position of the toast. Default: 'toast-top toast-end'.
+	 * @param string|null $color        The color of the toast.
+	 * @param string|null $colorAdjustment The color adjustment (e.g., 'darken', 'lighten').
+	 * @param int      $duration        The default duration in milliseconds. Default: 3000.
+	 */
+	public function __construct(
+		public string $position = 'toast-top toast-end',
+		public ?string $color = null,
+		public ?string $colorAdjustment = null,
+		public int $duration = 3000
+	) {
+	}
 
-    /**
-     * Get color-specific CSS classes using ColorGenerator.
-     *
-     * @return array
-     * @since 1.1.0
-     */
-    public function getColorClasses(): array
-    {
-        if (!$this->color) {
-            return [];
-        }
+	/**
+	 * Get color-specific CSS classes using ColorGenerator.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array
+	 */
+	public function getColorClasses(): array
+	{
+		if ( ! $this->color ) {
+			return [];
+		}
 
-        $colorGenerator = new ColorGenerator();
-        
-        // Use ColorGenerator for color resolution
-        $colorClasses = $colorGenerator->resolveComponentColor(
-            $this->color, 
-            $this->colorAdjustment, 
-            'toast'
-        );
-        
-        return $colorClasses;
-    }
+		$colorGenerator = new ColorGenerator();
 
-    public function render(): View|Closure|string
-    {
-        return view('livewire-ui-components::components.toast');
-    }
+		// Use ColorGenerator for color resolution
+		$colorClasses = $colorGenerator->resolveComponentColor(
+			$this->color,
+			$this->colorAdjustment,
+			'toast'
+		);
+
+		return $colorClasses;
+	}
+
+	/**
+	 * Get the view / contents that represent the component.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return View|Closure|string
+	 */
+	public function render(): View|Closure|string
+	{
+		return view( 'livewire-ui-components::components.toast' );
+	}
 }

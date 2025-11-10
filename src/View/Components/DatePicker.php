@@ -137,7 +137,7 @@ class DatePicker extends Component
      * Get color-specific CSS classes using ColorGenerator.
      *
      * @return array
-     * @since 1.1.0
+     * @since 1.0.0
      */
     public function getColorClasses(): array
     {
@@ -157,7 +157,7 @@ class DatePicker extends Component
      * Get FlatPicker theme configuration.
      *
      * @return array
-     * @since 1.1.0
+     * @since 1.0.0
      */
     public function getFlatPickrThemeConfig(): array
     {
@@ -174,7 +174,7 @@ class DatePicker extends Component
      * Generate CSS custom properties for theming.
      *
      * @return string
-     * @since 1.1.0
+     * @since 1.0.0
      */
     public function getCustomCSSVariables(): string
     {
@@ -202,7 +202,7 @@ class DatePicker extends Component
      * Get font configuration classes.
      *
      * @return array
-     * @since 1.1.0
+     * @since 1.0.0
      */
     public function getFontClasses(): array
     {
@@ -218,7 +218,7 @@ class DatePicker extends Component
      * Get theme data attributes for the calendar.
      *
      * @return array
-     * @since 1.1.0
+     * @since 1.0.0
      */
     public function getThemeAttributes(): array
     {

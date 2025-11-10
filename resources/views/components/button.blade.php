@@ -1,3 +1,15 @@
+{{--
+    Tailwind JIT Safelist - DO NOT REMOVE
+    These classes are generated dynamically but need to be visible for Tailwind to generate them:
+    hover:bg-[var(--artisanpack-variant-hover-color)] hover:text-[var(--artisanpack-variant-hover-text)]
+    focus:bg-[var(--artisanpack-variant-focus-color)] focus:text-[var(--artisanpack-variant-focus-text)]
+    hover:bg-[var(--artisanpack-tailwind-hover-color)] hover:text-[var(--artisanpack-tailwind-hover-text)]
+    focus:bg-[var(--artisanpack-tailwind-focus-color)] focus:text-[var(--artisanpack-tailwind-focus-text)]
+    hover:bg-[var(--artisanpack-custom-hover-color)] hover:text-[var(--artisanpack-custom-hover-text)]
+    focus:bg-[var(--artisanpack-custom-focus-color)] focus:text-[var(--artisanpack-custom-focus-text)]
+    bg-[var(--artisanpack-tailwind-color)] border-[var(--artisanpack-tailwind-color)]
+    bg-[var(--artisanpack-custom-color)] border-[var(--artisanpack-custom-color)]
+--}}
 @if($link)
     <a href="{!! $link !!}"
 @else
@@ -8,9 +20,12 @@
     {{ $attributes->whereDoesntStartWith('class')->merge(['type' => 'button']) }}
     @php
         $colorClasses = $getColorClasses();
-        $baseClasses = ['btn', '!inline-flex', 'transition-all', 'duration-300'];
+        $baseClasses = ['btn', '!inline-flex', 'transition-colors', 'duration-200', 'ease-in-out'];
         $tooltipClass = $tooltip ? 'lg:tooltip ' . $tooltipPosition : '';
-        
+
+        // Add size classes
+        $baseClasses[] = $getSizeClasses();
+
         // Handle new color system
         if (!empty($colorClasses)) {
             // Add color classes from new system
@@ -26,10 +41,13 @@
             // Fall back to legacy variant classes
             $baseClasses[] = $getVariantClasses();
         }
-        
+
         if ($tooltipClass) {
             $baseClasses[] = $tooltipClass;
         }
+
+        // DEBUG: Uncomment to see what classes are being added
+        // dd($baseClasses, $colorClasses, $attributes->get('class'));
     @endphp
     {{ $attributes->class($baseClasses) }}
 

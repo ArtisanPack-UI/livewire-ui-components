@@ -1,0 +1,26 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - src
+
+    level: 8
+
+    checkMissingIterableValueType: false
+    checkGenericClassInNonGenericObjectType: false
+
+    excludePaths:
+        - src/View/Components/Examples/*
+
+    ignoreErrors:
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Builder#'
+        - '#Access to an undefined property Illuminate\\Database\\Eloquent\\Model#'
+        - '#Property .* does not accept .* but accepts .*#'
+
+    reportUnmatchedIgnoredErrors: false
+
+    parallel:
+        jobSize: 20
+        maximumNumberOfProcesses: 8
+        minimumNumberOfJobsPerProcess: 2

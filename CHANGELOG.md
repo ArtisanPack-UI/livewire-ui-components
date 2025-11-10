@@ -1,5 +1,42 @@
 # ArtisanPack UI Livewire UI Components
 
+## [1.0.0-beta.1] - 2025-11-09
+
+### Added
+- New profile component for user profile displays
+- New fieldset component for grouping form fields
+- Comprehensive testing framework using Pest PHP
+- Code style checking with PHP_CodeSniffer
+- Support for artisanpack-ui/core package for improved configuration handling
+- AI guidelines for development
+- Component name standardization across the package
+
+### Changed
+- **Button component**: Complete overhaul with improved functionality and consistency
+- **Toast component**: Enhanced accessibility support
+- **Drawer component**: Updated to support multiple interaction modes
+- **Tabs component**: Added extensive customization options
+- **Menu item component**: Improved icon/spinner spacing logic and added menu-item class
+
+### Fixed
+- Fatal error in the toast trait
+- Accessibility issues in dropdown component
+- Accessibility issues in profile component
+- Accessibility issues in sub menu component
+- Rendering issues with checkbox component
+- Rendering issues with radio component
+- Rendering issues with toggle component
+- Issues with input component
+- Issues with select component
+- Issues with textarea component
+
+### Infrastructure
+- Updated .gitlab-ci.yml configuration
+- Removed unnecessary development files from repository
+- Updated .gitattributes to exclude development files from releases
+- Updated .gitignore to prevent committing build artifacts
+- Enhanced documentation
+
 ## [0.6.0] - 2025-08-18
 - Updated rating component functionality and accessibility.
 - Added image slider and image gallery components.

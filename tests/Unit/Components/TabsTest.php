@@ -89,7 +89,7 @@ describe('Tabs Component', function () {
         test('returns horizontal label classes for horizontal orientation', function () {
             $component = new Tabs();
             
-            expect($component->getLabelClass())
+            expect($component->getFinalLabelClass())
                 ->toBe('font-semibold pb-1');
         });
 
@@ -97,10 +97,10 @@ describe('Tabs Component', function () {
             $componentLeft = new Tabs(orientation: 'vertical-left');
             $componentRight = new Tabs(orientation: 'vertical-right');
             
-            expect($componentLeft->getLabelClass())
+            expect($componentLeft->getFinalLabelClass())
                 ->toBe('font-semibold w-full px-3 py-2 md:pr-1 md:pl-1 md:py-2');
             
-            expect($componentRight->getLabelClass())
+            expect($componentRight->getFinalLabelClass())
                 ->toBe('font-semibold w-full px-3 py-2 md:pr-1 md:pl-1 md:py-2');
         });
     });
@@ -139,7 +139,7 @@ describe('Tabs Component', function () {
             );
             
             expect($component->getTabsContainerClass())->toBe('custom-container');
-            expect($component->getLabelClass())->toBe('custom-label');
+            expect($component->getFinalLabelClass())->toBe('custom-label');
             expect($component->getActiveClass())->toBe('custom-active');
             expect($component->getLabelDivClass())->toBe('custom-label-div');
         });
@@ -190,7 +190,7 @@ describe('Tabs Component', function () {
             );
             
             expect($component->getTabsContainerClass())->toBe('custom-tabs');
-            expect($component->getLabelClass())->toBe('custom-label');
+            expect($component->getFinalLabelClass())->toBe('custom-label');
             expect($component->getActiveClass())->toBe('custom-active');
             expect($component->getLabelDivClass())->toBe('custom-label-div');
         });

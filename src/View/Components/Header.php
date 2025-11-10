@@ -21,6 +21,7 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Str;
 use Illuminate\View\Component;
+
 /**
  * Header Class
  *
@@ -28,42 +29,82 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-
 class Header extends Component
 {
-    public string $anchor = '';
+	/**
+	 * Anchor link for the header.
+	 *
+	 * @since 1.0.0
+	 * @var   string
+	 */
+	public string $anchor = '';
 
-    public function __construct(
-        public ?string $title = null,
-        public ?string $subtitle = null,
-        public ?bool $separator = false,
-        public ?string $progressIndicator = null,
-        public string $progressIndicatorClass = "progress-primary",
-        public ?bool $withAnchor = false,
-        public ?string $size = 'text-2xl',
+	/**
+	 * Constructor
+	 *
+	 * Initializes the header component with its properties.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string|null $title                  Optional. The title text. Default null.
+	 * @param string|null $subtitle               Optional. The subtitle text. Default null.
+	 * @param bool        $separator              Optional. Whether to show a separator. Default false.
+	 * @param string|null $progressIndicator      Optional. The wire target for the progress indicator. Default null.
+	 * @param string      $progressIndicatorClass Optional. The class for the progress indicator. Default 'progress-primary'.
+	 * @param bool        $withAnchor             Optional. Whether to wrap the title in an anchor link. Default false.
+	 * @param string      $size                   Optional. The text size class. Default 'text-2xl'.
+	 * @param int         $level                  Optional. The HTML heading level (e.g., 2 for <h2>). Default 2.
+	 * @param string|null $icon                   Optional. The icon name. Default null.
+	 * @param string|null $iconClasses            Optional. Additional classes for the icon. Default null.
+	 * @param mixed       $middle                 Optional. Slot for the middle section. Default null.
+	 * @param mixed       $actions                Optional. Slot for the actions section. Default null.
+	 */
+	public function __construct(
+		public ?string $title = null,
+		public ?string $subtitle = null,
+		public ?bool $separator = false,
+		public ?string $progressIndicator = null,
+		public string $progressIndicatorClass = "progress-primary",
+		public ?bool $withAnchor = false,
+		public ?string $size = 'text-2xl',
+		public int $level = 2,
 
-        // Icon
-        public ?string $icon = null,
-        public ?string $iconClasses = null,
+		// Icon
+		public ?string $icon = null,
+		public ?string $iconClasses = null,
 
-        // Slots
-        public mixed $middle = null,
-        public mixed $actions = null,
-    ) {
-        $this->anchor = Str::slug($title);
-    }
+		// Slots
+		public mixed $middle = null,
+		public mixed $actions = null,
+	) {
+		$this->anchor = Str::slug( $title );
+	}
 
-    public function progressTarget(): ?string
-    {
-        if ($this->progressIndicator == 1) {
-            return $this->attributes->whereStartsWith('progress-indicator')->first();
-        }
+	/**
+	 * Get the progress indicator target.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string|null
+	 */
+	public function progressTarget(): ?string
+	{
+		if ( $this->progressIndicator == 1 ) {
+			return $this->attributes->whereStartsWith( 'progress-indicator' )->first();
+		}
 
-        return $this->progressIndicator;
-    }
+		return $this->progressIndicator;
+	}
 
-    public function render(): View|Closure|string
-    {
-        return view('livewire-ui-components::components.header');
-    }
+	/**
+	 * Get the view / contents that represent the component.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return \Illuminate\Contracts\View\View|\Closure|string
+	 */
+	public function render(): View|Closure|string
+	{
+		return view( 'livewire-ui-components::components.header' );
+	}
 }

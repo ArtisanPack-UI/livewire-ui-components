@@ -50,7 +50,7 @@ class Loading extends Component
             return $this->type;
         }
         
-        return config('livewire-ui-components.icons.loading.default_type', 'css');
+        return config( 'artisanpack.livewire-ui-components.icons.loading.default_type', 'css');
     }
 
     public function getLoadingIcon(): ?string
@@ -59,7 +59,7 @@ class Loading extends Component
             return $this->icon;
         }
         
-        return config('livewire-ui-components.icons.loading.spinner');
+        return config( 'artisanpack.livewire-ui-components.icons.loading.spinner');
     }
 
     public function shouldUseSvg(): bool

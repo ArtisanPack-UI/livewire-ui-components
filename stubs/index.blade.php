@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\User;
+use Modules\Users\Models\User;
 use Illuminate\Support\Collection;
 use Livewire\Volt\Component;
 use ArtisanPack\LivewireUiComponents\Traits\Toast;

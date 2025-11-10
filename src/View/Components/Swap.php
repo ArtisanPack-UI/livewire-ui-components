@@ -33,12 +33,12 @@ class Swap extends Component
     public string $uuid;
 
     public function __construct(
-        public ?string $id = null,
-        public ?string $true = null,
-        public ?string $false = null,
-        public ?string $trueIcon = 'o-sun',
+        public ?string $id        = null,
+        public ?string $true      = null,
+        public ?string $false     = null,
+        public ?string $trueIcon  = 'o-sun',
         public ?string $falseIcon = 'o-moon',
-        public ?string $iconSize = "h-5 w-5",
+        public ?string $iconSize  = "h-5 w-5",
     ) {
         $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
     }
