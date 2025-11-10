@@ -347,8 +347,8 @@ prepare_release_description:
 
         # Define markers for the start and end of the desired section in CHANGELOG.md
         # Assumes CHANGELOG.md headings are like '## [X.Y.Z]'
-        START_MARKER="## \\[${RELEASE_VERSION}\\]"
-        END_MARKER="## \\[[0-9]*\\.[0-9]*\\.[0-9]*\\]" # Matches the next version heading
+        START_MARKER="## \\[${RELEASE_VERSION}\\].*"
+        END_MARKER="## \\[[^]]*\\].*" # Matches the next version heading
         echo "START_MARKER: ${START_MARKER}"
         echo "END_MARKER: ${END_MARKER}"
 
