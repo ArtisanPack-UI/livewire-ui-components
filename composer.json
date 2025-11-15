@@ -2,7 +2,7 @@
     "name": "artisanpack-ui/livewire-ui-components",
     "description": "A Livewire UI component library for the TALL stack, forked from MaryUI and adapted for the ArtisanPack UI ecosystem.",
     "license": "MIT",
-    "version": "1.0-beta1",
+    "version": "1.0-beta2",
     "authors": [
         {
             "name": "Jacob Martella",
@@ -37,11 +37,11 @@
         "laravel/prompts": "^0|^1",
         "blade-ui-kit/blade-heroicons": "^2.0",
         "livewire/livewire": "^3.6",
-        "artisanpack-ui/accessibility": "^1.1",
+        "artisanpack-ui/accessibility": "^2.0.0",
         "artisanpack-ui/security": "^1.0",
         "owenvoke/blade-fontawesome": "^2.9",
         "artisanpack-ui/core": "^1.0",
-        "artisanpack-ui/icons": "^1.0"
+        "artisanpack-ui/icons": "^2.0"
     },
     "require-dev": {
         "orchestra/testbench": "^8|^9|^10",
@@ -63,9 +63,9 @@
         "ext-dom": "*",
         "ext-libxml": "*",
         "brianium/paratest": "^7.0",
-        "phpstan/phpstan": "^1.10",
-        "larastan/larastan": "^2.0",
-        "rector/rector": "^1.0",
+        "phpstan/phpstan": "^2.0",
+        "larastan/larastan": "^3.0",
+        "rector/rector": "^2.0",
         "infection/infection": "^0.29"
     },
     "autoload": {

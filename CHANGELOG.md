@@ -1,5 +1,18 @@
 # ArtisanPack UI Livewire UI Components
 
+## [1.0.0-beta.2] - 2025-11-15
+
+### Changed
+- Updated artisanpack-ui/accessibility to ^2.0.0 for Laravel 12 compatibility
+- Updated artisanpack-ui/icons to ^2.0 for Laravel 12 compatibility
+- Updated phpstan/phpstan to ^2.0
+- Updated larastan/larastan to ^3.0 for Laravel 12 support
+- Updated rector/rector to ^2.0 for PHPStan 2.0 compatibility
+
+### Infrastructure
+- Added support for Laravel 12
+- Updated development tooling dependencies for improved code analysis
+
 ## [1.0.0-beta.1] - 2025-11-09
 
 ### Added
