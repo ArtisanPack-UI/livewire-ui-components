@@ -37,11 +37,11 @@
         "laravel/prompts": "^0|^1",
         "blade-ui-kit/blade-heroicons": "^2.0",
         "livewire/livewire": "^3.6",
-        "artisanpack-ui/accessibility": "^1.1",
+        "artisanpack-ui/accessibility": "^2.0.0",
         "artisanpack-ui/security": "^1.0",
         "owenvoke/blade-fontawesome": "^2.9",
         "artisanpack-ui/core": "^1.0",
-        "artisanpack-ui/icons": "^1.0"
+        "artisanpack-ui/icons": "^2.0"
     },
     "require-dev": {
         "orchestra/testbench": "^8|^9|^10",
