@@ -46,6 +46,7 @@ class Button extends Component
      * @param  string|null  $label  Optional. Text label for the button. Default null.
      * @param  string|null  $icon  Optional. Icon to display before the label. Default null.
      * @param  string|null  $iconRight  Optional. Icon to display after the label. Default null.
+     * @param  string|null  $loading  Optional. Text or icon to display during loading state (auto-detected). Default null.
      * @param  string|null  $spinner  Optional. Spinner target for loading states. Default null.
      * @param  string|null  $link  Optional. URL to convert the button to a link. Default null.
      * @param  bool|null  $external  Optional. Whether the link should open in a new tab. Default false.
@@ -69,6 +70,7 @@ class Button extends Component
         public ?string $label = null,
         public ?string $icon = null,
         public ?string $iconRight = null,
+        public ?string $loading = null,
         public ?string $spinner = null,
         public ?string $link = null,
         public ?bool $external = false,
@@ -194,6 +196,25 @@ class Button extends Component
         }
 
         return $this->spinner;
+    }
+
+    /**
+     * Determine if the loading value is an icon.
+     *
+     * Icons are identified by common prefixes: o-, s-, fa-, c-, etc.
+     *
+     * @since 1.0.0
+     *
+     * @return bool True if the loading value is an icon, false otherwise.
+     */
+    public function isLoadingIcon(): bool
+    {
+        if (!$this->loading) {
+            return false;
+        }
+
+        // Check if it starts with common icon prefixes
+        return preg_match('/^(o-|s-|fa-|c-|heroicon-|icon-)/', $this->loading) === 1;
     }
 
     public function render(): View
