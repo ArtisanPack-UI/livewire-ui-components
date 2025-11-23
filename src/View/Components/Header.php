@@ -86,7 +86,7 @@ class Header extends Component
      */
     public function progressTarget(): ?string
     {
-        if (1 == $this->progressIndicator) {
+        if (true === $this->progressIndicator) {
             return $this->attributes->whereStartsWith('progress-indicator')->first();
         }
 

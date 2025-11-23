@@ -21,6 +21,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Blade;
+use InvalidArgumentException;
 
 /**
  * ToastException Class
@@ -270,6 +271,8 @@ class ToastException extends Exception
     public function render(Request $request): JsonResponse|false
     {
         if ($request->hasHeader('x-livewire')) {
+            $validatedIcon = $this->validateIconName($this->icon);
+
             return response()->json([
                 'toast' => [
                     'type'        => $this->type,
@@ -277,7 +280,7 @@ class ToastException extends Exception
                     'description' => $this->description,
 
                     'position' => $this->position,
-                    'icon'     => Blade::render("<x-artisanpack-icon class='w-7 h-7' name='".$this->icon."' />"),
+                    'icon'     => Blade::render("<x-artisanpack-icon class='w-7 h-7' :name=\"\$iconName\" />", ['iconName' => $validatedIcon]),
                     'css'      => $this->css,
                     'timeout'  => $this->timeout,
                 ],
@@ -286,5 +289,28 @@ class ToastException extends Exception
         }
 
         return false;
+    }
+
+    /**
+     * Validate and sanitize icon name to prevent XSS.
+     *
+     * @since 1.0.0
+     *
+     * @param  string  $icon  The icon name to validate.
+     *
+     * @return string The validated icon name.
+     *
+     * @throws InvalidArgumentException If the icon name is invalid.
+     */
+    private function validateIconName(string $icon): string
+    {
+        // Allow only alphanumeric characters, hyphens, and underscores
+        if (!preg_match('/^[a-zA-Z0-9_-]+$/', $icon)) {
+            throw new InvalidArgumentException(
+                "Invalid icon name: '{$icon}'. Icon names must contain only alphanumeric characters, hyphens, and underscores."
+            );
+        }
+
+        return $icon;
     }
 }

@@ -189,7 +189,7 @@ class Button extends Component
      */
     public function spinnerTarget(): ?string
     {
-        if (1 == $this->spinner) {
+        if ("1" === $this->spinner) {
             return $this->attributes->whereStartsWith('wire:click')->first();
         }
 

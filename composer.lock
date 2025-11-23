@@ -6751,16 +6751,16 @@
         },
         {
             "name": "artisanpack-ui/code-style-pint",
-            "version": "1.0.0",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/jacob-martella-web-design/artisanpack-ui/artisanpack-ui-code-style-pint.git",
-                "reference": "198a9e02ea022c17c2a80692cf4423ecf28b43ee"
+                "reference": "31997861d7564c044a7c7b93df792cafcb93dab6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/jacob-martella-web-design%2Fartisanpack-ui%2Fartisanpack-ui-code-style-pint/repository/archive.zip?sha=198a9e02ea022c17c2a80692cf4423ecf28b43ee",
-                "reference": "198a9e02ea022c17c2a80692cf4423ecf28b43ee",
+                "url": "https://gitlab.com/api/v4/projects/jacob-martella-web-design%2Fartisanpack-ui%2Fartisanpack-ui-code-style-pint/repository/archive.zip?sha=31997861d7564c044a7c7b93df792cafcb93dab6",
+                "reference": "31997861d7564c044a7c7b93df792cafcb93dab6",
                 "shasum": ""
             },
             "require": {
@@ -6768,6 +6768,7 @@
                 "php": "^8.2"
             },
             "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.0",
                 "laravel/pint": "^1.0",
                 "orchestra/testbench": "^9.0|^10.0",
                 "pestphp/pest": "^3.8",
@@ -6806,9 +6807,9 @@
             ],
             "support": {
                 "issues": "https://gitlab.com/jacob-martella-web-design/artisanpack-ui/artisanpack-ui-code-style-pint/-/issues",
-                "source": "https://gitlab.com/jacob-martella-web-design/artisanpack-ui/artisanpack-ui-code-style-pint/-/tree/v1.0.0"
+                "source": "https://gitlab.com/jacob-martella-web-design/artisanpack-ui/artisanpack-ui-code-style-pint/-/tree/v1.1.0"
             },
-            "time": "2025-11-21T15:27:31+00:00"
+            "time": "2025-11-23T21:13:56+00:00"
         },
         {
             "name": "brianium/paratest",

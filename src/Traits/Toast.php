@@ -18,6 +18,7 @@ declare(strict_types=1);
 namespace ArtisanPack\LivewireUiComponents\Traits;
 
 use Illuminate\Support\Facades\Blade;
+use InvalidArgumentException;
 
 /**
  * Toast Trait
@@ -54,12 +55,14 @@ trait Toast
         ?int $duration = null,
         ?string $redirectTo = null,
     ) {
+        $validatedIcon = $this->validateIconName($icon);
+
         $toast = [
             'type'        => $type,
             'title'       => $title,
             'description' => $description,
             'position'    => $position,
-            'icon'        => Blade::render("<x-artisanpack-icon class='w-7 h-7' name='".$icon."' />"),
+            'icon'        => Blade::render("<x-artisanpack-icon class='w-7 h-7' :name=\"\$iconName\" />", ['iconName' => $validatedIcon]),
             'css'         => $css,
             'duration'    => $duration,
         ];
@@ -180,5 +183,28 @@ trait Toast
         ?string $redirectTo = null,
     ) {
         return $this->toast('info', $title, $description, $position, $icon, $css, $duration, $redirectTo);
+    }
+
+    /**
+     * Validate and sanitize icon name to prevent XSS.
+     *
+     * @since 1.0.0
+     *
+     * @param  string  $icon  The icon name to validate.
+     *
+     * @return string The validated icon name.
+     *
+     * @throws InvalidArgumentException If the icon name is invalid.
+     */
+    private function validateIconName(string $icon): string
+    {
+        // Allow only alphanumeric characters, hyphens, and underscores
+        if (!preg_match('/^[a-zA-Z0-9_-]+$/', $icon)) {
+            throw new InvalidArgumentException(
+                "Invalid icon name: '{$icon}'. Icon names must contain only alphanumeric characters, hyphens, and underscores."
+            );
+        }
+
+        return $icon;
     }
 }

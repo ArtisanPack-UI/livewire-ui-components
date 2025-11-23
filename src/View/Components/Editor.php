@@ -19,6 +19,7 @@ namespace ArtisanPack\LivewireUiComponents\View\Components;
 
 use Closure;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Js;
 use Illuminate\View\Component;
 
 /**
@@ -70,7 +71,7 @@ class Editor extends Component
 
         $setup['plugins'] = str('advlist autolink lists link image table quickbars ')->append($this->config['plugins'] ?? '');
 
-        return str(json_encode($setup))->trim('{}')->replace('"', "'")->toString();
+        return str(Js::from($setup)->toHtml())->trim('{}')->toString();
     }
 
     public function modelName(): ?string

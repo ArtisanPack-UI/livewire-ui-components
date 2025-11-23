@@ -45,7 +45,7 @@ class GenerateThemeCss extends Command
     /**
      * Execute the console command.
      *
-     * @param  \ArtisanPackUI\LivewireUIComponents\Styling\ColorGenerator  $colorGenerator  The color generator instance.
+     * @param  \ArtisanPack\LivewireUiComponents\Styling\ColorGenerator  $colorGenerator  The color generator instance.
      *
      * @since  1.0.0
      */

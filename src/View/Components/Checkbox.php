@@ -59,7 +59,7 @@ class Checkbox extends Component
     public function __construct(
         public ?string $id = null,
         public ?string $label = null,
-        public mixed $value = null, // [CHANGED] Added value prop
+        public mixed $value = null,
         public ?bool $right = false,
         public ?string $hint = null,
         public ?string $hintClass = 'fieldset-label',
