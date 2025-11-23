@@ -37,7 +37,7 @@ class Card extends Component
         public ?string $subtitle = null,
         public ?bool $separator = false,
         public ?bool $shadow = false,
-        public ?string $progressIndicator = null,
+        public string|bool|null $progressIndicator = null,
         public ?string $figurePosition = 'top', // New prop for figure position
 
         // Slots
