@@ -1,26 +1,26 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Avatar
  *
  * This file contains the Avatar class for the ArtisanPack UI Livewire UI Components package.
  *
- * @package    ArtisanPack\LivewireUiComponents\View
- * @subpackage Components
  * @author     Jacob Martella
  * @copyright  2023 Jacob Martella
  * @license    MIT
+ *
  * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
  * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
  * @since      1.0.0
  */
 
-
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
-use Closure;
+use ArtisanPack\LivewireUiComponents\Styling\ColorGenerator;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
-use ArtisanPack\LivewireUiComponents\Styling\ColorGenerator;
+
 /**
  * Avatar Class
  *
@@ -28,7 +28,6 @@ use ArtisanPack\LivewireUiComponents\Styling\ColorGenerator;
  *
  * @since 1.0.0
  */
-
 class Avatar extends Component
 {
     public string $uuid;
@@ -38,9 +37,13 @@ class Avatar extends Component
      * @param  ?string  $alt  The HTML `alt` attribute
      * @param  ?string  $placeholder  The placeholder of the avatar.
      * @param  ?string  $title  The title text displayed beside the avatar.
+     *
      * @slot  ?string  $title  The title text displayed beside the avatar.
+     *
      * @param  ?string  $subtitle  The subtitle text displayed beside the avatar.
+     *
      * @slot  ?string  $subtitle The subtitle text displayed beside the avatar.
+     *
      * @param  ?string  $color  Color variant, Tailwind color, or hex code for placeholder/border.
      * @param  ?string  $colorAdjustment  Background adjustment (lighter, darker, transparent, subtle).
      */
@@ -54,33 +57,32 @@ class Avatar extends Component
 
         // Slots
         public ?string $title = null,
-        public ?string $subtitle = null
+        public ?string $subtitle = null,
 
     ) {
-        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+        $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
     }
 
     /**
      * Get color-specific CSS classes using ColorGenerator.
      *
-     * @return array
      * @since 1.0.0
      */
     public function getColorClasses(): array
     {
-        if (!$this->color) {
+        if (! $this->color) {
             return [];
         }
 
-        $colorGenerator = new ColorGenerator();
-        
+        $colorGenerator = new ColorGenerator;
+
         // Use ColorGenerator for color resolution
         $colorClasses = $colorGenerator->resolveComponentColor(
-            $this->color, 
-            $this->colorAdjustment, 
-            'avatar'
+            $this->color,
+            $this->colorAdjustment,
+            'avatar',
         );
-        
+
         return $colorClasses;
     }
 

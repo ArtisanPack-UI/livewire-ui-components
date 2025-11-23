@@ -1,15 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
 
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
 use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
+use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
 use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
 use ArtisanPack\LivewireUiComponents\View\Components\Breadcrumbs;
+use Error;
+use RuntimeException;
 
 /**
  * Comprehensive unit tests for the Breadcrumbs component.
- * 
+ *
  * Auto-generated test class that extends ComponentTestCase to inherit
  * common testing patterns and implements component-specific tests.
  */
@@ -18,26 +22,28 @@ class BreadcrumbsComponentTest extends ComponentTestCase
     protected string $componentClass = Breadcrumbs::class;
 
     protected array $defaultProperties = [
-            'items' => [],
-            'separator' => 'o-chevron-right',
-            'linkItemClass' => 'hover:underline text-sm',
-            'textItemClass' => 'text-sm',
-            'iconClass' => 'h-4 w-4',
-            'separatorClass' => 'h-3 w-3 mx-1 text-base-content/40',
-            'noWireNavigate' => false
-        ];
+        'items'          => [],
+        'separator'      => 'o-chevron-right',
+        'linkItemClass'  => 'hover:underline text-sm',
+        'textItemClass'  => 'text-sm',
+        'iconClass'      => 'h-4 w-4',
+        'separatorClass' => 'h-3 w-3 mx-1 text-base-content/40',
+        'noWireNavigate' => false,
+    ];
 
     protected array $requiredProperties = [];
 
     public function test_breadcrumbs_string_properties(): void
     {
         $stringProperties = ['id', 'separator', 'linkItemClass', 'textItemClass', 'iconClass', 'separatorClass'];
-        $testValues = ComponentDataFactory::sampleTexts();
-        
+        $testValues       = ComponentDataFactory::sampleTexts();
+
         foreach ($stringProperties as $property) {
             foreach ($testValues as $value) {
-                if (empty($value)) continue; // Skip empty values for some properties
-                
+                if (empty($value)) {
+                    continue;
+                } // Skip empty values for some properties
+
                 $component = $this->createComponent([$property => $value]);
                 $this->assertEquals($value, $component->$property);
             }
@@ -47,11 +53,11 @@ class BreadcrumbsComponentTest extends ComponentTestCase
     public function test_breadcrumbs_boolean_properties(): void
     {
         $booleanProperties = ['noWireNavigate'];
-        
+
         foreach ($booleanProperties as $property) {
             $component = $this->createComponent([$property => true]);
             $this->assertTrue($component->$property);
-            
+
             $component = $this->createComponent([$property => false]);
             $this->assertFalse($component->$property);
         }
@@ -60,8 +66,8 @@ class BreadcrumbsComponentTest extends ComponentTestCase
     public function test_breadcrumbs_array_properties(): void
     {
         $arrayProperties = ['items'];
-        $testArrays = ComponentDataFactory::arrayData();
-        
+        $testArrays      = ComponentDataFactory::arrayData();
+
         foreach ($arrayProperties as $property) {
             foreach ($testArrays as $array) {
                 $component = $this->createComponent([$property => $array]);
@@ -79,7 +85,7 @@ class BreadcrumbsComponentTest extends ComponentTestCase
                 $result = $component->tooltip();
                 // Add specific assertions based on expected return type
                 $this->assertNotNull($result);
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Method requires attributes or context');
@@ -89,7 +95,7 @@ class BreadcrumbsComponentTest extends ComponentTestCase
         }
     }
 
-    public function test_breadcrumbs_tooltipPosition_method(): void
+    public function test_breadcrumbs_tooltip_position_method(): void
     {
         $component = $this->createComponent();
 
@@ -98,7 +104,7 @@ class BreadcrumbsComponentTest extends ComponentTestCase
                 $result = $component->tooltipPosition();
                 // Add specific assertions based on expected return type
                 $this->assertNotNull($result);
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Method requires attributes or context');
@@ -111,7 +117,7 @@ class BreadcrumbsComponentTest extends ComponentTestCase
     public function test_breadcrumbs_renders_successfully(): void
     {
         $component = $this->createComponent();
-        $view = $component->render();
+        $view      = $component->render();
 
         try {
             $html = $view->render();
@@ -121,7 +127,7 @@ class BreadcrumbsComponentTest extends ComponentTestCase
                 $this->markTestSkipped('Component requires slots or additional data for rendering');
             }
             throw $e;
-        } catch (\Error $e) {
+        } catch (Error $e) {
             if (str_contains($e->getMessage(), 'Call to a member function') &&
                 str_contains($e->getMessage(), 'on null')) {
                 $this->markTestSkipped('Component requires attributes or context for rendering');
@@ -136,7 +142,7 @@ class BreadcrumbsComponentTest extends ComponentTestCase
     public function test_breadcrumbs_accessibility_compliance(): void
     {
         $component = $this->createComponent();
-        $view = $component->render();
+        $view      = $component->render();
 
         try {
             $html = $view->render();
@@ -146,7 +152,7 @@ class BreadcrumbsComponentTest extends ComponentTestCase
                 $this->markTestSkipped('Component requires slots or additional data for rendering');
             }
             throw $e;
-        } catch (\Error $e) {
+        } catch (Error $e) {
             if (str_contains($e->getMessage(), 'Call to a member function') &&
                 str_contains($e->getMessage(), 'on null')) {
                 $this->markTestSkipped('Component requires attributes or context for rendering');
@@ -156,7 +162,7 @@ class BreadcrumbsComponentTest extends ComponentTestCase
 
         $validation = TestHelpers::validateHtmlStructure($html);
         $this->assertTrue($validation['is_valid'],
-            'Breadcrumbs should have valid HTML structure. Issues: ' . implode(', ', $validation['issues'])
+            'Breadcrumbs should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
         );
     }
 
@@ -166,7 +172,7 @@ class BreadcrumbsComponentTest extends ComponentTestCase
 
         foreach ($xssPayloads as $payload) {
             $component = $this->createComponent(['label' => $payload]);
-            $view = $component->render();
+            $view      = $component->render();
 
             try {
                 $html = $view->render();
@@ -176,7 +182,7 @@ class BreadcrumbsComponentTest extends ComponentTestCase
                     $this->markTestSkipped('Component requires slots or additional data for rendering');
                 }
                 throw $e;
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Component requires attributes or context for rendering');
@@ -194,9 +200,9 @@ class BreadcrumbsComponentTest extends ComponentTestCase
         try {
             $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
             $this->assertLessThan(100, $performance['average_time'],
-                'Breadcrumbs rendering should be under 100ms on average'
+                'Breadcrumbs rendering should be under 100ms on average',
             );
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             if (str_contains($e->getMessage(), 'requires slots') ||
                 str_contains($e->getMessage(), 'requires additional context')) {
                 $this->markTestSkipped($e->getMessage());

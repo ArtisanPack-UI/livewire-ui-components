@@ -1,14 +1,15 @@
 <?php
+
+declare(strict_types=1);
 /**
  * ImageSlider
  *
  * This file contains the ImageSlider class for the ArtisanPack UI Livewire UI Components package.
  *
- * @package    ArtisanPack\LivewireUiComponents\View
- * @subpackage Components
  * @author     Jacob Martella
  * @copyright  2023 Jacob Martella
  * @license    MIT
+ *
  * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
  * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
  * @since      1.0.0
@@ -44,9 +45,9 @@ class ImageSlider extends Component
         public int $transitionDuration = 300,   // Transition duration in ms
         public bool $showCounter = false,       // Show "X of Y" counter
         public bool $enableLightbox = true,     // Enable PhotoSwipe lightbox
-        public string $aspectRatio = '16:9'     // Image container aspect ratio
+        public string $aspectRatio = '16:9',     // Image container aspect ratio
     ) {
-        $this->uuid = "artisanpack-slider-" . md5(serialize($this)) . ($id ? "-{$id}" : '');
+        $this->uuid = 'artisanpack-slider-'.md5(serialize($this)).($id ? "-{$id}" : '');
     }
 
     /**
@@ -56,11 +57,11 @@ class ImageSlider extends Component
     {
         return match ($this->aspectRatio) {
             'square', '1:1' => 'aspect-square',
-            '16:9' => 'aspect-video',
-            '4:3' => 'aspect-[4/3]',
-            '3:4' => 'aspect-[3/4]',
-            '21:9' => 'aspect-[21/9]',
-            '2:1' => 'aspect-[2/1]',
+            '16:9'  => 'aspect-video',
+            '4:3'   => 'aspect-[4/3]',
+            '3:4'   => 'aspect-[3/4]',
+            '21:9'  => 'aspect-[21/9]',
+            '2:1'   => 'aspect-[2/1]',
             default => 'aspect-video'
         };
     }
@@ -71,7 +72,7 @@ class ImageSlider extends Component
     public function getTransitionClass(): string
     {
         return match ($this->transition) {
-            'fade' => 'transition-opacity',
+            'fade'  => 'transition-opacity',
             'slide' => 'transition-transform',
             default => 'transition-transform'
         };

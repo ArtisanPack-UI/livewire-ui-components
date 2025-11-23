@@ -156,11 +156,66 @@ You can combine sizes with any color variant:
 <!-- Disabled Button -->
 <x-artisanpack-button disabled>Disabled</x-artisanpack-button>
 
-<!-- Loading Button -->
-<x-artisanpack-button loading>Loading</x-artisanpack-button>
-
 <!-- Active Button -->
-<x-artisanpack-button active>Active</x-artisanpack-button>
+<x-artisanpack-button class="btn-active">Active</x-artisanpack-button>
+```
+
+### Button with Loading States
+
+The button component provides powerful loading state management with several options:
+
+#### Basic Spinner
+
+Show a spinner during Livewire actions using the `spinner` prop:
+
+```php
+<!-- Auto-detect wire:click action (use spinner="1") -->
+<x-artisanpack-button wire:click="save" spinner="1">
+    Save
+</x-artisanpack-button>
+
+<!-- Explicit spinner target -->
+<x-artisanpack-button wire:click="processData" spinner="processData">
+    Process Data
+</x-artisanpack-button>
+```
+
+#### Custom Loading Text
+
+Replace button content with custom text during loading:
+
+```php
+<x-artisanpack-button wire:click="save" spinner="save" loading="Saving...">
+    Save Changes
+</x-artisanpack-button>
+```
+
+#### Custom Loading Icon
+
+Display a custom icon during loading (replaces the spinner):
+
+```php
+<x-artisanpack-button wire:click="upload" spinner="upload" loading="o-arrow-up-tray">
+    Upload File
+</x-artisanpack-button>
+```
+
+The `loading` prop accepts any icon name (o-, s-, fa-, c-, heroicon-, etc.).
+
+#### Spinner Positioning
+
+The spinner appears on the left by default, but moves to the right when using `icon-right`:
+
+```php
+<!-- Spinner on the left -->
+<x-artisanpack-button wire:click="save" spinner="save">
+    Save
+</x-artisanpack-button>
+
+<!-- Spinner on the right -->
+<x-artisanpack-button wire:click="save" spinner="save" icon-right="o-arrow-right">
+    Next
+</x-artisanpack-button>
 ```
 
 ### Button as Link
@@ -222,7 +277,8 @@ You can combine sizes with any color variant:
 | `label` | string | `null` | Optional text label for the button |
 | `icon` | string | `null` | Icon to display before the label |
 | `iconRight` | string | `null` | Icon to display after the label |
-| `spinner` | string | `null` | Spinner target for loading states |
+| `loading` | string | `null` | Text or icon to display during loading state (auto-detected if icon name) |
+| `spinner` | string | `null` | Spinner target for loading states (use "1" to auto-detect wire:click) |
 | `link` | string | `null` | URL to convert the button to a link (renders as `<a>` tag) |
 | `external` | boolean | `false` | Whether the link should open in a new tab |
 | `noWireNavigate` | boolean | `false` | Disable wire:navigate for links |

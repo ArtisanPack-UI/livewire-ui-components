@@ -1,25 +1,26 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Markdown
  *
  * This file contains the Markdown class for the ArtisanPack UI Livewire UI Components package.
  *
- * @package    ArtisanPack\LivewireUiComponents\View
- * @subpackage Components
  * @author     Jacob Martella
  * @copyright  2023 Jacob Martella
  * @license    MIT
+ *
  * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
  * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
  * @since      1.0.0
  */
-
 
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
+
 /**
  * Markdown Class
  *
@@ -27,7 +28,6 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-
 class Markdown extends Component
 {
     public string $uuid;
@@ -49,28 +49,18 @@ class Markdown extends Component
         public ?bool $omitError = false,
         public ?bool $firstErrorOnly = false,
     ) {
-        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+        $this->uuid      = 'artisanpack'.md5(serialize($this)).$id;
         $this->uploadUrl = route('artisanpack.upload', absolute: false);
-    }
-
-    public function modelName(): ?string
-    {
-        return $this->attributes->whereStartsWith('wire:model')->first();
-    }
-
-    public function errorFieldName(): ?string
-    {
-        return $this->errorField ?? $this->modelName();
     }
 
     public function setup(): string
     {
         $setup = array_merge([
             'spellChecker' => false,
-            'autoSave' => false,
-            'uploadImage' => true,
-            'imageAccept' => 'image/png, image/jpeg, image/gif, image/avif',
-            'toolbar' => [
+            'autoSave'     => false,
+            'uploadImage'  => true,
+            'imageAccept'  => 'image/png, image/jpeg, image/gif, image/avif',
+            'toolbar'      => [
                 'heading',
                 'bold',
                 'italic',
@@ -87,7 +77,7 @@ class Markdown extends Component
                 'table',
                 '|',
                 'preview',
-                'side-by-side'
+                'side-by-side',
             ],
         ], $this->config);
 
@@ -96,10 +86,20 @@ class Markdown extends Component
         $table = "{ 'title' : 'Table', 'name' : 'myTable', 'action' : EasyMDE.drawTable, 'className' : 'fa fa-table' }";
 
         return str(json_encode($setup))
-            ->replace("\"", "'")
+            ->replace('"', "'")
             ->trim('{}')
             ->replace("'table'", $table)
             ->toString();
+    }
+
+    public function modelName(): ?string
+    {
+        return $this->attributes->whereStartsWith('wire:model')->first();
+    }
+
+    public function errorFieldName(): ?string
+    {
+        return $this->errorField ?? $this->modelName();
     }
 
     public function render(): View|Closure|string

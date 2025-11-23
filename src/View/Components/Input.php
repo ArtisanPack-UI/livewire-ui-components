@@ -1,27 +1,24 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Input
  *
  * This file contains the Input class for the ArtisanPack UI Livewire UI Components package.
  *
- * @package    ArtisanPack\LivewireUiComponents\View
- * @subpackage Components
  * @author     Jacob Martella
  * @copyright  2023 Jacob Martella
  * @license    MIT
+ *
  * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
  * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
  * @since      1.0.0
  */
 
-
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
-use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
-use Illuminate\Support\Facades\Blade;
-use Illuminate\View\ComponentSlot;
 
 /**
  * Input Class
@@ -30,7 +27,6 @@ use Illuminate\View\ComponentSlot;
  *
  * @since 1.0.0
  */
-
 class Input extends Component
 {
     public string $uuid;
@@ -59,7 +55,7 @@ class Input extends Component
         public ?bool $omitError = false,
         public ?bool $firstErrorOnly = false,
     ) {
-        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+        $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
     }
 
     public function modelName(): ?string
@@ -74,21 +70,21 @@ class Input extends Component
 
     public function isReadonly(): bool
     {
-        return $this->attributes->has('readonly') && $this->attributes->get('readonly') == true;
+        return $this->attributes->has('readonly') && true == $this->attributes->get('readonly');
     }
 
     public function isDisabled(): bool
     {
-        return $this->attributes->has('disabled') && $this->attributes->get('disabled') == true;
+        return $this->attributes->has('disabled') && true == $this->attributes->get('disabled');
     }
 
     public function moneySettings(): string
     {
         return json_encode([
-            'init' => true,
+            'init'     => true,
             'maskOpts' => [
-                'locales' => $this->locale
-            ]
+                'locales' => $this->locale,
+            ],
         ]);
     }
 

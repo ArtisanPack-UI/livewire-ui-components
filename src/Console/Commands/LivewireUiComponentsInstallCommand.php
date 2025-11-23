@@ -1,15 +1,16 @@
 <?php
+
+declare(strict_types=1);
 /**
  * LivewireUiComponents Install Command
  *
  * This command installs and configures all the necessary dependencies for the
  * ArtisanPack UI Livewire UI Components package.
  *
- * @package    ArtisanPack\LivewireUiComponents
- * @subpackage Console\Commands
  * @author     Jacob Martella
  * @copyright  2023 Jacob Martella
  * @license    MIT
+ *
  * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
  * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
  * @since      1.0.0
@@ -23,6 +24,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Str;
 use RuntimeException;
+
 use function Laravel\Prompts\select;
 
 /**
@@ -38,6 +40,7 @@ class LivewireUiComponentsInstallCommand extends Command
      * The name and signature of the console command.
      *
      * @var string
+     *
      * @since 1.0.0
      */
     protected $signature = 'livewire-ui-components:install';
@@ -46,6 +49,7 @@ class LivewireUiComponentsInstallCommand extends Command
      * The console command description.
      *
      * @var string
+     *
      * @since 1.0.0
      */
     protected $description = 'Install and configure ArtisanPack UI Livewire UI Components';
@@ -54,6 +58,7 @@ class LivewireUiComponentsInstallCommand extends Command
      * Directory separator shorthand.
      *
      * @var string
+     *
      * @since 1.0.0
      */
     protected $ds = DIRECTORY_SEPARATOR;
@@ -64,11 +69,12 @@ class LivewireUiComponentsInstallCommand extends Command
      * This is the main method that orchestrates the installation process.
      *
      * @return void
+     *
      * @since 1.0.0
      */
-    public function handle()
+    public function handle(): void
     {
-        $this->info("❤️  Livewire UI Components installer");
+        $this->info('❤️  Livewire UI Components installer');
 
         // Laravel 12+
         $this->checkForLaravelVersion();
@@ -76,7 +82,7 @@ class LivewireUiComponentsInstallCommand extends Command
         // Install Volt ?
         $shouldInstallVolt = $this->askForVolt();
 
-        //Yarn or Npm or Bun or Pnpm ?
+        // Yarn or Npm or Bun or Pnpm ?
         $packageManagerCommand = $this->askForPackageInstaller();
 
         // Install Livewire/Volt
@@ -95,27 +101,29 @@ class LivewireUiComponentsInstallCommand extends Command
         Artisan::call('view:clear');
 
         $this->info("\n");
-        $this->info("✅  Done!");
-        $this->info("❤️  Sponsor: https://github.com/sponsors/robsontenorio");
+        $this->info('✅  Done!');
+        $this->info('❤️  Sponsor: https://github.com/sponsors/robsontenorio');
         $this->info("\n");
     }
 
     /**
      * Install Livewire and optionally Volt.
      *
-     * @param string $shouldInstallVolt Whether to install Volt ('Yes' or 'No').
+     * @param  string  $shouldInstallVolt  Whether to install Volt ('Yes' or 'No').
+     *
      * @return void
+     *
      * @since 1.0.0
      */
-    public function installLivewire(string $shouldInstallVolt)
+    public function installLivewire(string $shouldInstallVolt): void
     {
         $this->info("\nInstalling Livewire...\n");
 
-        $extra = $shouldInstallVolt == 'Yes'
+        $extra = 'Yes' == $shouldInstallVolt
             ? ' livewire/volt && php artisan volt:install'
             : '';
 
-        Process::run("composer require livewire/livewire $extra", function (string $type, string $output) {
+        Process::run("composer require livewire/livewire $extra", function (string $type, string $output): void {
             echo $output;
         })->throw();
     }
@@ -125,26 +133,28 @@ class LivewireUiComponentsInstallCommand extends Command
      *
      * Installs the necessary npm packages and configures the CSS file.
      *
-     * @param string $packageManagerCommand The package manager command to use (npm, yarn, etc.).
+     * @param  string  $packageManagerCommand  The package manager command to use (npm, yarn, etc.).
+     *
      * @return void
+     *
      * @since 1.0.0
      */
-    public function setupTailwindDaisy(string $packageManagerCommand)
+    public function setupTailwindDaisy(string $packageManagerCommand): void
     {
         /**
          * Install daisyUI + Tailwind
          */
         $this->info("\nInstalling daisyUI + Tailwind...\n");
 
-        Process::run("$packageManagerCommand daisyui tailwindcss @tailwindcss/vite", function (string $type, string $output) {
+        Process::run("$packageManagerCommand daisyui tailwindcss @tailwindcss/vite", function (string $type, string $output): void {
             echo $output;
         })->throw();
 
         /**
          * Setup app.css
          */
-        $cssPath = base_path() . "{$this->ds}resources{$this->ds}css{$this->ds}app.css";
-        $css = File::get($cssPath);
+        $cssPath = base_path()."{$this->ds}resources{$this->ds}css{$this->ds}app.css";
+        $css     = File::get($cssPath);
 
         $livewireUiComponents = <<<EOT
             \n\n
@@ -191,27 +201,28 @@ class LivewireUiComponentsInstallCommand extends Command
      * to Livewire UI Components components, in order to avoid name collision with existing components.
      *
      * @return void
+     *
      * @since 1.0.0
      */
-    public function renameComponents()
+    public function renameComponents(): void
     {
-        $composerJson = File::get(base_path() . "/composer.json");
+        $composerJson = File::get(base_path().'/composer.json');
 
-        collect(['jetstream', 'breeze', 'livewire/flux'])->each(function (string $target) use ($composerJson) {
+        collect(['jetstream', 'breeze', 'livewire/flux'])->each(function (string $target) use ($composerJson): void {
             if (str($composerJson)->contains($target)) {
                 Artisan::call('vendor:publish --force --tag livewire-ui-components.config');
 
-                $path = base_path() . "{$this->ds}config{$this->ds}livewire-ui-components.php";
-                $config = File::get($path);
+                $path     = base_path()."{$this->ds}config{$this->ds}livewire-ui-components.php";
+                $config   = File::get($path);
                 $contents = str($config)->replace("'prefix' => ''", "'prefix' => 'artisanpack-'");
                 File::put($path, $contents);
 
                 $this->warn('---------------------------------------------');
                 $this->warn("🚨`$target` was detected.🚨");
                 $this->warn('---------------------------------------------');
-                $this->warn("A global prefix on Livewire UI Components components was added to avoid name collision.");
+                $this->warn('A global prefix on Livewire UI Components components was added to avoid name collision.');
                 $this->warn("\n * Example: x-artisanpack-button, x-artisanpack-card ...");
-                $this->warn(" * See config/livewire-ui-components.php");
+                $this->warn(' * See config/livewire-ui-components.php');
                 $this->warn('---------------------------------------------');
             }
         });
@@ -223,14 +234,14 @@ class LivewireUiComponentsInstallCommand extends Command
      * This method copies various stub files to set up a demo application
      * if no starter kit is detected.
      *
-     * @param string $shouldInstallVolt Whether Volt should be installed ('Yes' or 'No').
-     * @return void
+     * @param  string  $shouldInstallVolt  Whether Volt should be installed ('Yes' or 'No').
+     *
      * @since 1.0.0
      */
     public function copyStubs(string $shouldInstallVolt): void
     {
-        $composerJson = File::get(base_path() . "/composer.json");
-        $hasKit = str($composerJson)->contains('jetstream') || str($composerJson)->contains('breeze') || str($composerJson)->contains('livewire/flux');
+        $composerJson = File::get(base_path().'/composer.json');
+        $hasKit       = str($composerJson)->contains('jetstream') || str($composerJson)->contains('breeze') || str($composerJson)->contains('livewire/flux');
 
         if ($hasKit) {
             $this->warn('---------------------------------------------');
@@ -242,33 +253,33 @@ class LivewireUiComponentsInstallCommand extends Command
 
         $this->info("Copying stubs...\n");
 
-        $routes = base_path() . "{$this->ds}routes";
+        $routes            = base_path()."{$this->ds}routes";
         $appViewComponents = "app{$this->ds}View{$this->ds}Components";
-        $livewirePath = "app{$this->ds}Livewire";
-        $layoutsPath = "resources{$this->ds}views{$this->ds}components{$this->ds}layouts";
+        $livewirePath      = "app{$this->ds}Livewire";
+        $layoutsPath       = "resources{$this->ds}views{$this->ds}components{$this->ds}layouts";
         $livewireBladePath = "resources{$this->ds}views{$this->ds}livewire";
 
         // Blade Brand component
         $this->createDirectoryIfNotExists($appViewComponents);
-        $this->copyFile(__DIR__ . "/../../../stubs/AppBrand.php", "{$appViewComponents}{$this->ds}AppBrand.php");
+        $this->copyFile(__DIR__.'/../../../stubs/AppBrand.php', "{$appViewComponents}{$this->ds}AppBrand.php");
 
         // Default app layout
         $this->createDirectoryIfNotExists($layoutsPath);
-        $this->copyFile(__DIR__ . "/../../../stubs/app.blade.php", "{$layoutsPath}{$this->ds}app.blade.php");
+        $this->copyFile(__DIR__.'/../../../stubs/app.blade.php', "{$layoutsPath}{$this->ds}app.blade.php");
 
         // Livewire blade views
         $this->createDirectoryIfNotExists($livewireBladePath);
 
         // Demo component and its route
-        if ($shouldInstallVolt == 'Yes') {
+        if ('Yes' == $shouldInstallVolt) {
             $this->createDirectoryIfNotExists("$livewireBladePath{$this->ds}users");
-            $this->copyFile(__DIR__ . "/../../../stubs/index.blade.php", "$livewireBladePath{$this->ds}users{$this->ds}index.blade.php");
-            $this->copyFile(__DIR__ . "/../../../stubs/web-volt.php", "$routes{$this->ds}web.php");
+            $this->copyFile(__DIR__.'/../../../stubs/index.blade.php', "$livewireBladePath{$this->ds}users{$this->ds}index.blade.php");
+            $this->copyFile(__DIR__.'/../../../stubs/web-volt.php', "$routes{$this->ds}web.php");
         } else {
             $this->createDirectoryIfNotExists($livewirePath);
-            $this->copyFile(__DIR__ . "/../../../stubs/Welcome.php", "{$livewirePath}{$this->ds}Welcome.php");
-            $this->copyFile(__DIR__ . "/../../../stubs/welcome.blade.php", "{$livewireBladePath}{$this->ds}welcome.blade.php");
-            $this->copyFile(__DIR__ . "/../../../stubs/web.php", "$routes{$this->ds}web.php");
+            $this->copyFile(__DIR__.'/../../../stubs/Welcome.php', "{$livewirePath}{$this->ds}Welcome.php");
+            $this->copyFile(__DIR__.'/../../../stubs/welcome.blade.php', "{$livewireBladePath}{$this->ds}welcome.blade.php");
+            $this->copyFile(__DIR__.'/../../../stubs/web.php', "$routes{$this->ds}web.php");
         }
     }
 
@@ -279,17 +290,18 @@ class LivewireUiComponentsInstallCommand extends Command
      * the user to select one.
      *
      * @return string The selected package manager command.
+     *
      * @since 1.0.0
      */
     public function askForPackageInstaller(): string
     {
-        $os = PHP_OS;
-        $findCommand = stripos($os, 'WIN') === 0 ? 'where' : 'which';
+        $os          = PHP_OS;
+        $findCommand = 0 === stripos($os, 'WIN') ? 'where' : 'which';
 
-        $yarn = Process::run($findCommand . ' yarn')->output();
-        $npm = Process::run($findCommand . ' npm')->output();
-        $bun = Process::run($findCommand . ' bun')->output();
-        $pnpm = Process::run($findCommand . ' pnpm')->output();
+        $yarn = Process::run($findCommand.' yarn')->output();
+        $npm  = Process::run($findCommand.' npm')->output();
+        $bun  = Process::run($findCommand.' bun')->output();
+        $pnpm = Process::run($findCommand.' pnpm')->output();
 
         $options = [];
 
@@ -309,15 +321,15 @@ class LivewireUiComponentsInstallCommand extends Command
             $options = array_merge($options, ['pnpm i -D' => 'pnpm']);
         }
 
-        if (count($options) == 0) {
-            $this->error("You need yarn or npm or bun or pnpm installed.");
+        if (0 == count($options)) {
+            $this->error('You need yarn or npm or bun or pnpm installed.');
 
             exit;
         }
 
         return select(
             label: 'Install with ...',
-            options: $options
+            options: $options,
         );
     }
 
@@ -327,6 +339,7 @@ class LivewireUiComponentsInstallCommand extends Command
      * Prompts the user to decide whether to install Livewire/Volt alongside Livewire.
      *
      * @return string The user's choice ('Yes' or 'No').
+     *
      * @since 1.0.0
      */
     public function askForVolt(): string
@@ -334,7 +347,7 @@ class LivewireUiComponentsInstallCommand extends Command
         return select(
             'Also install `livewire/volt` ?',
             ['Yes', 'No'],
-            hint: 'No matter what is your choice, it always installs `livewire/livewire`'
+            hint: 'No matter what is your choice, it always installs `livewire/livewire`',
         );
     }
 
@@ -343,13 +356,12 @@ class LivewireUiComponentsInstallCommand extends Command
      *
      * Ensures that the application is running on Laravel 12 or above.
      *
-     * @return void
      * @since 1.0.0
      */
     public function checkForLaravelVersion(): void
     {
         if (version_compare(app()->version(), '12.0', '<')) {
-            $this->error("❌  Laravel 12 or above required.");
+            $this->error('❌  Laravel 12 or above required.');
 
             exit;
         }
@@ -358,8 +370,8 @@ class LivewireUiComponentsInstallCommand extends Command
     /**
      * Create a directory if it doesn't exist.
      *
-     * @param string $path The directory path to create.
-     * @return void
+     * @param  string  $path  The directory path to create.
+     *
      * @since 1.0.0
      */
     private function createDirectoryIfNotExists(string $path): void
@@ -372,15 +384,16 @@ class LivewireUiComponentsInstallCommand extends Command
     /**
      * Copy a file from source to destination.
      *
-     * @param string $source      The source file path.
-     * @param string $destination The destination file path.
-     * @return void
+     * @param  string  $source  The source file path.
+     * @param  string  $destination  The destination file path.
+     *
      * @throws RuntimeException If the file copy fails.
+     *
      * @since 1.0.0
      */
     private function copyFile(string $source, string $destination): void
     {
-        $source = str_replace('/', DIRECTORY_SEPARATOR, $source);
+        $source      = str_replace('/', DIRECTORY_SEPARATOR, $source);
         $destination = str_replace('/', DIRECTORY_SEPARATOR, $destination);
 
         if (! copy($source, $destination)) {

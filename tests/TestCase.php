@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ArtisanPack\LivewireUiComponents\Tests;
 
 use ArtisanPack\LivewireUiComponents\LivewireUiComponentsServiceProvider;

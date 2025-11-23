@@ -1,5 +1,59 @@
 # ArtisanPack UI Livewire UI Components
 
+## [1.0.0-beta.3] - 2025-11-23
+
+### Added
+- Laravel Boost AI guidelines in `resources/boost/guidelines/core.blade.php` for enhanced AI-assisted development
+- New `loading` property for Button component that accepts either text or icon name (auto-detected by prefix)
+- Developer tools support with comprehensive documentation
+
+### Changed
+- **Button component**: Added support for custom loading states with `loading` prop
+  - Automatically detects if value is an icon (o-, s-, fa-, c-, heroicon-, icon- prefixes) or text
+  - Replaces default spinner with custom content during loading state
+  - Hides regular button content when loading text is provided
+- **Documentation**: Completely rewrote table component documentation to match actual implementation
+  - Fixed all examples to use correct `:headers` array with object structure
+  - Documented `@scope` directives for custom cell/header rendering
+  - Added comprehensive examples for sorting, pagination, row selection, expandable rows
+  - Updated button, checkbox, input, and form component documentation
+- Updated dependency versions:
+  - artisanpack-ui/accessibility: 2.0.0 → 2.1.0
+  - artisanpack-ui/code-style: 1.0.5 → 1.1.0
+  - artisanpack-ui/icons: 2.0.0 → 2.1.0
+  - Added artisanpack-ui/hooks: 1.2.0
+  - laravel/serializable-closure: v1.3.7 → v2.0.6
+  - nette/utils: v4.0.8 → v4.0.9
+- Removed deprecated package: tormjens/eventy
+
+### Fixed
+- **Security**: Fixed XSS vulnerabilities in icon rendering
+  - ToastException: Added icon name validation to prevent XSS attacks
+  - Toast trait: Added icon name validation with regex pattern and safe Blade bindings
+  - Icons now validated against allowlist pattern before rendering
+- **GitLab CI**: Fixed build stage failure with PHP 8.5
+  - Changed build stage from `composer:2` image (PHP 8.5) to `php:8.2` for consistency
+  - Added PHP zip extension installation to resolve dependency requirements
+- **Type safety**: Improved strict type compliance throughout codebase
+  - Button component: Changed loose comparison `1 == $spinner` to strict `"1" === $spinner`
+  - MenuItem component: Changed loose comparison `1 == $spinner` to strict `"1" === $spinner`
+  - Header component: Changed `1 == $progressIndicator` to `true === $progressIndicator`
+  - Card component: Changed `1 == $progressIndicator` to `true === $progressIndicator`
+- **Type declarations**: Fixed property type declarations for boolean attributes
+  - Card component: Changed `progressIndicator` type from `?string` to `string|bool|null`
+  - Header component: Changed `progressIndicator` type from `?string` to `string|bool|null`
+- **PHPDoc**: Corrected namespace in GenerateThemeCss command
+  - Fixed `@param` type from incorrect `\ArtisanPackUI\LivewireUIComponents\Styling\ColorGenerator` to correct `\ArtisanPack\LivewireUiComponents\Styling\ColorGenerator`
+- **Code quality**: Removed development markers from production code
+  - Checkbox component: Removed inline comment "// [CHANGED] Added value prop"
+- **Editor component**: Replaced fragile quote replacement with Laravel's `Js::from()` helper
+  - Prevents JavaScript errors when config values contain single quotes
+  - Uses proper JSON/JS-safe representation instead of string manipulation
+
+### Infrastructure
+- Updated GitLab CI configuration to ensure PHP version consistency across all pipeline stages
+- Enhanced code security with comprehensive input validation
+
 ## [1.0.0-beta.2] - 2025-11-15
 
 ### Changed

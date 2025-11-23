@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders;
 
 use App\Models\Country;
@@ -19,16 +21,16 @@ class CountrySeeder extends Seeder
 
         Country::insert([
             [
-                'name' => 'Brazil'
+                'name' => 'Brazil',
             ],
             [
-                'name' => 'India'
+                'name' => 'India',
             ],
             [
-                'name' => 'United States'
+                'name' => 'United States',
             ],
             [
-                'name' => 'France'
+                'name' => 'France',
             ],
         ]);
     }

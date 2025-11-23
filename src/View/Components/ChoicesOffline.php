@@ -1,19 +1,19 @@
 <?php
+
+declare(strict_types=1);
 /**
  * ChoicesOffline
  *
  * This file contains the ChoicesOffline class for the ArtisanPack UI Livewire UI Components package.
  *
- * @package    ArtisanPack\LivewireUiComponents\View
- * @subpackage Components
  * @author     Jacob Martella
  * @copyright  2023 Jacob Martella
  * @license    MIT
+ *
  * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
  * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
  * @since      1.0.0
  */
-
 
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
@@ -22,6 +22,7 @@ use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Illuminate\View\Component;
+
 /**
  * ChoicesOffline Class
  *
@@ -29,7 +30,6 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-
 class ChoicesOffline extends Component
 {
     public string $uuid;
@@ -61,7 +61,7 @@ class ChoicesOffline extends Component
         public ?string $optionAvatar = 'avatar',
         public ?bool $valuesAsString = false,
         public ?string $height = 'max-h-64',
-        public Collection|array $options = new Collection(),
+        public Collection|array $options = new Collection,
         public ?string $noResultText = 'No results found.',
 
         // Validations
@@ -74,12 +74,12 @@ class ChoicesOffline extends Component
         public mixed $item = null,
         public mixed $selection = null,
         public mixed $prepend = null,
-        public mixed $append = null
+        public mixed $append = null,
     ) {
-        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+        $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
 
         if (($this->allowAll || $this->compact) && ($this->single || $this->searchable)) {
-            throw new Exception("`allow-all` and `compact` does not work combined with `single` or `searchable`.");
+            throw new Exception('`allow-all` and `compact` does not work combined with `single` or `searchable`.');
         }
     }
 
@@ -95,17 +95,17 @@ class ChoicesOffline extends Component
 
     public function isReadonly(): bool
     {
-        return $this->attributes->has('readonly') && $this->attributes->get('readonly') == true;
+        return $this->attributes->has('readonly') && true == $this->attributes->get('readonly');
     }
 
     public function isDisabled(): bool
     {
-        return $this->attributes->has('disabled') && $this->attributes->get('disabled') == true;
+        return $this->attributes->has('disabled') && true == $this->attributes->get('disabled');
     }
 
     public function isRequired(): bool
     {
-        return $this->attributes->has('required') && $this->attributes->get('required') == true;
+        return $this->attributes->has('required') && true == $this->attributes->get('required');
     }
 
     public function getOptionValue($option): mixed

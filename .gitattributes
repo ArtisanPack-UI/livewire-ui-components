@@ -35,3 +35,7 @@
 /docs export-ignore
 /CONTRIBUTING.md export-ignore
 /CHANGELOG.md export-ignore
+
+# Pint
+/pint.json export-ignore
+/pint-setup.php export-ignore
