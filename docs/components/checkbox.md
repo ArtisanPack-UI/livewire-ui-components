@@ -84,17 +84,34 @@ The Checkbox component is a form element that allows users to select one or more
 />
 ```
 
-### Checkbox with Custom Color
+### Checkbox with Right Label
 
 ```php
-<x-artisanpack-checkbox 
-    label="Primary color" 
-    color="primary"
+<x-artisanpack-checkbox
+    label="I agree to the terms"
+    right
+/>
+```
+
+### Checkbox with Card Style
+
+Display the checkbox as a card with enhanced visual feedback:
+
+```php
+<x-artisanpack-checkbox
+    label="Premium Plan"
+    hint="Access to all premium features"
+    card
+    wire:model="selectedPlan"
 />
 
-<x-artisanpack-checkbox 
-    label="Secondary color" 
-    color="secondary"
+<!-- Custom card styling -->
+<x-artisanpack-checkbox
+    label="Enterprise Plan"
+    hint="Custom solutions for your business"
+    card
+    card-class="card card-compact border-2 border-primary/30 hover:border-primary cursor-pointer"
+    wire:model="selectedPlan"
 />
 
 <x-artisanpack-checkbox 
@@ -143,18 +160,18 @@ The Checkbox component is a form element that allows users to select one or more
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
+| `id` | string | `null` | The ID attribute for the checkbox |
 | `label` | string | `null` | The label text for the checkbox |
-| `name` | string | `null` | The name attribute for the checkbox |
-| `value` | string | `null` | The value attribute for the checkbox |
-| `checked` | boolean | `false` | Whether the checkbox is checked |
-| `indeterminate` | boolean | `false` | Whether the checkbox is in an indeterminate state |
-| `disabled` | boolean | `false` | Whether the checkbox is disabled |
-| `required` | boolean | `false` | Whether the checkbox is required |
-| `helper` | string | `null` | Helper text displayed below the checkbox |
-| `error` | string | `null` | Error message to display |
-| `color` | string | `'primary'` | The color of the checkbox (`primary`, `secondary`, `accent`, etc.) |
-| `size` | string | `'md'` | The size of the checkbox (`sm`, `md`, `lg`) |
-| `label-position` | string | `'right'` | The position of the label relative to the checkbox (`left`, `right`) |
+| `value` | mixed | `null` | The value attribute for the checkbox |
+| `right` | boolean | `false` | Whether to position the label on the right side |
+| `hint` | string | `null` | Hint text displayed below the label |
+| `hint-class` | string | `'fieldset-label'` | CSS class for the hint text |
+| `card` | boolean | `false` | Whether to display the checkbox as a card |
+| `card-class` | string | `'card card-compact border-2 border-base-300 hover:border-primary cursor-pointer transition-colors'` | CSS classes for the card variant |
+| `error-field` | string | `null` | The field name for error validation |
+| `error-class` | string | `'text-error'` | CSS class for error messages |
+| `omit-error` | boolean | `false` | Whether to hide error messages |
+| `first-error-only` | boolean | `false` | Whether to show only the first error message |
 
 ## Events
 

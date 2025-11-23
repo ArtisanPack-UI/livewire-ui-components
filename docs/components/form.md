@@ -193,12 +193,7 @@ The Form component is a container for form elements that provides a consistent l
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `action` | string | `null` | The URL to submit the form to (for traditional forms) |
-| `method` | string | `'POST'` | The HTTP method to use for form submission (for traditional forms) |
-| `enctype` | string | `null` | The encoding type for the form (e.g., 'multipart/form-data' for file uploads) |
-| `spacing` | string/number | `4` | The spacing between form elements (Tailwind spacing scale) |
-| `novalidate` | boolean | `false` | Whether to disable browser validation |
-| `autocomplete` | string | `null` | The autocomplete attribute for the form |
+| `no-separator` | boolean | `false` | Whether to hide the separator line between form content and actions |
 
 ## Slots
 
