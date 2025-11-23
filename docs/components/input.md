@@ -207,34 +207,31 @@ The Input component is a versatile form element for collecting user text input. 
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `type` | string | `'text'` | HTML input type (`text`, `email`, `password`, `number`, etc.) |
-| `label` | string | `null` | Label text for the input |
-| `name` | string | `null` | Name attribute for the input (defaults to a generated ID if not provided) |
 | `id` | string | `null` | ID attribute for the input (auto-generated if not provided) |
-| `value` | string | `null` | Default value for the input |
-| `placeholder` | string | `null` | Placeholder text |
-| `helper` | string | `null` | Helper text displayed below the input |
-| `error` | string | `null` | Error message to display |
-| `required` | boolean | `false` | Whether the input is required |
-| `disabled` | boolean | `false` | Whether the input is disabled |
-| `readonly` | boolean | `false` | Whether the input is readonly |
-| `autofocus` | boolean | `false` | Whether the input should be automatically focused |
-| `autocomplete` | string | `null` | Value for the autocomplete attribute |
-| `size` | string | `'md'` | Input size (`sm`, `md`, `lg`) |
-| `min` | string/number | `null` | Minimum value (for number inputs) |
-| `max` | string/number | `null` | Maximum value (for number inputs) |
-| `step` | string/number | `null` | Step value (for number inputs) |
-| `minlength` | string/number | `null` | Minimum length of input value |
-| `maxlength` | string/number | `null` | Maximum length of input value |
-| `pattern` | string | `null` | Regular expression pattern for validation |
-| `title` | string | `null` | Title attribute (used for validation tooltip) |
+| `label` | string | `null` | Label text for the input |
+| `icon` | string | `null` | Icon to display on the left side of the input |
+| `icon-right` | string | `null` | Icon to display on the right side of the input |
+| `hint` | string | `null` | Hint text displayed below the input |
+| `hint-class` | string | `'fieldset-label'` | CSS class for the hint text |
+| `prefix` | string | `null` | Text prefix to display inside the input |
+| `suffix` | string | `null` | Text suffix to display inside the input |
+| `inline` | boolean | `false` | Whether to display the label inline with the input |
+| `clearable` | boolean | `false` | Whether to show a clear button |
+| `money` | boolean | `false` | Whether to format as currency input |
+| `locale` | string | `'en-US'` | Locale for money formatting |
+| `error-field` | string | `null` | The field name for error validation |
+| `error-class` | string | `'text-error'` | CSS class for error messages |
+| `omit-error` | boolean | `false` | Whether to hide error messages |
+| `first-error-only` | boolean | `false` | Whether to show only the first error message |
 
 ## Slots
 
 | Slot | Description |
 |------|-------------|
-| `prefix` | Content to display before the input |
-| `suffix` | Content to display after the input |
+| `prepend` | Content to display before the input (outside the input wrapper) |
+| `append` | Content to display after the input (outside the input wrapper) |
+
+Note: For text prefix/suffix inside the input, use the `prefix` and `suffix` props instead.
 
 ## Events
 
