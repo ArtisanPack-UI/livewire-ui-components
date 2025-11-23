@@ -1,25 +1,26 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Separator
  *
  * This file contains the Separator class for the ArtisanPack UI Livewire UI Components package.
  *
- * @package    ArtisanPack\LivewireUiComponents\View
- * @subpackage Components
  * @author     Jacob Martella
  * @copyright  2023 Jacob Martella
  * @license    MIT
+ *
  * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
  * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
  * @since      1.0.0
  */
-
 
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
+
 /**
  * Separator Class
  *
@@ -27,7 +28,6 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-
 class Separator extends Component
 {
     public string $uuid;
@@ -40,12 +40,12 @@ class Separator extends Component
         public ?string $image = null,
         public bool $vertical = false,
     ) {
-        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+        $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
     }
 
     public function progressTarget(): ?string
     {
-        if ($this->target == 1) {
+        if (1 == $this->target) {
             return $this->attributes->whereStartsWith('target')->first();
         }
 
@@ -54,7 +54,7 @@ class Separator extends Component
 
     public function getColorClasses(): string
     {
-        if (!$this->color) {
+        if (! $this->color) {
             return 'border-base-content/10';
         }
 
@@ -65,12 +65,12 @@ class Separator extends Component
 
         // Handle predefined colors
         $colorMap = [
-            'primary' => 'border-primary',
+            'primary'   => 'border-primary',
             'secondary' => 'border-secondary',
-            'accent' => 'border-accent',
-            'success' => 'border-success',
-            'warning' => 'border-warning',
-            'error' => 'border-error',
+            'accent'    => 'border-accent',
+            'success'   => 'border-success',
+            'warning'   => 'border-warning',
+            'error'     => 'border-error',
         ];
 
         if (isset($colorMap[$this->color])) {
@@ -83,18 +83,18 @@ class Separator extends Component
 
     public function getProgressColorClasses(): string
     {
-        if (!$this->color) {
+        if (! $this->color) {
             return 'progress-primary';
         }
 
         // Handle predefined colors - use more visible alternatives for problematic colors
         $colorMap = [
-            'primary' => 'progress-primary',
+            'primary'   => 'progress-primary',
             'secondary' => 'progress-secondary',
-            'accent' => 'progress-accent',
-            'success' => 'progress-accent', // Use accent instead of success for better visibility
-            'warning' => 'progress-warning',
-            'error' => 'progress-error',
+            'accent'    => 'progress-accent',
+            'success'   => 'progress-accent', // Use accent instead of success for better visibility
+            'warning'   => 'progress-warning',
+            'error'     => 'progress-error',
         ];
 
         if (isset($colorMap[$this->color])) {
@@ -109,8 +109,9 @@ class Separator extends Component
         // For custom Tailwind classes, try to match or use accent
         if (str_contains($this->color, 'border-')) {
             // Extract color name from border class and try to match to progress
-            $colorName = str_replace(['border-', '-500', '-400', '-600', '-300', '-700'], '', $this->color);
-            $progressClass = 'progress-' . $colorName;
+            $colorName     = str_replace(['border-', '-500', '-400', '-600', '-300', '-700'], '', $this->color);
+            $progressClass = 'progress-'.$colorName;
+
             // Return the extracted class, fallback to accent if not standard
             return in_array($colorName, ['red', 'green', 'blue', 'yellow', 'purple', 'pink', 'indigo']) ?
                    $progressClass : 'progress-accent';

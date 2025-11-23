@@ -1,19 +1,19 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Icon
  *
  * This file contains the Icon class for the ArtisanPack UI Livewire UI Components package.
  *
- * @package    ArtisanPack\LivewireUiComponents\View
- * @subpackage Components
  * @author     Jacob Martella
  * @copyright  2023 Jacob Martella
  * @license    MIT
+ *
  * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
  * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
  * @since      1.0.0
  */
-
 
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
@@ -22,6 +22,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Str;
 use Illuminate\Support\Stringable;
 use Illuminate\View\Component;
+
 /**
  * Icon Class
  *
@@ -29,19 +30,17 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-
 class Icon extends Component
 {
-
     public function __construct(
         public string $name,
         public ?string $id = null,
         public ?string $label = null,
-        public string $uuid = ''
+        public string $uuid = '',
     ) {
         // Set uuid if not provided or empty
         if (empty($this->uuid)) {
-            $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+            $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
         }
     }
 

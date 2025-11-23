@@ -1,15 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
 
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
 use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
+use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
 use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
 use ArtisanPack\LivewireUiComponents\View\Components\ChoicesOffline;
+use Error;
+use RuntimeException;
 
 /**
  * Comprehensive unit tests for the ChoicesOffline component.
- * 
+ *
  * Auto-generated test class that extends ComponentTestCase to inherit
  * common testing patterns and implements component-specific tests.
  */
@@ -18,42 +22,44 @@ class ChoicesOfflineComponentTest extends ComponentTestCase
     protected string $componentClass = ChoicesOffline::class;
 
     protected array $defaultProperties = [
-            'hintClass' => 'fieldset-label',
-            'inline' => false,
-            'clearable' => false,
-            'searchable' => false,
-            'single' => false,
-            'compact' => false,
-            'compactText' => 'selected',
-            'allowAll' => false,
-            'debounce' => '250ms',
-            'minChars' => 0,
-            'allowAllText' => 'Select all',
-            'removeAllText' => 'Remove all',
-            'optionValue' => 'id',
-            'optionLabel' => 'name',
-            'optionSubLabel' => '',
-            'optionAvatar' => 'avatar',
-            'valuesAsString' => false,
-            'height' => 'max-h-64',
-            'options' => [],
-            'noResultText' => 'No results found.',
-            'errorClass' => 'text-error label-text-alt p-1',
-            'omitError' => false,
-            'firstErrorOnly' => false
-        ];
+        'hintClass'      => 'fieldset-label',
+        'inline'         => false,
+        'clearable'      => false,
+        'searchable'     => false,
+        'single'         => false,
+        'compact'        => false,
+        'compactText'    => 'selected',
+        'allowAll'       => false,
+        'debounce'       => '250ms',
+        'minChars'       => 0,
+        'allowAllText'   => 'Select all',
+        'removeAllText'  => 'Remove all',
+        'optionValue'    => 'id',
+        'optionLabel'    => 'name',
+        'optionSubLabel' => '',
+        'optionAvatar'   => 'avatar',
+        'valuesAsString' => false,
+        'height'         => 'max-h-64',
+        'options'        => [],
+        'noResultText'   => 'No results found.',
+        'errorClass'     => 'text-error label-text-alt p-1',
+        'omitError'      => false,
+        'firstErrorOnly' => false,
+    ];
 
     protected array $requiredProperties = [];
 
     public function test_choicesoffline_string_properties(): void
     {
         $stringProperties = ['id', 'label', 'hint', 'hintClass', 'icon', 'iconRight', 'prefix', 'suffix', 'compactText', 'debounce', 'allowAllText', 'removeAllText', 'optionValue', 'optionLabel', 'optionSubLabel', 'optionAvatar', 'height', 'noResultText', 'errorField', 'errorClass'];
-        $testValues = ComponentDataFactory::sampleTexts();
-        
+        $testValues       = ComponentDataFactory::sampleTexts();
+
         foreach ($stringProperties as $property) {
             foreach ($testValues as $value) {
-                if (empty($value)) continue; // Skip empty values for some properties
-                
+                if (empty($value)) {
+                    continue;
+                } // Skip empty values for some properties
+
                 $component = $this->createComponent([$property => $value]);
                 $this->assertEquals($value, $component->$property);
             }
@@ -63,17 +69,17 @@ class ChoicesOfflineComponentTest extends ComponentTestCase
     public function test_choicesoffline_boolean_properties(): void
     {
         $booleanProperties = ['inline', 'clearable', 'searchable', 'single', 'compact', 'allowAll', 'valuesAsString', 'omitError', 'firstErrorOnly'];
-        
+
         foreach ($booleanProperties as $property) {
             $component = $this->createComponent([$property => true]);
             $this->assertTrue($component->$property);
-            
+
             $component = $this->createComponent([$property => false]);
             $this->assertFalse($component->$property);
         }
     }
 
-    public function test_choicesoffline_modelName_method(): void
+    public function test_choicesoffline_model_name_method(): void
     {
         $component = $this->createComponent();
 
@@ -82,7 +88,7 @@ class ChoicesOfflineComponentTest extends ComponentTestCase
                 $result = $component->modelName();
                 // Add specific assertions based on expected return type
                 $this->assertNotNull($result);
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Method requires attributes or context');
@@ -92,7 +98,7 @@ class ChoicesOfflineComponentTest extends ComponentTestCase
         }
     }
 
-    public function test_choicesoffline_errorFieldName_method(): void
+    public function test_choicesoffline_error_field_name_method(): void
     {
         $component = $this->createComponent();
 
@@ -101,7 +107,7 @@ class ChoicesOfflineComponentTest extends ComponentTestCase
                 $result = $component->errorFieldName();
                 // Add specific assertions based on expected return type
                 $this->assertNotNull($result);
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Method requires attributes or context');
@@ -111,7 +117,7 @@ class ChoicesOfflineComponentTest extends ComponentTestCase
         }
     }
 
-    public function test_choicesoffline_isReadonly_method(): void
+    public function test_choicesoffline_is_readonly_method(): void
     {
         $component = $this->createComponent();
 
@@ -120,7 +126,7 @@ class ChoicesOfflineComponentTest extends ComponentTestCase
                 $result = $component->isReadonly();
                 // Add specific assertions based on expected return type
                 $this->assertNotNull($result);
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Method requires attributes or context');
@@ -130,7 +136,7 @@ class ChoicesOfflineComponentTest extends ComponentTestCase
         }
     }
 
-    public function test_choicesoffline_isDisabled_method(): void
+    public function test_choicesoffline_is_disabled_method(): void
     {
         $component = $this->createComponent();
 
@@ -139,7 +145,7 @@ class ChoicesOfflineComponentTest extends ComponentTestCase
                 $result = $component->isDisabled();
                 // Add specific assertions based on expected return type
                 $this->assertNotNull($result);
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Method requires attributes or context');
@@ -149,7 +155,7 @@ class ChoicesOfflineComponentTest extends ComponentTestCase
         }
     }
 
-    public function test_choicesoffline_isRequired_method(): void
+    public function test_choicesoffline_is_required_method(): void
     {
         $component = $this->createComponent();
 
@@ -158,7 +164,7 @@ class ChoicesOfflineComponentTest extends ComponentTestCase
                 $result = $component->isRequired();
                 // Add specific assertions based on expected return type
                 $this->assertNotNull($result);
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Method requires attributes or context');
@@ -168,7 +174,7 @@ class ChoicesOfflineComponentTest extends ComponentTestCase
         }
     }
 
-    public function test_choicesoffline_getOptionValue_method(): void
+    public function test_choicesoffline_get_option_value_method(): void
     {
         $component = $this->createComponent();
 
@@ -177,7 +183,7 @@ class ChoicesOfflineComponentTest extends ComponentTestCase
                 $result = $component->getOptionValue();
                 // Add specific assertions based on expected return type
                 $this->assertNotNull($result);
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Method requires attributes or context');
@@ -190,7 +196,7 @@ class ChoicesOfflineComponentTest extends ComponentTestCase
     public function test_choicesoffline_renders_successfully(): void
     {
         $component = $this->createComponent();
-        $view = $component->render();
+        $view      = $component->render();
 
         try {
             $html = $view->render();
@@ -200,7 +206,7 @@ class ChoicesOfflineComponentTest extends ComponentTestCase
                 $this->markTestSkipped('Component requires slots or additional data for rendering');
             }
             throw $e;
-        } catch (\Error $e) {
+        } catch (Error $e) {
             if (str_contains($e->getMessage(), 'Call to a member function') &&
                 str_contains($e->getMessage(), 'on null')) {
                 $this->markTestSkipped('Component requires attributes or context for rendering');
@@ -215,7 +221,7 @@ class ChoicesOfflineComponentTest extends ComponentTestCase
     public function test_choicesoffline_accessibility_compliance(): void
     {
         $component = $this->createComponent();
-        $view = $component->render();
+        $view      = $component->render();
 
         try {
             $html = $view->render();
@@ -225,7 +231,7 @@ class ChoicesOfflineComponentTest extends ComponentTestCase
                 $this->markTestSkipped('Component requires slots or additional data for rendering');
             }
             throw $e;
-        } catch (\Error $e) {
+        } catch (Error $e) {
             if (str_contains($e->getMessage(), 'Call to a member function') &&
                 str_contains($e->getMessage(), 'on null')) {
                 $this->markTestSkipped('Component requires attributes or context for rendering');
@@ -235,7 +241,7 @@ class ChoicesOfflineComponentTest extends ComponentTestCase
 
         $validation = TestHelpers::validateHtmlStructure($html);
         $this->assertTrue($validation['is_valid'],
-            'ChoicesOffline should have valid HTML structure. Issues: ' . implode(', ', $validation['issues'])
+            'ChoicesOffline should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
         );
     }
 
@@ -245,7 +251,7 @@ class ChoicesOfflineComponentTest extends ComponentTestCase
 
         foreach ($xssPayloads as $payload) {
             $component = $this->createComponent(['label' => $payload]);
-            $view = $component->render();
+            $view      = $component->render();
 
             try {
                 $html = $view->render();
@@ -255,7 +261,7 @@ class ChoicesOfflineComponentTest extends ComponentTestCase
                     $this->markTestSkipped('Component requires slots or additional data for rendering');
                 }
                 throw $e;
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Component requires attributes or context for rendering');
@@ -273,9 +279,9 @@ class ChoicesOfflineComponentTest extends ComponentTestCase
         try {
             $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
             $this->assertLessThan(100, $performance['average_time'],
-                'ChoicesOffline rendering should be under 100ms on average'
+                'ChoicesOffline rendering should be under 100ms on average',
             );
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             if (str_contains($e->getMessage(), 'requires slots') ||
                 str_contains($e->getMessage(), 'requires additional context')) {
                 $this->markTestSkipped($e->getMessage());

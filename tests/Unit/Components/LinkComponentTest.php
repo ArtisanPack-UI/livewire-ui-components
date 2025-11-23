@@ -1,15 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
 
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
 use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
+use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
 use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
 use ArtisanPack\LivewireUiComponents\View\Components\Link;
+use Error;
+use RuntimeException;
 
 /**
  * Comprehensive unit tests for the Link component.
- * 
+ *
  * Auto-generated test class that extends ComponentTestCase to inherit
  * common testing patterns and implements component-specific tests.
  */
@@ -18,25 +22,27 @@ class LinkComponentTest extends ComponentTestCase
     protected string $componentClass = Link::class;
 
     protected array $defaultProperties = [
-            'underline' => false,
-            'hoverUnderline' => true,
-            'external' => false,
-            'noWireNavigate' => false,
-            'uuid' => '',
-            'tooltipPosition' => 'lg:tooltip-top'
-        ];
+        'underline'       => false,
+        'hoverUnderline'  => true,
+        'external'        => false,
+        'noWireNavigate'  => false,
+        'uuid'            => '',
+        'tooltipPosition' => 'lg:tooltip-top',
+    ];
 
     protected array $requiredProperties = [];
 
     public function test_link_string_properties(): void
     {
         $stringProperties = ['id', 'href', 'color', 'icon', 'iconRight', 'tooltip', 'tooltipLeft', 'tooltipRight', 'tooltipBottom', 'uuid', 'tooltipPosition'];
-        $testValues = ComponentDataFactory::sampleTexts();
-        
+        $testValues       = ComponentDataFactory::sampleTexts();
+
         foreach ($stringProperties as $property) {
             foreach ($testValues as $value) {
-                if (empty($value)) continue; // Skip empty values for some properties
-                
+                if (empty($value)) {
+                    continue;
+                } // Skip empty values for some properties
+
                 $component = $this->createComponent([$property => $value]);
                 $this->assertEquals($value, $component->$property);
             }
@@ -46,17 +52,17 @@ class LinkComponentTest extends ComponentTestCase
     public function test_link_boolean_properties(): void
     {
         $booleanProperties = ['underline', 'hoverUnderline', 'external', 'noWireNavigate'];
-        
+
         foreach ($booleanProperties as $property) {
             $component = $this->createComponent([$property => true]);
             $this->assertTrue($component->$property);
-            
+
             $component = $this->createComponent([$property => false]);
             $this->assertFalse($component->$property);
         }
     }
 
-    public function test_link_colorClass_method(): void
+    public function test_link_color_class_method(): void
     {
         $component = $this->createComponent();
 
@@ -65,7 +71,7 @@ class LinkComponentTest extends ComponentTestCase
                 $result = $component->colorClass();
                 // Add specific assertions based on expected return type
                 $this->assertNotNull($result);
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Method requires attributes or context');
@@ -75,7 +81,7 @@ class LinkComponentTest extends ComponentTestCase
         }
     }
 
-    public function test_link_underlineClass_method(): void
+    public function test_link_underline_class_method(): void
     {
         $component = $this->createComponent();
 
@@ -84,7 +90,7 @@ class LinkComponentTest extends ComponentTestCase
                 $result = $component->underlineClass();
                 // Add specific assertions based on expected return type
                 $this->assertNotNull($result);
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Method requires attributes or context');
@@ -97,7 +103,7 @@ class LinkComponentTest extends ComponentTestCase
     public function test_link_renders_successfully(): void
     {
         $component = $this->createComponent();
-        $view = $component->render();
+        $view      = $component->render();
 
         try {
             $html = $view->render();
@@ -107,7 +113,7 @@ class LinkComponentTest extends ComponentTestCase
                 $this->markTestSkipped('Component requires slots or additional data for rendering');
             }
             throw $e;
-        } catch (\Error $e) {
+        } catch (Error $e) {
             if (str_contains($e->getMessage(), 'Call to a member function') &&
                 str_contains($e->getMessage(), 'on null')) {
                 $this->markTestSkipped('Component requires attributes or context for rendering');
@@ -122,7 +128,7 @@ class LinkComponentTest extends ComponentTestCase
     public function test_link_accessibility_compliance(): void
     {
         $component = $this->createComponent();
-        $view = $component->render();
+        $view      = $component->render();
 
         try {
             $html = $view->render();
@@ -132,7 +138,7 @@ class LinkComponentTest extends ComponentTestCase
                 $this->markTestSkipped('Component requires slots or additional data for rendering');
             }
             throw $e;
-        } catch (\Error $e) {
+        } catch (Error $e) {
             if (str_contains($e->getMessage(), 'Call to a member function') &&
                 str_contains($e->getMessage(), 'on null')) {
                 $this->markTestSkipped('Component requires attributes or context for rendering');
@@ -142,7 +148,7 @@ class LinkComponentTest extends ComponentTestCase
 
         $validation = TestHelpers::validateHtmlStructure($html);
         $this->assertTrue($validation['is_valid'],
-            'Link should have valid HTML structure. Issues: ' . implode(', ', $validation['issues'])
+            'Link should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
         );
     }
 
@@ -152,7 +158,7 @@ class LinkComponentTest extends ComponentTestCase
 
         foreach ($xssPayloads as $payload) {
             $component = $this->createComponent(['label' => $payload]);
-            $view = $component->render();
+            $view      = $component->render();
 
             try {
                 $html = $view->render();
@@ -162,7 +168,7 @@ class LinkComponentTest extends ComponentTestCase
                     $this->markTestSkipped('Component requires slots or additional data for rendering');
                 }
                 throw $e;
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Component requires attributes or context for rendering');
@@ -180,9 +186,9 @@ class LinkComponentTest extends ComponentTestCase
         try {
             $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
             $this->assertLessThan(100, $performance['average_time'],
-                'Link rendering should be under 100ms on average'
+                'Link rendering should be under 100ms on average',
             );
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             if (str_contains($e->getMessage(), 'requires slots') ||
                 str_contains($e->getMessage(), 'requires additional context')) {
                 $this->markTestSkipped($e->getMessage());

@@ -1,15 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
 
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
 use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
+use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
 use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
 use ArtisanPack\LivewireUiComponents\View\Components\Main;
+use Error;
+use RuntimeException;
 
 /**
  * Comprehensive unit tests for the Main component.
- * 
+ *
  * Auto-generated test class that extends ComponentTestCase to inherit
  * common testing patterns and implements component-specific tests.
  */
@@ -18,24 +22,26 @@ class MainComponentTest extends ComponentTestCase
     protected string $componentClass = Main::class;
 
     protected array $defaultProperties = [
-            'fullWidth' => false,
-            'withNav' => false,
-            'collapseText' => 'Collapse',
-            'collapseIcon' => 'o-bars-3-bottom-right',
-            'collapsible' => false
-        ];
+        'fullWidth'    => false,
+        'withNav'      => false,
+        'collapseText' => 'Collapse',
+        'collapseIcon' => 'o-bars-3-bottom-right',
+        'collapsible'  => false,
+    ];
 
     protected array $requiredProperties = [];
 
     public function test_main_string_properties(): void
     {
         $stringProperties = ['collapseText', 'collapseIcon'];
-        $testValues = ComponentDataFactory::sampleTexts();
-        
+        $testValues       = ComponentDataFactory::sampleTexts();
+
         foreach ($stringProperties as $property) {
             foreach ($testValues as $value) {
-                if (empty($value)) continue; // Skip empty values for some properties
-                
+                if (empty($value)) {
+                    continue;
+                } // Skip empty values for some properties
+
                 $component = $this->createComponent([$property => $value]);
                 $this->assertEquals($value, $component->$property);
             }
@@ -45,11 +51,11 @@ class MainComponentTest extends ComponentTestCase
     public function test_main_boolean_properties(): void
     {
         $booleanProperties = ['fullWidth', 'withNav', 'collapsible'];
-        
+
         foreach ($booleanProperties as $property) {
             $component = $this->createComponent([$property => true]);
             $this->assertTrue($component->$property);
-            
+
             $component = $this->createComponent([$property => false]);
             $this->assertFalse($component->$property);
         }
@@ -58,7 +64,7 @@ class MainComponentTest extends ComponentTestCase
     public function test_main_renders_successfully(): void
     {
         $component = $this->createComponent();
-        $view = $component->render();
+        $view      = $component->render();
 
         try {
             $html = $view->render();
@@ -68,7 +74,7 @@ class MainComponentTest extends ComponentTestCase
                 $this->markTestSkipped('Component requires slots or additional data for rendering');
             }
             throw $e;
-        } catch (\Error $e) {
+        } catch (Error $e) {
             if (str_contains($e->getMessage(), 'Call to a member function') &&
                 str_contains($e->getMessage(), 'on null')) {
                 $this->markTestSkipped('Component requires attributes or context for rendering');
@@ -83,7 +89,7 @@ class MainComponentTest extends ComponentTestCase
     public function test_main_accessibility_compliance(): void
     {
         $component = $this->createComponent();
-        $view = $component->render();
+        $view      = $component->render();
 
         try {
             $html = $view->render();
@@ -93,7 +99,7 @@ class MainComponentTest extends ComponentTestCase
                 $this->markTestSkipped('Component requires slots or additional data for rendering');
             }
             throw $e;
-        } catch (\Error $e) {
+        } catch (Error $e) {
             if (str_contains($e->getMessage(), 'Call to a member function') &&
                 str_contains($e->getMessage(), 'on null')) {
                 $this->markTestSkipped('Component requires attributes or context for rendering');
@@ -103,7 +109,7 @@ class MainComponentTest extends ComponentTestCase
 
         $validation = TestHelpers::validateHtmlStructure($html);
         $this->assertTrue($validation['is_valid'],
-            'Main should have valid HTML structure. Issues: ' . implode(', ', $validation['issues'])
+            'Main should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
         );
     }
 
@@ -113,7 +119,7 @@ class MainComponentTest extends ComponentTestCase
 
         foreach ($xssPayloads as $payload) {
             $component = $this->createComponent(['label' => $payload]);
-            $view = $component->render();
+            $view      = $component->render();
 
             try {
                 $html = $view->render();
@@ -123,7 +129,7 @@ class MainComponentTest extends ComponentTestCase
                     $this->markTestSkipped('Component requires slots or additional data for rendering');
                 }
                 throw $e;
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Component requires attributes or context for rendering');
@@ -141,9 +147,9 @@ class MainComponentTest extends ComponentTestCase
         try {
             $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
             $this->assertLessThan(100, $performance['average_time'],
-                'Main rendering should be under 100ms on average'
+                'Main rendering should be under 100ms on average',
             );
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             if (str_contains($e->getMessage(), 'requires slots') ||
                 str_contains($e->getMessage(), 'requires additional context')) {
                 $this->markTestSkipped($e->getMessage());

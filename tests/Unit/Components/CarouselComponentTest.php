@@ -1,15 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
 
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
 use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
+use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
 use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
 use ArtisanPack\LivewireUiComponents\View\Components\Carousel;
+use Error;
+use RuntimeException;
 
 /**
  * Comprehensive unit tests for the Carousel component.
- * 
+ *
  * Auto-generated test class that extends ComponentTestCase to inherit
  * common testing patterns and implements component-specific tests.
  */
@@ -18,26 +22,28 @@ class CarouselComponentTest extends ComponentTestCase
     protected string $componentClass = Carousel::class;
 
     protected array $defaultProperties = [
-            'withoutIndicators' => false,
-            'withoutArrows' => false,
-            'autoplay' => false,
-            'interval' => 2000,
-            'respectsReducedMotion' => true
-        ];
+        'withoutIndicators'     => false,
+        'withoutArrows'         => false,
+        'autoplay'              => false,
+        'interval'              => 2000,
+        'respectsReducedMotion' => true,
+    ];
 
     protected array $requiredProperties = [
-            'slides'
-        ];
+        'slides',
+    ];
 
     public function test_carousel_string_properties(): void
     {
         $stringProperties = ['id', 'ariaLabel', 'ariaLabelledBy'];
-        $testValues = ComponentDataFactory::sampleTexts();
-        
+        $testValues       = ComponentDataFactory::sampleTexts();
+
         foreach ($stringProperties as $property) {
             foreach ($testValues as $value) {
-                if (empty($value)) continue; // Skip empty values for some properties
-                
+                if (empty($value)) {
+                    continue;
+                } // Skip empty values for some properties
+
                 $component = $this->createComponent([$property => $value]);
                 $this->assertEquals($value, $component->$property);
             }
@@ -47,11 +53,11 @@ class CarouselComponentTest extends ComponentTestCase
     public function test_carousel_boolean_properties(): void
     {
         $booleanProperties = ['withoutIndicators', 'withoutArrows', 'autoplay', 'respectsReducedMotion'];
-        
+
         foreach ($booleanProperties as $property) {
             $component = $this->createComponent([$property => true]);
             $this->assertTrue($component->$property);
-            
+
             $component = $this->createComponent([$property => false]);
             $this->assertFalse($component->$property);
         }
@@ -60,8 +66,8 @@ class CarouselComponentTest extends ComponentTestCase
     public function test_carousel_array_properties(): void
     {
         $arrayProperties = ['slides'];
-        $testArrays = ComponentDataFactory::arrayData();
-        
+        $testArrays      = ComponentDataFactory::arrayData();
+
         foreach ($arrayProperties as $property) {
             foreach ($testArrays as $array) {
                 $component = $this->createComponent([$property => $array]);
@@ -70,7 +76,7 @@ class CarouselComponentTest extends ComponentTestCase
         }
     }
 
-    public function test_carousel_renderIcon_method(): void
+    public function test_carousel_render_icon_method(): void
     {
         $component = $this->createComponent();
 
@@ -79,7 +85,7 @@ class CarouselComponentTest extends ComponentTestCase
                 $result = $component->renderIcon();
                 // Add specific assertions based on expected return type
                 $this->assertNotNull($result);
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Method requires attributes or context');
@@ -92,7 +98,7 @@ class CarouselComponentTest extends ComponentTestCase
     public function test_carousel_renders_successfully(): void
     {
         $component = $this->createComponent();
-        $view = $component->render();
+        $view      = $component->render();
 
         try {
             $html = $view->render();
@@ -102,7 +108,7 @@ class CarouselComponentTest extends ComponentTestCase
                 $this->markTestSkipped('Component requires slots or additional data for rendering');
             }
             throw $e;
-        } catch (\Error $e) {
+        } catch (Error $e) {
             if (str_contains($e->getMessage(), 'Call to a member function') &&
                 str_contains($e->getMessage(), 'on null')) {
                 $this->markTestSkipped('Component requires attributes or context for rendering');
@@ -117,7 +123,7 @@ class CarouselComponentTest extends ComponentTestCase
     public function test_carousel_accessibility_compliance(): void
     {
         $component = $this->createComponent();
-        $view = $component->render();
+        $view      = $component->render();
 
         try {
             $html = $view->render();
@@ -127,7 +133,7 @@ class CarouselComponentTest extends ComponentTestCase
                 $this->markTestSkipped('Component requires slots or additional data for rendering');
             }
             throw $e;
-        } catch (\Error $e) {
+        } catch (Error $e) {
             if (str_contains($e->getMessage(), 'Call to a member function') &&
                 str_contains($e->getMessage(), 'on null')) {
                 $this->markTestSkipped('Component requires attributes or context for rendering');
@@ -137,7 +143,7 @@ class CarouselComponentTest extends ComponentTestCase
 
         $validation = TestHelpers::validateHtmlStructure($html);
         $this->assertTrue($validation['is_valid'],
-            'Carousel should have valid HTML structure. Issues: ' . implode(', ', $validation['issues'])
+            'Carousel should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
         );
     }
 
@@ -147,7 +153,7 @@ class CarouselComponentTest extends ComponentTestCase
 
         foreach ($xssPayloads as $payload) {
             $component = $this->createComponent(['label' => $payload]);
-            $view = $component->render();
+            $view      = $component->render();
 
             try {
                 $html = $view->render();
@@ -157,7 +163,7 @@ class CarouselComponentTest extends ComponentTestCase
                     $this->markTestSkipped('Component requires slots or additional data for rendering');
                 }
                 throw $e;
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Component requires attributes or context for rendering');
@@ -175,9 +181,9 @@ class CarouselComponentTest extends ComponentTestCase
         try {
             $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
             $this->assertLessThan(100, $performance['average_time'],
-                'Carousel rendering should be under 100ms on average'
+                'Carousel rendering should be under 100ms on average',
             );
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             if (str_contains($e->getMessage(), 'requires slots') ||
                 str_contains($e->getMessage(), 'requires additional context')) {
                 $this->markTestSkipped($e->getMessage());

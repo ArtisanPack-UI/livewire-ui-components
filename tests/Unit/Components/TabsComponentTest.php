@@ -1,15 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
 
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
 use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
+use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
 use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
 use ArtisanPack\LivewireUiComponents\View\Components\Tabs;
+use Error;
+use RuntimeException;
 
 /**
  * Comprehensive unit tests for the Tabs component.
- * 
+ *
  * Auto-generated test class that extends ComponentTestCase to inherit
  * common testing patterns and implements component-specific tests.
  */
@@ -18,38 +22,40 @@ class TabsComponentTest extends ComponentTestCase
     protected string $componentClass = Tabs::class;
 
     protected array $defaultProperties = [
-            'orientation' => 'horizontal',
-            'labelClass' => 'font-semibold pb-1',
-            'activeClass' => 'border-b-[length:var(--border)] border-b-base-content/50',
-            'labelDivClass' => 'border-b-[length:var(--border)] border-b-base-content/10 flex overflow-x-auto',
-            'tabsClass' => 'relative w-full',
-            'verticalTabsClass' => 'relative w-full flex flex-col md:flex-row',
-            'verticalLabelClass' => 'font-semibold w-full px-3 py-2 md:pr-1 md:pl-1 md:py-2',
-            'verticalActiveClass' => 'border-r-[length:var(--border)] border-r-base-content/50',
-            'verticalLabelDivClass' => 'border-r-[length:var(--border)] border-r-base-content/10 flex flex-col overflow-y-auto min-w-48',
-            'verticalContentClass' => 'flex-1',
-            'verticalRightActiveClass' => 'border-l-[length:var(--border)] border-l-base-content/50',
-            'verticalRightLabelDivClass' => 'border-l-[length:var(--border)] border-l-base-content/10 flex flex-col overflow-y-auto min-w-48'
-        ];
+        'orientation'                => 'horizontal',
+        'labelClass'                 => 'font-semibold pb-1',
+        'activeClass'                => 'border-b-[length:var(--border)] border-b-base-content/50',
+        'labelDivClass'              => 'border-b-[length:var(--border)] border-b-base-content/10 flex overflow-x-auto',
+        'tabsClass'                  => 'relative w-full',
+        'verticalTabsClass'          => 'relative w-full flex flex-col md:flex-row',
+        'verticalLabelClass'         => 'font-semibold w-full px-3 py-2 md:pr-1 md:pl-1 md:py-2',
+        'verticalActiveClass'        => 'border-r-[length:var(--border)] border-r-base-content/50',
+        'verticalLabelDivClass'      => 'border-r-[length:var(--border)] border-r-base-content/10 flex flex-col overflow-y-auto min-w-48',
+        'verticalContentClass'       => 'flex-1',
+        'verticalRightActiveClass'   => 'border-l-[length:var(--border)] border-l-base-content/50',
+        'verticalRightLabelDivClass' => 'border-l-[length:var(--border)] border-l-base-content/10 flex flex-col overflow-y-auto min-w-48',
+    ];
 
     protected array $requiredProperties = [];
 
     public function test_tabs_string_properties(): void
     {
         $stringProperties = ['id', 'selected', 'orientation', 'variant', 'gap', 'labelColorClasses', 'activeColorClasses', 'labelClass', 'activeClass', 'labelDivClass', 'tabsClass', 'verticalTabsClass', 'verticalLabelClass', 'verticalActiveClass', 'verticalLabelDivClass', 'verticalContentClass', 'verticalRightActiveClass', 'verticalRightLabelDivClass'];
-        $testValues = ComponentDataFactory::sampleTexts();
-        
+        $testValues       = ComponentDataFactory::sampleTexts();
+
         foreach ($stringProperties as $property) {
             foreach ($testValues as $value) {
-                if (empty($value)) continue; // Skip empty values for some properties
-                
+                if (empty($value)) {
+                    continue;
+                } // Skip empty values for some properties
+
                 $component = $this->createComponent([$property => $value]);
                 $this->assertEquals($value, $component->$property);
             }
         }
     }
 
-    public function test_tabs_isVertical_method(): void
+    public function test_tabs_is_vertical_method(): void
     {
         $component = $this->createComponent();
 
@@ -58,7 +64,7 @@ class TabsComponentTest extends ComponentTestCase
                 $result = $component->isVertical();
                 // Add specific assertions based on expected return type
                 $this->assertNotNull($result);
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Method requires attributes or context');
@@ -68,7 +74,7 @@ class TabsComponentTest extends ComponentTestCase
         }
     }
 
-    public function test_tabs_isVerticalRight_method(): void
+    public function test_tabs_is_vertical_right_method(): void
     {
         $component = $this->createComponent();
 
@@ -77,7 +83,7 @@ class TabsComponentTest extends ComponentTestCase
                 $result = $component->isVerticalRight();
                 // Add specific assertions based on expected return type
                 $this->assertNotNull($result);
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Method requires attributes or context');
@@ -87,7 +93,7 @@ class TabsComponentTest extends ComponentTestCase
         }
     }
 
-    public function test_tabs_getTabsContainerClass_method(): void
+    public function test_tabs_get_tabs_container_class_method(): void
     {
         $component = $this->createComponent();
 
@@ -96,7 +102,7 @@ class TabsComponentTest extends ComponentTestCase
                 $result = $component->getTabsContainerClass();
                 // Add specific assertions based on expected return type
                 $this->assertNotNull($result);
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Method requires attributes or context');
@@ -106,7 +112,7 @@ class TabsComponentTest extends ComponentTestCase
         }
     }
 
-    public function test_tabs_getLabelDivClass_method(): void
+    public function test_tabs_get_label_div_class_method(): void
     {
         $component = $this->createComponent();
 
@@ -115,7 +121,7 @@ class TabsComponentTest extends ComponentTestCase
                 $result = $component->getLabelDivClass();
                 // Add specific assertions based on expected return type
                 $this->assertNotNull($result);
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Method requires attributes or context');
@@ -125,7 +131,7 @@ class TabsComponentTest extends ComponentTestCase
         }
     }
 
-    public function test_tabs_getFinalLabelClass_method(): void
+    public function test_tabs_get_final_label_class_method(): void
     {
         $component = $this->createComponent();
 
@@ -134,7 +140,7 @@ class TabsComponentTest extends ComponentTestCase
                 $result = $component->getFinalLabelClass();
                 // Add specific assertions based on expected return type
                 $this->assertNotNull($result);
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Method requires attributes or context');
@@ -144,7 +150,7 @@ class TabsComponentTest extends ComponentTestCase
         }
     }
 
-    public function test_tabs_getActiveClass_method(): void
+    public function test_tabs_get_active_class_method(): void
     {
         $component = $this->createComponent();
 
@@ -153,7 +159,7 @@ class TabsComponentTest extends ComponentTestCase
                 $result = $component->getActiveClass();
                 // Add specific assertions based on expected return type
                 $this->assertNotNull($result);
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Method requires attributes or context');
@@ -166,7 +172,7 @@ class TabsComponentTest extends ComponentTestCase
     public function test_tabs_renders_successfully(): void
     {
         $component = $this->createComponent();
-        $view = $component->render();
+        $view      = $component->render();
 
         try {
             $html = $view->render();
@@ -176,7 +182,7 @@ class TabsComponentTest extends ComponentTestCase
                 $this->markTestSkipped('Component requires slots or additional data for rendering');
             }
             throw $e;
-        } catch (\Error $e) {
+        } catch (Error $e) {
             if (str_contains($e->getMessage(), 'Call to a member function') &&
                 str_contains($e->getMessage(), 'on null')) {
                 $this->markTestSkipped('Component requires attributes or context for rendering');
@@ -191,7 +197,7 @@ class TabsComponentTest extends ComponentTestCase
     public function test_tabs_accessibility_compliance(): void
     {
         $component = $this->createComponent();
-        $view = $component->render();
+        $view      = $component->render();
 
         try {
             $html = $view->render();
@@ -201,7 +207,7 @@ class TabsComponentTest extends ComponentTestCase
                 $this->markTestSkipped('Component requires slots or additional data for rendering');
             }
             throw $e;
-        } catch (\Error $e) {
+        } catch (Error $e) {
             if (str_contains($e->getMessage(), 'Call to a member function') &&
                 str_contains($e->getMessage(), 'on null')) {
                 $this->markTestSkipped('Component requires attributes or context for rendering');
@@ -211,7 +217,7 @@ class TabsComponentTest extends ComponentTestCase
 
         $validation = TestHelpers::validateHtmlStructure($html);
         $this->assertTrue($validation['is_valid'],
-            'Tabs should have valid HTML structure. Issues: ' . implode(', ', $validation['issues'])
+            'Tabs should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
         );
     }
 
@@ -221,7 +227,7 @@ class TabsComponentTest extends ComponentTestCase
 
         foreach ($xssPayloads as $payload) {
             $component = $this->createComponent(['label' => $payload]);
-            $view = $component->render();
+            $view      = $component->render();
 
             try {
                 $html = $view->render();
@@ -231,7 +237,7 @@ class TabsComponentTest extends ComponentTestCase
                     $this->markTestSkipped('Component requires slots or additional data for rendering');
                 }
                 throw $e;
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Component requires attributes or context for rendering');
@@ -249,9 +255,9 @@ class TabsComponentTest extends ComponentTestCase
         try {
             $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
             $this->assertLessThan(100, $performance['average_time'],
-                'Tabs rendering should be under 100ms on average'
+                'Tabs rendering should be under 100ms on average',
             );
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             if (str_contains($e->getMessage(), 'requires slots') ||
                 str_contains($e->getMessage(), 'requires additional context')) {
                 $this->markTestSkipped($e->getMessage());

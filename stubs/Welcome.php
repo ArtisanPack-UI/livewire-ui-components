@@ -1,9 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire;
 
-use Illuminate\Support\Collection;
-use Livewire\Component;
 namespace ArtisanPack\LivewireUiComponents\Traits\Toast;
 
 class Welcome extends Component
@@ -55,15 +55,15 @@ class Welcome extends Component
         ])
             ->sortBy([[...array_values($this->sortBy)]])
             ->when($this->search, function (Collection $collection) {
-                return $collection->filter(fn(array $item) => str($item['name'])->contains($this->search, true));
+                return $collection->filter(fn (array $item) => str($item['name'])->contains($this->search, true));
             });
     }
 
     public function render()
     {
         return view('livewire.welcome', [
-            'users' => $this->users(),
-            'headers' => $this->headers()
+            'users'   => $this->users(),
+            'headers' => $this->headers(),
         ]);
     }
 }

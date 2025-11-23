@@ -1,15 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
 
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
 use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
+use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
 use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
 use ArtisanPack\LivewireUiComponents\View\Components\Stat;
+use Error;
+use RuntimeException;
 
 /**
  * Comprehensive unit tests for the Stat component.
- * 
+ *
  * Auto-generated test class that extends ComponentTestCase to inherit
  * common testing patterns and implements component-specific tests.
  */
@@ -18,31 +22,33 @@ class StatComponentTest extends ComponentTestCase
     protected string $componentClass = Stat::class;
 
     protected array $defaultProperties = [
-            'color' => '',
-            'size' => 'md',
-            'iconPosition' => 'left',
-            'titlePosition' => 'top',
-            'contentAlign' => 'left'
-        ];
+        'color'         => '',
+        'size'          => 'md',
+        'iconPosition'  => 'left',
+        'titlePosition' => 'top',
+        'contentAlign'  => 'left',
+    ];
 
     protected array $requiredProperties = [];
 
     public function test_stat_string_properties(): void
     {
         $stringProperties = ['id', 'value', 'icon', 'color', 'title', 'description', 'tooltip', 'tooltipLeft', 'tooltipRight', 'tooltipBottom', 'size', 'iconPosition', 'titlePosition', 'contentAlign'];
-        $testValues = ComponentDataFactory::sampleTexts();
-        
+        $testValues       = ComponentDataFactory::sampleTexts();
+
         foreach ($stringProperties as $property) {
             foreach ($testValues as $value) {
-                if (empty($value)) continue; // Skip empty values for some properties
-                
+                if (empty($value)) {
+                    continue;
+                } // Skip empty values for some properties
+
                 $component = $this->createComponent([$property => $value]);
                 $this->assertEquals($value, $component->$property);
             }
         }
     }
 
-    public function test_stat_sizeClasses_method(): void
+    public function test_stat_size_classes_method(): void
     {
         $component = $this->createComponent();
 
@@ -51,7 +57,7 @@ class StatComponentTest extends ComponentTestCase
                 $result = $component->sizeClasses();
                 // Add specific assertions based on expected return type
                 $this->assertNotNull($result);
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Method requires attributes or context');
@@ -61,7 +67,7 @@ class StatComponentTest extends ComponentTestCase
         }
     }
 
-    public function test_stat_layoutClasses_method(): void
+    public function test_stat_layout_classes_method(): void
     {
         $component = $this->createComponent();
 
@@ -70,7 +76,7 @@ class StatComponentTest extends ComponentTestCase
                 $result = $component->layoutClasses();
                 // Add specific assertions based on expected return type
                 $this->assertNotNull($result);
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Method requires attributes or context');
@@ -80,7 +86,7 @@ class StatComponentTest extends ComponentTestCase
         }
     }
 
-    public function test_stat_shouldRenderIconFirst_method(): void
+    public function test_stat_should_render_icon_first_method(): void
     {
         $component = $this->createComponent();
 
@@ -89,7 +95,7 @@ class StatComponentTest extends ComponentTestCase
                 $result = $component->shouldRenderIconFirst();
                 // Add specific assertions based on expected return type
                 $this->assertNotNull($result);
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Method requires attributes or context');
@@ -99,7 +105,7 @@ class StatComponentTest extends ComponentTestCase
         }
     }
 
-    public function test_stat_shouldRenderTitleFirst_method(): void
+    public function test_stat_should_render_title_first_method(): void
     {
         $component = $this->createComponent();
 
@@ -108,7 +114,7 @@ class StatComponentTest extends ComponentTestCase
                 $result = $component->shouldRenderTitleFirst();
                 // Add specific assertions based on expected return type
                 $this->assertNotNull($result);
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Method requires attributes or context');
@@ -121,7 +127,7 @@ class StatComponentTest extends ComponentTestCase
     public function test_stat_renders_successfully(): void
     {
         $component = $this->createComponent();
-        $view = $component->render();
+        $view      = $component->render();
 
         try {
             $html = $view->render();
@@ -131,7 +137,7 @@ class StatComponentTest extends ComponentTestCase
                 $this->markTestSkipped('Component requires slots or additional data for rendering');
             }
             throw $e;
-        } catch (\Error $e) {
+        } catch (Error $e) {
             if (str_contains($e->getMessage(), 'Call to a member function') &&
                 str_contains($e->getMessage(), 'on null')) {
                 $this->markTestSkipped('Component requires attributes or context for rendering');
@@ -146,7 +152,7 @@ class StatComponentTest extends ComponentTestCase
     public function test_stat_accessibility_compliance(): void
     {
         $component = $this->createComponent();
-        $view = $component->render();
+        $view      = $component->render();
 
         try {
             $html = $view->render();
@@ -156,7 +162,7 @@ class StatComponentTest extends ComponentTestCase
                 $this->markTestSkipped('Component requires slots or additional data for rendering');
             }
             throw $e;
-        } catch (\Error $e) {
+        } catch (Error $e) {
             if (str_contains($e->getMessage(), 'Call to a member function') &&
                 str_contains($e->getMessage(), 'on null')) {
                 $this->markTestSkipped('Component requires attributes or context for rendering');
@@ -166,7 +172,7 @@ class StatComponentTest extends ComponentTestCase
 
         $validation = TestHelpers::validateHtmlStructure($html);
         $this->assertTrue($validation['is_valid'],
-            'Stat should have valid HTML structure. Issues: ' . implode(', ', $validation['issues'])
+            'Stat should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
         );
     }
 
@@ -176,7 +182,7 @@ class StatComponentTest extends ComponentTestCase
 
         foreach ($xssPayloads as $payload) {
             $component = $this->createComponent(['label' => $payload]);
-            $view = $component->render();
+            $view      = $component->render();
 
             try {
                 $html = $view->render();
@@ -186,7 +192,7 @@ class StatComponentTest extends ComponentTestCase
                     $this->markTestSkipped('Component requires slots or additional data for rendering');
                 }
                 throw $e;
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Component requires attributes or context for rendering');
@@ -204,9 +210,9 @@ class StatComponentTest extends ComponentTestCase
         try {
             $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
             $this->assertLessThan(100, $performance['average_time'],
-                'Stat rendering should be under 100ms on average'
+                'Stat rendering should be under 100ms on average',
             );
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             if (str_contains($e->getMessage(), 'requires slots') ||
                 str_contains($e->getMessage(), 'requires additional context')) {
                 $this->markTestSkipped($e->getMessage());

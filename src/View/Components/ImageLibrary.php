@@ -1,19 +1,19 @@
 <?php
+
+declare(strict_types=1);
 /**
  * ImageLibrary
  *
  * This file contains the ImageLibrary class for the ArtisanPack UI Livewire UI Components package.
  *
- * @package    ArtisanPack\LivewireUiComponents\View
- * @subpackage Components
  * @author     Jacob Martella
  * @copyright  2023 Jacob Martella
  * @license    MIT
+ *
  * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
  * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
  * @since      1.0.0
  */
-
 
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
@@ -21,6 +21,7 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Illuminate\View\Component;
+
 /**
  * ImageLibrary Class
  *
@@ -28,7 +29,6 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-
 class ImageLibrary extends Component
 {
     public string $uuid;
@@ -41,24 +41,24 @@ class ImageLibrary extends Component
         public ?string $hint = null,
         public ?bool $hideErrors = false,
         public ?bool $hideProgress = false,
-        public ?string $changeText = "Change",
-        public ?string $cropText = "Crop",
-        public ?string $removeText = "Remove",
-        public ?string $cropTitleText = "Crop image",
-        public ?string $cropCancelText = "Cancel",
-        public ?string $cropSaveText = "Crop",
-        public ?string $addFilesText = "Add images",
+        public ?string $changeText = 'Change',
+        public ?string $cropText = 'Crop',
+        public ?string $removeText = 'Remove',
+        public ?string $cropTitleText = 'Crop image',
+        public ?string $cropCancelText = 'Cancel',
+        public ?string $cropSaveText = 'Crop',
+        public ?string $addFilesText = 'Add images',
         public ?array $cropConfig = [],
-        public Collection $preview = new Collection(),
+        public Collection $preview = new Collection,
 
         // Drag and Drop
         public ?bool $withDragDrop = false,
-        public ?string $dragDropText = "Drop images here",
-        public ?string $dragDropMultipleText = "Drop {count} images here",
+        public ?string $dragDropText = 'Drop images here',
+        public ?string $dragDropMultipleText = 'Drop {count} images here',
         public ?string $dragDropClass = null,
 
     ) {
-        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+        $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
     }
 
     public function modelName(): ?string
@@ -79,9 +79,9 @@ class ImageLibrary extends Component
     public function cropSetup(): string
     {
         return json_encode(array_merge([
-            'autoCropArea' => 1,
-            'viewMode' => 1,
-            'dragMode' => 'move',
+            'autoCropArea'     => 1,
+            'viewMode'         => 1,
+            'dragMode'         => 'move',
             'checkCrossOrigin' => false,
         ], $this->cropConfig));
     }

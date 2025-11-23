@@ -1,15 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
 
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
 use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
+use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
 use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
 use ArtisanPack\LivewireUiComponents\View\Components\Loading;
+use Error;
+use RuntimeException;
 
 /**
  * Comprehensive unit tests for the Loading component.
- * 
+ *
  * Auto-generated test class that extends ComponentTestCase to inherit
  * common testing patterns and implements component-specific tests.
  */
@@ -18,20 +22,22 @@ class LoadingComponentTest extends ComponentTestCase
     protected string $componentClass = Loading::class;
 
     protected array $defaultProperties = [
-            'animated' => true
-        ];
+        'animated' => true,
+    ];
 
     protected array $requiredProperties = [];
 
     public function test_loading_string_properties(): void
     {
         $stringProperties = ['id', 'type', 'icon', 'customSvg'];
-        $testValues = ComponentDataFactory::sampleTexts();
-        
+        $testValues       = ComponentDataFactory::sampleTexts();
+
         foreach ($stringProperties as $property) {
             foreach ($testValues as $value) {
-                if (empty($value)) continue; // Skip empty values for some properties
-                
+                if (empty($value)) {
+                    continue;
+                } // Skip empty values for some properties
+
                 $component = $this->createComponent([$property => $value]);
                 $this->assertEquals($value, $component->$property);
             }
@@ -41,17 +47,17 @@ class LoadingComponentTest extends ComponentTestCase
     public function test_loading_boolean_properties(): void
     {
         $booleanProperties = ['animated'];
-        
+
         foreach ($booleanProperties as $property) {
             $component = $this->createComponent([$property => true]);
             $this->assertTrue($component->$property);
-            
+
             $component = $this->createComponent([$property => false]);
             $this->assertFalse($component->$property);
         }
     }
 
-    public function test_loading_getLoadingType_method(): void
+    public function test_loading_get_loading_type_method(): void
     {
         $component = $this->createComponent();
 
@@ -60,7 +66,7 @@ class LoadingComponentTest extends ComponentTestCase
                 $result = $component->getLoadingType();
                 // Add specific assertions based on expected return type
                 $this->assertNotNull($result);
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Method requires attributes or context');
@@ -70,7 +76,7 @@ class LoadingComponentTest extends ComponentTestCase
         }
     }
 
-    public function test_loading_getLoadingIcon_method(): void
+    public function test_loading_get_loading_icon_method(): void
     {
         $component = $this->createComponent();
 
@@ -79,7 +85,7 @@ class LoadingComponentTest extends ComponentTestCase
                 $result = $component->getLoadingIcon();
                 // Add specific assertions based on expected return type
                 $this->assertNotNull($result);
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Method requires attributes or context');
@@ -89,7 +95,7 @@ class LoadingComponentTest extends ComponentTestCase
         }
     }
 
-    public function test_loading_shouldUseSvg_method(): void
+    public function test_loading_should_use_svg_method(): void
     {
         $component = $this->createComponent();
 
@@ -98,7 +104,7 @@ class LoadingComponentTest extends ComponentTestCase
                 $result = $component->shouldUseSvg();
                 // Add specific assertions based on expected return type
                 $this->assertNotNull($result);
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Method requires attributes or context');
@@ -111,7 +117,7 @@ class LoadingComponentTest extends ComponentTestCase
     public function test_loading_renders_successfully(): void
     {
         $component = $this->createComponent();
-        $view = $component->render();
+        $view      = $component->render();
 
         try {
             $html = $view->render();
@@ -121,7 +127,7 @@ class LoadingComponentTest extends ComponentTestCase
                 $this->markTestSkipped('Component requires slots or additional data for rendering');
             }
             throw $e;
-        } catch (\Error $e) {
+        } catch (Error $e) {
             if (str_contains($e->getMessage(), 'Call to a member function') &&
                 str_contains($e->getMessage(), 'on null')) {
                 $this->markTestSkipped('Component requires attributes or context for rendering');
@@ -136,7 +142,7 @@ class LoadingComponentTest extends ComponentTestCase
     public function test_loading_accessibility_compliance(): void
     {
         $component = $this->createComponent();
-        $view = $component->render();
+        $view      = $component->render();
 
         try {
             $html = $view->render();
@@ -146,7 +152,7 @@ class LoadingComponentTest extends ComponentTestCase
                 $this->markTestSkipped('Component requires slots or additional data for rendering');
             }
             throw $e;
-        } catch (\Error $e) {
+        } catch (Error $e) {
             if (str_contains($e->getMessage(), 'Call to a member function') &&
                 str_contains($e->getMessage(), 'on null')) {
                 $this->markTestSkipped('Component requires attributes or context for rendering');
@@ -156,7 +162,7 @@ class LoadingComponentTest extends ComponentTestCase
 
         $validation = TestHelpers::validateHtmlStructure($html);
         $this->assertTrue($validation['is_valid'],
-            'Loading should have valid HTML structure. Issues: ' . implode(', ', $validation['issues'])
+            'Loading should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
         );
     }
 
@@ -166,7 +172,7 @@ class LoadingComponentTest extends ComponentTestCase
 
         foreach ($xssPayloads as $payload) {
             $component = $this->createComponent(['label' => $payload]);
-            $view = $component->render();
+            $view      = $component->render();
 
             try {
                 $html = $view->render();
@@ -176,7 +182,7 @@ class LoadingComponentTest extends ComponentTestCase
                     $this->markTestSkipped('Component requires slots or additional data for rendering');
                 }
                 throw $e;
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Component requires attributes or context for rendering');
@@ -194,9 +200,9 @@ class LoadingComponentTest extends ComponentTestCase
         try {
             $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
             $this->assertLessThan(100, $performance['average_time'],
-                'Loading rendering should be under 100ms on average'
+                'Loading rendering should be under 100ms on average',
             );
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             if (str_contains($e->getMessage(), 'requires slots') ||
                 str_contains($e->getMessage(), 'requires additional context')) {
                 $this->markTestSkipped($e->getMessage());

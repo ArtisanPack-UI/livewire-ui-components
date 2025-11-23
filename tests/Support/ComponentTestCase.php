@@ -1,16 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ArtisanPack\LivewireUiComponents\Tests\Support;
 
 use ArtisanPack\LivewireUiComponents\Tests\TestCase;
-use Illuminate\View\Component;
+use Error;
+use Exception;
 use Illuminate\Contracts\View\View;
+use Illuminate\View\Component;
 use ReflectionClass;
 use ReflectionProperty;
 
 /**
  * Base test case for component testing providing common patterns and utilities.
- * 
+ *
  * This class establishes consistent testing approaches across all UI components,
  * providing methods for testing component instantiation, properties, rendering,
  * and common behaviors like UUID generation and color resolution.
@@ -38,7 +42,7 @@ abstract class ComponentTestCase extends TestCase
     public function test_component_can_be_instantiated(): void
     {
         $component = $this->createComponent();
-        
+
         $this->assertInstanceOf($this->componentClass, $component);
         $this->assertInstanceOf(Component::class, $component);
     }
@@ -50,7 +54,7 @@ abstract class ComponentTestCase extends TestCase
     {
         try {
             $component = $this->createComponent();
-            $view = $component->render();
+            $view      = $component->render();
 
             $this->assertInstanceOf(View::class, $view);
             $this->assertNotEmpty($view->name());
@@ -63,15 +67,15 @@ abstract class ComponentTestCase extends TestCase
                 // If it's a slot/variable issue, skip test
                 if (str_contains($e->getMessage(), 'Undefined variable') ||
                     str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data: ' . $e->getMessage());
+                    $this->markTestSkipped('Component requires slots or additional data: '.$e->getMessage());
                 }
                 throw $e;
             }
-        } catch (\Error $e) {
+        } catch (Error $e) {
             // Handle null method calls (e.g., $attributes->whereStartsWith())
             if (str_contains($e->getMessage(), 'Call to a member function') &&
                 str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context: ' . $e->getMessage());
+                $this->markTestSkipped('Component requires attributes or context: '.$e->getMessage());
             }
             throw $e;
         }
@@ -92,7 +96,7 @@ abstract class ComponentTestCase extends TestCase
             $this->assertEquals(
                 $expectedValue,
                 $component->$property,
-                "Property '{$property}' should have default value '{$expectedValue}'"
+                "Property '{$property}' should have default value '{$expectedValue}'",
             );
         }
     }
@@ -102,7 +106,7 @@ abstract class ComponentTestCase extends TestCase
      */
     public function test_component_generates_unique_uuid(): void
     {
-        if (!$this->componentHasProperty('uuid')) {
+        if (! $this->componentHasProperty('uuid')) {
             $this->markTestSkipped('Component does not have uuid property');
         }
 
@@ -121,11 +125,11 @@ abstract class ComponentTestCase extends TestCase
      */
     public function test_component_uses_custom_id_in_uuid(): void
     {
-        if (!$this->componentHasProperty('uuid') || !$this->componentHasProperty('id')) {
+        if (! $this->componentHasProperty('uuid') || ! $this->componentHasProperty('id')) {
             $this->markTestSkipped('Component does not have uuid or id property');
         }
 
-        $customId = 'test-custom-id';
+        $customId  = 'test-custom-id';
         $component = $this->createComponent(['id' => $customId]);
 
         $this->assertStringEndsWith($customId, $component->uuid);
@@ -136,7 +140,7 @@ abstract class ComponentTestCase extends TestCase
      */
     public function test_component_resolves_colors(): void
     {
-        if (!$this->componentHasProperty('color')) {
+        if (! $this->componentHasProperty('color')) {
             $this->markTestSkipped('Component does not have color property');
         }
 
@@ -146,10 +150,10 @@ abstract class ComponentTestCase extends TestCase
 
         // Test custom color if color method exists
         if (method_exists($component, 'getColorClasses')) {
-            $customColor = 'blue-500';
-            $component = $this->createComponent(['color' => $customColor]);
+            $customColor  = 'blue-500';
+            $component    = $this->createComponent(['color' => $customColor]);
             $colorClasses = $component->getColorClasses();
-            
+
             $this->assertNotEmpty($colorClasses);
         }
     }
@@ -159,12 +163,12 @@ abstract class ComponentTestCase extends TestCase
      */
     public function test_component_handles_size_variations(): void
     {
-        if (!$this->componentHasProperty('size')) {
+        if (! $this->componentHasProperty('size')) {
             $this->markTestSkipped('Component does not have size property');
         }
 
         $sizes = ['xs', 'sm', 'md', 'lg', 'xl'];
-        
+
         foreach ($sizes as $size) {
             $component = $this->createComponent(['size' => $size]);
             $this->assertEquals($size, $component->size);
@@ -176,12 +180,12 @@ abstract class ComponentTestCase extends TestCase
      */
     public function test_component_handles_variants(): void
     {
-        if (!$this->componentHasProperty('variant')) {
+        if (! $this->componentHasProperty('variant')) {
             $this->markTestSkipped('Component does not have variant property');
         }
 
         $variants = ['primary', 'secondary', 'success', 'warning', 'error', 'info'];
-        
+
         foreach ($variants as $variant) {
             $component = $this->createComponent(['variant' => $variant]);
             $this->assertEquals($variant, $component->variant);
@@ -194,7 +198,7 @@ abstract class ComponentTestCase extends TestCase
     public function test_component_handles_boolean_properties(): void
     {
         $booleanProperties = $this->getBooleanProperties();
-        
+
         if (empty($booleanProperties)) {
             $this->markTestSkipped('No boolean properties found for this component');
         }
@@ -225,9 +229,9 @@ abstract class ComponentTestCase extends TestCase
                 // If no exception is thrown, check that the property has a meaningful default
                 $this->assertNotNull(
                     $component->$property,
-                    "Required property '{$property}' should not be null"
+                    "Required property '{$property}' should not be null",
                 );
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 // Expected behavior for truly required properties
                 $this->assertTrue(true, "Property '{$property}' correctly throws exception when null");
             }
@@ -241,7 +245,7 @@ abstract class ComponentTestCase extends TestCase
     {
         try {
             $component = $this->createComponent();
-            $view = $component->render();
+            $view      = $component->render();
 
             try {
                 $html = $view->render();
@@ -255,9 +259,9 @@ abstract class ComponentTestCase extends TestCase
 
             // Check for basic accessibility attributes
             $accessibilityChecks = [
-                'aria-' => 'Should have ARIA attributes for accessibility',
-                'role=' => 'Should have role attributes where appropriate',
-                'tabindex=' => 'Should have tabindex for keyboard navigation where appropriate'
+                'aria-'     => 'Should have ARIA attributes for accessibility',
+                'role='     => 'Should have role attributes where appropriate',
+                'tabindex=' => 'Should have tabindex for keyboard navigation where appropriate',
             ];
 
             $hasAccessibilityFeatures = false;
@@ -270,15 +274,15 @@ abstract class ComponentTestCase extends TestCase
 
             // Only fail if this is an interactive component that should have accessibility features
             $interactiveComponents = ['Button', 'Input', 'Select', 'Checkbox', 'Radio', 'Toggle', 'Modal'];
-            $componentName = class_basename($this->componentClass);
+            $componentName         = class_basename($this->componentClass);
 
             if (in_array($componentName, $interactiveComponents)) {
                 $this->assertTrue(
                     $hasAccessibilityFeatures,
-                    "Interactive component '{$componentName}' should have accessibility attributes"
+                    "Interactive component '{$componentName}' should have accessibility attributes",
                 );
             }
-        } catch (\Error $e) {
+        } catch (Error $e) {
             if (str_contains($e->getMessage(), 'Call to a member function') &&
                 str_contains($e->getMessage(), 'on null')) {
                 $this->markTestSkipped('Component requires attributes or context for rendering');
@@ -301,6 +305,7 @@ abstract class ComponentTestCase extends TestCase
     protected function componentHasProperty(string $property): bool
     {
         $reflection = new ReflectionClass($this->componentClass);
+
         return $reflection->hasProperty($property);
     }
 
@@ -309,22 +314,22 @@ abstract class ComponentTestCase extends TestCase
      */
     protected function getBooleanProperties(): array
     {
-        $reflection = new ReflectionClass($this->componentClass);
-        $properties = $reflection->getProperties(ReflectionProperty::IS_PUBLIC);
+        $reflection        = new ReflectionClass($this->componentClass);
+        $properties        = $reflection->getProperties(ReflectionProperty::IS_PUBLIC);
         $booleanProperties = [];
 
         foreach ($properties as $property) {
             $propertyName = $property->getName();
-            
+
             // Skip certain non-boolean properties
             if (in_array($propertyName, ['uuid', 'id', 'class', 'style', 'attributes'])) {
                 continue;
             }
 
             // Check if property name suggests boolean (starts with 'is', 'has', 'can', etc.)
-            $booleanPrefixes = ['is', 'has', 'can', 'should', 'will', 'does'];
+            $booleanPrefixes         = ['is', 'has', 'can', 'should', 'will', 'does'];
             $startsWithBooleanPrefix = false;
-            
+
             foreach ($booleanPrefixes as $prefix) {
                 if (str_starts_with(strtolower($propertyName), $prefix)) {
                     $startsWithBooleanPrefix = true;
@@ -334,10 +339,10 @@ abstract class ComponentTestCase extends TestCase
 
             // Common boolean property names
             $commonBooleanProperties = [
-                'disabled', 'readonly', 'required', 'multiple', 'checked', 
+                'disabled', 'readonly', 'required', 'multiple', 'checked',
                 'selected', 'active', 'visible', 'hidden', 'loading',
                 'clearable', 'searchable', 'sortable', 'filterable',
-                'draggable', 'resizable', 'collapsible', 'expandable'
+                'draggable', 'resizable', 'collapsible', 'expandable',
             ];
 
             if ($startsWithBooleanPrefix || in_array(strtolower($propertyName), $commonBooleanProperties)) {
@@ -369,9 +374,9 @@ abstract class ComponentTestCase extends TestCase
             $this->assertStringContainsString(
                 $expectedContent,
                 $html,
-                "Component should render expected content: {$expectedContent}"
+                "Component should render expected content: {$expectedContent}",
             );
-        } catch (\Error $e) {
+        } catch (Error $e) {
             if (str_contains($e->getMessage(), 'Call to a member function') &&
                 str_contains($e->getMessage(), 'on null')) {
                 $this->markTestSkipped('Component requires attributes or context for rendering');
@@ -402,10 +407,10 @@ abstract class ComponentTestCase extends TestCase
                 $this->assertStringContainsString(
                     $class,
                     $html,
-                    "Component should have CSS class: {$class}"
+                    "Component should have CSS class: {$class}",
                 );
             }
-        } catch (\Error $e) {
+        } catch (Error $e) {
             if (str_contains($e->getMessage(), 'Call to a member function') &&
                 str_contains($e->getMessage(), 'on null')) {
                 $this->markTestSkipped('Component requires attributes or context for rendering');
@@ -421,7 +426,7 @@ abstract class ComponentTestCase extends TestCase
     {
         $reflection = new ReflectionClass($component);
         $properties = $reflection->getProperties(ReflectionProperty::IS_PUBLIC);
-        $values = [];
+        $values     = [];
 
         foreach ($properties as $property) {
             $values[$property->getName()] = $component->{$property->getName()};

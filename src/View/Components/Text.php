@@ -1,21 +1,21 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Text Component
  *
  * A component for displaying paragraphs of text with customizable styling options.
  *
- * @package    ArtisanPack\LivewireUiComponents
- * @subpackage View\Components
  * @author     Jacob Martella
  * @copyright  2023 Jacob Martella
  * @license    MIT
+ *
  * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
  * @since      1.0.0
  */
 
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
-use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
@@ -31,7 +31,6 @@ class Text extends Component
     /**
      * Unique identifier for the text instance.
      *
-     * @var string
      * @since 1.0.0
      */
     public string $uuid;
@@ -39,15 +38,16 @@ class Text extends Component
     /**
      * Constructor for the Text component.
      *
-     * @param string|null $id        Optional ID for the text element.
-     * @param string|null $size      Custom size class. Defaults to text-base.
-     * @param string|null $color     Text color class.
-     * @param bool|null   $semibold  Whether to use semibold font weight.
-     * @param bool|null   $bold      Whether to use bold font weight.
-     * @param bool|null   $center    Whether to center align the text.
-     * @param bool|null   $muted     Whether to use muted text color.
-     * @param bool|null   $lead      Whether to style as lead paragraph (larger, more prominent).
-     * @param bool|null   $prose     Whether to apply prose styling for rich text content.
+     * @param  string|null  $id  Optional ID for the text element.
+     * @param  string|null  $size  Custom size class. Defaults to text-base.
+     * @param  string|null  $color  Text color class.
+     * @param  bool|null  $semibold  Whether to use semibold font weight.
+     * @param  bool|null  $bold  Whether to use bold font weight.
+     * @param  bool|null  $center  Whether to center align the text.
+     * @param  bool|null  $muted  Whether to use muted text color.
+     * @param  bool|null  $lead  Whether to style as lead paragraph (larger, more prominent).
+     * @param  bool|null  $prose  Whether to apply prose styling for rich text content.
+     *
      * @since 1.0.0
      */
     public function __construct(
@@ -61,13 +61,14 @@ class Text extends Component
         public ?bool $lead = false,
         public ?bool $prose = false,
     ) {
-        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+        $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
     }
 
     /**
      * Get the font weight class based on component properties.
      *
      * @return string The font weight class.
+     *
      * @since 1.0.0
      */
     public function fontWeightClass(): string
@@ -87,6 +88,7 @@ class Text extends Component
      * Get the text color class based on component properties.
      *
      * @return string The text color class.
+     *
      * @since 1.0.0
      */
     public function colorClass(): string
@@ -102,6 +104,7 @@ class Text extends Component
      * Get the size class based on component properties.
      *
      * @return string The size class.
+     *
      * @since 1.0.0
      */
     public function sizeClass(): string
@@ -117,6 +120,7 @@ class Text extends Component
      * Renders the text component.
      *
      * @return View The rendered component.
+     *
      * @since 1.0.0
      */
     public function render(): View

@@ -35,7 +35,11 @@ build:vendors:
         - composer.lock
       prefix: v1
     policy: pull-push
-  image: composer:2
+  image: php:8.2
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq git curl libzip-dev unzip
+    - docker-php-ext-install zip
+    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
   script:
     - echo "Forcing a clean vendor directory..."
     - rm -rf vendor

@@ -1,25 +1,26 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Swap
  *
  * This file contains the Swap class for the ArtisanPack UI Livewire UI Components package.
  *
- * @package    ArtisanPack\LivewireUiComponents\View
- * @subpackage Components
  * @author     Jacob Martella
  * @copyright  2023 Jacob Martella
  * @license    MIT
+ *
  * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
  * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
  * @since      1.0.0
  */
-
 
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
+
 /**
  * Swap Class
  *
@@ -27,7 +28,6 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-
 class Swap extends Component
 {
     public string $uuid;
@@ -38,9 +38,9 @@ class Swap extends Component
         public ?string $false     = null,
         public ?string $trueIcon  = 'o-sun',
         public ?string $falseIcon = 'o-moon',
-        public ?string $iconSize  = "h-5 w-5",
+        public ?string $iconSize  = 'h-5 w-5',
     ) {
-        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+        $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
     }
 
     public function render(): View|Closure|string

@@ -1,26 +1,26 @@
 <?php
+
+declare(strict_types=1);
 /**
  * ListItem
  *
  * This file contains the ListItem class for the ArtisanPack UI Livewire UI Components package.
  *
- * @package    ArtisanPack\LivewireUiComponents\View
- * @subpackage Components
  * @author     Jacob Martella
  * @copyright  2023 Jacob Martella
  * @license    MIT
+ *
  * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
  * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
  * @since      1.0.0
  */
 
-
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
 use Closure;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Str;
 use Illuminate\View\Component;
+
 /**
  * ListItem Class
  *
@@ -28,7 +28,6 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-
 class ListItem extends Component
 {
     public string $uuid;
@@ -54,7 +53,7 @@ class ListItem extends Component
         public mixed $actions = null,
         public mixed $iconSlot = null,         // Custom icon slot
     ) {
-        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+        $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
     }
 
     public function getIcon(): ?string
@@ -63,21 +62,21 @@ class ListItem extends Component
         if ($this->icon) {
             return $this->icon;
         }
-        
+
         if ($this->iconType) {
             return config("livewire-ui-components.icons.list_item.{$this->iconType}");
         }
-        
+
         if ($this->iconStatus) {
             return config("livewire-ui-components.icons.list_item.status.{$this->iconStatus}");
         }
-        
+
         return null;
     }
 
     public function shouldShowIcon(): bool
     {
-        return !$this->noIcon && ($this->getIcon() || $this->iconSlot);
+        return ! $this->noIcon && ($this->getIcon() || $this->iconSlot);
     }
 
     public function render(): View|Closure|string
