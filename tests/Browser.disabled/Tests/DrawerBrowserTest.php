@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ArtisanPack\LivewireUiComponents\Tests\Browser\Tests;
 
-use Laravel\Dusk\Browser;
 use ArtisanPack\LivewireUiComponents\Tests\Browser\DuskTestCase;
+use Laravel\Dusk\Browser;
 use PHPUnit\Framework\Attributes\Test;
 
 /**
@@ -12,15 +14,15 @@ use PHPUnit\Framework\Attributes\Test;
 class DrawerBrowserTest extends DuskTestCase
 {
     #[Test]
-    public function it_opens_drawer_from_right()
+    public function it_opens_drawer_from_right(): void
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser->visit('/test/drawer')
-                   ->assertMissing('@drawer-content')
-                   ->click('@drawer-trigger-right')
-                   ->waitFor('@drawer-content', 2)
-                   ->assertVisible('@drawer-content')
-                   ->assertPresent('@drawer-content.drawer-right');
+                ->assertMissing('@drawer-content')
+                ->click('@drawer-trigger-right')
+                ->waitFor('@drawer-content', 2)
+                ->assertVisible('@drawer-content')
+                ->assertPresent('@drawer-content.drawer-right');
         });
     }
 }

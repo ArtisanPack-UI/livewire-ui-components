@@ -1,19 +1,19 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Tab
  *
  * This file contains the Tab class for the ArtisanPack UI Livewire UI Components package.
  *
- * @package    ArtisanPack\LivewireUiComponents\View
- * @subpackage Components
  * @author     Jacob Martella
  * @copyright  2023 Jacob Martella
  * @license    MIT
+ *
  * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
  * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
  * @since      1.0.0
  */
-
 
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
@@ -38,13 +38,14 @@ class Tab extends Component
      *
      * @since 1.0.0
      *
-     * @param string|null $id             The component ID.
-     * @param string|null $name           The name of the tab.
-     * @param string|null $label          The label for the tab.
-     * @param string|null $icon           The icon for the tab.
-     * @param bool        $disabled       Whether the tab is disabled.
-     * @param bool        $hidden         Whether the tab is hidden.
-     * @param string|null $contentClasses Custom CSS classes for the tab content panel. Overrides default padding.
+     * @param  string|null  $id  The component ID.
+     * @param  string|null  $name  The name of the tab.
+     * @param  string|null  $label  The label for the tab.
+     * @param  string|null  $icon  The icon for the tab.
+     * @param  bool  $disabled  Whether the tab is disabled.
+     * @param  bool  $hidden  Whether the tab is hidden.
+     * @param  string|null  $contentClasses  Custom CSS classes for the tab content panel. Overrides default padding.
+     *
      * @return void
      */
     public function __construct(
@@ -54,9 +55,9 @@ class Tab extends Component
         public ?string $icon = null,
         public bool $disabled = false,
         public bool $hidden = false,
-        public ?string $contentClasses = null
+        public ?string $contentClasses = null,
     ) {
-        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+        $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
     }
 
     /**
@@ -64,8 +65,7 @@ class Tab extends Component
      *
      * @since 1.0.0
      *
-     * @param  string $label The label text.
-     * @return string
+     * @param  string  $label  The label text.
      */
     public function tabLabel(string $label): string
     {
@@ -73,7 +73,7 @@ class Tab extends Component
 
         if ($this->icon) {
             return Blade::render("
-                <x-artisanpack-icon name='" . $this->icon . "' @class([
+                <x-artisanpack-icon name='".$this->icon."' @class([
                 'me-2',
                 'whitespace-nowrap',
                 'text-base-content/30 cursor-not-allowed' => '$this->disabled'
@@ -99,8 +99,6 @@ class Tab extends Component
      * Get the view / contents that represent the component.
      *
      * @since 1.0.0
-     *
-     * @return \Illuminate\Contracts\View\View|\Closure|string
      */
     public function render(): View|Closure|string
     {

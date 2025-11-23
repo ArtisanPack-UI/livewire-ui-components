@@ -1,26 +1,25 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Profile
  *
  * This file contains the Profile class for the ArtisanPack UI Livewire UI Components package.
  *
- * @package    ArtisanPack\LivewireUiComponents\View
- * @subpackage Components
  * @author     Jacob Martella
  * @copyright  2023 Jacob Martella
  * @license    MIT
+ *
  * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
  * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
  * @since      1.0.0
  */
 
-
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
-use Closure;
+use ArtisanPack\LivewireUiComponents\Styling\ColorGenerator;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
-use ArtisanPack\LivewireUiComponents\Styling\ColorGenerator;
 
 /**
  * Profile Class
@@ -47,7 +46,7 @@ class Profile extends Component
      */
     public function __construct(
         public ?string $id = null,
-        
+
         // Avatar properties
         public ?string $image = '',
         public ?string $alt = '',
@@ -56,36 +55,35 @@ class Profile extends Component
         public ?string $colorAdjustment = null,
         public ?string $title = null,
         public ?string $subtitle = null,
-        
+
         // Dropdown properties
         public ?bool $right = false,
         public ?bool $top = false,
-        public ?bool $noXAnchor = false
+        public ?bool $noXAnchor = false,
     ) {
-        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+        $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
     }
 
     /**
      * Get color-specific CSS classes using ColorGenerator.
      *
-     * @return array
      * @since 1.0.0
      */
     public function getColorClasses(): array
     {
-        if (!$this->color) {
+        if (! $this->color) {
             return [];
         }
 
-        $colorGenerator = new ColorGenerator();
-        
+        $colorGenerator = new ColorGenerator;
+
         // Use ColorGenerator for color resolution
         $colorClasses = $colorGenerator->resolveComponentColor(
-            $this->color, 
-            $this->colorAdjustment, 
-            'avatar'
+            $this->color,
+            $this->colorAdjustment,
+            'avatar',
         );
-        
+
         return $colorClasses;
     }
 

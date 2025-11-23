@@ -1,19 +1,19 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Step
  *
  * This file contains the Step class for the ArtisanPack UI Livewire UI Components package.
  *
- * @package    ArtisanPack\LivewireUiComponents\View
- * @subpackage Components
  * @author     Jacob Martella
  * @copyright  2023 Jacob Martella
  * @license    MIT
+ *
  * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
  * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
  * @since      1.0.0
  */
-
 
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
@@ -21,6 +21,7 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\View\Component;
+
 /**
  * Step Class
  *
@@ -28,7 +29,6 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-
 class Step extends Component
 {
     public string $uuid;
@@ -42,12 +42,12 @@ class Step extends Component
         public ?string $dataContent = null,
 
     ) {
-        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+        $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
     }
 
     public function iconHTML(): ?string
     {
-        return Blade::render("<x-artisanpack-icon name='" . $this->icon . "' class='w-4 w-4' />");
+        return Blade::render("<x-artisanpack-icon name='".$this->icon."' class='w-4 w-4' />");
     }
 
     public function render(): View|Closure|string

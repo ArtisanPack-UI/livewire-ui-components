@@ -1,26 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ArtisanPack\LivewireUiComponents\Tests\Support;
 
+use Exception;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use ReflectionClass;
+use ReflectionMethod;
 use ReflectionParameter;
-use Illuminate\Support\Str;
+use ReflectionUnionType;
 
 /**
  * Component Test Generator
- * 
+ *
  * Automatically generates comprehensive unit tests for all UI components
  * based on component analysis and established testing patterns.
  */
 class ComponentTestGenerator
 {
     private array $componentClasses = [];
+
     private string $testDirectory;
+
     private string $namespace = 'ArtisanPack\\LivewireUiComponents\\Tests\\Unit\\Components';
 
     public function __construct(?string $testDirectory = null)
     {
-        $this->testDirectory = $testDirectory ?? __DIR__ . '/../Unit/Components';
+        $this->testDirectory = $testDirectory ?? __DIR__.'/../Unit/Components';
     }
 
     /**
@@ -29,7 +37,7 @@ class ComponentTestGenerator
     public function scanComponents(string $componentDirectory): array
     {
         $components = [];
-        $files = $this->getAllPhpFiles($componentDirectory);
+        $files      = $this->getAllPhpFiles($componentDirectory);
 
         foreach ($files as $file) {
             $className = $this->extractClassName($file);
@@ -39,27 +47,8 @@ class ComponentTestGenerator
         }
 
         $this->componentClasses = $components;
+
         return $components;
-    }
-
-    /**
-     * Recursively get all PHP files from a directory.
-     */
-    private function getAllPhpFiles(string $directory): array
-    {
-        $files = [];
-        $iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($directory, \RecursiveDirectoryIterator::SKIP_DOTS),
-            \RecursiveIteratorIterator::SELF_FIRST
-        );
-
-        foreach ($iterator as $file) {
-            if ($file->isFile() && $file->getExtension() === 'php') {
-                $files[] = $file->getPathname();
-            }
-        }
-
-        return $files;
     }
 
     /**
@@ -68,14 +57,14 @@ class ComponentTestGenerator
     public function generateAllTests(): array
     {
         $generated = [];
-        
+
         foreach ($this->componentClasses as $componentClass) {
             $testFile = $this->generateTestForComponent($componentClass);
             if ($testFile) {
                 $generated[] = $testFile;
             }
         }
-        
+
         return $generated;
     }
 
@@ -85,30 +74,50 @@ class ComponentTestGenerator
     public function generateTestForComponent(string $componentClass): ?string
     {
         try {
-            $reflection = new ReflectionClass($componentClass);
+            $reflection    = new ReflectionClass($componentClass);
             $componentName = $reflection->getShortName();
-            $testClassName = $componentName . 'ComponentTest';
-            $testFilePath = $this->testDirectory . '/' . $testClassName . '.php';
-            
+            $testClassName = $componentName.'ComponentTest';
+            $testFilePath  = $this->testDirectory.'/'.$testClassName.'.php';
+
             // Skip if test already exists
             if (file_exists($testFilePath)) {
                 return null;
             }
-            
+
             $testContent = $this->generateTestContent($reflection, $testClassName, $componentClass);
-            
+
             // Create directory if it doesn't exist
-            if (!is_dir($this->testDirectory)) {
+            if (! is_dir($this->testDirectory)) {
                 mkdir($this->testDirectory, 0755, true);
             }
-            
+
             file_put_contents($testFilePath, $testContent);
-            
+
             return $testFilePath;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Log error or handle as needed
             return null;
         }
+    }
+
+    /**
+     * Recursively get all PHP files from a directory.
+     */
+    private function getAllPhpFiles(string $directory): array
+    {
+        $files    = [];
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($directory, RecursiveDirectoryIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::SELF_FIRST,
+        );
+
+        foreach ($iterator as $file) {
+            if ($file->isFile() && 'php' === $file->getExtension()) {
+                $files[] = $file->getPathname();
+            }
+        }
+
+        return $files;
     }
 
     /**
@@ -117,44 +126,44 @@ class ComponentTestGenerator
     private function generateTestContent(ReflectionClass $reflection, string $testClassName, string $componentClass): string
     {
         $componentName = $reflection->getShortName();
-        $constructor = $reflection->getConstructor();
-        $properties = $this->analyzeConstructorParameters($constructor);
-        $methods = $this->analyzePublicMethods($reflection);
-        
-        $defaultProperties = $this->generateDefaultProperties($properties);
+        $constructor   = $reflection->getConstructor();
+        $properties    = $this->analyzeConstructorParameters($constructor);
+        $methods       = $this->analyzePublicMethods($reflection);
+
+        $defaultProperties  = $this->generateDefaultProperties($properties);
         $requiredProperties = $this->generateRequiredProperties($properties);
-        $testMethods = $this->generateTestMethods($componentName, $properties, $methods);
-        
+        $testMethods        = $this->generateTestMethods($componentName, $properties, $methods);
+
         return $this->buildTestFileContent(
             $testClassName,
             $componentClass,
             $componentName,
             $defaultProperties,
             $requiredProperties,
-            $testMethods
+            $testMethods,
         );
     }
 
     /**
      * Analyze constructor parameters to understand component properties.
      */
-    private function analyzeConstructorParameters(?\ReflectionMethod $constructor): array
+    private function analyzeConstructorParameters(?ReflectionMethod $constructor): array
     {
-        if (!$constructor) {
+        if (! $constructor) {
             return [];
         }
-        
+
         $properties = [];
         foreach ($constructor->getParameters() as $parameter) {
             $properties[] = [
-                'name' => $parameter->getName(),
-                'type' => $this->getParameterType($parameter),
-                'hasDefault' => $parameter->isDefaultValueAvailable(),
+                'name'         => $parameter->getName(),
+                'type'         => $this->getParameterType($parameter),
+                'hasDefault'   => $parameter->isDefaultValueAvailable(),
                 'defaultValue' => $parameter->isDefaultValueAvailable() ? $parameter->getDefaultValue() : null,
-                'nullable' => $parameter->allowsNull()
+                'nullable'     => $parameter->allowsNull(),
             ];
         }
-        
+
         return $properties;
     }
 
@@ -164,23 +173,23 @@ class ComponentTestGenerator
     private function analyzePublicMethods(ReflectionClass $reflection): array
     {
         $methods = [];
-        foreach ($reflection->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+        foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
             if ($method->getDeclaringClass()->getName() === $reflection->getName()) {
-                $returnType = $method->getReturnType();
+                $returnType     = $method->getReturnType();
                 $returnTypeName = null;
 
                 if ($returnType) {
-                    if ($returnType instanceof \ReflectionUnionType) {
-                        $returnTypeName = implode('|', array_map(fn($t) => $t->getName(), $returnType->getTypes()));
+                    if ($returnType instanceof ReflectionUnionType) {
+                        $returnTypeName = implode('|', array_map(fn ($t) => $t->getName(), $returnType->getTypes()));
                     } else {
                         $returnTypeName = $returnType->getName();
                     }
                 }
 
                 $methods[] = [
-                    'name' => $method->getName(),
-                    'parameters' => array_map(fn($p) => $p->getName(), $method->getParameters()),
-                    'returnType' => $returnTypeName
+                    'name'       => $method->getName(),
+                    'parameters' => array_map(fn ($p) => $p->getName(), $method->getParameters()),
+                    'returnType' => $returnTypeName,
                 ];
             }
         }
@@ -194,13 +203,13 @@ class ComponentTestGenerator
     private function generateDefaultProperties(array $properties): array
     {
         $defaults = [];
-        
+
         foreach ($properties as $property) {
-            if ($property['hasDefault'] && $property['defaultValue'] !== null) {
+            if ($property['hasDefault'] && null !== $property['defaultValue']) {
                 $defaults[$property['name']] = $property['defaultValue'];
             }
         }
-        
+
         return $defaults;
     }
 
@@ -210,13 +219,13 @@ class ComponentTestGenerator
     private function generateRequiredProperties(array $properties): array
     {
         $required = [];
-        
+
         foreach ($properties as $property) {
-            if (!$property['hasDefault'] && !$property['nullable']) {
+            if (! $property['hasDefault'] && ! $property['nullable']) {
                 $required[] = $property['name'];
             }
         }
-        
+
         return $required;
     }
 
@@ -226,23 +235,23 @@ class ComponentTestGenerator
     private function generateTestMethods(string $componentName, array $properties, array $methods): string
     {
         $testMethods = [];
-        
+
         // Generate property-based tests
         $testMethods[] = $this->generatePropertyTests($componentName, $properties);
-        
+
         // Generate method-based tests
         foreach ($methods as $method) {
-            if (!in_array($method['name'], ['__construct', 'render', 'shouldRender'])) {
+            if (! in_array($method['name'], ['__construct', 'render', 'shouldRender'])) {
                 $testMethods[] = $this->generateMethodTest($componentName, $method);
             }
         }
-        
+
         // Generate common tests
         $testMethods[] = $this->generateRenderingTest($componentName);
         $testMethods[] = $this->generateAccessibilityTest($componentName);
         $testMethods[] = $this->generateSecurityTest($componentName);
         $testMethods[] = $this->generatePerformanceTest($componentName);
-        
+
         return implode("\n\n", array_filter($testMethods));
     }
 
@@ -251,26 +260,26 @@ class ComponentTestGenerator
      */
     private function generatePropertyTests(string $componentName, array $properties): string
     {
-        $tests = [];
+        $tests              = [];
         $lowerComponentName = strtolower($componentName);
-        
+
         // Group properties by type for better testing
-        $stringProperties = array_filter($properties, fn($p) => $p['type'] === 'string');
-        $boolProperties = array_filter($properties, fn($p) => $p['type'] === 'bool');
-        $arrayProperties = array_filter($properties, fn($p) => $p['type'] === 'array');
-        
-        if (!empty($stringProperties)) {
+        $stringProperties = array_filter($properties, fn ($p) => 'string' === $p['type']);
+        $boolProperties   = array_filter($properties, fn ($p) => 'bool' === $p['type']);
+        $arrayProperties  = array_filter($properties, fn ($p) => 'array' === $p['type']);
+
+        if (! empty($stringProperties)) {
             $tests[] = $this->generateStringPropertyTest($lowerComponentName, $stringProperties);
         }
-        
-        if (!empty($boolProperties)) {
+
+        if (! empty($boolProperties)) {
             $tests[] = $this->generateBooleanPropertyTest($lowerComponentName, $boolProperties);
         }
-        
-        if (!empty($arrayProperties)) {
+
+        if (! empty($arrayProperties)) {
             $tests[] = $this->generateArrayPropertyTest($lowerComponentName, $arrayProperties);
         }
-        
+
         return implode("\n\n", $tests);
     }
 
@@ -280,8 +289,8 @@ class ComponentTestGenerator
     private function generateStringPropertyTest(string $componentName, array $properties): string
     {
         $propertyNames = array_column($properties, 'name');
-        $propertyList = "'" . implode("', '", $propertyNames) . "'";
-        
+        $propertyList  = "'".implode("', '", $propertyNames)."'";
+
         return "    public function test_{$componentName}_string_properties(): void
     {
         \$stringProperties = [{$propertyList}];
@@ -304,8 +313,8 @@ class ComponentTestGenerator
     private function generateBooleanPropertyTest(string $componentName, array $properties): string
     {
         $propertyNames = array_column($properties, 'name');
-        $propertyList = "'" . implode("', '", $propertyNames) . "'";
-        
+        $propertyList  = "'".implode("', '", $propertyNames)."'";
+
         return "    public function test_{$componentName}_boolean_properties(): void
     {
         \$booleanProperties = [{$propertyList}];
@@ -326,8 +335,8 @@ class ComponentTestGenerator
     private function generateArrayPropertyTest(string $componentName, array $properties): string
     {
         $propertyNames = array_column($properties, 'name');
-        $propertyList = "'" . implode("', '", $propertyNames) . "'";
-        
+        $propertyList  = "'".implode("', '", $propertyNames)."'";
+
         return "    public function test_{$componentName}_array_properties(): void
     {
         \$arrayProperties = [{$propertyList}];
@@ -347,7 +356,7 @@ class ComponentTestGenerator
      */
     private function generateMethodTest(string $componentName, array $method): string
     {
-        $methodName = $method['name'];
+        $methodName         = $method['name'];
         $lowerComponentName = strtolower($componentName);
 
         return "    public function test_{$lowerComponentName}_{$methodName}_method(): void
@@ -508,11 +517,11 @@ class ComponentTestGenerator
         string $componentName,
         array $defaultProperties,
         array $requiredProperties,
-        string $testMethods
+        string $testMethods,
     ): string {
-        $defaultPropertiesStr = $this->arrayToPhpString($defaultProperties, 8);
+        $defaultPropertiesStr  = $this->arrayToPhpString($defaultProperties, 8);
         $requiredPropertiesStr = $this->arrayToPhpString($requiredProperties, 8);
-        
+
         return "<?php
 
 namespace {$this->namespace};
@@ -549,8 +558,9 @@ class {$testClassName} extends ComponentTestCase
         $content = file_get_contents($file);
         if (preg_match('/namespace\s+([^;]+);/', $content, $namespaceMatches) &&
             preg_match('/^\s*class\s+(\w+)/m', $content, $classMatches)) {
-            return $namespaceMatches[1] . '\\' . $classMatches[1];
+            return $namespaceMatches[1].'\\'.$classMatches[1];
         }
+
         return null;
     }
 
@@ -558,9 +568,10 @@ class {$testClassName} extends ComponentTestCase
     {
         try {
             $reflection = new ReflectionClass($className);
-            return $reflection->isSubclassOf('Illuminate\View\Component') && 
-                   !$reflection->isAbstract();
-        } catch (\Exception $e) {
+
+            return $reflection->isSubclassOf('Illuminate\View\Component') &&
+                   ! $reflection->isAbstract();
+        } catch (Exception $e) {
             return false;
         }
     }
@@ -568,12 +579,14 @@ class {$testClassName} extends ComponentTestCase
     private function getParameterType(ReflectionParameter $parameter): string
     {
         $type = $parameter->getType();
-        if (!$type) return 'mixed';
-        
-        if ($type instanceof \ReflectionUnionType) {
-            return implode('|', array_map(fn($t) => $t->getName(), $type->getTypes()));
+        if (! $type) {
+            return 'mixed';
         }
-        
+
+        if ($type instanceof ReflectionUnionType) {
+            return implode('|', array_map(fn ($t) => $t->getName(), $type->getTypes()));
+        }
+
         return $type->getName();
     }
 
@@ -584,7 +597,7 @@ class {$testClassName} extends ComponentTestCase
         }
 
         $spaces = str_repeat(' ', $indent);
-        $items = [];
+        $items  = [];
 
         foreach ($array as $key => $value) {
             // Convert Collections to arrays
@@ -601,7 +614,7 @@ class {$testClassName} extends ComponentTestCase
             }
         }
 
-        return "[\n{$spaces}    " . implode(",\n{$spaces}    ", $items) . "\n{$spaces}]";
+        return "[\n{$spaces}    ".implode(",\n{$spaces}    ", $items)."\n{$spaces}]";
     }
 
     private function valueToPhpString($value): string
@@ -625,12 +638,13 @@ class {$testClassName} extends ComponentTestCase
                     $items[] = $vStr;
                 }
             }
-            return '[' . implode(', ', $items) . ']';
+
+            return '['.implode(', ', $items).']';
         }
 
         // Handle strings
         if (is_string($value)) {
-            return "'" . addslashes($value) . "'";
+            return "'".addslashes($value)."'";
         }
 
         // Handle booleans
@@ -639,7 +653,7 @@ class {$testClassName} extends ComponentTestCase
         }
 
         // Handle null
-        if ($value === null) {
+        if (null === $value) {
             return 'null';
         }
 

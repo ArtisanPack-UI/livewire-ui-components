@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ArtisanPack\LivewireUiComponents\Tests\Support;
 
 /**
  * Component Data Factory for generating test data for various component states.
- * 
+ *
  * This factory provides consistent test data for different component scenarios,
  * including edge cases, common configurations, and stress testing data.
  */
@@ -23,7 +25,7 @@ class ComponentDataFactory
             'warning',
             'error',
             'info',
-            'neutral'
+            'neutral',
         ];
     }
 
@@ -40,7 +42,7 @@ class ComponentDataFactory
             'yellow-300',
             'indigo-800',
             'pink-200',
-            'gray-900'
+            'gray-900',
         ];
     }
 
@@ -57,7 +59,7 @@ class ComponentDataFactory
             '#000000',
             '#FFFFFF',
             '#FFA500',
-            '#800080'
+            '#800080',
         ];
     }
 
@@ -80,7 +82,7 @@ class ComponentDataFactory
             'ghost',
             'solid',
             'soft',
-            'subtle'
+            'subtle',
         ];
     }
 
@@ -112,7 +114,7 @@ class ComponentDataFactory
             'arrow-right',
             'arrow-left',
             'arrow-up',
-            'arrow-down'
+            'arrow-down',
         ];
     }
 
@@ -135,7 +137,7 @@ class ComponentDataFactory
             'o-heart',
             's-heart',
             'o-star',
-            's-star'
+            's-star',
         ];
     }
 
@@ -155,7 +157,7 @@ class ComponentDataFactory
             '   ', // Whitespace only
             '123456789', // Numbers
             'https://example.com', // URL
-            'user@example.com' // Email
+            'user@example.com', // Email
         ];
     }
 
@@ -174,7 +176,7 @@ class ComponentDataFactory
             '0', // Zero
             'false', // String false
             'null', // String null
-            'undefined' // String undefined
+            'undefined', // String undefined
         ];
     }
 
@@ -195,7 +197,7 @@ class ComponentDataFactory
             999999,
             -999999,
             PHP_INT_MAX,
-            PHP_INT_MIN
+            PHP_INT_MIN,
         ];
     }
 
@@ -229,7 +231,7 @@ class ComponentDataFactory
             [
                 ['id' => 1, 'name' => 'Item 1'],
                 ['id' => 2, 'name' => 'Item 2'],
-                ['id' => 3, 'name' => 'Item 3']
+                ['id' => 3, 'name' => 'Item 3'],
             ], // Array of objects
             ['key1' => 'value1', 'key2' => 'value2'], // Associative array
         ];
@@ -250,7 +252,7 @@ class ComponentDataFactory
             'javascript:void(0)',
             '', // Empty
             '/', // Root
-            '/very/long/path/that/might/cause/issues/with/some/components'
+            '/very/long/path/that/might/cause/issues/with/some/components',
         ];
     }
 
@@ -269,7 +271,7 @@ class ComponentDataFactory
             'class-with-numbers-123',
             'class_with_underscores',
             'class-with-dashes',
-            'ClassName' // PascalCase
+            'ClassName', // PascalCase
         ];
     }
 
@@ -281,14 +283,14 @@ class ComponentDataFactory
         return [
             ['aria-label' => 'Test Label'],
             ['aria-describedby' => 'description-id'],
-            ['role' => 'button'],
-            ['role' => 'link'],
-            ['tabindex' => '0'],
-            ['tabindex' => '-1'],
-            ['aria-expanded' => 'true'],
-            ['aria-expanded' => 'false'],
-            ['aria-hidden' => 'true'],
-            ['aria-disabled' => 'true']
+            ['role'             => 'button'],
+            ['role'             => 'link'],
+            ['tabindex'         => '0'],
+            ['tabindex'         => '-1'],
+            ['aria-expanded'    => 'true'],
+            ['aria-expanded'    => 'false'],
+            ['aria-hidden'      => 'true'],
+            ['aria-disabled'    => 'true'],
         ];
     }
 
@@ -301,12 +303,12 @@ class ComponentDataFactory
             'colors' => array_merge(
                 self::colorVariants(),
                 self::tailwindColors(),
-                self::hexColors()
+                self::hexColors(),
             ),
-            'sizes' => self::sizeVariants(),
+            'sizes'    => self::sizeVariants(),
             'variants' => self::componentVariants(),
             'booleans' => self::booleanCases(),
-            'texts' => self::sampleTexts(),
+            'texts'    => self::sampleTexts(),
         ];
 
         // Component-specific data
@@ -314,29 +316,29 @@ class ComponentDataFactory
             case 'button':
                 $data['icons'] = self::iconNames();
                 break;
-                
+
             case 'input':
             case 'textarea':
                 $data['values'] = self::formInputValues();
                 break;
-                
+
             case 'select':
                 $data['options'] = self::arrayData();
                 break;
-                
+
             case 'rating':
-                $data['values'] = array_filter(self::numberValues(), fn($n) => $n >= 0 && $n <= 5);
+                $data['values'] = array_filter(self::numberValues(), fn ($n) => $n >= 0 && $n <= 5);
                 break;
-                
+
             case 'progress':
-                $data['values'] = array_filter(self::numberValues(), fn($n) => $n >= 0 && $n <= 100);
+                $data['values'] = array_filter(self::numberValues(), fn ($n) => $n >= 0 && $n <= 100);
                 break;
-                
+
             case 'calendar':
             case 'datepicker':
                 $data['dates'] = self::dateValues();
                 break;
-                
+
             case 'link':
                 $data['urls'] = self::urlValues();
                 break;
@@ -352,31 +354,31 @@ class ComponentDataFactory
     {
         return [
             'empty_values' => [
-                'text' => '',
-                'array' => [],
-                'number' => 0,
+                'text'    => '',
+                'array'   => [],
+                'number'  => 0,
                 'boolean' => false,
-                'null' => null
+                'null'    => null,
             ],
             'extreme_values' => [
-                'very_long_text' => str_repeat('A', 10000),
-                'large_number' => PHP_INT_MAX,
+                'very_long_text'  => str_repeat('A', 10000),
+                'large_number'    => PHP_INT_MAX,
                 'negative_number' => PHP_INT_MIN,
-                'large_array' => array_fill(0, 1000, 'item')
+                'large_array'     => array_fill(0, 1000, 'item'),
             ],
             'special_characters' => [
                 'html_entities' => '&lt;script&gt;alert("test")&lt;/script&gt;',
-                'unicode' => '🌟🎉💖✨🚀🔥💯⚡🌈🎯',
+                'unicode'       => '🌟🎉💖✨🚀🔥💯⚡🌈🎯',
                 'sql_injection' => "'; DROP TABLE users; --",
-                'xss_attempt' => '<script>alert("xss")</script>',
-                'null_bytes' => "test\0null\0bytes"
+                'xss_attempt'   => '<script>alert("xss")</script>',
+                'null_bytes'    => "test\0null\0bytes",
             ],
             'whitespace_variants' => [
-                'leading_spaces' => '   text',
-                'trailing_spaces' => 'text   ',
+                'leading_spaces'   => '   text',
+                'trailing_spaces'  => 'text   ',
                 'mixed_whitespace' => "  \t\n  text  \t\n  ",
-                'only_whitespace' => "   \t\n   "
-            ]
+                'only_whitespace'  => "   \t\n   ",
+            ],
         ];
     }
 
@@ -386,16 +388,16 @@ class ComponentDataFactory
     public static function randomData(int $count = 10): array
     {
         $data = [];
-        
+
         for ($i = 0; $i < $count; $i++) {
             $data[] = [
-                'string' => bin2hex(random_bytes(rand(5, 50))),
-                'number' => rand(-1000, 1000),
-                'boolean' => (bool)rand(0, 1),
-                'array' => array_fill(0, rand(0, 10), bin2hex(random_bytes(10)))
+                'string'  => bin2hex(random_bytes(rand(5, 50))),
+                'number'  => rand(-1000, 1000),
+                'boolean' => (bool) rand(0, 1),
+                'array'   => array_fill(0, rand(0, 10), bin2hex(random_bytes(10))),
             ];
         }
-        
+
         return $data;
     }
 
@@ -405,9 +407,9 @@ class ComponentDataFactory
     public static function performanceTestData(): array
     {
         return [
-            'small_dataset' => array_fill(0, 10, 'item'),
-            'medium_dataset' => array_fill(0, 100, 'item'),
-            'large_dataset' => array_fill(0, 1000, 'item'),
+            'small_dataset'       => array_fill(0, 10, 'item'),
+            'medium_dataset'      => array_fill(0, 100, 'item'),
+            'large_dataset'       => array_fill(0, 1000, 'item'),
             'extra_large_dataset' => array_fill(0, 10000, 'item'),
         ];
     }

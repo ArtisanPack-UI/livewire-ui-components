@@ -1,19 +1,19 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Tabs
  *
  * This file contains the Tabs class for the ArtisanPack UI Livewire UI Components package.
  *
- * @package    ArtisanPack\LivewireUiComponents\View
- * @subpackage Components
  * @author     Jacob Martella
  * @copyright  2023 Jacob Martella
  * @license    MIT
+ *
  * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
  * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
  * @since      1.0.0
  */
-
 
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
@@ -38,24 +38,25 @@ class Tabs extends Component
      *
      * @since 1.0.0
      *
-     * @param string|null $id                      The component ID.
-     * @param string|null $selected                The name of the selected tab.
-     * @param string|null $orientation             The orientation of the tabs. Accepts 'horizontal', 'vertical-left', 'vertical-right'. Default 'horizontal'.
-     * @param string|null $variant                 The style variant of the tab buttons. Accepts 'rounded', 'pill'. Default null.
-     * @param string|null $gap                     The spacing between tab buttons. Accepts Tailwind gap classes like 'gap-2', 'gap-4', etc.
-     * @param string|null $labelColorClasses       Custom Tailwind CSS classes for the inactive tab buttons, including hover/focus states.
-     * @param string|null $activeColorClasses      Custom Tailwind CSS classes for the active tab button. This will override the default active style.
-     * @param string      $labelClass              Base CSS classes for tab labels.
-     * @param string      $activeClass             Base CSS classes for the active tab label.
-     * @param string      $labelDivClass           Base CSS classes for the container of the tab labels.
-     * @param string      $tabsClass               Base CSS classes for the main tabs container.
-     * @param string      $verticalTabsClass       CSS classes for vertical tabs container.
-     * @param string      $verticalLabelClass      CSS classes for vertical tab labels.
-     * @param string      $verticalActiveClass     CSS classes for active vertical tab labels.
-     * @param string      $verticalLabelDivClass   CSS classes for the container of vertical tab labels.
-     * @param string      $verticalContentClass    CSS classes for the content area of vertical tabs.
-     * @param string      $verticalRightActiveClass CSS classes for active right-aligned vertical tab labels.
-     * @param string      $verticalRightLabelDivClass CSS classes for the container of right-aligned vertical tab labels.
+     * @param  string|null  $id  The component ID.
+     * @param  string|null  $selected  The name of the selected tab.
+     * @param  string|null  $orientation  The orientation of the tabs. Accepts 'horizontal', 'vertical-left', 'vertical-right'. Default 'horizontal'.
+     * @param  string|null  $variant  The style variant of the tab buttons. Accepts 'rounded', 'pill'. Default null.
+     * @param  string|null  $gap  The spacing between tab buttons. Accepts Tailwind gap classes like 'gap-2', 'gap-4', etc.
+     * @param  string|null  $labelColorClasses  Custom Tailwind CSS classes for the inactive tab buttons, including hover/focus states.
+     * @param  string|null  $activeColorClasses  Custom Tailwind CSS classes for the active tab button. This will override the default active style.
+     * @param  string  $labelClass  Base CSS classes for tab labels.
+     * @param  string  $activeClass  Base CSS classes for the active tab label.
+     * @param  string  $labelDivClass  Base CSS classes for the container of the tab labels.
+     * @param  string  $tabsClass  Base CSS classes for the main tabs container.
+     * @param  string  $verticalTabsClass  CSS classes for vertical tabs container.
+     * @param  string  $verticalLabelClass  CSS classes for vertical tab labels.
+     * @param  string  $verticalActiveClass  CSS classes for active vertical tab labels.
+     * @param  string  $verticalLabelDivClass  CSS classes for the container of vertical tab labels.
+     * @param  string  $verticalContentClass  CSS classes for the content area of vertical tabs.
+     * @param  string  $verticalRightActiveClass  CSS classes for active right-aligned vertical tab labels.
+     * @param  string  $verticalRightLabelDivClass  CSS classes for the container of right-aligned vertical tab labels.
+     *
      * @return void
      */
     public function __construct(
@@ -80,15 +81,13 @@ class Tabs extends Component
         public string $verticalRightActiveClass = 'border-l-[length:var(--border)] border-l-base-content/50',
         public string $verticalRightLabelDivClass = 'border-l-[length:var(--border)] border-l-base-content/10 flex flex-col overflow-y-auto min-w-48',
     ) {
-        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+        $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
     }
 
     /**
      * Check if tabs should use vertical layout.
      *
      * @since 1.0.0
-     *
-     * @return bool
      */
     public function isVertical(): bool
     {
@@ -99,20 +98,16 @@ class Tabs extends Component
      * Check if tabs should be positioned on the right side.
      *
      * @since 1.0.0
-     *
-     * @return bool
      */
     public function isVerticalRight(): bool
     {
-        return $this->orientation === 'vertical-right';
+        return 'vertical-right' === $this->orientation;
     }
 
     /**
      * Get the appropriate container classes based on orientation.
      *
      * @since 1.0.0
-     *
-     * @return string
      */
     public function getTabsContainerClass(): string
     {
@@ -123,8 +118,6 @@ class Tabs extends Component
      * Get the appropriate label div classes based on orientation.
      *
      * @since 1.0.0
-     *
-     * @return string
      */
     public function getLabelDivClass(): string
     {
@@ -138,17 +131,17 @@ class Tabs extends Component
 
         // Add gap if specified
         if ($this->gap) {
-            $class .= ' ' . $this->gap;
+            $class .= ' '.$this->gap;
         }
 
         // Remove border for rounded or pill variants
         if (in_array($this->variant, ['rounded', 'pill'])) {
             $class = Str::of($class)
-                        ->replace('border-b-[length:var(--border)] border-b-base-content/10', '')
-                        ->replace('border-r-[length:var(--border)] border-r-base-content/10', '')
-                        ->replace('border-l-[length:var(--border)] border-l-base-content/10', '')
-                        ->squish() // Removes extra spaces
-                        ->toString();
+                ->replace('border-b-[length:var(--border)] border-b-base-content/10', '')
+                ->replace('border-r-[length:var(--border)] border-r-base-content/10', '')
+                ->replace('border-l-[length:var(--border)] border-l-base-content/10', '')
+                ->squish() // Removes extra spaces
+                ->toString();
         }
 
         return $class;
@@ -158,23 +151,21 @@ class Tabs extends Component
      * Get the appropriate label classes based on orientation and variants.
      *
      * @since 1.0.0
-     *
-     * @return string
      */
     public function getFinalLabelClass(): string
     {
         $classes = $this->isVertical() ? $this->verticalLabelClass : $this->labelClass;
 
-        if ($this->variant === 'rounded') {
+        if ('rounded' === $this->variant) {
             $classes = Str::of($classes)->replace('pb-1', 'py-2 px-4')->append(' rounded-lg');
         }
 
-        if ($this->variant === 'pill') {
+        if ('pill' === $this->variant) {
             $classes = Str::of($classes)->replace('pb-1', 'py-2 px-4')->append(' rounded-full');
         }
 
         if ($this->labelColorClasses) {
-            $classes .= ' ' . $this->labelColorClasses;
+            $classes .= ' '.$this->labelColorClasses;
         }
 
         return $classes;
@@ -184,8 +175,6 @@ class Tabs extends Component
      * Get the appropriate active classes based on orientation and custom colors.
      *
      * @since 1.0.0
-     *
-     * @return string
      */
     public function getActiveClass(): string
     {
@@ -204,11 +193,11 @@ class Tabs extends Component
         // Remove border for rounded or pill variants as it interferes with the button style.
         if (in_array($this->variant, ['rounded', 'pill'])) {
             $class = Str::of($class)
-                        ->replace('border-b-[length:var(--border)] border-b-base-content/50', '')
-                        ->replace('border-r-[length:var(--border)] border-r-base-content/50', '')
-                        ->replace('border-l-[length:var(--border)] border-l-base-content/50', '')
-                        ->squish()
-                        ->toString();
+                ->replace('border-b-[length:var(--border)] border-b-base-content/50', '')
+                ->replace('border-r-[length:var(--border)] border-r-base-content/50', '')
+                ->replace('border-l-[length:var(--border)] border-l-base-content/50', '')
+                ->squish()
+                ->toString();
         }
 
         return $class;
@@ -218,8 +207,6 @@ class Tabs extends Component
      * Get the view / contents that represent the component.
      *
      * @since 1.0.0
-     *
-     * @return \Illuminate\Contracts\View\View|\Closure|string
      */
     public function render(): View|Closure|string
     {

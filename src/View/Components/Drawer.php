@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Drawer
  *
@@ -7,13 +9,11 @@
  * @since      1.0.0
  * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
  * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
+ *
  * @copyright  2023 Jacob Martella
  * @license    MIT
- * @package    ArtisanPack\LivewireUiComponents\View
- * @subpackage Components
  * @author     Jacob Martella
  */
-
 
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
@@ -45,25 +45,24 @@ class Drawer extends Component
         public ?string $openOn = null,   // <-- ADD: Event name to listen for to open.
         public ?string $closeOn = null,  // <-- ADD: Event name to listen for to close.
 
-        //Slots
-        public ?string $actions = null
-    )
-    {
-        $this->uuid = "artisanpack" . md5( serialize( $this ) ) . $id;
+        // Slots
+        public ?string $actions = null,
+    ) {
+        $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
     }
 
     public function id(): string
     {
-        return $this->id ?? $this->attributes?->wire( 'model' )->value();
+        return $this->id ?? $this->attributes?->wire('model')->value();
     }
 
     public function modelName(): WireDirective
     {
-        return $this->attributes->wire( 'model' );
+        return $this->attributes->wire('model');
     }
 
-    public function render(): View | Closure | string
+    public function render(): View|Closure|string
     {
-        return view( 'livewire-ui-components::components.drawer' );
+        return view('livewire-ui-components::components.drawer');
     }
 }

@@ -1,21 +1,21 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Heading Component
  *
  * A component for displaying headings with customizable styling options.
  *
- * @package    ArtisanPack\LivewireUiComponents
- * @subpackage View\Components
  * @author     Jacob Martella
  * @copyright  2023 Jacob Martella
  * @license    MIT
+ *
  * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
  * @since      1.0.0
  */
 
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
-use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
@@ -28,18 +28,18 @@ use Illuminate\View\Component;
  */
 class Heading extends Component
 {
-
     /**
      * Constructor for the Heading component.
      *
-     * @param string|null $id        Optional ID for the heading.
-     * @param string|null $level     Heading level (1-6). Defaults to 1 (h1).
-     * @param string|null $size      Custom size class. If not provided, defaults based on level.
-     * @param string|null $color     Text color class.
-     * @param bool|null   $semibold  Whether to use semibold font weight.
-     * @param bool|null   $bold      Whether to use bold font weight.
-     * @param bool|null   $extrabold Whether to use extra bold font weight.
-     * @param bool|null   $center    Whether to center align the heading.
+     * @param  string|null  $id  Optional ID for the heading.
+     * @param  string|null  $level  Heading level (1-6). Defaults to 1 (h1).
+     * @param  string|null  $size  Custom size class. If not provided, defaults based on level.
+     * @param  string|null  $color  Text color class.
+     * @param  bool|null  $semibold  Whether to use semibold font weight.
+     * @param  bool|null  $bold  Whether to use bold font weight.
+     * @param  bool|null  $extrabold  Whether to use extra bold font weight.
+     * @param  bool|null  $center  Whether to center align the heading.
+     *
      * @since 1.0.0
      */
     public function __construct(
@@ -55,7 +55,7 @@ class Heading extends Component
     ) {
         // Set uuid if not provided or empty
         if (empty($this->uuid)) {
-            $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+            $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
         }
     }
 
@@ -63,6 +63,7 @@ class Heading extends Component
      * Get the appropriate size class based on heading level.
      *
      * @return string The size class.
+     *
      * @since 1.0.0
      */
     public function sizeClass(): string
@@ -72,12 +73,12 @@ class Heading extends Component
         }
 
         return match ($this->level) {
-            '1' => 'text-4xl',
-            '2' => 'text-3xl',
-            '3' => 'text-2xl',
-            '4' => 'text-xl',
-            '5' => 'text-lg',
-            '6' => 'text-base',
+            '1'     => 'text-4xl',
+            '2'     => 'text-3xl',
+            '3'     => 'text-2xl',
+            '4'     => 'text-xl',
+            '5'     => 'text-lg',
+            '6'     => 'text-base',
             default => 'text-4xl',
         };
     }
@@ -86,6 +87,7 @@ class Heading extends Component
      * Get the font weight class based on component properties.
      *
      * @return string The font weight class.
+     *
      * @since 1.0.0
      */
     public function fontWeightClass(): string
@@ -109,6 +111,7 @@ class Heading extends Component
      * Renders the heading component.
      *
      * @return View The rendered component.
+     *
      * @since 1.0.0
      */
     public function render(): View

@@ -1,15 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
 
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
 use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
+use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
 use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
 use ArtisanPack\LivewireUiComponents\View\Components\ListItem;
+use Error;
+use RuntimeException;
 
 /**
  * Comprehensive unit tests for the ListItem component.
- * 
+ *
  * Auto-generated test class that extends ComponentTestCase to inherit
  * common testing patterns and implements component-specific tests.
  */
@@ -18,28 +22,30 @@ class ListItemComponentTest extends ComponentTestCase
     protected string $componentClass = ListItem::class;
 
     protected array $defaultProperties = [
-            'avatar' => 'avatar',
-            'value' => 'name',
-            'subValue' => '',
-            'noSeparator' => false,
-            'noHover' => false,
-            'iconClass' => 'w-4 h-4',
-            'noIcon' => false
-        ];
+        'avatar'      => 'avatar',
+        'value'       => 'name',
+        'subValue'    => '',
+        'noSeparator' => false,
+        'noHover'     => false,
+        'iconClass'   => 'w-4 h-4',
+        'noIcon'      => false,
+    ];
 
     protected array $requiredProperties = [
-            'item'
-        ];
+        'item',
+    ];
 
     public function test_listitem_string_properties(): void
     {
         $stringProperties = ['id', 'avatar', 'value', 'subValue', 'link', 'icon', 'iconType', 'iconStatus', 'iconClass'];
-        $testValues = ComponentDataFactory::sampleTexts();
-        
+        $testValues       = ComponentDataFactory::sampleTexts();
+
         foreach ($stringProperties as $property) {
             foreach ($testValues as $value) {
-                if (empty($value)) continue; // Skip empty values for some properties
-                
+                if (empty($value)) {
+                    continue;
+                } // Skip empty values for some properties
+
                 $component = $this->createComponent([$property => $value]);
                 $this->assertEquals($value, $component->$property);
             }
@@ -49,17 +55,17 @@ class ListItemComponentTest extends ComponentTestCase
     public function test_listitem_boolean_properties(): void
     {
         $booleanProperties = ['noSeparator', 'noHover', 'noIcon'];
-        
+
         foreach ($booleanProperties as $property) {
             $component = $this->createComponent([$property => true]);
             $this->assertTrue($component->$property);
-            
+
             $component = $this->createComponent([$property => false]);
             $this->assertFalse($component->$property);
         }
     }
 
-    public function test_listitem_getIcon_method(): void
+    public function test_listitem_get_icon_method(): void
     {
         $component = $this->createComponent();
 
@@ -68,7 +74,7 @@ class ListItemComponentTest extends ComponentTestCase
                 $result = $component->getIcon();
                 // Add specific assertions based on expected return type
                 $this->assertNotNull($result);
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Method requires attributes or context');
@@ -78,7 +84,7 @@ class ListItemComponentTest extends ComponentTestCase
         }
     }
 
-    public function test_listitem_shouldShowIcon_method(): void
+    public function test_listitem_should_show_icon_method(): void
     {
         $component = $this->createComponent();
 
@@ -87,7 +93,7 @@ class ListItemComponentTest extends ComponentTestCase
                 $result = $component->shouldShowIcon();
                 // Add specific assertions based on expected return type
                 $this->assertNotNull($result);
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Method requires attributes or context');
@@ -100,7 +106,7 @@ class ListItemComponentTest extends ComponentTestCase
     public function test_listitem_renders_successfully(): void
     {
         $component = $this->createComponent();
-        $view = $component->render();
+        $view      = $component->render();
 
         try {
             $html = $view->render();
@@ -110,7 +116,7 @@ class ListItemComponentTest extends ComponentTestCase
                 $this->markTestSkipped('Component requires slots or additional data for rendering');
             }
             throw $e;
-        } catch (\Error $e) {
+        } catch (Error $e) {
             if (str_contains($e->getMessage(), 'Call to a member function') &&
                 str_contains($e->getMessage(), 'on null')) {
                 $this->markTestSkipped('Component requires attributes or context for rendering');
@@ -125,7 +131,7 @@ class ListItemComponentTest extends ComponentTestCase
     public function test_listitem_accessibility_compliance(): void
     {
         $component = $this->createComponent();
-        $view = $component->render();
+        $view      = $component->render();
 
         try {
             $html = $view->render();
@@ -135,7 +141,7 @@ class ListItemComponentTest extends ComponentTestCase
                 $this->markTestSkipped('Component requires slots or additional data for rendering');
             }
             throw $e;
-        } catch (\Error $e) {
+        } catch (Error $e) {
             if (str_contains($e->getMessage(), 'Call to a member function') &&
                 str_contains($e->getMessage(), 'on null')) {
                 $this->markTestSkipped('Component requires attributes or context for rendering');
@@ -145,7 +151,7 @@ class ListItemComponentTest extends ComponentTestCase
 
         $validation = TestHelpers::validateHtmlStructure($html);
         $this->assertTrue($validation['is_valid'],
-            'ListItem should have valid HTML structure. Issues: ' . implode(', ', $validation['issues'])
+            'ListItem should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
         );
     }
 
@@ -155,7 +161,7 @@ class ListItemComponentTest extends ComponentTestCase
 
         foreach ($xssPayloads as $payload) {
             $component = $this->createComponent(['label' => $payload]);
-            $view = $component->render();
+            $view      = $component->render();
 
             try {
                 $html = $view->render();
@@ -165,7 +171,7 @@ class ListItemComponentTest extends ComponentTestCase
                     $this->markTestSkipped('Component requires slots or additional data for rendering');
                 }
                 throw $e;
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Component requires attributes or context for rendering');
@@ -183,9 +189,9 @@ class ListItemComponentTest extends ComponentTestCase
         try {
             $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
             $this->assertLessThan(100, $performance['average_time'],
-                'ListItem rendering should be under 100ms on average'
+                'ListItem rendering should be under 100ms on average',
             );
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             if (str_contains($e->getMessage(), 'requires slots') ||
                 str_contains($e->getMessage(), 'requires additional context')) {
                 $this->markTestSkipped($e->getMessage());

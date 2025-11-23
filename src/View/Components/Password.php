@@ -1,19 +1,19 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Password
  *
  * This file contains the Password class for the ArtisanPack UI Livewire UI Components package.
  *
- * @package    ArtisanPack\LivewireUiComponents\View
- * @subpackage Components
  * @author     Jacob Martella
  * @copyright  2023 Jacob Martella
  * @license    MIT
+ *
  * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
  * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
  * @since      1.0.0
  */
-
 
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
@@ -21,6 +21,7 @@ use Closure;
 use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
+
 /**
  * Password Class
  *
@@ -28,10 +29,8 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-
 class Password extends Component
 {
-
     public function __construct(
         public ?string $id = null,
         public ?string $label = null,
@@ -63,17 +62,17 @@ class Password extends Component
     ) {
         // Set uuid if not provided or empty
         if (empty($this->uuid)) {
-            $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+            $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
         }
 
         // Cannot use a left icon when password toggle should be shown on the left side.
         if (($this->icon && ! $this->right) && ! $this->onlyPassword) {
-            throw new Exception("Cannot use `icon` without providing `right` or `onlyPassword`.");
+            throw new Exception('Cannot use `icon` without providing `right` or `onlyPassword`.');
         }
 
         // Cannot use a right icon when password toggle should be shown on the right side.
         if (($this->iconRight && $this->right) && ! $this->onlyPassword) {
-            throw new Exception("Cannot use `iconRight` when providing `right` and not providing `onlyPassword`.");
+            throw new Exception('Cannot use `iconRight` when providing `right` and not providing `onlyPassword`.');
         }
     }
 

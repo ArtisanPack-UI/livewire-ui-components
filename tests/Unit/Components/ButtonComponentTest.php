@@ -1,15 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
 
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
 use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
+use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
 use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
 use ArtisanPack\LivewireUiComponents\View\Components\Button;
+use Error;
+use RuntimeException;
 
 /**
  * Comprehensive unit tests for the Button component.
- * 
+ *
  * Auto-generated test class that extends ComponentTestCase to inherit
  * common testing patterns and implements component-specific tests.
  */
@@ -18,13 +22,13 @@ class ButtonComponentTest extends ComponentTestCase
     protected string $componentClass = Button::class;
 
     protected array $defaultProperties = [
-            'external' => false,
-            'noWireNavigate' => false,
-            'responsive' => false,
-            'variant' => 'primary',
-            'size' => 'md',
-            'tooltipPosition' => 'lg:tooltip-top'
-        ];
+        'external'        => false,
+        'noWireNavigate'  => false,
+        'responsive'      => false,
+        'variant'         => 'primary',
+        'size'            => 'md',
+        'tooltipPosition' => 'lg:tooltip-top',
+    ];
 
     protected array $requiredProperties = [];
 
@@ -32,11 +36,13 @@ class ButtonComponentTest extends ComponentTestCase
     {
         // Note: 'variant' is excluded because it has validation logic that changes the value
         $stringProperties = ['id', 'label', 'icon', 'iconRight', 'spinner', 'link', 'badge', 'badgeClasses', 'tooltip', 'tooltipLeft', 'tooltipRight', 'tooltipBottom', 'color', 'colorAdjustment', 'size', 'tooltipPosition'];
-        $testValues = ComponentDataFactory::sampleTexts();
+        $testValues       = ComponentDataFactory::sampleTexts();
 
         foreach ($stringProperties as $property) {
             foreach ($testValues as $value) {
-                if (empty($value)) continue; // Skip empty values for some properties
+                if (empty($value)) {
+                    continue;
+                } // Skip empty values for some properties
 
                 $component = $this->createComponent([$property => $value]);
                 $this->assertEquals($value, $component->$property);
@@ -47,17 +53,17 @@ class ButtonComponentTest extends ComponentTestCase
     public function test_button_boolean_properties(): void
     {
         $booleanProperties = ['external', 'noWireNavigate', 'responsive'];
-        
+
         foreach ($booleanProperties as $property) {
             $component = $this->createComponent([$property => true]);
             $this->assertTrue($component->$property);
-            
+
             $component = $this->createComponent([$property => false]);
             $this->assertFalse($component->$property);
         }
     }
 
-    public function test_button_getColorClasses_method(): void
+    public function test_button_get_color_classes_method(): void
     {
         $component = $this->createComponent();
 
@@ -66,7 +72,7 @@ class ButtonComponentTest extends ComponentTestCase
                 $result = $component->getColorClasses();
                 // Add specific assertions based on expected return type
                 $this->assertNotNull($result);
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Method requires attributes or context');
@@ -76,7 +82,7 @@ class ButtonComponentTest extends ComponentTestCase
         }
     }
 
-    public function test_button_getVariantClasses_method(): void
+    public function test_button_get_variant_classes_method(): void
     {
         $component = $this->createComponent();
 
@@ -85,7 +91,7 @@ class ButtonComponentTest extends ComponentTestCase
                 $result = $component->getVariantClasses();
                 // Add specific assertions based on expected return type
                 $this->assertNotNull($result);
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Method requires attributes or context');
@@ -95,7 +101,7 @@ class ButtonComponentTest extends ComponentTestCase
         }
     }
 
-    public function test_button_getSizeClasses_method(): void
+    public function test_button_get_size_classes_method(): void
     {
         $component = $this->createComponent();
 
@@ -106,7 +112,7 @@ class ButtonComponentTest extends ComponentTestCase
                 $this->assertIsString($result);
                 // Should start with 'btn-'
                 $this->assertStringStartsWith('btn-', $result);
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Method requires attributes or context');
@@ -116,7 +122,7 @@ class ButtonComponentTest extends ComponentTestCase
         }
     }
 
-    public function test_button_spinnerTarget_method(): void
+    public function test_button_spinner_target_method(): void
     {
         $component = $this->createComponent();
 
@@ -124,8 +130,8 @@ class ButtonComponentTest extends ComponentTestCase
             try {
                 $result = $component->spinnerTarget();
                 // spinnerTarget can return null when no spinner is set, which is valid
-                $this->assertTrue($result === null || is_string($result));
-            } catch (\Error $e) {
+                $this->assertTrue(null === $result || is_string($result));
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Method requires attributes or context');
@@ -138,7 +144,7 @@ class ButtonComponentTest extends ComponentTestCase
     public function test_button_renders_successfully(): void
     {
         $component = $this->createComponent();
-        $view = $component->render();
+        $view      = $component->render();
 
         try {
             $html = $view->render();
@@ -148,7 +154,7 @@ class ButtonComponentTest extends ComponentTestCase
                 $this->markTestSkipped('Component requires slots or additional data for rendering');
             }
             throw $e;
-        } catch (\Error $e) {
+        } catch (Error $e) {
             if (str_contains($e->getMessage(), 'Call to a member function') &&
                 str_contains($e->getMessage(), 'on null')) {
                 $this->markTestSkipped('Component requires attributes or context for rendering');
@@ -163,7 +169,7 @@ class ButtonComponentTest extends ComponentTestCase
     public function test_button_accessibility_compliance(): void
     {
         $component = $this->createComponent();
-        $view = $component->render();
+        $view      = $component->render();
 
         try {
             $html = $view->render();
@@ -173,7 +179,7 @@ class ButtonComponentTest extends ComponentTestCase
                 $this->markTestSkipped('Component requires slots or additional data for rendering');
             }
             throw $e;
-        } catch (\Error $e) {
+        } catch (Error $e) {
             if (str_contains($e->getMessage(), 'Call to a member function') &&
                 str_contains($e->getMessage(), 'on null')) {
                 $this->markTestSkipped('Component requires attributes or context for rendering');
@@ -183,7 +189,7 @@ class ButtonComponentTest extends ComponentTestCase
 
         $validation = TestHelpers::validateHtmlStructure($html);
         $this->assertTrue($validation['is_valid'],
-            'Button should have valid HTML structure. Issues: ' . implode(', ', $validation['issues'])
+            'Button should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
         );
     }
 
@@ -193,7 +199,7 @@ class ButtonComponentTest extends ComponentTestCase
 
         foreach ($xssPayloads as $payload) {
             $component = $this->createComponent(['label' => $payload]);
-            $view = $component->render();
+            $view      = $component->render();
 
             try {
                 $html = $view->render();
@@ -203,7 +209,7 @@ class ButtonComponentTest extends ComponentTestCase
                     $this->markTestSkipped('Component requires slots or additional data for rendering');
                 }
                 throw $e;
-            } catch (\Error $e) {
+            } catch (Error $e) {
                 if (str_contains($e->getMessage(), 'Call to a member function') &&
                     str_contains($e->getMessage(), 'on null')) {
                     $this->markTestSkipped('Component requires attributes or context for rendering');
@@ -221,9 +227,9 @@ class ButtonComponentTest extends ComponentTestCase
         try {
             $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
             $this->assertLessThan(100, $performance['average_time'],
-                'Button rendering should be under 100ms on average'
+                'Button rendering should be under 100ms on average',
             );
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             if (str_contains($e->getMessage(), 'requires slots') ||
                 str_contains($e->getMessage(), 'requires additional context')) {
                 $this->markTestSkipped($e->getMessage());
@@ -248,7 +254,7 @@ class ButtonComponentTest extends ComponentTestCase
         $this->assertEquals('md', $component->size);
     }
 
-    public function test_button_getSizeClasses_returns_correct_classes(): void
+    public function test_button_get_size_classes_returns_correct_classes(): void
     {
         $sizeClassMap = [
             'xs' => 'btn-xs',
@@ -276,7 +282,7 @@ class ButtonComponentTest extends ComponentTestCase
     public function test_button_renders_with_size_classes(): void
     {
         $component = $this->createComponent(['size' => 'lg', 'label' => 'Test Button']);
-        $view = $component->render();
+        $view      = $component->render();
 
         try {
             $html = $view->render();
@@ -293,9 +299,9 @@ class ButtonComponentTest extends ComponentTestCase
     public function test_button_size_combines_with_color(): void
     {
         $component = $this->createComponent([
-            'size' => 'sm',
+            'size'  => 'sm',
             'color' => 'primary',
-            'label' => 'Small Primary'
+            'label' => 'Small Primary',
         ]);
 
         $this->assertEquals('sm', $component->size);
@@ -320,7 +326,7 @@ class ButtonComponentTest extends ComponentTestCase
         $variants = ['primary', 'secondary', 'accent', 'success', 'warning', 'error'];
 
         foreach ($variants as $variant) {
-            $component = $this->createComponent(['color' => $variant]);
+            $component    = $this->createComponent(['color' => $variant]);
             $colorClasses = $component->getColorClasses();
 
             // Verify hover state exists
@@ -342,7 +348,7 @@ class ButtonComponentTest extends ComponentTestCase
         $tailwindColors = ['blue-500', 'red-600', 'green-400', 'purple-700'];
 
         foreach ($tailwindColors as $color) {
-            $component = $this->createComponent(['color' => $color]);
+            $component    = $this->createComponent(['color' => $color]);
             $colorClasses = $component->getColorClasses();
 
             // Verify hover state exists
@@ -364,7 +370,7 @@ class ButtonComponentTest extends ComponentTestCase
         $hexColors = ['#ff6b6b', '#4ecdc4', '#ffe66d'];
 
         foreach ($hexColors as $color) {
-            $component = $this->createComponent(['color' => $color]);
+            $component    = $this->createComponent(['color' => $color]);
             $colorClasses = $component->getColorClasses();
 
             // Verify hover state exists
@@ -383,7 +389,7 @@ class ButtonComponentTest extends ComponentTestCase
 
     public function test_button_focus_state_includes_text_color(): void
     {
-        $component = $this->createComponent(['color' => 'primary']);
+        $component    = $this->createComponent(['color' => 'primary']);
         $colorClasses = $component->getColorClasses();
 
         // Verify focus state exists
@@ -400,7 +406,7 @@ class ButtonComponentTest extends ComponentTestCase
     public function test_button_transitions_are_optimized(): void
     {
         $component = $this->createComponent(['label' => 'Test Button']);
-        $view = $component->render();
+        $view      = $component->render();
 
         try {
             $html = $view->render();
@@ -420,10 +426,10 @@ class ButtonComponentTest extends ComponentTestCase
     public function test_button_color_adjustment_works_with_size(): void
     {
         $component = $this->createComponent([
-            'size' => 'lg',
-            'color' => 'blue-500',
+            'size'            => 'lg',
+            'color'           => 'blue-500',
             'colorAdjustment' => 'lighter',
-            'label' => 'Large Light Blue'
+            'label'           => 'Large Light Blue',
         ]);
 
         $this->assertEquals('lg', $component->size);

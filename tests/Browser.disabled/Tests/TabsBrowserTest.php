@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ArtisanPack\LivewireUiComponents\Tests\Browser\Tests;
 
-use Laravel\Dusk\Browser;
 use ArtisanPack\LivewireUiComponents\Tests\Browser\DuskTestCase;
+use Laravel\Dusk\Browser;
 use PHPUnit\Framework\Attributes\Test;
 
 /**
@@ -12,16 +14,16 @@ use PHPUnit\Framework\Attributes\Test;
 class TabsBrowserTest extends DuskTestCase
 {
     #[Test]
-    public function it_renders_tabs_correctly()
+    public function it_renders_tabs_correctly(): void
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser->visit('/test/tabs')
-                   ->assertVisible('@tab-1')
-                   ->assertVisible('@tab-2')
-                   ->assertVisible('@tab-3')
-                   ->assertVisible('@tab-panel-1')
-                   ->assertMissing('@tab-panel-2')
-                   ->assertMissing('@tab-panel-3');
+                ->assertVisible('@tab-1')
+                ->assertVisible('@tab-2')
+                ->assertVisible('@tab-3')
+                ->assertVisible('@tab-panel-1')
+                ->assertMissing('@tab-panel-2')
+                ->assertMissing('@tab-panel-3');
         });
     }
 }

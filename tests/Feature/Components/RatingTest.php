@@ -1,28 +1,29 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ArtisanPack\LivewireUiComponents\Tests\Feature\Components;
 
-use ArtisanPack\LivewireUiComponents\View\Components\Rating;
 use ArtisanPack\LivewireUiComponents\Tests\TestCase;
-use Illuminate\View\Component;
+use ArtisanPack\LivewireUiComponents\View\Components\Rating;
 use PHPUnit\Framework\Attributes\Test;
 
 class RatingTest extends TestCase
 {
     #[Test]
-    public function it_renders_basic_rating_component()
+    public function it_renders_basic_rating_component(): void
     {
-        $component = new Rating();
-        $view = $component->render();
+        $component = new Rating;
+        $view      = $component->render();
 
         $this->assertInstanceOf(\Illuminate\Contracts\View\View::class, $view);
         $this->assertEquals('livewire-ui-components::components.rating', $view->name());
     }
 
     #[Test]
-    public function it_has_default_values()
+    public function it_has_default_values(): void
     {
-        $component = new Rating();
+        $component = new Rating;
 
         $this->assertNull($component->id);
         $this->assertEquals(5, $component->total);
@@ -44,12 +45,12 @@ class RatingTest extends TestCase
     }
 
     #[Test]
-    public function it_accepts_custom_icon_props()
+    public function it_accepts_custom_icon_props(): void
     {
         $component = new Rating(
             icon: 'heroicon-o-heart',
             filledIcon: 'heroicon-s-heart',
-            emptyIcon: 'heroicon-o-heart'
+            emptyIcon: 'heroicon-o-heart',
         );
 
         $this->assertEquals('heroicon-o-heart', $component->icon);
@@ -58,12 +59,12 @@ class RatingTest extends TestCase
     }
 
     #[Test]
-    public function it_accepts_custom_color_props()
+    public function it_accepts_custom_color_props(): void
     {
         $component = new Rating(
             color: 'primary',
             filledColor: 'red-500',
-            emptyColor: 'gray-300'
+            emptyColor: 'gray-300',
         );
 
         $this->assertEquals('primary', $component->color);
@@ -72,7 +73,7 @@ class RatingTest extends TestCase
     }
 
     #[Test]
-    public function it_resolves_filled_color_with_priority()
+    public function it_resolves_filled_color_with_priority(): void
     {
         // filledColor takes priority
         $component = new Rating(color: 'primary', filledColor: 'red-500');
@@ -84,22 +85,22 @@ class RatingTest extends TestCase
         $this->assertNull($component->filledColor);
 
         // default fallback
-        $component = new Rating();
+        $component = new Rating;
         $this->assertEquals('warning', $component->color);
     }
 
     #[Test]
-    public function it_resolves_empty_color_correctly()
+    public function it_resolves_empty_color_correctly(): void
     {
         $component = new Rating(emptyColor: 'gray-400');
         $this->assertEquals('gray-400', $component->emptyColor);
 
-        $component = new Rating();
+        $component = new Rating;
         $this->assertEquals('gray-200', $component->emptyColor);
     }
 
     #[Test]
-    public function it_resolves_filled_icon_with_priority()
+    public function it_resolves_filled_icon_with_priority(): void
     {
         // filledIcon takes priority
         $component = new Rating(icon: 'o-heart', filledIcon: 's-heart');
@@ -111,12 +112,12 @@ class RatingTest extends TestCase
         $this->assertNull($component->filledIcon);
 
         // default fallback
-        $component = new Rating();
+        $component = new Rating;
         $this->assertEquals('s-star', $component->icon);
     }
 
     #[Test]
-    public function it_resolves_empty_icon_with_priority()
+    public function it_resolves_empty_icon_with_priority(): void
     {
         // emptyIcon takes priority
         $component = new Rating(icon: 's-heart', emptyIcon: 'o-heart');
@@ -128,18 +129,13 @@ class RatingTest extends TestCase
         $this->assertNull($component->emptyIcon);
 
         // default fallback
-        $component = new Rating();
+        $component = new Rating;
         $this->assertEquals('s-star', $component->icon);
         $this->assertNull($component->emptyIcon);
     }
 
-
-
-
-
-
     #[Test]
-    public function it_accepts_float_values()
+    public function it_accepts_float_values(): void
     {
         $component = new Rating(value: 3.5);
         $this->assertEquals(3.5, $component->value);
@@ -149,10 +145,10 @@ class RatingTest extends TestCase
     }
 
     #[Test]
-    public function it_generates_unique_uuid()
+    public function it_generates_unique_uuid(): void
     {
-        $component1 = new Rating();
-        $component2 = new Rating();
+        $component1 = new Rating;
+        $component2 = new Rating;
 
         $this->assertNotEquals($component1->uuid, $component2->uuid);
         $this->assertStringStartsWith('artisanpack', $component1->uuid);
@@ -160,14 +156,14 @@ class RatingTest extends TestCase
     }
 
     #[Test]
-    public function it_uses_custom_id_in_uuid()
+    public function it_uses_custom_id_in_uuid(): void
     {
         $component = new Rating(id: 'custom-rating');
         $this->assertStringEndsWith('custom-rating', $component->uuid);
     }
 
     #[Test]
-    public function it_maintains_backward_compatibility()
+    public function it_maintains_backward_compatibility(): void
     {
         // Old usage should still work
         $component = new Rating(id: 'old-rating', total: 10);

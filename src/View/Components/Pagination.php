@@ -1,19 +1,19 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Pagination
  *
  * This file contains the Pagination class for the ArtisanPack UI Livewire UI Components package.
  *
- * @package    ArtisanPack\LivewireUiComponents\View
- * @subpackage Components
  * @author     Jacob Martella
  * @copyright  2023 Jacob Martella
  * @license    MIT
+ *
  * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
  * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
  * @since      1.0.0
  */
-
 
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
@@ -22,6 +22,7 @@ use Closure;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
+
 /**
  * Pagination Class
  *
@@ -29,7 +30,6 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-
 class Pagination extends Component
 {
     public string $uuid;
@@ -38,7 +38,7 @@ class Pagination extends Component
         public ArrayAccess|array $rows,
         public ?string $id = null,
         public ?array $perPageValues = [10, 20, 50, 100],
-        
+
         // New variant parameters
         public ?bool $simple = false,
         public ?bool $compact = false,
@@ -53,7 +53,7 @@ class Pagination extends Component
         public ?bool $showPageInfo = true,
         public ?string $pageInfoTemplate = 'Showing {from} to {to} of {total} results',
     ) {
-        $this->uuid = "artisanpack" . md5(serialize($this)) . $id;
+        $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
     }
 
     public function modelName(): ?string
@@ -71,7 +71,7 @@ class Pagination extends Component
     public function getVariantClasses(): string
     {
         $classes = ['artisanpack-table-pagination'];
-        
+
         if ($this->simple) {
             $classes[] = 'pagination-simple';
         } elseif ($this->compact) {
@@ -83,22 +83,22 @@ class Pagination extends Component
         } else {
             $classes[] = 'pagination-default';
         }
-        
-        if ($this->size !== 'default') {
-            $classes[] = 'pagination-' . $this->size;
+
+        if ('default' !== $this->size) {
+            $classes[] = 'pagination-'.$this->size;
         }
-        
+
         return implode(' ', $classes);
     }
 
     public function shouldShowPerPageSelector(): bool
     {
-        return !$this->hidePerPage && !$this->simple && !$this->minimal && $this->isShowable();
+        return ! $this->hidePerPage && ! $this->simple && ! $this->minimal && $this->isShowable();
     }
 
     public function shouldShowPageInfo(): bool
     {
-        return $this->showPageInfo && !$this->hidePageInfo && !$this->simple && !$this->minimal;
+        return $this->showPageInfo && ! $this->hidePageInfo && ! $this->simple && ! $this->minimal;
     }
 
     public function render(): View|Closure|string

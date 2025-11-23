@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace ArtisanPack\LivewireUiComponents\Tests\Browser\Tests;
 
-use Laravel\Dusk\Browser;
 use ArtisanPack\LivewireUiComponents\Tests\Browser\DuskTestCase;
+use Laravel\Dusk\Browser;
 use PHPUnit\Framework\Attributes\Test;
 
 /**
@@ -12,14 +14,14 @@ use PHPUnit\Framework\Attributes\Test;
 class DropdownBrowserTest extends DuskTestCase
 {
     #[Test]
-    public function it_opens_dropdown_on_click()
+    public function it_opens_dropdown_on_click(): void
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser->visit('/test/dropdown')
-                   ->assertMissing('@dropdown-menu')
-                   ->click('@dropdown-trigger')
-                   ->waitFor('@dropdown-menu', 2)
-                   ->assertVisible('@dropdown-menu');
+                ->assertMissing('@dropdown-menu')
+                ->click('@dropdown-trigger')
+                ->waitFor('@dropdown-menu', 2)
+                ->assertVisible('@dropdown-menu');
         });
     }
 }

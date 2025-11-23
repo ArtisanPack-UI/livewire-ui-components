@@ -1,14 +1,15 @@
 <?php
+
+declare(strict_types=1);
 /**
  * ImageGallery
  *
  * This file contains the ImageGallery class for the ArtisanPack UI Livewire UI Components package.
  *
- * @package    ArtisanPack\LivewireUiComponents\View
- * @subpackage Components
  * @author     Jacob Martella
  * @copyright  2023 Jacob Martella
  * @license    MIT
+ *
  * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
  * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
  * @since      1.0.0
@@ -36,10 +37,10 @@ class ImageGallery extends Component
         public ?string $id = null,                     // Optional: Custom ID
         public int|array $columns = [                  // Responsive columns or single integer
             'default' => 1,
-            'sm' => 2,
-            'md' => 3,
-            'lg' => 4,
-            'xl' => 5
+            'sm'      => 2,
+            'md'      => 3,
+            'lg'      => 4,
+            'xl'      => 5,
         ],
         public string $aspectRatio = 'square',         // square|landscape|portrait|auto
         public string $gap = 'md',                     // xs|sm|md|lg|xl
@@ -49,21 +50,21 @@ class ImageGallery extends Component
         public bool $lazyLoad = true,                  // Enable lazy loading
         public ?array $filters = null,                 // Optional category filters
         public int $itemsPerPage = 0,                  // 0 = no pagination
-        public string $loadingStyle = 'skeleton'       // skeleton|spinner|fade
+        public string $loadingStyle = 'skeleton',       // skeleton|spinner|fade
     ) {
         // Convert integer columns to array format
         if (is_int($this->columns)) {
-            $cols = $this->columns;
+            $cols          = $this->columns;
             $this->columns = [
                 'default' => 1,
-                'sm' => min(2, $cols),
-                'md' => min(3, $cols),
-                'lg' => min(4, $cols),
-                'xl' => $cols
+                'sm'      => min(2, $cols),
+                'md'      => min(3, $cols),
+                'lg'      => min(4, $cols),
+                'xl'      => $cols,
             ];
         }
-        
-        $this->uuid = "artisanpack-gallery-" . md5(serialize($this)) . ($id ? "-{$id}" : '');
+
+        $this->uuid = 'artisanpack-gallery-'.md5(serialize($this)).($id ? "-{$id}" : '');
     }
 
     /**
@@ -72,11 +73,11 @@ class ImageGallery extends Component
     public function getGapClass(): string
     {
         return match ($this->gap) {
-            'xs' => 'gap-1',
-            'sm' => 'gap-2',
-            'md' => 'gap-4',
-            'lg' => 'gap-6',
-            'xl' => 'gap-8',
+            'xs'    => 'gap-1',
+            'sm'    => 'gap-2',
+            'md'    => 'gap-4',
+            'lg'    => 'gap-6',
+            'xl'    => 'gap-8',
             default => 'gap-4'
         };
     }
@@ -87,11 +88,11 @@ class ImageGallery extends Component
     public function getAspectRatioClass(): string
     {
         return match ($this->aspectRatio) {
-            'square' => 'aspect-square',
+            'square'    => 'aspect-square',
             'landscape' => 'aspect-[4/3]',
-            'portrait' => 'aspect-[3/4]',
-            'auto' => '',
-            default => 'aspect-square'
+            'portrait'  => 'aspect-[3/4]',
+            'auto'      => '',
+            default     => 'aspect-square'
         };
     }
 
@@ -103,7 +104,7 @@ class ImageGallery extends Component
         $classes = [];
 
         foreach ($this->columns as $breakpoint => $cols) {
-            if ($breakpoint === 'default') {
+            if ('default' === $breakpoint) {
                 $classes[] = "grid-cols-{$cols}";
             } else {
                 $classes[] = "{$breakpoint}:grid-cols-{$cols}";
@@ -120,9 +121,9 @@ class ImageGallery extends Component
     {
         return match ($this->loadingStyle) {
             'skeleton' => 'bg-gray-200 dark:bg-gray-700 animate-pulse',
-            'spinner' => 'bg-gray-100 dark:bg-gray-800',
-            'fade' => 'bg-gray-100 dark:bg-gray-800 opacity-50',
-            default => 'bg-gray-200 dark:bg-gray-700 animate-pulse'
+            'spinner'  => 'bg-gray-100 dark:bg-gray-800',
+            'fade'     => 'bg-gray-100 dark:bg-gray-800 opacity-50',
+            default    => 'bg-gray-200 dark:bg-gray-700 animate-pulse'
         };
     }
 
