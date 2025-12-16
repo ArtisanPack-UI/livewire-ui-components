@@ -53,7 +53,16 @@ class Drawer extends Component
 
     public function id(): string
     {
-        return $this->id ?? $this->attributes?->wire('model')->value();
+        if ($this->id) {
+            return $this->id;
+        }
+
+        $wireModel = $this->attributes?->wire('model')->value();
+        if ($wireModel && is_string($wireModel)) {
+            return $wireModel;
+        }
+
+        return $this->uuid;
     }
 
     public function modelName(): WireDirective

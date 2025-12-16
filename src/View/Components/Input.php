@@ -44,6 +44,7 @@ class Input extends Component
         public ?bool $clearable = false,
         public ?bool $money = false,
         public ?string $locale = 'en-US',
+        public mixed $value = null,
 
         // Slots
         public mixed $prepend = null,

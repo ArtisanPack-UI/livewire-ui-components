@@ -41,7 +41,6 @@ class Checkbox extends Component
      *
      * @param  string|null  $id  The component's ID.
      * @param  string|null  $label  The component's label.
-     * @param  mixed  $value  The component's initial value.
      * @param  bool|null  $right  Whether to position the label on the right.
      * @param  string|null  $hint  A hint message to display.
      * @param  string|null  $hintClass  The CSS class for the hint.
@@ -59,7 +58,6 @@ class Checkbox extends Component
     public function __construct(
         public ?string $id = null,
         public ?string $label = null,
-        public mixed $value = null,
         public ?bool $right = false,
         public ?string $hint = null,
         public ?string $hintClass = 'fieldset-label',
