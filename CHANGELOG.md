@@ -1,5 +1,40 @@
 # ArtisanPack UI Livewire UI Components
 
+## [1.0.0-beta.4] - 2025-12-16
+
+### Added
+- CodeRabbit AI code review configuration file for automated code quality checks
+- New enhancement issue template for improvement requests
+- Comprehensive default merge request template with standardized sections
+
+### Changed
+- **CONTRIBUTING.md**: Completely overhauled contributing guidelines with extensive documentation
+  - Added detailed development workflow and Git branching strategy
+  - Expanded code style guidelines and best practices
+  - Included comprehensive testing requirements and documentation standards
+  - Added merge request and issue management guidelines
+- **Issue templates**: Updated and streamlined issue templates
+  - Enhanced bug report template with better structure
+  - Improved feature request template with clearer sections
+  - Updated task template with standardized format
+- **Merge request templates**: Restructured merge request templates
+  - Consolidated templates into default and release templates
+  - Enhanced release merge request template with comprehensive checklist
+  - Removed redundant bug, feature, and task-specific templates
+- **Drawer component**: Code improvements and optimizations
+
+### Fixed
+- **Menu item component**: Fixed padding issues for better visual consistency (menu-item.blade.php:line 2)
+- **Input component**: Resolved rendering and functionality issues
+  - Fixed input field rendering (input.blade.php, Input.php)
+  - Fixed checkbox component rendering (checkbox.blade.php, Checkbox.php)
+  - Fixed toggle component rendering (toggle.blade.php, Toggle.php)
+
+### Infrastructure
+- Enhanced project documentation and contribution guidelines
+- Improved automated code review workflow with CodeRabbit integration
+- Streamlined GitLab issue and merge request templates
+
 ## [1.0.0-beta.3] - 2025-11-23
 
 ### Added

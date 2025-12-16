@@ -1,0 +1,58 @@
+# .coderabbit.yaml configuration for ArtisanPack UI
+language: "en-US"
+
+reviews:
+  # General Review Settings
+  profile: "chill" # "chill" offers good feedback without nitpicking every minor style preference
+  request_changes_workflow: false # Set to true if you want the bot to formally request changes
+  high_level_summary: true
+  auto_review:
+    enabled: true
+    drafts: false # Skip WIP/Draft MRs to save tokens and reduce noise
+
+  # ------------------------------------------------------------------
+  # IGNORE PATTERNS
+  # ------------------------------------------------------------------
+  ignore:
+    # 1. Standard Dependencies & Git
+    - ".git/**"
+    - "node_modules/**"
+    - "vendor/**"
+
+    # 2. Build Artifacts (Vite/Laravel)
+    # Ignored because these are auto-generated and unreadable for review
+    - "public/build/**"
+    - "public/hot"
+    - "public/storage"
+    - "storage/**"
+    - "bootstrap/cache/**"
+
+    # 3. Lock Files
+    # Changes here are usually just version bumps, not logic to review
+    - "composer.lock"
+    - "package-lock.json"
+    - "yarn.lock"
+
+    # 4. IDE & Auto-Generated Helpers
+    - ".idea/**"
+    - ".vscode/**"
+    - "_ide_helper.php"
+    - "_ide_helper_models.php"
+    - ".phpstorm.meta.php"
+
+    # 5. ArtisanPack UI Specifics
+    # SVGs are code, but reviewing path data is useless.
+    # Given your 'icons' package, this is crucial to avoid massive diffs.
+    - "**/*.svg"
+
+    # Minified assets (Alpine/Tailwind builds)
+    - "**/*.min.js"
+    - "**/*.min.css"
+    - "**/*.map"
+
+    # 6. Static Assets
+    # If your CMS framework has a large static folder for default themes
+    - "public/vendor/**"
+
+chat:
+  auto_reply: true # Allows the bot to reply when you tag @coderabbitai in comments
