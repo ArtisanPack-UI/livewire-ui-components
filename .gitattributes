@@ -8,6 +8,7 @@
 /.idea export-ignore
 /.junie export-ignore
 /.claude export-ignore
+/.coderabbit.yaml export-ignore
 
 # Testing and code quality
 /tests export-ignore
