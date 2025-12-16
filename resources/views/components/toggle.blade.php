@@ -7,9 +7,8 @@
                 <input
                     id="{{ $uuid }}"
                     type="checkbox"
-                    @checked($value == true || $value === 1 || $value === '1')
                     {{
-                        $attributes->whereDoesntStartWith(['id', 'checked'])
+                        $attributes->whereDoesntStartWith(['id'])
                             ->class(["order-2" => $right])
                             ->merge(['class' => 'toggle'])
                     }}

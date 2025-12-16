@@ -107,6 +107,9 @@
                         <input
                             id="{{ $uuid }}"
                             placeholder="{{ $attributes->get('placeholder') }} "
+                            @if($value !== null && !$attributes->whereStartsWith('wire:model')->first())
+                                value="{{ $value }}"
+                            @endif
                             @if($attributes->has('autofocus') && $attributes->get('autofocus') == true)
                                 autofocus
                             @endif
