@@ -5,7 +5,7 @@
     $isActive = $active || ($activateByRoute && $attributes->get('active') === null && $routeMatches());
 
     // NOTE: `p-2` was changed to `px-4 py-1.5` to match daisyUI's default menu item padding
-    $classes = ['flex', 'items-center', 'gap-3', 'my-0.5', 'px-4', 'py-1.5', 'w-full', 'text-left']; // Added w-full and text-left for buttons
+    $classes = ['flex', 'items-center', 'gap-3', 'my-0.5', 'p-2', 'w-full', 'text-left']; // Added w-full and text-left for buttons
     $extraAttributes = [];
 
     if ($isActive) {
