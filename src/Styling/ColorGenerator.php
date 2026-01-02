@@ -425,7 +425,8 @@ class ColorGenerator
         if ($this->isVariant($color)) {
             $baseColor = $this->getVariantBaseColor($color);
         } elseif ($this->isTailwindColorWithIntensity($color)) {
-            $baseColor = $this->tailwindColorToHex(...explode('-', $color));
+            [$colorName, $intensity] = explode('-', $color);
+            $baseColor               = $this->tailwindColorToHex($colorName, (int) $intensity);
         } elseif ($this->isTailwindColorName($color)) {
             $baseColor = $this->tailwindColorToHex($color, 500);
         } elseif ($this->isHexColor($color)) {
@@ -477,7 +478,7 @@ class ColorGenerator
     {
         $pattern = '/^('.implode('|', array_keys($this->tailwindColorBases)).')-(50|100|200|300|400|500|600|700|800|900|950)$/';
 
-        return preg_match($pattern, $color);
+        return (bool) preg_match($pattern, $color);
     }
 
     /**
@@ -497,7 +498,7 @@ class ColorGenerator
      */
     protected function isHexColor(string $color): bool
     {
-        return preg_match('/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', $color);
+        return (bool) preg_match('/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', $color);
     }
 
     /**

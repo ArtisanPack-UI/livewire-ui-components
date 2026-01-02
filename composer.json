@@ -2,7 +2,7 @@
     "name": "artisanpack-ui/livewire-ui-components",
     "description": "A Livewire UI component library for the TALL stack, forked from MaryUI and adapted for the ArtisanPack UI ecosystem.",
     "license": "MIT",
-    "version": "1.0-beta4",
+    "version": "1.0.0",
     "authors": [
         {
             "name": "Jacob Martella",

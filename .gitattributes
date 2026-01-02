@@ -9,6 +9,14 @@
 /.junie export-ignore
 /.claude export-ignore
 /.coderabbit.yaml export-ignore
+/.ai export-ignore
+/.DS_Store export-ignore
+
+# Release planning documents
+/LIVEWIRE-UI-1.0-PLAN.md export-ignore
+
+# Lock file (not needed for package releases)
+/composer.lock export-ignore
 
 # Testing and code quality
 /tests export-ignore

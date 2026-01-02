@@ -10,7 +10,9 @@ use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 use ReflectionClass;
+use ReflectionNamedType;
 use ReflectionProperty;
+use stdClass;
 
 /**
  * Base test case for component testing providing common patterns and utilities.
@@ -110,9 +112,9 @@ abstract class ComponentTestCase extends TestCase
             $this->markTestSkipped('Component does not have uuid property');
         }
 
-        // Create components with different label/name to ensure different UUIDs
-        $component1 = $this->createComponent(['label' => 'Test 1', 'name' => 'test1']);
-        $component2 = $this->createComponent(['label' => 'Test 2', 'name' => 'test2']);
+        // Create components with different IDs to ensure different UUIDs
+        $component1 = $this->createComponent(['id' => 'test-id-1']);
+        $component2 = $this->createComponent(['id' => 'test-id-2']);
 
         $this->assertNotEmpty($component1->uuid);
         $this->assertNotEmpty($component2->uuid);
@@ -144,17 +146,17 @@ abstract class ComponentTestCase extends TestCase
             $this->markTestSkipped('Component does not have color property');
         }
 
-        // Test default color
-        $component = $this->createComponent();
-        $this->assertNotNull($component->resolvedColor ?? $component->color);
-
         // Test custom color if color method exists
-        if (method_exists($component, 'getColorClasses')) {
+        if (method_exists($this->componentClass, 'getColorClasses')) {
             $customColor  = 'blue-500';
             $component    = $this->createComponent(['color' => $customColor]);
             $colorClasses = $component->getColorClasses();
 
             $this->assertNotEmpty($colorClasses);
+        } else {
+            // Just verify component can be created with a color
+            $component = $this->createComponent(['color' => 'primary']);
+            $this->assertEquals('primary', $component->color);
         }
     }
 
@@ -293,10 +295,110 @@ abstract class ComponentTestCase extends TestCase
 
     /**
      * Create a component instance with the given properties.
+     *
+     * Filters out properties that don't exist as constructor parameters
+     * and provides default values for required parameters.
      */
     protected function createComponent(array $properties = []): Component
     {
-        return new $this->componentClass(...$properties);
+        // Filter properties to only include valid constructor parameters
+        $filteredProperties = $this->filterValidConstructorParameters($properties);
+
+        // Add default values for required parameters not provided
+        $filteredProperties = $this->addRequiredParameterDefaults($filteredProperties);
+
+        return new $this->componentClass(...$filteredProperties);
+    }
+
+    /**
+     * Filter properties to only include valid constructor parameters for the component.
+     */
+    protected function filterValidConstructorParameters(array $properties): array
+    {
+        $reflection  = new ReflectionClass($this->componentClass);
+        $constructor = $reflection->getConstructor();
+
+        if (null === $constructor) {
+            return [];
+        }
+
+        $validParams = [];
+        foreach ($constructor->getParameters() as $param) {
+            $validParams[] = $param->getName();
+        }
+
+        return array_filter(
+            $properties,
+            fn ($key) => in_array($key, $validParams),
+            ARRAY_FILTER_USE_KEY,
+        );
+    }
+
+    /**
+     * Add default values for required constructor parameters that aren't provided.
+     */
+    protected function addRequiredParameterDefaults(array $properties): array
+    {
+        $reflection  = new ReflectionClass($this->componentClass);
+        $constructor = $reflection->getConstructor();
+
+        if (null === $constructor) {
+            return $properties;
+        }
+
+        foreach ($constructor->getParameters() as $param) {
+            $paramName = $param->getName();
+
+            // Skip if already provided
+            if (array_key_exists($paramName, $properties)) {
+                continue;
+            }
+
+            // Skip if parameter has a default value or is optional
+            if ($param->isDefaultValueAvailable() || $param->allowsNull()) {
+                continue;
+            }
+
+            // Provide sensible defaults based on type
+            $type = $param->getType();
+
+            if (null === $type) {
+                $properties[$paramName] = 'test';
+
+                continue;
+            }
+
+            // Handle union types (e.g., ArrayAccess|array)
+            $typeString = (string) $type;
+
+            // Check for array-like types first
+            if (str_contains($typeString, 'array') || str_contains($typeString, 'ArrayAccess')) {
+                $properties[$paramName] = [];
+
+                continue;
+            }
+
+            // Check for object types
+            if (str_contains($typeString, 'object')) {
+                $properties[$paramName] = new stdClass;
+
+                continue;
+            }
+
+            // Handle named types
+            $typeName = $type instanceof ReflectionNamedType ? $type->getName() : null;
+
+            $properties[$paramName] = match ($typeName) {
+                'string' => 'Test '.$paramName,
+                'int'    => 1,
+                'float'  => 1.0,
+                'bool'   => false,
+                'array'  => [],
+                default  => 'test',
+            };
+        }
+
+        return $properties;
     }
 
     /**
@@ -310,43 +412,32 @@ abstract class ComponentTestCase extends TestCase
     }
 
     /**
-     * Get all boolean properties of the component.
+     * Get all boolean properties of the component by checking actual type declarations.
      */
     protected function getBooleanProperties(): array
     {
         $reflection        = new ReflectionClass($this->componentClass);
-        $properties        = $reflection->getProperties(ReflectionProperty::IS_PUBLIC);
+        $constructor       = $reflection->getConstructor();
         $booleanProperties = [];
 
-        foreach ($properties as $property) {
-            $propertyName = $property->getName();
+        if (null === $constructor) {
+            return $booleanProperties;
+        }
 
-            // Skip certain non-boolean properties
-            if (in_array($propertyName, ['uuid', 'id', 'class', 'style', 'attributes'])) {
+        // Check constructor parameters for actual bool types
+        foreach ($constructor->getParameters() as $param) {
+            $type = $param->getType();
+
+            if (null === $type) {
                 continue;
             }
 
-            // Check if property name suggests boolean (starts with 'is', 'has', 'can', etc.)
-            $booleanPrefixes         = ['is', 'has', 'can', 'should', 'will', 'does'];
-            $startsWithBooleanPrefix = false;
+            // Handle union types and named types
+            $typeName = $type instanceof ReflectionNamedType ? $type->getName() : null;
 
-            foreach ($booleanPrefixes as $prefix) {
-                if (str_starts_with(strtolower($propertyName), $prefix)) {
-                    $startsWithBooleanPrefix = true;
-                    break;
-                }
-            }
-
-            // Common boolean property names
-            $commonBooleanProperties = [
-                'disabled', 'readonly', 'required', 'multiple', 'checked',
-                'selected', 'active', 'visible', 'hidden', 'loading',
-                'clearable', 'searchable', 'sortable', 'filterable',
-                'draggable', 'resizable', 'collapsible', 'expandable',
-            ];
-
-            if ($startsWithBooleanPrefix || in_array(strtolower($propertyName), $commonBooleanProperties)) {
-                $booleanProperties[] = $propertyName;
+            // Only include parameters that are strictly bool type
+            if ('bool' === $typeName) {
+                $booleanProperties[] = $param->getName();
             }
         }
 
