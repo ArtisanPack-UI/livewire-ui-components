@@ -101,7 +101,6 @@ feature-tests:
     paths:
       - coverage-feature.xml
     expire_in: 1 week
-  allow_failure: true  # Allow failures while tests are being refined
 
 # Integration Tests
 integration-tests:
@@ -130,7 +129,6 @@ integration-tests:
     paths:
       - coverage-integration.xml
     expire_in: 1 week
-  allow_failure: true  # Allow failures while tests are being refined
 
 # Browser Tests with Dusk
 browser-tests:

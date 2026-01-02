@@ -1,5 +1,36 @@
 # ArtisanPack UI Livewire UI Components
 
+## [1.0.0] - 2026-01-02
+
+### First Stable Release
+
+This is the first stable release of ArtisanPack UI Livewire UI Components, a comprehensive UI component library for the TALL stack (Tailwind CSS, Alpine.js, Laravel, and Livewire).
+
+### Highlights
+
+- **77 Production-Ready Components**: Complete library spanning form inputs, layout elements, navigation, data display, feedback, and utility components
+- **Full Test Coverage**: 1,567+ tests with 6,490 assertions ensuring reliability
+- **Laravel 10, 11, and 12 Support**: Future-proof compatibility with current and upcoming Laravel versions
+- **Livewire 3.6+ Compatible**: Built for the latest Livewire features
+- **Tailwind CSS 4 and daisyUI**: Modern styling with full dark mode support
+- **Accessibility Focused**: WCAG 2.1 compliant components
+- **Comprehensive Documentation**: Detailed guides and examples for every component
+
+### Component Categories
+
+- **Form Components (25)**: Button, Input, Select, Checkbox, DatePicker, Editor, File upload, and more
+- **Layout Components (11)**: Card, Modal, Tabs, Accordion, Drawer, Dropdown
+- **Navigation Components (9)**: Menu, Breadcrumbs, Pagination, Spotlight Search
+- **Data Display Components (22)**: Table, Chart, Calendar, Avatar, Badge, Progress
+- **Feedback Components (4)**: Alert, Toast, Loading, Errors
+- **Utility Components (6)**: Carousel, Icon, ThemeToggle, Swap
+
+### Migration from Beta
+
+If upgrading from a beta version, no breaking changes are expected. The component API remains stable.
+
+---
+
 ## [1.0.0-beta.4] - 2025-12-16
 
 ### Added

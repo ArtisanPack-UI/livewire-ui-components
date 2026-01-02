@@ -15,7 +15,7 @@ npm run dev
 
 ### Component Naming Convention
 
-All components use the `<x-artisanpack-{component-name}>` naming pattern. The old `<x-artisanpack-artisanpack-{name}>` syntax is deprecated and should not be used in new code.
+All components use the `<x-artisanpack-{component-name}>` naming pattern. The old `<x-artisanpack-{name}>` syntax is deprecated and should not be used in new code.
 
 @verbatim
 <code-snippet name="Component naming syntax" lang="blade">
@@ -24,7 +24,7 @@ All components use the `<x-artisanpack-{component-name}>` naming pattern. The ol
 <x-artisanpack-input wire:model="name" />
 
 <!-- Deprecated (do not use) -->
-<x-artisanpack-artisanpack-button>Click Me</x-artisanpack-artisanpack-button>
+<x-artisanpack-button>Click Me</x-artisanpack-artisanpack-button>
 </code-snippet>
 @endverbatim
 
