@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace ArtisanPack\LivewireUiComponents\Styling;
 
-use ArtisanPackUI\Accessibility\Facades\A11y;
 use Illuminate\Support\Facades\Http;
 use InvalidArgumentException;
 
@@ -279,8 +278,6 @@ class ColorGenerator
      */
     public function generateThemeCss(string $primaryColor, string $secondaryColor, string $accentColor): string
     {
-        $a11y = new A11y;
-
         $primaryBase     = $this->getBaseColor($primaryColor);
         $secondaryBase   = $this->getBaseColor($secondaryColor);
         $accentBase      = $this->getBaseColor($accentColor);

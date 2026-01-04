@@ -1,5 +1,13 @@
 # ArtisanPack UI Livewire UI Components
 
+## [1.0.1] - 2026-01-04
+
+### Fixed
+- **Demo views**: Fixed image-gallery and image-slider demo views to use correct `<x-artisanpack-*>` component prefixes instead of incorrect `<x-*>` syntax
+- **ColorGenerator**: Removed unused `$a11y` variable and `ArtisanPackUI\Accessibility\Facades\A11y` import in `generateThemeCss()` method
+
+---
+
 ## [1.0.0] - 2026-01-02
 
 ### First Stable Release
