@@ -36,7 +36,7 @@
             <h2 class="text-2xl font-semibold mb-4">Default Configuration</h2>
             <p class="text-gray-600 mb-6">Basic grid layout with default settings (3 columns, medium gap, landscape aspect ratio)</p>
             
-            <x-image-gallery :images="$images" />
+            <x-artisanpack-image-gallery :images="$images" />
         </section>
 
         <!-- Different Column Layouts -->
@@ -46,17 +46,17 @@
             <div class="space-y-8">
                 <div>
                     <h3 class="text-lg font-medium mb-3">2 Columns</h3>
-                    <x-image-gallery :images="array_slice($images, 0, 4)" :columns="2" />
+                    <x-artisanpack-image-gallery :images="array_slice($images, 0, 4)" :columns="2" />
                 </div>
 
                 <div>
                     <h3 class="text-lg font-medium mb-3">4 Columns</h3>
-                    <x-image-gallery :images="$images" :columns="4" />
+                    <x-artisanpack-image-gallery :images="$images" :columns="4" />
                 </div>
 
                 <div>
                     <h3 class="text-lg font-medium mb-3">5 Columns</h3>
-                    <x-image-gallery :images="$images" :columns="5" />
+                    <x-artisanpack-image-gallery :images="$images" :columns="5" />
                 </div>
             </div>
         </section>
@@ -68,17 +68,17 @@
             <div class="space-y-8">
                 <div>
                     <h3 class="text-lg font-medium mb-3">Square (1:1)</h3>
-                    <x-image-gallery :images="array_slice($images, 0, 4)" aspect-ratio="square" />
+                    <x-artisanpack-image-gallery :images="array_slice($images, 0, 4)" aspect-ratio="square" />
                 </div>
 
                 <div>
                     <h3 class="text-lg font-medium mb-3">Portrait (3:4)</h3>
-                    <x-image-gallery :images="array_slice($images, 0, 3)" aspect-ratio="portrait" />
+                    <x-artisanpack-image-gallery :images="array_slice($images, 0, 3)" aspect-ratio="portrait" />
                 </div>
 
                 <div>
                     <h3 class="text-lg font-medium mb-3">Auto (Natural Image Ratio)</h3>
-                    <x-image-gallery :images="array_slice($images, 0, 6)" aspect-ratio="auto" />
+                    <x-artisanpack-image-gallery :images="array_slice($images, 0, 6)" aspect-ratio="auto" />
                 </div>
             </div>
         </section>
@@ -90,22 +90,22 @@
             <div class="space-y-8">
                 <div>
                     <h3 class="text-lg font-medium mb-3">No Gap</h3>
-                    <x-image-gallery :images="array_slice($images, 0, 6)" gap="none" />
+                    <x-artisanpack-image-gallery :images="array_slice($images, 0, 6)" gap="none" />
                 </div>
 
                 <div>
                     <h3 class="text-lg font-medium mb-3">Small Gap</h3>
-                    <x-image-gallery :images="array_slice($images, 0, 6)" gap="sm" />
+                    <x-artisanpack-image-gallery :images="array_slice($images, 0, 6)" gap="sm" />
                 </div>
 
                 <div>
                     <h3 class="text-lg font-medium mb-3">Large Gap</h3>
-                    <x-image-gallery :images="array_slice($images, 0, 6)" gap="lg" />
+                    <x-artisanpack-image-gallery :images="array_slice($images, 0, 6)" gap="lg" />
                 </div>
 
                 <div>
                     <h3 class="text-lg font-medium mb-3">Extra Large Gap</h3>
-                    <x-image-gallery :images="array_slice($images, 0, 6)" gap="xl" />
+                    <x-artisanpack-image-gallery :images="array_slice($images, 0, 6)" gap="xl" />
                 </div>
             </div>
         </section>
@@ -115,7 +115,7 @@
             <h2 class="text-2xl font-semibold mb-4">Custom ID</h2>
             <p class="text-gray-600 mb-6">Using a custom ID for the gallery</p>
             
-            <x-image-gallery :images="array_slice($images, 0, 4)" id="custom-gallery" />
+            <x-artisanpack-image-gallery :images="array_slice($images, 0, 4)" id="custom-gallery" />
         </section>
 
         <!-- Usage Examples -->

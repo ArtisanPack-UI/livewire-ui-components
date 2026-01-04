@@ -36,7 +36,7 @@
             <h2 class="text-2xl font-semibold mb-4">Default Configuration</h2>
             <p class="text-gray-600 mb-6">Basic slider with navigation arrows and indicators enabled</p>
             
-            <x-image-slider :images="$images" />
+            <x-artisanpack-image-slider :images="$images" />
         </section>
 
         <!-- Navigation Variations -->
@@ -46,17 +46,17 @@
             <div class="space-y-8">
                 <div>
                     <h3 class="text-lg font-medium mb-3">Without Arrows</h3>
-                    <x-image-slider :images="$images" :with-arrows="false" />
+                    <x-artisanpack-image-slider :images="$images" :with-arrows="false" />
                 </div>
 
                 <div>
                     <h3 class="text-lg font-medium mb-3">Without Indicators</h3>
-                    <x-image-slider :images="$images" :with-indicators="false" />
+                    <x-artisanpack-image-slider :images="$images" :with-indicators="false" />
                 </div>
 
                 <div>
                     <h3 class="text-lg font-medium mb-3">No Navigation</h3>
-                    <x-image-slider :images="$images" :with-arrows="false" :with-indicators="false" />
+                    <x-artisanpack-image-slider :images="$images" :with-arrows="false" :with-indicators="false" />
                 </div>
             </div>
         </section>
@@ -69,7 +69,7 @@
                 <div>
                     <h3 class="text-lg font-medium mb-3">Auto-play (5 second interval)</h3>
                     <p class="text-sm text-gray-500 mb-3">Automatically advances slides, pauses on hover</p>
-                    <x-image-slider 
+                    <x-artisanpack-image-slider 
                         :images="$images" 
                         :auto-play="true" 
                         :auto-play-interval="5000"
@@ -80,7 +80,7 @@
                 <div>
                     <h3 class="text-lg font-medium mb-3">Fast Auto-play (2 second interval)</h3>
                     <p class="text-sm text-gray-500 mb-3">Quick succession, doesn't pause on hover</p>
-                    <x-image-slider 
+                    <x-artisanpack-image-slider 
                         :images="$images" 
                         :auto-play="true" 
                         :auto-play-interval="2000"
@@ -97,22 +97,22 @@
             <div class="space-y-8">
                 <div>
                     <h3 class="text-lg font-medium mb-3">16:9 (Widescreen)</h3>
-                    <x-image-slider :images="$images" aspect-ratio="16:9" />
+                    <x-artisanpack-image-slider :images="$images" aspect-ratio="16:9" />
                 </div>
 
                 <div>
                     <h3 class="text-lg font-medium mb-3">Square (1:1)</h3>
-                    <x-image-slider :images="$images" aspect-ratio="square" />
+                    <x-artisanpack-image-slider :images="$images" aspect-ratio="square" />
                 </div>
 
                 <div>
                     <h3 class="text-lg font-medium mb-3">4:3 (Traditional)</h3>
-                    <x-image-slider :images="$images" aspect-ratio="4:3" />
+                    <x-artisanpack-image-slider :images="$images" aspect-ratio="4:3" />
                 </div>
 
                 <div>
                     <h3 class="text-lg font-medium mb-3">3:4 (Portrait)</h3>
-                    <x-image-slider :images="$images" aspect-ratio="3:4" />
+                    <x-artisanpack-image-slider :images="$images" aspect-ratio="3:4" />
                 </div>
             </div>
         </section>
@@ -124,12 +124,12 @@
             <div class="space-y-8">
                 <div>
                     <h3 class="text-lg font-medium mb-3">Slide Transition</h3>
-                    <x-image-slider :images="$images" transition="slide" />
+                    <x-artisanpack-image-slider :images="$images" transition="slide" />
                 </div>
 
                 <div>
                     <h3 class="text-lg font-medium mb-3">Fade Transition</h3>
-                    <x-image-slider :images="$images" transition="fade" />
+                    <x-artisanpack-image-slider :images="$images" transition="fade" />
                 </div>
             </div>
         </section>
@@ -139,7 +139,7 @@
             <h2 class="text-2xl font-semibold mb-4">Custom ID</h2>
             <p class="text-gray-600 mb-6">Using a custom ID for the slider</p>
             
-            <x-image-slider :images="$images" id="custom-slider" />
+            <x-artisanpack-image-slider :images="$images" id="custom-slider" />
         </section>
 
         <!-- Advanced Configuration -->
@@ -147,7 +147,7 @@
             <h2 class="text-2xl font-semibold mb-4">Advanced Configuration</h2>
             <p class="text-gray-600 mb-6">Combining multiple features</p>
             
-            <x-image-slider 
+            <x-artisanpack-image-slider 
                 :images="$images" 
                 id="advanced-slider"
                 :with-arrows="true"
