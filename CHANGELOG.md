@@ -1,5 +1,18 @@
 # ArtisanPack UI Livewire UI Components
 
+## [1.0.2] - 2026-01-10
+
+### Fixed
+- **Button component**: Fixed loading state content (spinners, loading text/icons) showing in default state instead of only during loading
+  - Changed from `wire:loading` to CSS-safe approach using `class="hidden"` with `wire:loading.class.remove="hidden"`
+  - Ensures loading indicators are hidden by default via CSS, preventing flash of unstyled content
+  - Loading content is now properly hidden on initial page render regardless of JavaScript initialization timing
+
+### Changed
+- **Button documentation**: Updated loading states section with recommended usage patterns and explanation of CSS-safe implementation
+
+---
+
 ## [1.0.1] - 2026-01-04
 
 ### Fixed
