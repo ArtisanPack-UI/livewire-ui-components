@@ -71,17 +71,17 @@
 
     <!-- SPINNER LEFT -->
     @if($spinner && !$iconRight && !$loading)
-        <span wire:loading wire:target="{{ $spinnerTarget() }}" class="loading loading-spinner w-5 h-5"></span>
+        <span class="loading loading-spinner w-5 h-5 hidden" wire:loading.class.remove="hidden" wire:target="{{ $spinnerTarget() }}"></span>
     @endif
 
     <!-- LOADING CONTENT (icon or text, shows during loading) -->
     @if($loading)
         @if($isLoadingIcon())
-            <span wire:loading wire:target="{{ $spinnerTarget() }}" class="block">
+            <span class="hidden" wire:loading.class.remove="hidden" wire:target="{{ $spinnerTarget() }}">
                 <x-artisanpack-icon :name="$loading" />
             </span>
         @else
-            <span wire:loading wire:target="{{ $spinnerTarget() }}" @class(["hidden lg:block" => $responsive ])>
+            <span class="hidden" wire:loading.class.remove="hidden" wire:target="{{ $spinnerTarget() }}">
                 {{ $loading }}
             </span>
         @endif
@@ -117,7 +117,7 @@
 
     <!-- SPINNER RIGHT -->
     @if($spinner && $iconRight && !$loading)
-        <span wire:loading wire:target="{{ $spinnerTarget() }}" class="loading loading-spinner w-5 h-5"></span>
+        <span class="loading loading-spinner w-5 h-5 hidden" wire:loading.class.remove="hidden" wire:target="{{ $spinnerTarget() }}"></span>
     @endif
 
 @if(!$link)
