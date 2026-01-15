@@ -171,6 +171,208 @@ class ColorGenerator
     ];
 
     /**
+     * Default typography design token values.
+     *
+     * These tokens define the typographic scale and font properties.
+     *
+     * @since 2.0.0
+     */
+    protected array $typographyTokenDefaults = [
+        // Font families
+        'font-family-sans'  => 'ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
+        'font-family-serif' => 'ui-serif, Georgia, Cambria, "Times New Roman", Times, serif',
+        'font-family-mono'  => 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+
+        // Font sizes (based on a modular scale with 1rem = 16px)
+        'font-size-xs'   => '0.75rem',   // 12px
+        'font-size-sm'   => '0.875rem',  // 14px
+        'font-size-base' => '1rem',      // 16px
+        'font-size-lg'   => '1.125rem',  // 18px
+        'font-size-xl'   => '1.25rem',   // 20px
+        'font-size-2xl'  => '1.5rem',    // 24px
+        'font-size-3xl'  => '1.875rem',  // 30px
+        'font-size-4xl'  => '2.25rem',   // 36px
+        'font-size-5xl'  => '3rem',      // 48px
+        'font-size-6xl'  => '3.75rem',   // 60px
+
+        // Font weights
+        'font-weight-thin'       => '100',
+        'font-weight-extralight' => '200',
+        'font-weight-light'      => '300',
+        'font-weight-normal'     => '400',
+        'font-weight-medium'     => '500',
+        'font-weight-semibold'   => '600',
+        'font-weight-bold'       => '700',
+        'font-weight-extrabold'  => '800',
+        'font-weight-black'      => '900',
+
+        // Line heights
+        'line-height-none'    => '1',
+        'line-height-tight'   => '1.25',
+        'line-height-snug'    => '1.375',
+        'line-height-normal'  => '1.5',
+        'line-height-relaxed' => '1.625',
+        'line-height-loose'   => '2',
+
+        // Letter spacing
+        'letter-spacing-tighter' => '-0.05em',
+        'letter-spacing-tight'   => '-0.025em',
+        'letter-spacing-normal'  => '0em',
+        'letter-spacing-wide'    => '0.025em',
+        'letter-spacing-wider'   => '0.05em',
+        'letter-spacing-widest'  => '0.1em',
+    ];
+
+    /**
+     * Default spacing design token values.
+     *
+     * These tokens define a consistent spacing scale based on 0.25rem (4px) increments.
+     *
+     * @since 2.0.0
+     */
+    protected array $spacingTokenDefaults = [
+        'spacing-0'    => '0',
+        'spacing-px'   => '1px',
+        'spacing-0-5'  => '0.125rem',  // 2px
+        'spacing-1'    => '0.25rem',   // 4px
+        'spacing-1-5'  => '0.375rem',  // 6px
+        'spacing-2'    => '0.5rem',    // 8px
+        'spacing-2-5'  => '0.625rem',  // 10px
+        'spacing-3'    => '0.75rem',   // 12px
+        'spacing-3-5'  => '0.875rem',  // 14px
+        'spacing-4'    => '1rem',      // 16px
+        'spacing-5'    => '1.25rem',   // 20px
+        'spacing-6'    => '1.5rem',    // 24px
+        'spacing-7'    => '1.75rem',   // 28px
+        'spacing-8'    => '2rem',      // 32px
+        'spacing-9'    => '2.25rem',   // 36px
+        'spacing-10'   => '2.5rem',    // 40px
+        'spacing-11'   => '2.75rem',   // 44px
+        'spacing-12'   => '3rem',      // 48px
+        'spacing-14'   => '3.5rem',    // 56px
+        'spacing-16'   => '4rem',      // 64px
+        'spacing-20'   => '5rem',      // 80px
+        'spacing-24'   => '6rem',      // 96px
+        'spacing-28'   => '7rem',      // 112px
+        'spacing-32'   => '8rem',      // 128px
+        'spacing-36'   => '9rem',      // 144px
+        'spacing-40'   => '10rem',     // 160px
+        'spacing-44'   => '11rem',     // 176px
+        'spacing-48'   => '12rem',     // 192px
+        'spacing-52'   => '13rem',     // 208px
+        'spacing-56'   => '14rem',     // 224px
+        'spacing-60'   => '15rem',     // 240px
+        'spacing-64'   => '16rem',     // 256px
+        'spacing-72'   => '18rem',     // 288px
+        'spacing-80'   => '20rem',     // 320px
+        'spacing-96'   => '24rem',     // 384px
+    ];
+
+    /**
+     * Default border radius design token values.
+     *
+     * These tokens define the rounded corner system.
+     *
+     * @since 2.0.0
+     */
+    protected array $radiusTokenDefaults = [
+        'radius-none' => '0',
+        'radius-sm'   => '0.125rem',  // 2px
+        'radius-base' => '0.25rem',   // 4px
+        'radius-md'   => '0.375rem',  // 6px
+        'radius-lg'   => '0.5rem',    // 8px
+        'radius-xl'   => '0.75rem',   // 12px
+        'radius-2xl'  => '1rem',      // 16px
+        'radius-3xl'  => '1.5rem',    // 24px
+        'radius-full' => '9999px',    // Fully rounded (pill shape)
+    ];
+
+    /**
+     * Default shadow/elevation design token values.
+     *
+     * These tokens define the elevation system for depth effects.
+     *
+     * @since 2.0.0
+     */
+    protected array $shadowTokenDefaults = [
+        'shadow-none' => 'none',
+        'shadow-sm'   => '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+        'shadow-base' => '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
+        'shadow-md'   => '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+        'shadow-lg'   => '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
+        'shadow-xl'   => '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
+        'shadow-2xl'  => '0 25px 50px -12px rgb(0 0 0 / 0.25)',
+        'shadow-inner' => 'inset 0 2px 4px 0 rgb(0 0 0 / 0.05)',
+
+        // Colored shadows for semantic feedback
+        'shadow-primary' => '0 4px 14px 0 rgb(59 130 246 / 0.3)',
+        'shadow-success' => '0 4px 14px 0 rgb(34 197 94 / 0.3)',
+        'shadow-warning' => '0 4px 14px 0 rgb(249 115 22 / 0.3)',
+        'shadow-error'   => '0 4px 14px 0 rgb(239 68 68 / 0.3)',
+        'shadow-info'    => '0 4px 14px 0 rgb(14 165 233 / 0.3)',
+
+        // Glow effects for interactive states
+        'shadow-glow-sm' => '0 0 8px 0 rgb(59 130 246 / 0.4)',
+        'shadow-glow-md' => '0 0 16px 0 rgb(59 130 246 / 0.4)',
+        'shadow-glow-lg' => '0 0 24px 0 rgb(59 130 246 / 0.4)',
+    ];
+
+    /**
+     * Dark mode overrides for shadow tokens.
+     *
+     * @since 2.0.0
+     */
+    protected array $shadowTokenDarkDefaults = [
+        'shadow-sm'   => '0 1px 2px 0 rgb(0 0 0 / 0.2)',
+        'shadow-base' => '0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3)',
+        'shadow-md'   => '0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3)',
+        'shadow-lg'   => '0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3)',
+        'shadow-xl'   => '0 20px 25px -5px rgb(0 0 0 / 0.3), 0 8px 10px -6px rgb(0 0 0 / 0.3)',
+        'shadow-2xl'  => '0 25px 50px -12px rgb(0 0 0 / 0.5)',
+        'shadow-inner' => 'inset 0 2px 4px 0 rgb(0 0 0 / 0.2)',
+    ];
+
+    /**
+     * Default animation design token values.
+     *
+     * These tokens define animation durations, easings, and timing.
+     *
+     * @since 2.0.0
+     */
+    protected array $animationTokenDefaults = [
+        // Durations
+        'duration-0'       => '0ms',
+        'duration-75'      => '75ms',
+        'duration-100'     => '100ms',
+        'duration-150'     => '150ms',
+        'duration-200'     => '200ms',
+        'duration-300'     => '300ms',
+        'duration-500'     => '500ms',
+        'duration-700'     => '700ms',
+        'duration-1000'    => '1000ms',
+
+        // Standard easing functions
+        'ease-linear'      => 'linear',
+        'ease-in'          => 'cubic-bezier(0.4, 0, 1, 1)',
+        'ease-out'         => 'cubic-bezier(0, 0, 0.2, 1)',
+        'ease-in-out'      => 'cubic-bezier(0.4, 0, 0.2, 1)',
+
+        // Expressive easing functions
+        'ease-spring'      => 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+        'ease-bounce'      => 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+        'ease-elastic'     => 'cubic-bezier(0.68, -0.6, 0.32, 1.6)',
+
+        // Common animation presets
+        'transition-none'     => 'none',
+        'transition-all'      => 'all var(--duration-200) var(--ease-in-out)',
+        'transition-default'  => 'color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter',
+        'transition-colors'   => 'color, background-color, border-color, text-decoration-color, fill, stroke',
+        'transition-opacity'  => 'opacity',
+        'transition-shadow'   => 'box-shadow',
+        'transition-transform' => 'transform',
+    ];
+
+    /**
      * Default DaisyUI component-specific variables.
      *
      * These are applied to component classes, not :root.
@@ -509,6 +711,245 @@ class ColorGenerator
     public function getGlassTokenDarkDefaults(): array
     {
         return $this->glassTokenDarkDefaults;
+    }
+
+    /**
+     * Gets the default typography token values.
+     *
+     * @since 2.0.0
+     *
+     * @return array The default typography token values.
+     */
+    public function getTypographyTokenDefaults(): array
+    {
+        return $this->typographyTokenDefaults;
+    }
+
+    /**
+     * Gets the default spacing token values.
+     *
+     * @since 2.0.0
+     *
+     * @return array The default spacing token values.
+     */
+    public function getSpacingTokenDefaults(): array
+    {
+        return $this->spacingTokenDefaults;
+    }
+
+    /**
+     * Gets the default border radius token values.
+     *
+     * @since 2.0.0
+     *
+     * @return array The default radius token values.
+     */
+    public function getRadiusTokenDefaults(): array
+    {
+        return $this->radiusTokenDefaults;
+    }
+
+    /**
+     * Gets the default shadow token values.
+     *
+     * @since 2.0.0
+     *
+     * @return array The default shadow token values.
+     */
+    public function getShadowTokenDefaults(): array
+    {
+        return $this->shadowTokenDefaults;
+    }
+
+    /**
+     * Gets the dark mode shadow token overrides.
+     *
+     * @since 2.0.0
+     *
+     * @return array The dark mode shadow token overrides.
+     */
+    public function getShadowTokenDarkDefaults(): array
+    {
+        return $this->shadowTokenDarkDefaults;
+    }
+
+    /**
+     * Gets the default animation token values.
+     *
+     * @since 2.0.0
+     *
+     * @return array The default animation token values.
+     */
+    public function getAnimationTokenDefaults(): array
+    {
+        return $this->animationTokenDefaults;
+    }
+
+    /**
+     * Gets all design token defaults combined.
+     *
+     * @since 2.0.0
+     *
+     * @return array All design token defaults organized by category.
+     */
+    public function getAllDesignTokenDefaults(): array
+    {
+        return [
+            'typography' => $this->typographyTokenDefaults,
+            'spacing'    => $this->spacingTokenDefaults,
+            'radius'     => $this->radiusTokenDefaults,
+            'shadow'     => $this->shadowTokenDefaults,
+            'animation'  => $this->animationTokenDefaults,
+            'glass'      => $this->glassTokenDefaults,
+        ];
+    }
+
+    /**
+     * Generates the comprehensive design tokens CSS content.
+     *
+     * This method creates CSS custom properties for all design token categories:
+     * typography, spacing, radius, shadow, animation, and glass effects.
+     *
+     * @since 2.0.0
+     *
+     * @param  array  $overrides  Optional. Custom token values to override defaults by category.
+     *
+     * @return string The CSS content for all design tokens.
+     */
+    public function generateDesignTokensCss( array $overrides = [] ): string
+    {
+        $css = "/**\n * ArtisanPack UI - Design Tokens\n * \n * This file is automatically generated. Do not edit directly.\n * Use the 'artisanpack:generate-theme' command to update.\n *\n * Token Categories:\n * - Typography (fonts, sizes, weights, line heights)\n * - Spacing (consistent spacing scale)\n * - Border Radius (rounded corners)\n * - Shadows (elevation system)\n * - Animation (durations, easings)\n * - Glass (glassmorphism effects)\n *\n * @since 2.0.0\n */\n\n";
+
+        // Merge overrides with defaults
+        $typography = array_merge( $this->typographyTokenDefaults, $overrides['typography'] ?? [] );
+        $spacing    = array_merge( $this->spacingTokenDefaults, $overrides['spacing'] ?? [] );
+        $radius     = array_merge( $this->radiusTokenDefaults, $overrides['radius'] ?? [] );
+        $shadow     = array_merge( $this->shadowTokenDefaults, $overrides['shadow'] ?? [] );
+        $animation  = array_merge( $this->animationTokenDefaults, $overrides['animation'] ?? [] );
+        $glass      = array_merge( $this->glassTokenDefaults, $overrides['glass'] ?? [] );
+
+        // Tailwind CSS v4 @theme directive
+        $css .= "/**\n * Tailwind CSS v4 @theme integration\n * These tokens can be extended or overridden in your app.css using @theme\n */\n";
+        $css .= "@theme {\n";
+
+        $css .= "    /* --- Typography Tokens --- */\n";
+        foreach ( $typography as $key => $value ) {
+            $css .= "    --{$key}: {$value};\n";
+        }
+
+        $css .= "\n    /* --- Spacing Tokens --- */\n";
+        foreach ( $spacing as $key => $value ) {
+            $css .= "    --{$key}: {$value};\n";
+        }
+
+        $css .= "\n    /* --- Border Radius Tokens --- */\n";
+        foreach ( $radius as $key => $value ) {
+            $css .= "    --{$key}: {$value};\n";
+        }
+
+        $css .= "\n    /* --- Shadow Tokens --- */\n";
+        foreach ( $shadow as $key => $value ) {
+            $css .= "    --{$key}: {$value};\n";
+        }
+
+        $css .= "\n    /* --- Animation Tokens --- */\n";
+        foreach ( $animation as $key => $value ) {
+            $css .= "    --{$key}: {$value};\n";
+        }
+
+        $css .= "\n    /* --- Glass Tokens --- */\n";
+        foreach ( $glass as $key => $value ) {
+            $css .= "    --{$key}: {$value};\n";
+        }
+
+        $css .= "}\n\n";
+
+        // Root-level tokens
+        $css .= ":root {\n";
+
+        $css .= "    /* =========================================================================\n";
+        $css .= "     * Typography Tokens\n";
+        $css .= "     * ========================================================================= */\n";
+        foreach ( $typography as $key => $value ) {
+            $css .= "    --{$key}: {$value};\n";
+        }
+
+        $css .= "\n    /* =========================================================================\n";
+        $css .= "     * Spacing Tokens\n";
+        $css .= "     * ========================================================================= */\n";
+        foreach ( $spacing as $key => $value ) {
+            $css .= "    --{$key}: {$value};\n";
+        }
+
+        $css .= "\n    /* =========================================================================\n";
+        $css .= "     * Border Radius Tokens\n";
+        $css .= "     * ========================================================================= */\n";
+        foreach ( $radius as $key => $value ) {
+            $css .= "    --{$key}: {$value};\n";
+        }
+
+        $css .= "\n    /* =========================================================================\n";
+        $css .= "     * Shadow Tokens\n";
+        $css .= "     * ========================================================================= */\n";
+        foreach ( $shadow as $key => $value ) {
+            $css .= "    --{$key}: {$value};\n";
+        }
+
+        $css .= "\n    /* =========================================================================\n";
+        $css .= "     * Animation Tokens\n";
+        $css .= "     * ========================================================================= */\n";
+        foreach ( $animation as $key => $value ) {
+            $css .= "    --{$key}: {$value};\n";
+        }
+
+        $css .= "\n    /* =========================================================================\n";
+        $css .= "     * Glass Tokens\n";
+        $css .= "     * ========================================================================= */\n";
+        foreach ( $glass as $key => $value ) {
+            $css .= "    --{$key}: {$value};\n";
+        }
+
+        $css .= "\n    /* =========================================================================\n";
+        $css .= "     * Computed Glass Colors (Light Mode)\n";
+        $css .= "     * ========================================================================= */\n";
+        $css .= "    --glass-bg-color: rgba(255, 255, 255, var(--glass-opacity));\n";
+        $css .= "    --glass-border-color: rgba(255, 255, 255, var(--glass-border-opacity));\n";
+        $css .= "    --glass-shadow-color: rgba(0, 0, 0, var(--glass-shadow-opacity));\n";
+        $css .= "    --glass-frosted-bg-color: rgba(255, 255, 255, var(--glass-frosted-opacity));\n";
+        $css .= "    --glass-liquid-bg-color: rgba(255, 255, 255, var(--glass-liquid-opacity));\n";
+        $css .= "    --glass-liquid-border-glow-color: rgba(255, 255, 255, var(--glass-liquid-border-glow));\n";
+        $css .= "    --glass-transparent-bg-color: rgba(255, 255, 255, var(--glass-transparent-opacity));\n";
+
+        $css .= "}\n";
+
+        // Dark mode overrides
+        $shadowDark = array_merge( $this->shadowTokenDarkDefaults, $overrides['shadow_dark'] ?? [] );
+        $glassDark  = $this->glassTokenDarkDefaults;
+
+        $css .= "\n[data-theme=\"dark\"] {\n";
+
+        $css .= "    /* --- Shadow Token Dark Mode Overrides --- */\n";
+        foreach ( $shadowDark as $key => $value ) {
+            $css .= "    --{$key}: {$value};\n";
+        }
+
+        $css .= "\n    /* --- Glass Token Dark Mode Overrides --- */\n";
+        foreach ( $glassDark as $key => $value ) {
+            $css .= "    --{$key}: {$value};\n";
+        }
+
+        $css .= "\n    /* --- Computed Glass Colors (Dark Mode) --- */\n";
+        $css .= "    --glass-bg-color: rgba(30, 30, 30, var(--glass-opacity));\n";
+        $css .= "    --glass-border-color: rgba(255, 255, 255, var(--glass-border-opacity));\n";
+        $css .= "    --glass-shadow-color: rgba(0, 0, 0, var(--glass-shadow-opacity));\n";
+        $css .= "    --glass-frosted-bg-color: rgba(30, 30, 30, var(--glass-frosted-opacity));\n";
+        $css .= "    --glass-liquid-bg-color: rgba(30, 30, 30, var(--glass-liquid-opacity));\n";
+        $css .= "    --glass-liquid-border-glow-color: rgba(255, 255, 255, calc(var(--glass-liquid-border-glow) * 0.7));\n";
+        $css .= "    --glass-transparent-bg-color: rgba(30, 30, 30, var(--glass-transparent-opacity));\n";
+
+        $css .= "}\n";
+
+        return $css;
     }
 
     /**
