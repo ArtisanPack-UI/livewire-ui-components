@@ -1,0 +1,339 @@
+/**
+ * ArtisanPack UI - Glass Design Tokens
+ *
+ * This file contains the foundational CSS custom properties for all glass effects.
+ * These tokens form the foundation of the glassmorphism design system.
+ *
+ * Tokens are configurable via Tailwind CSS @theme directive.
+ *
+ * @since 2.0.0
+ * @link https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
+ */
+
+/**
+ * Tailwind CSS v4 @theme integration
+ * These tokens can be extended or overridden in your app.css using @theme
+ *
+ * Example:
+ * @theme {
+ *   --glass-blur: 16px;
+ *   --glass-opacity: 0.8;
+ * }
+ */
+@theme {
+	/* =========================================================================
+	 * Base Glass Tokens
+	 * ========================================================================= */
+
+	/* Blur intensity for glass effect */
+	--glass-blur: 12px;
+
+	/* Background opacity for glass surfaces */
+	--glass-opacity: 0.7;
+
+	/* Border width for glass elements */
+	--glass-border-width: 1px;
+
+	/* Border opacity (white/black depending on theme) */
+	--glass-border-opacity: 0.2;
+
+	/* Shadow opacity for glass depth */
+	--glass-shadow-opacity: 0.1;
+
+	/* =========================================================================
+	 * Tint Tokens
+	 * ========================================================================= */
+
+	/* Color tint applied to glass surface (use Tailwind colors or hex) */
+	--glass-tint-color: transparent;
+
+	/* Opacity of the color tint overlay */
+	--glass-tint-opacity: 0.15;
+
+	/* =========================================================================
+	 * Frosted Variant
+	 * - Higher blur for strong frosted glass effect
+	 * - Higher opacity for more prominent surface
+	 * - Increased saturation for vivid backdrop
+	 * ========================================================================= */
+
+	/* Blur intensity for frosted variant */
+	--glass-frosted-blur: 16px;
+
+	/* Background opacity for frosted surfaces */
+	--glass-frosted-opacity: 0.8;
+
+	/* Backdrop saturation enhancement (percentage) */
+	--glass-frosted-saturation: 180%;
+
+	/* =========================================================================
+	 * Liquid Variant
+	 * - Maximum blur for smooth liquid effect
+	 * - Lower opacity for transparency
+	 * - Refraction effect intensity
+	 * - Border glow for premium feel
+	 * ========================================================================= */
+
+	/* Blur intensity for liquid variant */
+	--glass-liquid-blur: 24px;
+
+	/* Background opacity for liquid surfaces */
+	--glass-liquid-opacity: 0.6;
+
+	/* Refraction effect intensity (0-1) */
+	--glass-liquid-refraction: 0.5;
+
+	/* Border glow intensity (0-1) */
+	--glass-liquid-border-glow: 0.3;
+
+	/* =========================================================================
+	 * Transparent Variant
+	 * - Minimal blur for subtle effect
+	 * - Low opacity for maximum transparency
+	 * ========================================================================= */
+
+	/* Blur intensity for transparent variant */
+	--glass-transparent-blur: 8px;
+
+	/* Background opacity for transparent surfaces */
+	--glass-transparent-opacity: 0.3;
+}
+
+/**
+ * Root-level glass tokens
+ * These serve as the default values and can be overridden by the @theme directive
+ */
+:root {
+	/* =========================================================================
+	 * Base Glass Tokens
+	 * ========================================================================= */
+	--glass-blur: 12px;
+	--glass-opacity: 0.7;
+	--glass-border-width: 1px;
+	--glass-border-opacity: 0.2;
+	--glass-shadow-opacity: 0.1;
+
+	/* =========================================================================
+	 * Tint Tokens
+	 * ========================================================================= */
+	--glass-tint-color: transparent;
+	--glass-tint-opacity: 0.15;
+
+	/* =========================================================================
+	 * Frosted Variant
+	 * ========================================================================= */
+	--glass-frosted-blur: 16px;
+	--glass-frosted-opacity: 0.8;
+	--glass-frosted-saturation: 180%;
+
+	/* =========================================================================
+	 * Liquid Variant
+	 * ========================================================================= */
+	--glass-liquid-blur: 24px;
+	--glass-liquid-opacity: 0.6;
+	--glass-liquid-refraction: 0.5;
+	--glass-liquid-border-glow: 0.3;
+
+	/* =========================================================================
+	 * Transparent Variant
+	 * ========================================================================= */
+	--glass-transparent-blur: 8px;
+	--glass-transparent-opacity: 0.3;
+
+	/* =========================================================================
+	 * Computed Glass Colors (Light Mode)
+	 * These are computed based on the current theme
+	 * ========================================================================= */
+	--glass-bg-color: rgba(255, 255, 255, var(--glass-opacity));
+	--glass-border-color: rgba(255, 255, 255, var(--glass-border-opacity));
+	--glass-shadow-color: rgba(0, 0, 0, var(--glass-shadow-opacity));
+
+	/* Frosted variant computed colors */
+	--glass-frosted-bg-color: rgba(255, 255, 255, var(--glass-frosted-opacity));
+
+	/* Liquid variant computed colors */
+	--glass-liquid-bg-color: rgba(255, 255, 255, var(--glass-liquid-opacity));
+	--glass-liquid-border-glow-color: rgba(255, 255, 255, var(--glass-liquid-border-glow));
+
+	/* Transparent variant computed colors */
+	--glass-transparent-bg-color: rgba(255, 255, 255, var(--glass-transparent-opacity));
+}
+
+/**
+ * Dark Mode Overrides
+ * Adjusted values for optimal glass effects in dark mode
+ */
+[data-theme="dark"] {
+	/* =========================================================================
+	 * Adjusted Dark Mode Tokens
+	 * ========================================================================= */
+
+	/* Slightly reduced opacity for better dark mode visibility */
+	--glass-frosted-opacity: 0.7;
+
+	/* Reduced border opacity in dark mode */
+	--glass-border-opacity: 0.15;
+
+	/* Increased shadow opacity for depth in dark mode */
+	--glass-shadow-opacity: 0.2;
+
+	/* =========================================================================
+	 * Computed Glass Colors (Dark Mode)
+	 * ========================================================================= */
+	--glass-bg-color: rgba(30, 30, 30, var(--glass-opacity));
+	--glass-border-color: rgba(255, 255, 255, var(--glass-border-opacity));
+	--glass-shadow-color: rgba(0, 0, 0, var(--glass-shadow-opacity));
+
+	/* Frosted variant computed colors */
+	--glass-frosted-bg-color: rgba(30, 30, 30, var(--glass-frosted-opacity));
+
+	/* Liquid variant computed colors */
+	--glass-liquid-bg-color: rgba(30, 30, 30, var(--glass-liquid-opacity));
+	--glass-liquid-border-glow-color: rgba(255, 255, 255, calc(var(--glass-liquid-border-glow) * 0.7));
+
+	/* Transparent variant computed colors */
+	--glass-transparent-bg-color: rgba(30, 30, 30, var(--glass-transparent-opacity));
+}
+
+/**
+ * Utility Classes for Glass Effects
+ * These classes can be applied directly to elements
+ */
+
+/* Base glass effect */
+.glass {
+	background: var(--glass-bg-color);
+	backdrop-filter: blur(var(--glass-blur));
+	-webkit-backdrop-filter: blur(var(--glass-blur));
+	border: var(--glass-border-width) solid var(--glass-border-color);
+	box-shadow: 0 4px 6px -1px var(--glass-shadow-color);
+}
+
+/* Frosted glass variant */
+.glass-frosted {
+	background: var(--glass-frosted-bg-color);
+	backdrop-filter: blur(var(--glass-frosted-blur)) saturate(var(--glass-frosted-saturation));
+	-webkit-backdrop-filter: blur(var(--glass-frosted-blur)) saturate(var(--glass-frosted-saturation));
+	border: var(--glass-border-width) solid var(--glass-border-color);
+	box-shadow: 0 4px 6px -1px var(--glass-shadow-color);
+}
+
+/* Liquid glass variant */
+.glass-liquid {
+	background: var(--glass-liquid-bg-color);
+	backdrop-filter: blur(var(--glass-liquid-blur));
+	-webkit-backdrop-filter: blur(var(--glass-liquid-blur));
+	border: var(--glass-border-width) solid var(--glass-liquid-border-glow-color);
+	box-shadow:
+		0 4px 6px -1px var(--glass-shadow-color),
+		inset 0 1px 0 0 var(--glass-liquid-border-glow-color);
+}
+
+/* Transparent glass variant */
+.glass-transparent {
+	background: var(--glass-transparent-bg-color);
+	backdrop-filter: blur(var(--glass-transparent-blur));
+	-webkit-backdrop-filter: blur(var(--glass-transparent-blur));
+	border: var(--glass-border-width) solid var(--glass-border-color);
+}
+
+/**
+ * Tinted Glass Modifiers
+ * Apply these alongside the base glass classes for colored glass effects
+ *
+ * Usage: <div class="glass glass-tint-primary">
+ */
+.glass-tint-primary {
+	--glass-tint-color: var(--color-primary, #3b82f6);
+}
+
+.glass-tint-secondary {
+	--glass-tint-color: var(--color-secondary, #64748b);
+}
+
+.glass-tint-accent {
+	--glass-tint-color: var(--color-accent, #f59e0b);
+}
+
+.glass-tint-success {
+	--glass-tint-color: var(--color-success, #22c55e);
+}
+
+.glass-tint-warning {
+	--glass-tint-color: var(--color-warning, #f97316);
+}
+
+.glass-tint-error {
+	--glass-tint-color: var(--color-error, #ef4444);
+}
+
+.glass-tint-info {
+	--glass-tint-color: var(--color-info, #0ea5e9);
+}
+
+/* Apply tint overlay when tint color is set */
+.glass[class*="glass-tint-"]::before,
+.glass-frosted[class*="glass-tint-"]::before,
+.glass-liquid[class*="glass-tint-"]::before,
+.glass-transparent[class*="glass-tint-"]::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: var(--glass-tint-color);
+	opacity: var(--glass-tint-opacity);
+	pointer-events: none;
+	border-radius: inherit;
+}
+
+/* Ensure tinted glass elements have relative positioning */
+.glass[class*="glass-tint-"],
+.glass-frosted[class*="glass-tint-"],
+.glass-liquid[class*="glass-tint-"],
+.glass-transparent[class*="glass-tint-"] {
+	position: relative;
+	overflow: hidden;
+}
+
+/**
+ * Tint Opacity Modifiers
+ * Control the intensity of the color tint
+ */
+.glass-tint-opacity-10 {
+	--glass-tint-opacity: 0.1;
+}
+
+.glass-tint-opacity-20 {
+	--glass-tint-opacity: 0.2;
+}
+
+.glass-tint-opacity-30 {
+	--glass-tint-opacity: 0.3;
+}
+
+.glass-tint-opacity-40 {
+	--glass-tint-opacity: 0.4;
+}
+
+.glass-tint-opacity-50 {
+	--glass-tint-opacity: 0.5;
+}
+
+.glass-tint-opacity-60 {
+	--glass-tint-opacity: 0.6;
+}
+
+.glass-tint-opacity-70 {
+	--glass-tint-opacity: 0.7;
+}
+
+.glass-tint-opacity-80 {
+	--glass-tint-opacity: 0.8;
+}
+
+.glass-tint-opacity-90 {
+	--glass-tint-opacity: 0.9;
+}
+
+.glass-tint-opacity-100 {
+	--glass-tint-opacity: 1;
+}
