@@ -142,4 +142,51 @@ return [
 			'transparent-opacity' => null, // Default: 0.3
 		],
 	],
+
+	/*
+    |--------------------------------------------------------------------------
+    | Design Tokens Settings
+    |--------------------------------------------------------------------------
+    |
+    | These settings control the comprehensive design token system including
+    | typography, spacing, border radius, shadows, and animations.
+    |
+    | @since 2.0.0
+    */
+	'design_tokens' => [
+		// Whether to include design tokens in the generated theme CSS
+		'enabled' => true,
+
+		// Output path for standalone design tokens CSS file
+		'output_path' => resource_path( 'css/artisanpack-design-tokens.css' ),
+
+		// Typography token overrides (leave null to use defaults)
+		'typography' => [
+			// 'font-family-sans' => null,  // Default: ui-sans-serif, system-ui, ...
+			// 'font-family-serif' => null, // Default: ui-serif, Georgia, ...
+			// 'font-family-mono' => null,  // Default: ui-monospace, SFMono-Regular, ...
+			// 'font-size-base' => null,    // Default: 1rem
+		],
+
+		// Spacing token overrides (leave null to use defaults)
+		'spacing' => [
+			// 'spacing-4' => null, // Default: 1rem
+		],
+
+		// Border radius token overrides (leave null to use defaults)
+		'radius' => [
+			// 'radius-lg' => null, // Default: 0.5rem
+		],
+
+		// Shadow token overrides (leave null to use defaults)
+		'shadow' => [
+			// 'shadow-md' => null, // Default: 0 4px 6px -1px rgb(0 0 0 / 0.1), ...
+		],
+
+		// Animation token overrides (leave null to use defaults)
+		'animation' => [
+			// 'duration-200' => null, // Default: 200ms
+			// 'ease-in-out' => null,  // Default: cubic-bezier(0.4, 0, 0.2, 1)
+		],
+	],
 ];
