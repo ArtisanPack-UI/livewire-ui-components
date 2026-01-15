@@ -162,7 +162,7 @@ You can combine sizes with any color variant:
 
 ### Button with Loading States
 
-The button component provides powerful loading state management with several options:
+The button component provides powerful loading state management with several options. The component uses a CSS-safe approach that ensures loading indicators are hidden by default and only appear during Livewire actions, preventing any flash of unstyled content.
 
 #### Basic Spinner
 
@@ -180,24 +180,45 @@ Show a spinner during Livewire actions using the `spinner` prop:
 </x-artisanpack-button>
 ```
 
-#### Custom Loading Text
+#### Custom Loading Text (Recommended)
 
-Replace button content with custom text during loading:
+Replace button content with custom text during loading using the `label` and `loading` props together:
 
 ```php
-<x-artisanpack-button wire:click="save" spinner="save" loading="Saving...">
-    Save Changes
-</x-artisanpack-button>
+<!-- Recommended: Use label prop with loading for clean loading states -->
+<x-artisanpack-button
+    wire:click="save"
+    spinner="1"
+    loading="Saving..."
+    label="Save Changes"
+/>
+
+<!-- The button displays "Save Changes" normally, and "Saving..." during the action -->
+<x-artisanpack-button
+    wire:click="importData"
+    spinner="1"
+    loading="Importing..."
+    label="Import Data"
+/>
 ```
+
+This approach is recommended because:
+- Uses the component's built-in CSS-safe loading mechanism
+- Automatically hides the label and shows loading text during actions
+- No need for manual `wire:loading` directives in the slot
+- Prevents any flash of loading content on page load
 
 #### Custom Loading Icon
 
 Display a custom icon during loading (replaces the spinner):
 
 ```php
-<x-artisanpack-button wire:click="upload" spinner="upload" loading="o-arrow-up-tray">
-    Upload File
-</x-artisanpack-button>
+<x-artisanpack-button
+    wire:click="upload"
+    spinner="upload"
+    loading="o-arrow-up-tray"
+    label="Upload File"
+/>
 ```
 
 The `loading` prop accepts any icon name (o-, s-, fa-, c-, heroicon-, etc.).
@@ -208,15 +229,24 @@ The spinner appears on the left by default, but moves to the right when using `i
 
 ```php
 <!-- Spinner on the left -->
-<x-artisanpack-button wire:click="save" spinner="save">
-    Save
-</x-artisanpack-button>
+<x-artisanpack-button wire:click="save" spinner="1" label="Save" />
 
-<!-- Spinner on the right -->
-<x-artisanpack-button wire:click="save" spinner="save" icon-right="o-arrow-right">
-    Next
-</x-artisanpack-button>
+<!-- Spinner on the right (when using icon-right) -->
+<x-artisanpack-button wire:click="save" spinner="1" icon-right="o-arrow-right" label="Next" />
 ```
+
+#### How Loading States Work
+
+The button component uses a CSS-safe implementation for loading states:
+
+1. **Hidden by Default:** Loading content (spinners, loading text/icons) is hidden using `class="hidden"`
+2. **Revealed During Loading:** Livewire's `wire:loading.class.remove="hidden"` removes the hidden class during actions
+3. **Content Hiding:** When using `spinner` with `loading`, the label is hidden during loading via `wire:loading.class="hidden"`
+
+This approach ensures:
+- No flash of loading content on initial page render
+- Works reliably regardless of JavaScript initialization timing
+- Compatible with all browsers and Livewire versions
 
 ### Button as Link
 
