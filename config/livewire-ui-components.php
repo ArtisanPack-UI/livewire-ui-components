@@ -95,4 +95,51 @@ return [
     |
     */
 	'theme_output_path' => resource_path('css/artisanpack-ui-theme.css'),
+
+	/*
+    |--------------------------------------------------------------------------
+    | Glass Design Token Settings
+    |--------------------------------------------------------------------------
+    |
+    | These settings control the glassmorphism design system tokens.
+    | You can customize the default values for glass effects here.
+    |
+    | @since 2.0.0
+    */
+	'glass' => [
+		// Whether to include glass tokens in the generated theme CSS
+		'enabled' => true,
+
+		// Output path for standalone glass tokens CSS file
+		'output_path' => resource_path('css/artisanpack-glass-tokens.css'),
+
+		// Base glass token overrides (leave null to use defaults)
+		'tokens' => [
+			// Base glass tokens
+			'blur'           => null, // Default: 12px
+			'opacity'        => null, // Default: 0.7
+			'border-width'   => null, // Default: 1px
+			'border-opacity' => null, // Default: 0.2
+			'shadow-opacity' => null, // Default: 0.1
+
+			// Tint tokens
+			'tint-color'   => null, // Default: transparent
+			'tint-opacity' => null, // Default: 0.15
+
+			// Frosted variant
+			'frosted-blur'       => null, // Default: 16px
+			'frosted-opacity'    => null, // Default: 0.8
+			'frosted-saturation' => null, // Default: 180%
+
+			// Liquid variant
+			'liquid-blur'        => null, // Default: 24px
+			'liquid-opacity'     => null, // Default: 0.6
+			'liquid-refraction'  => null, // Default: 0.5
+			'liquid-border-glow' => null, // Default: 0.3
+
+			// Transparent variant
+			'transparent-blur'    => null, // Default: 8px
+			'transparent-opacity' => null, // Default: 0.3
+		],
+	],
 ];

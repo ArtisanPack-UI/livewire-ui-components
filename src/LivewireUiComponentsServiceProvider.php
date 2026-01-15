@@ -172,6 +172,14 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
             'artisanpack-assets',
         );
 
+        // Publish glass design tokens CSS separately for easy customization
+        $this->publishes(
+            [
+                __DIR__.'/../resources/css/glass-tokens.css' => resource_path('css/artisanpack-glass-tokens.css'),
+            ],
+            'artisanpack-glass-tokens',
+        );
+
         // Publishing is only necessary when using the CLI.
         if ($this->app->runningInConsole()) {
             $this->bootForConsole();
