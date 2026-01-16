@@ -17,7 +17,17 @@
         x-trap="open" x-bind:inert="!open"
     @endif
 >
-    <div class="modal-box {{ $boxClass }}">
+    <div
+        @class([
+            'modal-box',
+            $boxClass,
+            $glassClasses() => $glass,
+        ])
+
+        @if($glassStyle())
+            style="{{ $glassStyle() }}"
+        @endif
+    >
         @if(!$persistent)
             @if ($id)
                 <x-artisanpack-button class="btn-circle btn-sm btn-ghost absolute end-2 top-2 z-[999]" icon="o-x-mark" type="button" onclick="document.getElementById('{{ $id }}').close()" tabindex="-1" />

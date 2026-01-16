@@ -35,14 +35,23 @@
                 @php
                     $colorClasses = $getColorClasses();
                     $baseClasses = ['alert', 'gap-2'];
+                    $inlineStyles = [];
 
-                    // Handle new color system
-                    if (!empty($colorClasses)) {
+                    // Handle glass effect
+                    if ($glass) {
+                        $baseClasses[] = $glassClasses();
+                        if ($glassStyle()) {
+                            $inlineStyles[] = $glassStyle();
+                        }
+                    }
+
+                    // Handle new color system (only if not using glass)
+                    if (!empty($colorClasses) && !$glass) {
                         // Add color classes from new system
                         foreach ($colorClasses as $type => $class) {
                             if ($type === 'style' && $class) {
                                 // Handle inline styles for hex colors - will be merged below
-                                $toastStyle = $class;
+                                $inlineStyles[] = $class;
                             } elseif ($type !== 'style' && $class) {
                                 $baseClasses[] = $class;
                             }
@@ -50,9 +59,10 @@
                     }
 
                     $baseClassString = implode(' ', $baseClasses);
+                    $styleString = implode(' ', $inlineStyles);
                 @endphp
                 class="{{ $baseClassString }}"
-                @if(isset($toastStyle)) style="{{ $toastStyle }}" @endif
+                @if(!empty($styleString)) style="{{ $styleString }}" @endif
                 :class="toast.css"
             >
                 <div x-html="toast.icon" class="hidden sm:inline-block"></div>

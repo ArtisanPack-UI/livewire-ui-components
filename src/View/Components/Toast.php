@@ -18,6 +18,7 @@ declare(strict_types=1);
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
 use ArtisanPack\LivewireUiComponents\Styling\ColorGenerator;
+use ArtisanPack\LivewireUiComponents\Support\GlassHelper;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
@@ -40,12 +41,20 @@ class Toast extends Component
      * @param  string|null  $color  The color of the toast.
      * @param  string|null  $colorAdjustment  The color adjustment (e.g., 'darken', 'lighten').
      * @param  int  $duration  The default duration in milliseconds. Default: 3000.
+     * @param  string|null  $glass  Glass effect variant ('frosted', 'liquid', 'transparent').
+     * @param  string|null  $glassTint  Tailwind color name or hex code for glass tint.
+     * @param  int|null  $glassTintOpacity  Tint opacity (10-100).
      */
     public function __construct(
         public string $position = 'toast-top toast-end',
         public ?string $color = null,
         public ?string $colorAdjustment = null,
         public int $duration = 3000,
+
+        // Glass effect props
+        public ?string $glass = null,
+        public ?string $glassTint = null,
+        public ?int $glassTintOpacity = null,
     ) {}
 
     /**
@@ -69,6 +78,33 @@ class Toast extends Component
         );
 
         return $colorClasses;
+    }
+
+    /**
+     * Get the glass effect CSS classes.
+     *
+     * @since 2.0.0
+     *
+     * @return string Space-separated CSS classes.
+     */
+    public function glassClasses(): string
+    {
+        return GlassHelper::getClasses($this->glass, $this->glassTint, $this->glassTintOpacity);
+    }
+
+    /**
+     * Get the glass effect inline styles including accessible text color.
+     *
+     * Combines custom tint color CSS variable with accessible text color
+     * to ensure WCAG 2.0 AA compliance on tinted glass backgrounds.
+     *
+     * @since 2.0.0
+     *
+     * @return string Inline style string.
+     */
+    public function glassStyle(): string
+    {
+        return GlassHelper::getFullInlineStyle($this->glassTint);
     }
 
     /**

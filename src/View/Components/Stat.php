@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
+use ArtisanPack\LivewireUiComponents\Support\GlassHelper;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
@@ -46,16 +47,48 @@ class Stat extends Component
         public ?string $tooltipRight = null,
         public ?string $tooltipBottom = null,
 
-        // New size and positioning props
+        // Size and positioning props
         public ?string $size = 'md',
         public ?string $iconPosition = 'left',
         public ?string $titlePosition = 'top',
         public ?string $contentAlign = 'left',
 
+        // Glass effect props
+        public ?string $glass = null,
+        public ?string $glassTint = null,
+        public ?int $glassTintOpacity = null,
+
     ) {
         $this->uuid            = 'artisanpack'.md5(serialize($this)).$id;
         $this->tooltip         = $this->tooltip ?? $this->tooltipLeft ?? $this->tooltipRight ?? $this->tooltipBottom;
         $this->tooltipPosition = $this->tooltipLeft ? 'lg:tooltip-left' : ($this->tooltipRight ? 'lg:tooltip-right' : ($this->tooltipBottom ? 'lg:tooltip-bottom' : 'lg:tooltip-top'));
+    }
+
+    /**
+     * Get the glass effect CSS classes.
+     *
+     * @since 2.0.0
+     *
+     * @return string Space-separated CSS classes.
+     */
+    public function glassClasses(): string
+    {
+        return GlassHelper::getClasses($this->glass, $this->glassTint, $this->glassTintOpacity);
+    }
+
+    /**
+     * Get the glass effect inline styles including accessible text color.
+     *
+     * Combines custom tint color CSS variable with accessible text color
+     * to ensure WCAG 2.0 AA compliance on tinted glass backgrounds.
+     *
+     * @since 2.0.0
+     *
+     * @return string Inline style string.
+     */
+    public function glassStyle(): string
+    {
+        return GlassHelper::getFullInlineStyle($this->glassTint);
     }
 
     /**

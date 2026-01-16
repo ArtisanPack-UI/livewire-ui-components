@@ -5,13 +5,19 @@
 
 <div
     {{ $attributes->class([
-        "bg-base-100 rounded-lg w-full",
+        "rounded-lg w-full",
+        "bg-base-100" => !$glass,
         $sizeClasses['container'],
-        "lg:tooltip $tooltipPosition" => $tooltip
+        "lg:tooltip $tooltipPosition" => $tooltip,
+        $glassClasses() => $glass,
     ]) }}
 
     @if($tooltip)
         data-tip="{{ $tooltip }}"
+    @endif
+
+    @if($glassStyle())
+        style="{{ $glassStyle() }}"
     @endif
 >
     <div class="{{ $layoutClasses['container'] }}">

@@ -9,6 +9,12 @@
                     });
                 }
         }"
+        @class([
+            $glassClasses() => $glass,
+        ])
+        @if($glassStyle())
+            style="{{ $glassStyle() }}"
+        @endif
     >
         <!-- STEP LABELS -->
         <ul class="steps [&>*:nth-child(2)]:before:hidden {{ $stepperClasses }}">

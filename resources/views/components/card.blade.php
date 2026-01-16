@@ -1,17 +1,33 @@
-<div
-    {{
-        $attributes
-            ->merge(['wire:key' => $uuid ])
-            ->class([
-                'card bg-base-100 rounded-lg',
-                'shadow-xs' => $shadow,
-                'p-5' => !$figure || in_array($figurePosition, ['top', 'bottom']),
-                'flex' => $figure && in_array($figurePosition, ['left', 'right']),
-                'flex-row' => $figure && $figurePosition === 'left',
-                'flex-row-reverse' => $figure && $figurePosition === 'right'
-            ])
-    }}
->
+@php
+    $baseClasses = [
+        'card rounded-lg',
+        'bg-base-100' => !$glass,
+        'shadow-xs' => $shadow,
+        'p-5' => !$figure || in_array($figurePosition, ['top', 'bottom']),
+        'flex' => $figure && in_array($figurePosition, ['left', 'right']),
+        'flex-row' => $figure && $figurePosition === 'left',
+        'flex-row-reverse' => $figure && $figurePosition === 'right',
+    ];
+    $inlineStyles = [];
+
+    // Handle glass effect (call $glassStyle() only once)
+    if ($glass) {
+        $baseClasses[] = $glassClasses();
+        $computedGlassStyle = $glassStyle();
+        if ($computedGlassStyle) {
+            $inlineStyles[] = $computedGlassStyle;
+        }
+    }
+
+    // Merge inline styles (preserves user-provided styles)
+    if (!empty($inlineStyles)) {
+        $attributes = $attributes->merge(['style' => implode(' ', $inlineStyles)]);
+    }
+
+    // Merge wire:key and classes into attributes
+    $attributes = $attributes->merge(['wire:key' => $uuid])->class($baseClasses);
+@endphp
+<div {{ $attributes }}>
     {{-- Figure at top --}}
     @if($figure && $figurePosition === 'top')
         <figure {{ $figure->attributes->class(["-m-5 mb-0 rounded-t-lg overflow-hidden"]) }}>

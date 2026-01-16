@@ -141,7 +141,8 @@ Add color tints to glass surfaces:
 </code-snippet>
 @endverbatim
 
-Available tint classes:
+#### Semantic Tint Classes
+
 - `glass-tint-primary`
 - `glass-tint-secondary`
 - `glass-tint-accent`
@@ -149,6 +150,59 @@ Available tint classes:
 - `glass-tint-warning`
 - `glass-tint-error`
 - `glass-tint-info`
+
+#### Tailwind Color Tint Classes
+
+All default Tailwind CSS colors are available as tint classes with all shade variants (50-950):
+
+@verbatim
+<code-snippet name="Tailwind color tint examples" lang="blade">
+<!-- Blue tinted glass -->
+<div class="glass-frosted glass-tint-blue-500 glass-tint-opacity-20 rounded-lg p-4">
+    Blue tinted frosted glass
+</div>
+
+<!-- Emerald tinted liquid glass -->
+<div class="glass-liquid glass-tint-emerald-600 glass-tint-opacity-30 rounded-lg p-4">
+    Emerald tinted liquid glass
+</div>
+
+<!-- Purple tinted transparent glass -->
+<div class="glass-transparent glass-tint-purple-400 glass-tint-opacity-20 rounded-lg p-4">
+    Purple tinted transparent glass
+</div>
+</code-snippet>
+@endverbatim
+
+**Available color families:**
+- Gray scales: `slate`, `gray`, `zinc`, `neutral`, `stone`
+- Colors: `red`, `orange`, `amber`, `yellow`, `lime`, `green`, `emerald`, `teal`, `cyan`, `sky`, `blue`, `indigo`, `violet`, `purple`, `fuchsia`, `pink`, `rose`
+
+**Available shades:** `50`, `100`, `200`, `300`, `400`, `500`, `600`, `700`, `800`, `900`, `950`
+
+**Class pattern:** `glass-tint-{color}-{shade}` (e.g., `glass-tint-blue-500`, `glass-tint-emerald-300`)
+
+#### Custom Tint Colors
+
+Use `.glass-tint-custom` with inline styles for custom hex colors:
+
+@verbatim
+<code-snippet name="Custom tint color examples" lang="blade">
+<!-- Custom tint using --custom-tint variable -->
+<div class="glass-frosted glass-tint-custom glass-tint-opacity-25 rounded-lg p-4"
+     style="--custom-tint: #8b5cf6;">
+    Custom purple tinted glass
+</div>
+
+<!-- Custom tint using --glass-tint-color directly -->
+<div class="glass-liquid rounded-lg p-4"
+     style="--glass-tint-color: #ec4899; --glass-tint-opacity: 0.3;">
+    Custom pink tinted liquid glass
+</div>
+</code-snippet>
+@endverbatim
+
+#### Tint Opacity Modifiers
 
 Tint opacity modifiers: `glass-tint-opacity-10` through `glass-tint-opacity-100` (in increments of 10)
 

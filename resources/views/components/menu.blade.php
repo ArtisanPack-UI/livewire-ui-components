@@ -1,4 +1,14 @@
-<ul {{ $attributes->class(["menu w-full"]) }} >
+<ul
+    {{
+        $attributes->class([
+            "menu w-full",
+            $glassClasses() => $glass,
+        ])
+    }}
+    @if($glassStyle())
+        style="{{ $glassStyle() }}"
+    @endif
+>
     @if($title)
         <li class="menu-title text-inherit uppercase">
             <div class="flex items-center gap-2">

@@ -27,7 +27,16 @@
         </div>
     @endif
 
-    <div class="{{ $getLabelDivClass() }}" role="tablist">
+    <div
+        @class([
+            $getLabelDivClass(),
+            $glassClasses() => $glass,
+        ])
+        @if($glassStyle())
+            style="{{ $glassStyle() }}"
+        @endif
+        role="tablist"
+    >
         <template x-for="tab in tabs">
             <a
                     role="tab"

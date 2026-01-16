@@ -18,6 +18,7 @@ declare(strict_types=1);
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
 use ArtisanPack\LivewireUiComponents\Styling\ColorGenerator;
+use ArtisanPack\LivewireUiComponents\Support\GlassHelper;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
@@ -37,6 +38,11 @@ class Badge extends Component
         public ?string $value = null,
         public ?string $color = null,
         public ?string $colorAdjustment = null,
+
+        // Glass effect props
+        public ?string $glass = null,
+        public ?string $glassTint = null,
+        public ?int $glassTintOpacity = null,
     ) {
         $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
     }
@@ -62,6 +68,33 @@ class Badge extends Component
         );
 
         return $colorClasses;
+    }
+
+    /**
+     * Get the glass effect CSS classes.
+     *
+     * @since 2.0.0
+     *
+     * @return string Space-separated CSS classes.
+     */
+    public function glassClasses(): string
+    {
+        return GlassHelper::getClasses($this->glass, $this->glassTint, $this->glassTintOpacity);
+    }
+
+    /**
+     * Get the glass effect inline styles including accessible text color.
+     *
+     * Combines custom tint color CSS variable with accessible text color
+     * to ensure WCAG 2.0 AA compliance on tinted glass backgrounds.
+     *
+     * @since 2.0.0
+     *
+     * @return string Inline style string.
+     */
+    public function glassStyle(): string
+    {
+        return GlassHelper::getFullInlineStyle($this->glassTint);
     }
 
     public function render(): View
