@@ -444,11 +444,34 @@
 
 	/* =========================================================================
 	 * Glass Token Dark Mode Overrides
+	 *
+	 * Dark mode considerations:
+	 * - Frosted: More opaque to stand out against dark backgrounds
+	 * - Liquid: Enhanced border glow for premium feel
+	 * - Transparent: Higher blur for better readability
+	 * - Tints: Increased opacity for visibility
 	 * ========================================================================= */
 
-	--glass-frosted-opacity: 0.7;
-	--glass-border-opacity: 0.15;
-	--glass-shadow-opacity: 0.2;
+	/* Base glass token overrides */
+	--glass-opacity: 0.75;
+	--glass-border-opacity: 0.25;
+	--glass-shadow-opacity: 0.25;
+
+	/* Tint token overrides */
+	--glass-tint-opacity: 0.2;
+
+	/* Frosted variant overrides */
+	--glass-frosted-opacity: 0.85;
+	--glass-frosted-blur: 20px;
+	--glass-frosted-saturation: 200%;
+
+	/* Liquid variant overrides */
+	--glass-liquid-opacity: 0.65;
+	--glass-liquid-border-glow: 0.4;
+
+	/* Transparent variant overrides */
+	--glass-transparent-blur: 12px;
+	--glass-transparent-opacity: 0.35;
 
 	/* =========================================================================
 	 * Computed Glass Colors (Dark Mode)
@@ -459,7 +482,7 @@
 	--glass-shadow-color: rgba(0, 0, 0, var(--glass-shadow-opacity));
 	--glass-frosted-bg-color: rgba(30, 30, 30, var(--glass-frosted-opacity));
 	--glass-liquid-bg-color: rgba(30, 30, 30, var(--glass-liquid-opacity));
-	--glass-liquid-border-glow-color: rgba(255, 255, 255, calc(var(--glass-liquid-border-glow) * 0.7));
+	--glass-liquid-border-glow-color: rgba(255, 255, 255, var(--glass-liquid-border-glow));
 	--glass-transparent-bg-color: rgba(30, 30, 30, var(--glass-transparent-opacity));
 }
 

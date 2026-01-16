@@ -61,7 +61,16 @@
 			}}
         >
             <!-- HEADERS -->
-            <thead @class(["text-base-content", "hidden" => $noHeaders])>
+            <thead
+                @class([
+                    "text-base-content",
+                    "hidden" => $noHeaders,
+                    $headerGlassClasses() => $headerGlass,
+                ])
+                @if($headerGlassStyle())
+                    style="{{ $headerGlassStyle() }}"
+                @endif
+            >
             <tr x-ref="headers">
                 <!-- CHECKALL -->
                 @if($selectable)

@@ -29,7 +29,15 @@
     x-transition
     @mouseover="show()"
     @mouseout="hide()"
-    {{ $content->attributes->class(["z-[1] shadow-xl border-[length:var(--border)] border-base-content/10 w-fit p-3 rounded-md bg-base-100"]) }}
+    @class([
+        'z-[1] shadow-xl border-[length:var(--border)] border-base-content/10 w-fit p-3 rounded-md',
+        'bg-base-100' => !$glass,
+        $glassClasses() => $glass,
+    ])
+    @if($glassStyle())
+        style="{{ $glassStyle() }}"
+    @endif
+    {{ $content->attributes }}
   >
     {{ $content }}
   </div>

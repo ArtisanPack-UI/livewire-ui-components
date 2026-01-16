@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
+use ArtisanPack\LivewireUiComponents\Support\GlassHelper;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Str;
@@ -56,6 +57,9 @@ class Tabs extends Component
      * @param  string  $verticalContentClass  CSS classes for the content area of vertical tabs.
      * @param  string  $verticalRightActiveClass  CSS classes for active right-aligned vertical tab labels.
      * @param  string  $verticalRightLabelDivClass  CSS classes for the container of right-aligned vertical tab labels.
+     * @param  string|null  $glass  Glass effect variant ('frosted', 'liquid', 'transparent').
+     * @param  string|null  $glassTint  Tailwind color name or hex code for glass tint.
+     * @param  int|null  $glassTintOpacity  Tint opacity (10-100).
      *
      * @return void
      */
@@ -80,6 +84,11 @@ class Tabs extends Component
         // Right-side vertical specific classes with responsive behavior
         public string $verticalRightActiveClass = 'border-l-[length:var(--border)] border-l-base-content/50',
         public string $verticalRightLabelDivClass = 'border-l-[length:var(--border)] border-l-base-content/10 flex flex-col overflow-y-auto min-w-48',
+
+        // Glass effect props
+        public ?string $glass = null,
+        public ?string $glassTint = null,
+        public ?int $glassTintOpacity = null,
     ) {
         $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
     }
@@ -201,6 +210,33 @@ class Tabs extends Component
         }
 
         return $class;
+    }
+
+    /**
+     * Get the glass effect CSS classes.
+     *
+     * @since 2.0.0
+     *
+     * @return string Space-separated CSS classes.
+     */
+    public function glassClasses(): string
+    {
+        return GlassHelper::getClasses($this->glass, $this->glassTint, $this->glassTintOpacity);
+    }
+
+    /**
+     * Get the glass effect inline styles including accessible text color.
+     *
+     * Combines custom tint color CSS variable with accessible text color
+     * to ensure WCAG 2.0 AA compliance on tinted glass backgrounds.
+     *
+     * @since 2.0.0
+     *
+     * @return string Inline style string.
+     */
+    public function glassStyle(): string
+    {
+        return GlassHelper::getFullInlineStyle($this->glassTint);
     }
 
     /**

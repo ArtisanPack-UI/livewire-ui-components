@@ -162,12 +162,35 @@ class ColorGenerator
     /**
      * Dark mode overrides for glass tokens.
      *
+     * Dark mode considerations:
+     * - Frosted: More opaque to stand out against dark backgrounds
+     * - Liquid: Enhanced border glow for premium feel
+     * - Transparent: Higher blur for better readability
+     * - Tints: Increased opacity for visibility
+     *
      * @since 2.0.0
      */
     protected array $glassTokenDarkDefaults = [
-        'glass-frosted-opacity' => '0.7',
-        'glass-border-opacity'  => '0.15',
-        'glass-shadow-opacity'  => '0.2',
+        // Base glass token overrides
+        'glass-opacity'              => '0.75',
+        'glass-border-opacity'       => '0.25',
+        'glass-shadow-opacity'       => '0.25',
+
+        // Tint token overrides
+        'glass-tint-opacity'         => '0.2',
+
+        // Frosted variant overrides
+        'glass-frosted-opacity'      => '0.85',
+        'glass-frosted-blur'         => '20px',
+        'glass-frosted-saturation'   => '200%',
+
+        // Liquid variant overrides
+        'glass-liquid-opacity'       => '0.65',
+        'glass-liquid-border-glow'   => '0.4',
+
+        // Transparent variant overrides
+        'glass-transparent-blur'     => '12px',
+        'glass-transparent-opacity'  => '0.35',
     ];
 
     /**
@@ -295,13 +318,13 @@ class ColorGenerator
      * @since 2.0.0
      */
     protected array $shadowTokenDefaults = [
-        'shadow-none' => 'none',
-        'shadow-sm'   => '0 1px 2px 0 rgb(0 0 0 / 0.05)',
-        'shadow-base' => '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
-        'shadow-md'   => '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-        'shadow-lg'   => '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
-        'shadow-xl'   => '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
-        'shadow-2xl'  => '0 25px 50px -12px rgb(0 0 0 / 0.25)',
+        'shadow-none'  => 'none',
+        'shadow-sm'    => '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+        'shadow-base'  => '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
+        'shadow-md'    => '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+        'shadow-lg'    => '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
+        'shadow-xl'    => '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
+        'shadow-2xl'   => '0 25px 50px -12px rgb(0 0 0 / 0.25)',
         'shadow-inner' => 'inset 0 2px 4px 0 rgb(0 0 0 / 0.05)',
 
         // Colored shadows for semantic feedback
@@ -323,12 +346,12 @@ class ColorGenerator
      * @since 2.0.0
      */
     protected array $shadowTokenDarkDefaults = [
-        'shadow-sm'   => '0 1px 2px 0 rgb(0 0 0 / 0.2)',
-        'shadow-base' => '0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3)',
-        'shadow-md'   => '0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3)',
-        'shadow-lg'   => '0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3)',
-        'shadow-xl'   => '0 20px 25px -5px rgb(0 0 0 / 0.3), 0 8px 10px -6px rgb(0 0 0 / 0.3)',
-        'shadow-2xl'  => '0 25px 50px -12px rgb(0 0 0 / 0.5)',
+        'shadow-sm'    => '0 1px 2px 0 rgb(0 0 0 / 0.2)',
+        'shadow-base'  => '0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3)',
+        'shadow-md'    => '0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3)',
+        'shadow-lg'    => '0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3)',
+        'shadow-xl'    => '0 20px 25px -5px rgb(0 0 0 / 0.3), 0 8px 10px -6px rgb(0 0 0 / 0.3)',
+        'shadow-2xl'   => '0 25px 50px -12px rgb(0 0 0 / 0.5)',
         'shadow-inner' => 'inset 0 2px 4px 0 rgb(0 0 0 / 0.2)',
     ];
 
@@ -363,12 +386,12 @@ class ColorGenerator
         'ease-elastic'     => 'cubic-bezier(0.68, -0.6, 0.32, 1.6)',
 
         // Common animation presets
-        'transition-none'     => 'none',
-        'transition-all'      => 'all var(--duration-200) var(--ease-in-out)',
-        'transition-default'  => 'color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter',
-        'transition-colors'   => 'color, background-color, border-color, text-decoration-color, fill, stroke',
-        'transition-opacity'  => 'opacity',
-        'transition-shadow'   => 'box-shadow',
+        'transition-none'      => 'none',
+        'transition-all'       => 'all var(--duration-200) var(--ease-in-out)',
+        'transition-default'   => 'color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter',
+        'transition-colors'    => 'color, background-color, border-color, text-decoration-color, fill, stroke',
+        'transition-opacity'   => 'opacity',
+        'transition-shadow'    => 'box-shadow',
         'transition-transform' => 'transform',
     ];
 
@@ -571,7 +594,7 @@ class ColorGenerator
         }
 
         $css .= "\n    /* --- Glass Design Tokens --- */\n";
-        foreach ( $this->glassTokenDefaults as $key => $value ) {
+        foreach ($this->glassTokenDefaults as $key => $value) {
             $css .= "    --{$key}: {$value};\n";
         }
 
@@ -594,7 +617,7 @@ class ColorGenerator
         }
 
         $css .= "\n    /* --- Glass Design Token Dark Mode Overrides --- */\n";
-        foreach ( $this->glassTokenDarkDefaults as $key => $value ) {
+        foreach ($this->glassTokenDarkDefaults as $key => $value) {
             $css .= "    --{$key}: {$value};\n";
         }
 
@@ -636,9 +659,9 @@ class ColorGenerator
      *
      * @return string The CSS content for glass tokens.
      */
-    public function generateGlassTokensCss( array $overrides = [] ): string
+    public function generateGlassTokensCss(array $overrides = []): string
     {
-        $tokens     = array_merge( $this->glassTokenDefaults, $overrides );
+        $tokens     = array_merge($this->glassTokenDefaults, $overrides);
         $darkTokens = $this->glassTokenDarkDefaults;
 
         $css = "/**\n * ArtisanPack UI - Glass Design Tokens\n * \n * This file is automatically generated. Do not edit directly.\n * Use the 'artisanpack:generate-theme' command to update.\n *\n * @since 2.0.0\n */\n\n";
@@ -647,7 +670,7 @@ class ColorGenerator
         $css .= "/**\n * Tailwind CSS v4 @theme integration\n * These tokens can be extended or overridden in your app.css using @theme\n */\n";
         $css .= "@theme {\n";
         $css .= "    /* --- Base Glass Tokens --- */\n";
-        foreach ( $tokens as $key => $value ) {
+        foreach ($tokens as $key => $value) {
             $css .= "    --{$key}: {$value};\n";
         }
         $css .= "}\n\n";
@@ -655,7 +678,7 @@ class ColorGenerator
         // Root-level tokens
         $css .= ":root {\n";
         $css .= "    /* --- Base Glass Tokens --- */\n";
-        foreach ( $tokens as $key => $value ) {
+        foreach ($tokens as $key => $value) {
             $css .= "    --{$key}: {$value};\n";
         }
 
@@ -672,7 +695,7 @@ class ColorGenerator
         // Dark mode overrides
         $css .= "\n[data-theme=\"dark\"] {\n";
         $css .= "    /* --- Dark Mode Token Overrides --- */\n";
-        foreach ( $darkTokens as $key => $value ) {
+        foreach ($darkTokens as $key => $value) {
             $css .= "    --{$key}: {$value};\n";
         }
 
@@ -816,49 +839,49 @@ class ColorGenerator
      *
      * @return string The CSS content for all design tokens.
      */
-    public function generateDesignTokensCss( array $overrides = [] ): string
+    public function generateDesignTokensCss(array $overrides = []): string
     {
         $css = "/**\n * ArtisanPack UI - Design Tokens\n * \n * This file is automatically generated. Do not edit directly.\n * Use the 'artisanpack:generate-theme' command to update.\n *\n * Token Categories:\n * - Typography (fonts, sizes, weights, line heights)\n * - Spacing (consistent spacing scale)\n * - Border Radius (rounded corners)\n * - Shadows (elevation system)\n * - Animation (durations, easings)\n * - Glass (glassmorphism effects)\n *\n * @since 2.0.0\n */\n\n";
 
         // Merge overrides with defaults
-        $typography = array_merge( $this->typographyTokenDefaults, $overrides['typography'] ?? [] );
-        $spacing    = array_merge( $this->spacingTokenDefaults, $overrides['spacing'] ?? [] );
-        $radius     = array_merge( $this->radiusTokenDefaults, $overrides['radius'] ?? [] );
-        $shadow     = array_merge( $this->shadowTokenDefaults, $overrides['shadow'] ?? [] );
-        $animation  = array_merge( $this->animationTokenDefaults, $overrides['animation'] ?? [] );
-        $glass      = array_merge( $this->glassTokenDefaults, $overrides['glass'] ?? [] );
+        $typography = array_merge($this->typographyTokenDefaults, $overrides['typography'] ?? []);
+        $spacing    = array_merge($this->spacingTokenDefaults, $overrides['spacing'] ?? []);
+        $radius     = array_merge($this->radiusTokenDefaults, $overrides['radius'] ?? []);
+        $shadow     = array_merge($this->shadowTokenDefaults, $overrides['shadow'] ?? []);
+        $animation  = array_merge($this->animationTokenDefaults, $overrides['animation'] ?? []);
+        $glass      = array_merge($this->glassTokenDefaults, $overrides['glass'] ?? []);
 
         // Tailwind CSS v4 @theme directive
         $css .= "/**\n * Tailwind CSS v4 @theme integration\n * These tokens can be extended or overridden in your app.css using @theme\n */\n";
         $css .= "@theme {\n";
 
         $css .= "    /* --- Typography Tokens --- */\n";
-        foreach ( $typography as $key => $value ) {
+        foreach ($typography as $key => $value) {
             $css .= "    --{$key}: {$value};\n";
         }
 
         $css .= "\n    /* --- Spacing Tokens --- */\n";
-        foreach ( $spacing as $key => $value ) {
+        foreach ($spacing as $key => $value) {
             $css .= "    --{$key}: {$value};\n";
         }
 
         $css .= "\n    /* --- Border Radius Tokens --- */\n";
-        foreach ( $radius as $key => $value ) {
+        foreach ($radius as $key => $value) {
             $css .= "    --{$key}: {$value};\n";
         }
 
         $css .= "\n    /* --- Shadow Tokens --- */\n";
-        foreach ( $shadow as $key => $value ) {
+        foreach ($shadow as $key => $value) {
             $css .= "    --{$key}: {$value};\n";
         }
 
         $css .= "\n    /* --- Animation Tokens --- */\n";
-        foreach ( $animation as $key => $value ) {
+        foreach ($animation as $key => $value) {
             $css .= "    --{$key}: {$value};\n";
         }
 
         $css .= "\n    /* --- Glass Tokens --- */\n";
-        foreach ( $glass as $key => $value ) {
+        foreach ($glass as $key => $value) {
             $css .= "    --{$key}: {$value};\n";
         }
 
@@ -870,42 +893,42 @@ class ColorGenerator
         $css .= "    /* =========================================================================\n";
         $css .= "     * Typography Tokens\n";
         $css .= "     * ========================================================================= */\n";
-        foreach ( $typography as $key => $value ) {
+        foreach ($typography as $key => $value) {
             $css .= "    --{$key}: {$value};\n";
         }
 
         $css .= "\n    /* =========================================================================\n";
         $css .= "     * Spacing Tokens\n";
         $css .= "     * ========================================================================= */\n";
-        foreach ( $spacing as $key => $value ) {
+        foreach ($spacing as $key => $value) {
             $css .= "    --{$key}: {$value};\n";
         }
 
         $css .= "\n    /* =========================================================================\n";
         $css .= "     * Border Radius Tokens\n";
         $css .= "     * ========================================================================= */\n";
-        foreach ( $radius as $key => $value ) {
+        foreach ($radius as $key => $value) {
             $css .= "    --{$key}: {$value};\n";
         }
 
         $css .= "\n    /* =========================================================================\n";
         $css .= "     * Shadow Tokens\n";
         $css .= "     * ========================================================================= */\n";
-        foreach ( $shadow as $key => $value ) {
+        foreach ($shadow as $key => $value) {
             $css .= "    --{$key}: {$value};\n";
         }
 
         $css .= "\n    /* =========================================================================\n";
         $css .= "     * Animation Tokens\n";
         $css .= "     * ========================================================================= */\n";
-        foreach ( $animation as $key => $value ) {
+        foreach ($animation as $key => $value) {
             $css .= "    --{$key}: {$value};\n";
         }
 
         $css .= "\n    /* =========================================================================\n";
         $css .= "     * Glass Tokens\n";
         $css .= "     * ========================================================================= */\n";
-        foreach ( $glass as $key => $value ) {
+        foreach ($glass as $key => $value) {
             $css .= "    --{$key}: {$value};\n";
         }
 
@@ -923,18 +946,18 @@ class ColorGenerator
         $css .= "}\n";
 
         // Dark mode overrides
-        $shadowDark = array_merge( $this->shadowTokenDarkDefaults, $overrides['shadow_dark'] ?? [] );
+        $shadowDark = array_merge($this->shadowTokenDarkDefaults, $overrides['shadow_dark'] ?? []);
         $glassDark  = $this->glassTokenDarkDefaults;
 
         $css .= "\n[data-theme=\"dark\"] {\n";
 
         $css .= "    /* --- Shadow Token Dark Mode Overrides --- */\n";
-        foreach ( $shadowDark as $key => $value ) {
+        foreach ($shadowDark as $key => $value) {
             $css .= "    --{$key}: {$value};\n";
         }
 
         $css .= "\n    /* --- Glass Token Dark Mode Overrides --- */\n";
-        foreach ( $glassDark as $key => $value ) {
+        foreach ($glassDark as $key => $value) {
             $css .= "    --{$key}: {$value};\n";
         }
 

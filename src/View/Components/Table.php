@@ -18,6 +18,7 @@ declare(strict_types=1);
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
 use ArrayAccess;
+use ArtisanPack\LivewireUiComponents\Support\GlassHelper;
 use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Arr;
@@ -98,6 +99,11 @@ class Table extends Component
         public ?bool $noHover = false,
         public string $uuid = '',
         public string $keyBy = 'id',
+
+        // Glass effect props (for header)
+        public ?string $headerGlass = null,
+        public ?string $headerGlassTint = null,
+        public ?int $headerGlassTintOpacity = null,
 
         // Slots
         public mixed $actions = null,
@@ -262,6 +268,30 @@ class Table extends Component
     public function selectableModifier(): string
     {
         return is_string($this->getAllIds()[0] ?? null) ? '' : '.number';
+    }
+
+    /**
+     * Get the glass effect CSS classes for the header.
+     *
+     * @since 2.0.0
+     *
+     * @return string Space-separated CSS classes.
+     */
+    public function headerGlassClasses(): string
+    {
+        return GlassHelper::getClasses($this->headerGlass, $this->headerGlassTint, $this->headerGlassTintOpacity);
+    }
+
+    /**
+     * Get the glass effect inline styles for custom header tint colors.
+     *
+     * @since 2.0.0
+     *
+     * @return string Inline style string.
+     */
+    public function headerGlassStyle(): string
+    {
+        return GlassHelper::getFullInlineStyle($this->headerGlassTint);
     }
 
     public function getKeyValue($row, $key): mixed

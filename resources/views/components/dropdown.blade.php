@@ -93,9 +93,14 @@
     <ul
         x-ref="menu"
         @class([
-            'p-2','shadow','menu','z-[1]','border-[length:var(--border)]','border-base-content/10','bg-base-100', 'rounded-box','w-auto','min-w-max',
+            'p-2','shadow','menu','z-[1]','border-[length:var(--border)]','border-base-content/10','rounded-box','w-auto','min-w-max',
+            'bg-base-100' => !$glass,
             'dropdown-content' => $noXAnchor,
+            $glassClasses() => $glass,
         ])
+        @if($glassStyle())
+            style="{{ $glassStyle() }}"
+        @endif
         @click="closeDropdown()"
         @keydown.arrow-down.prevent="navigateItems('down')"
         @keydown.arrow-up.prevent="navigateItems('up')"
