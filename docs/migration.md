@@ -17,6 +17,10 @@ Migration guides provide step-by-step instructions for updating your code when b
 
 ## Available Migration Guides
 
+### Livewire 4 Features
+
+- [**Livewire 4 Features (v2.0)**](livewire-4-features) - Guide for using new Livewire 4-specific features including `wire:intersect`, `wire:sort`, and `data-loading` CSS variants
+
 ### Component Migrations
 
 - [**Chart Component Migration (v2.0)**](chart) - Guide for migrating from the Chart.js-based Chart component to the new ApexCharts implementation
