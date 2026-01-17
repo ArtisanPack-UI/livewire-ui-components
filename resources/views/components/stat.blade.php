@@ -54,6 +54,29 @@
                     {{ $description }}
                 </div>
             @endif
+
+            {{-- Trend Indicator --}}
+            @if($hasChange())
+                <div class="flex items-center gap-1 mt-1 {{ $changeColorClasses() }} {{ $sizeClasses['description'] }}">
+                    <x-artisanpack-icon :name="$changeIcon()" class="w-4 h-4" />
+                    <span class="font-medium">{{ $formattedChange() }}</span>
+                    @if($changeLabel)
+                        <span class="text-base-content/50">{{ $changeLabel }}</span>
+                    @endif
+                </div>
+            @endif
+
+            {{-- Sparkline --}}
+            @if($hasSparkline())
+                <div class="mt-2 w-full">
+                    <x-artisanpack-sparkline
+                        :data="$sparklineData"
+                        :type="$sparklineType"
+                        :color="$sparklineColor"
+                        :height="$sparklineHeight()"
+                    />
+                </div>
+            @endif
         </div>
 
         {{-- Icon Last (right/bottom) --}}

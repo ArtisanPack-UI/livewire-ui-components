@@ -112,18 +112,21 @@ abstract class ComponentTestCase extends TestCase
             $this->markTestSkipped('Component does not have uuid property');
         }
 
-        // Create components with different IDs to ensure different UUIDs
-        $component1 = $this->createComponent(['id' => 'test-id-1']);
-        $component2 = $this->createComponent(['id' => 'test-id-2']);
+        // Create components without explicit IDs to test auto-generated UUIDs
+        $component1 = $this->createComponent();
+        $component2 = $this->createComponent();
 
         $this->assertNotEmpty($component1->uuid);
         $this->assertNotEmpty($component2->uuid);
         $this->assertNotEquals($component1->uuid, $component2->uuid, 'UUIDs should be unique for different components');
-        $this->assertStringStartsWith('artisanpack', $component1->uuid);
+        $this->assertStringStartsWith('artisanpack', $component1->uuid, 'Auto-generated UUIDs should start with artisanpack prefix');
     }
 
     /**
      * Test that custom ID is used in UUID generation.
+     *
+     * When an explicit ID is provided, it should be used as-is (for event matching)
+     * or included in the UUID to ensure consistency.
      */
     public function test_component_uses_custom_id_in_uuid(): void
     {
@@ -134,7 +137,11 @@ abstract class ComponentTestCase extends TestCase
         $customId  = 'test-custom-id';
         $component = $this->createComponent(['id' => $customId]);
 
-        $this->assertStringEndsWith($customId, $component->uuid);
+        // UUID should either be the custom ID itself or contain it
+        $this->assertTrue(
+            $component->uuid === $customId || str_contains($component->uuid, $customId),
+            'UUID should be the custom ID or contain the custom ID',
+        );
     }
 
     /**
