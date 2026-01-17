@@ -90,6 +90,11 @@
                     <th class="w-1"></th>
                 @endif
 
+                <!-- SORT HANDLE HEADER -->
+                @if($isSortingEnabled() && $sortHandle)
+                    <th class="w-1"></th>
+                @endif
+
                 @foreach($headers as $header)
                     @php
                         # SKIP THE HIDDEN COLUMN
@@ -123,11 +128,21 @@
             </thead>
 
             <!-- ROWS -->
-            <tbody>
+            <tbody
+                @if($isSortingEnabled())
+                    wire:sort="{{ $attributes->wire('sort')->value() ?: 'updateOrder' }}"
+                    @if($sortGroup)
+                        wire:sort:group="{{ $sortGroup }}"
+                    @endif
+                @endif
+            >
             @foreach($rows as $k => $row)
                 <tr
                     wire:key="artisan-pack-table-row-{{ data_get($row, $keyBy) }}"
-                    @class([$rowClasses($row), "hover:bg-base-200" => !$noHover])
+                    @class([$rowClasses($row), "hover:bg-base-200" => !$noHover, "cursor-move" => $isSortingEnabled() && !$sortHandle])
+                    @if($isSortingEnabled())
+                        wire:sort:item="{{ $getSortableItemValue($row) }}"
+                    @endif
                     @if($attributes->has('@row-click'))
                         @click="$dispatch('row-click', {{ json_encode($row) }});"
                     @endif
@@ -154,6 +169,19 @@
                                     ::class="isExpanded({{ $getKeyValue($row, 'expandableKey') }}) || '-rotate-90 !text-current'"
                                     class="cursor-pointer p-2 w-8 h-8 bg-base-300 rounded-lg"
                                     @click="toggleExpand({{ $getKeyValue($row, 'expandableKey') }});" />
+                            @endif
+                        </td>
+                    @endif
+
+                    <!-- SORT HANDLE -->
+                    @if($isSortingEnabled() && $sortHandle)
+                        <td class="w-1 pe-0 py-0" wire:sort:handle>
+                            @if($sortHandleSlot)
+                                {{ $sortHandleSlot($row) }}
+                            @else
+                                <x-artisanpack-icon
+                                    name="o-bars-3"
+                                    class="cursor-move p-2 w-8 h-8 text-base-content/50 hover:text-base-content" />
                             @endif
                         </td>
                     @endif
@@ -214,12 +242,41 @@
             @endforeach
             </tbody>
 
-            <!-- FOOTER SLOT -->
-            @isset ($footer)
-                <tfoot {{ $footer->attributes ?? '' }}>
-                {{ $footer }}
+            @php
+                $hasFooterSlot = isset($footer);
+                $hasInfiniteScroll = $isInfiniteScrollEnabled() && $hasMorePages;
+                $infiniteScrollColspan = collect($headers)->filter(fn($h) => !$isHidden($h))->count() + ($selectable ? 1 : 0) + ($expandable ? 1 : 0) + ($isSortingEnabled() && $sortHandle ? 1 : 0) + ($actions ? 1 : 0);
+            @endphp
+
+            <!-- FOOTER (combines footer slot and infinite scroll into single tfoot) -->
+            @if($hasFooterSlot || $hasInfiniteScroll)
+                <tfoot {{ $hasFooterSlot ? ($footer->attributes ?? '') : '' }}>
+                    {{-- Footer slot content --}}
+                    @if($hasFooterSlot)
+                        {{ $footer }}
+                    @endif
+
+                    {{-- Infinite scroll row (Livewire 4+) --}}
+                    @if($hasInfiniteScroll)
+                        <tr>
+                            <td colspan="{{ $infiniteScrollColspan }}">
+                                @if($infiniteScrollModifier === 'once')
+                                    <div wire:intersect.once="{{ $infiniteScrollMethod }}" class="py-4 text-center">
+                                @elseif($infiniteScrollModifier === 'half')
+                                    <div wire:intersect.half="{{ $infiniteScrollMethod }}" class="py-4 text-center">
+                                @elseif($infiniteScrollModifier === 'full')
+                                    <div wire:intersect.full="{{ $infiniteScrollMethod }}" class="py-4 text-center">
+                                @else
+                                    <div wire:intersect="{{ $infiniteScrollMethod }}" class="py-4 text-center">
+                                @endif
+                                    <span wire:loading.remove wire:target="{{ $infiniteScrollMethod }}" class="text-base-content/50">{{ $infiniteScrollText }}</span>
+                                    <x-artisanpack-loading wire:loading wire:target="{{ $infiniteScrollMethod }}" class="hidden" />
+                                </div>
+                            </td>
+                        </tr>
+                    @endif
                 </tfoot>
-            @endisset
+            @endif
         </table>
 
         @if(count($rows) === 0)

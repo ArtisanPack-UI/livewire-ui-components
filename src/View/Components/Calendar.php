@@ -17,13 +17,20 @@ use Carbon\CarbonPeriod;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Lazy;
 use Livewire\Component;
 
 /**
  * Renders an interactive calendar component.
  *
+ * Uses Livewire's #[Lazy] attribute for deferred loading in Livewire 3+.
+ * The component will show a placeholder until it becomes visible in the viewport.
+ *
  * @since 1.0.0
+ * @since 2.0.0 Added #[Lazy] attribute for deferred loading.
  */
+#[Lazy]
 class Calendar extends Component
 {
     public ?string $id = null;
@@ -268,9 +275,14 @@ class Calendar extends Component
     /**
      * Computed property to get the weekday names.
      *
+     * Uses Livewire's #[Computed] attribute for optimized computed property handling.
+     * This is compatible with both Livewire 3 and Livewire 4.
+     *
      * @since 1.0.0
+     * @since 2.0.0 Updated to use #[Computed] attribute.
      */
-    public function getWeekdaysProperty(): Collection
+    #[Computed]
+    public function weekdays(): Collection
     {
         $weekdays = collect();
         $startDay = $this->sundayStart ? Carbon::SUNDAY : Carbon::MONDAY;
@@ -287,9 +299,17 @@ class Calendar extends Component
     /**
      * Computed property to get the weeks for the calendar grid.
      *
+     * Uses Livewire's #[Computed] attribute for optimized computed property handling.
+     * This property depends on dynamic state (gridStartsAt, events) that changes
+     * during navigation, so it's recalculated per-request rather than persisted.
+     *
+     * This is compatible with both Livewire 3 and Livewire 4.
+     *
      * @since 1.0.0
+     * @since 2.0.0 Updated to use #[Computed] attribute.
      */
-    public function getWeeksProperty(): Collection
+    #[Computed]
+    public function weeks(): Collection
     {
         $startDayOfWeek = $this->sundayStart ? Carbon::SUNDAY : Carbon::MONDAY;
         $endDayOfWeek   = $this->sundayStart ? Carbon::SATURDAY : Carbon::SUNDAY;
@@ -366,6 +386,23 @@ class Calendar extends Component
     public function render(): View
     {
         return view('livewire-ui-components::components.calendar');
+    }
+
+    /**
+     * Return the placeholder view while the component is lazy loading.
+     *
+     * This method is used by Livewire's #[Lazy] attribute (available in Livewire 3+)
+     * to display a loading state before the component hydrates.
+     *
+     * @since 2.0.0
+     *
+     * @param  array<string, mixed>  $params  The component parameters.
+     *
+     * @return View The placeholder view.
+     */
+    public function placeholder(array $params = []): View
+    {
+        return view('livewire-ui-components::placeholders.calendar', $params);
     }
 
     /**

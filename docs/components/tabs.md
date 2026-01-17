@@ -398,6 +398,42 @@ For better accessibility:
 3. Make sure tab content is properly structured with headings and semantic HTML
 4. Consider users who navigate with keyboards when designing tab interactions
 
+## Livewire Compatibility
+
+The Tabs component is fully compatible with both Livewire 3 and Livewire 4.
+
+### Dynamic Tab Removal
+
+When tabs are dynamically removed (e.g., via Livewire conditionals), the component automatically handles cleanup:
+
+```php
+{{-- Livewire component --}}
+<x-artisanpack-tabs wire:model="activeTab">
+    <x-artisanpack-tab name="tab1" label="Always Visible">
+        Content 1
+    </x-artisanpack-tab>
+
+    @if($showOptionalTab)
+        <x-artisanpack-tab name="tab2" label="Conditional Tab">
+            This tab can be removed dynamically
+        </x-artisanpack-tab>
+    @endif
+
+    <x-artisanpack-tab name="tab3" label="Another Tab">
+        Content 3
+    </x-artisanpack-tab>
+</x-artisanpack-tabs>
+```
+
+When a tab is removed:
+1. The tab is automatically unregistered from the tabs array
+2. If the removed tab was selected, the first available non-hidden, non-disabled tab is automatically selected
+3. The cleanup is handled via Livewire's `morph.removing` hook, which works identically in both Livewire 3 and 4
+
+### Navigation Cleanup
+
+The component also handles cleanup during Livewire navigation (using `wire:navigate`), ensuring tab state is properly reset when navigating between pages.
+
 ## Related Components
 
 - [Tab](tab) - Individual tab component used within Tabs

@@ -16,7 +16,7 @@
 
         @if($progress)
             <progress
-                class="progress {{ $getProgressColorClasses() }} hidden w-[1px] absolute z-10"
+                class="progress {{ $getProgressColorClasses() }} hidden w-[1px] absolute z-10 data-loading:block data-loading:!w-[length:var(--border)]"
                 wire:loading.class="!w-[length:var(--border)] !block"
                 @if($progressTarget())
                     wire:target="{{ $progressTarget() }}"
@@ -43,7 +43,7 @@
 
         @if($progress)
             <progress
-                class="progress {{ $getProgressColorClasses() }} hidden h-[1px] absolute top-0 left-0 w-full z-10"
+                class="progress {{ $getProgressColorClasses() }} hidden h-[1px] absolute top-0 left-0 w-full z-10 data-loading:block data-loading:!h-[length:var(--border)]"
                 wire:loading.class="!h-[length:var(--border)] !block"
                 @if($progressTarget())
                     wire:target="{{ $progressTarget() }}"

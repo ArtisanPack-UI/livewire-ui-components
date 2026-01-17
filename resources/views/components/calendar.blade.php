@@ -3,7 +3,23 @@
     class="w-full"
 >
     <div class="bg-white dark:bg-base-200 border border-stroke dark:border-base-300 rounded-lg p-4">
-        {{-- Header --}}
+        {{--
+            Islands Architecture
+
+            The Calendar uses Islands to separate header and grid updates:
+            - Header island: Navigation buttons, title, view selector
+            - Grid island: The calendar grid with weeks/days
+
+            The @island directive creates a div with wire:key for DOM isolation.
+            This is compatible with both Livewire 3 and Livewire 4:
+            - Livewire 4+: Optimized partial updates per-island
+            - Livewire 3: Standard rendering with wire:key isolation (still functional)
+
+            The directive outputs: <div wire:key="island-{name}" data-island="{name}">
+        --}}
+
+        {{-- Header Island --}}
+        @island('calendar-header')
         <div class="mb-[30px] flex items-center justify-between rounded-lg border border-stroke dark:border-base-300 bg-gray-2 dark:bg-base-200 py-3 pr-4 pl-[30px]">
             <div class="flex items-center space-x-2">
                 <button wire:click="goToPreviousPeriod" type="button" class="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-base-300 transition-colors duration-200 ease-in-out text-dark dark:text-white">
@@ -13,7 +29,7 @@
                     <x-artisanpack-icon name="o-chevron-right" class="w-4 h-4" />
                 </button>
                 <button wire:click="goToToday" type="button" class="px-3 py-1 rounded-md hover:bg-gray-100 dark:hover:bg-base-300 transition-colors duration-200 ease-in-out text-dark dark:text-white">
-                    Today
+                    {{ __( 'Today' ) }}
                 </button>
             </div>
             <p class="text-base font-semibold text-dark dark:text-white sm:text-xl">
@@ -22,18 +38,20 @@
             <div class="relative z-20 inline-flex rounded-[5px] bg-white dark:bg-base-100 text-dark dark:text-white">
                 <x-artisanpack-select
                     :options="[
-						['name' => 'Day', 'id' => 'day'],
-						['name' => 'Week', 'id' => 'week'],
-						['name' => 'Month', 'id' => 'month'],
-						['name' => 'Year', 'id' => 'year']
+						['name' => __( 'Day' ), 'id' => 'day'],
+						['name' => __( 'Week' ), 'id' => 'week'],
+						['name' => __( 'Month' ), 'id' => 'month'],
+						['name' => __( 'Year' ), 'id' => 'year']
 					]"
                     wire:model.live="view"
                     class="w-40"
                 />
             </div>
         </div>
+        @endisland
 
-        {{-- Calendar Grid --}}
+        {{-- Calendar Grid Island --}}
+        @island('calendar-grid')
         <div class="w-full max-w-full bg-white dark:bg-neutral overflow-x-auto rounded-lg shadow-sm">
             <table class="w-full">
                 <thead>
@@ -121,6 +139,7 @@
                 </tbody>
             </table>
         </div>
+        @endisland
     </div>
 
     {{-- Event Details Modal --}}

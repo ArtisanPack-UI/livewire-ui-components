@@ -318,7 +318,7 @@
                 @click.outside="clear()"
             >
                 {{-- PROGRESS --}}
-                <progress wire:loading wire:target="{{ preg_replace('/\((.*?)\)/', '', $searchFunction) }}" class="progress absolute top-0 h-0.5"></progress>
+                <progress class="progress absolute top-0 h-0.5 hidden data-loading:block" wire:loading.class.remove="hidden" wire:target="{{ preg_replace('/\((.*?)\)/', '', $searchFunction) }}"></progress>
 
                 {{-- NO RESULTS --}}
                 <div

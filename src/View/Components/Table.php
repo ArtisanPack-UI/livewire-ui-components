@@ -19,6 +19,7 @@ namespace ArtisanPack\LivewireUiComponents\View\Components;
 
 use ArrayAccess;
 use ArtisanPack\LivewireUiComponents\Support\GlassHelper;
+use ArtisanPack\LivewireUiComponents\Support\LivewireHelper;
 use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Arr;
@@ -72,8 +73,19 @@ class Table extends Component
      * @param  mixed|null  $expansion  Slot for expanded row content.
      * @param  mixed|null  $empty  Slot for empty state content.
      * @param  mixed|null  $footer  Slot for table footer.
+     * @param  bool  $sortable  Whether rows can be drag-and-drop sorted (Livewire 4+ only).
+     * @param  string|null  $sortableKey  Key to use for sortable item identification. Defaults to $keyBy.
+     * @param  string|null  $sortGroup  Group name for cross-list dragging (wire:sort:group).
+     * @param  bool  $sortHandle  Whether to use a sort handle instead of the entire row.
+     * @param  bool  $infiniteScroll  Whether to enable infinite scrolling (Livewire 4+ only).
+     * @param  string  $infiniteScrollMethod  The Livewire method to call when scrolling (default 'loadMore').
+     * @param  string|null  $infiniteScrollModifier  Modifier for wire:intersect (.once, .half, .full).
+     * @param  string  $infiniteScrollText  Text to display while loading more items.
+     * @param  bool  $hasMorePages  Whether there are more pages to load (for infinite scroll).
      *
      * @since 1.0.0
+     * @since 2.0.0 Added sortable, sortableKey, sortGroup, and sortHandle props for Livewire 4 wire:sort support.
+     * @since 2.0.0 Added infiniteScroll, infiniteScrollMethod, infiniteScrollModifier, infiniteScrollText, and hasMorePages props for Livewire 4 wire:intersect support.
      */
     public function __construct(
         public array $headers,
@@ -105,6 +117,19 @@ class Table extends Component
         public ?string $headerGlassTint = null,
         public ?int $headerGlassTintOpacity = null,
 
+        // Drag-and-drop sorting props (Livewire 4+)
+        public bool $sortable = false,
+        public ?string $sortableKey = null,
+        public ?string $sortGroup = null,
+        public bool $sortHandle = false,
+
+        // Infinite scroll props (Livewire 4+)
+        public bool $infiniteScroll = false,
+        public string $infiniteScrollMethod = 'loadMore',
+        public ?string $infiniteScrollModifier = null,
+        public string $infiniteScrollText = 'Scroll for more',
+        public bool $hasMorePages = true,
+
         // Slots
         public mixed $actions = null,
         public mixed $tr = null,
@@ -112,6 +137,7 @@ class Table extends Component
         public mixed $expansion = null,
         public mixed $empty = null,
         public mixed $footer = null,
+        public mixed $sortHandleSlot = null,
 
     ) {
         if ($this->selectable && $this->expandable) {
@@ -299,6 +325,77 @@ class Table extends Component
         $value = data_get($row, $this->$key);
 
         return is_numeric($value) && ! str($value)->startsWith('0') ? $value : "'$value'";
+    }
+
+    /**
+     * Check if wire:sort is supported and enabled.
+     *
+     * @since 2.0.0
+     *
+     * @return bool True if sortable and Livewire 4+.
+     */
+    public function isSortingEnabled(): bool
+    {
+        return $this->sortable && LivewireHelper::supportsWireSort();
+    }
+
+    /**
+     * Get the key to use for sortable item identification.
+     *
+     * Defaults to $keyBy if no specific sortableKey is provided.
+     *
+     * @since 2.0.0
+     *
+     * @return string The key to use for wire:sort:item.
+     */
+    public function getSortableKey(): string
+    {
+        return $this->sortableKey ?? $this->keyBy;
+    }
+
+    /**
+     * Get the sortable item value for a row.
+     *
+     * @since 2.0.0
+     *
+     * @param  mixed  $row  The row data.
+     *
+     * @return mixed The sortable item identifier.
+     */
+    public function getSortableItemValue(mixed $row): mixed
+    {
+        return data_get($row, $this->getSortableKey());
+    }
+
+    /**
+     * Check if wire:intersect infinite scroll is supported and enabled.
+     *
+     * @since 2.0.0
+     *
+     * @return bool True if infiniteScroll is enabled and Livewire 4+.
+     */
+    public function isInfiniteScrollEnabled(): bool
+    {
+        return $this->infiniteScroll && LivewireHelper::supportsWireIntersect();
+    }
+
+    /**
+     * Get the wire:intersect directive with optional modifier.
+     *
+     * @since 2.0.0
+     *
+     * @return string The wire:intersect directive (e.g., "wire:intersect" or "wire:intersect.once").
+     */
+    public function getInfiniteScrollDirective(): string
+    {
+        $directive = 'wire:intersect';
+
+        if ($this->infiniteScrollModifier) {
+            $modifier  = ltrim($this->infiniteScrollModifier, '.');
+            $directive .= '.'.$modifier;
+        }
+
+        return $directive;
     }
 
     /**

@@ -44,85 +44,86 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
      * @since 1.0.0
      */
     protected array $bladeComponents = [
-        'accordion'        => View\Components\Accordion::class,
-        'alert'            => View\Components\Alert::class,
-        'avatar'           => View\Components\Avatar::class,
-        'badge'            => View\Components\Badge::class,
-        'breadcrumbs'      => View\Components\Breadcrumbs::class,
-        'button'           => View\Components\Button::class,
-        'card'             => View\Components\Card::class,
-        'carousel'         => View\Components\Carousel::class,
-        'chart'            => View\Components\Chart::class,
-        'checkbox'         => View\Components\Checkbox::class,
-        'checkbox-group'   => View\Components\CheckboxGroup::class,
-        'choices'          => View\Components\Choices::class,
-        'choices-offline'  => View\Components\ChoicesOffline::class,
-        'code'             => View\Components\Code::class,
-        'collapse'         => View\Components\Collapse::class,
-        'colorpicker'      => View\Components\Colorpicker::class,
-        'datepicker'       => View\Components\DatePicker::class,
-        'datetime'         => View\Components\DateTime::class,
-        'diff'             => View\Components\Diff::class,
-        'drawer'           => View\Components\Drawer::class,
-        'dropdown'         => View\Components\Dropdown::class,
-        'editor'           => View\Components\Editor::class,
-        'errors'           => View\Components\Errors::class,
-        'fieldset'         => View\Components\Fieldset::class,
-        'file'             => View\Components\File::class,
-        'form'             => View\Components\Form::class,
-        'group'            => View\Components\Group::class,
-        'header'           => View\Components\Header::class,
-        'heading'          => View\Components\Heading::class,
-        'icon'             => View\Components\Icon::class,
-        'image-gallery'    => View\Components\ImageGallery::class,
-        'image-library'    => View\Components\ImageLibrary::class,
-        'image-slider'     => View\Components\ImageSlider::class,
-        'input'            => View\Components\Input::class,
-        'kbd'              => View\Components\Kbd::class,
-        'link'             => View\Components\Link::class,
-        'list-item'        => View\Components\ListItem::class,
-        'loading'          => View\Components\Loading::class,
-        'main'             => View\Components\Main::class,
-        'markdown'         => View\Components\Markdown::class,
-        'menu'             => View\Components\Menu::class,
-        'menu-item'        => View\Components\MenuItem::class,
-        'menu-separator'   => View\Components\MenuSeparator::class,
-        'menu-sub'         => View\Components\MenuSub::class,
-        'menu-title'       => View\Components\MenuTitle::class,
-        'modal'            => View\Components\Modal::class,
-        'nav'              => View\Components\Nav::class,
-        'pagination'       => View\Components\Pagination::class,
-        'password'         => View\Components\Password::class,
-        'pin'              => View\Components\Pin::class,
-        'popover'          => View\Components\Popover::class,
-        'profile'          => View\Components\Profile::class,
-        'progress'         => View\Components\Progress::class,
-        'progress-radial'  => View\Components\ProgressRadial::class,
-        'radio'            => View\Components\Radio::class,
-        'radio-group'      => View\Components\RadioGroup::class,
-        'range'            => View\Components\Range::class,
-        'rating'           => View\Components\Rating::class,
-        'select'           => View\Components\Select::class,
-        'select-group'     => View\Components\SelectGroup::class,
-        'separator'        => View\Components\Separator::class,
-        'signature'        => View\Components\Signature::class,
-        'sparkline'        => View\Components\Sparkline::class,
-        'spotlight'        => View\Components\Spotlight::class,
-        'stat'             => View\Components\Stat::class,
-        'step'             => View\Components\Step::class,
-        'steps'            => View\Components\Steps::class,
-        'subheading'       => View\Components\Subheading::class,
-        'swap'             => View\Components\Swap::class,
-        'tab'              => View\Components\Tab::class,
-        'table'            => View\Components\Table::class,
-        'tabs'             => View\Components\Tabs::class,
-        'tags'             => View\Components\Tags::class,
-        'text'             => View\Components\Text::class,
-        'textarea'         => View\Components\Textarea::class,
-        'theme-toggle'     => View\Components\ThemeToggle::class,
-        'timeline-item'    => View\Components\TimelineItem::class,
-        'toast'            => View\Components\Toast::class,
-        'toggle'           => View\Components\Toggle::class,
+        'accordion'           => View\Components\Accordion::class,
+        'alert'               => View\Components\Alert::class,
+        'avatar'              => View\Components\Avatar::class,
+        'badge'               => View\Components\Badge::class,
+        'breadcrumbs'         => View\Components\Breadcrumbs::class,
+        'button'              => View\Components\Button::class,
+        'card'                => View\Components\Card::class,
+        'carousel'            => View\Components\Carousel::class,
+        'chart'               => View\Components\Chart::class,
+        'checkbox'            => View\Components\Checkbox::class,
+        'checkbox-group'      => View\Components\CheckboxGroup::class,
+        'choices'             => View\Components\Choices::class,
+        'choices-offline'     => View\Components\ChoicesOffline::class,
+        'code'                => View\Components\Code::class,
+        'collapse'            => View\Components\Collapse::class,
+        'colorpicker'         => View\Components\Colorpicker::class,
+        'datepicker'          => View\Components\DatePicker::class,
+        'datetime'            => View\Components\DateTime::class,
+        'diff'                => View\Components\Diff::class,
+        'drawer'              => View\Components\Drawer::class,
+        'dropdown'            => View\Components\Dropdown::class,
+        'editor'              => View\Components\Editor::class,
+        'errors'              => View\Components\Errors::class,
+        'fieldset'            => View\Components\Fieldset::class,
+        'file'                => View\Components\File::class,
+        'form'                => View\Components\Form::class,
+        'group'               => View\Components\Group::class,
+        'header'              => View\Components\Header::class,
+        'heading'             => View\Components\Heading::class,
+        'icon'                => View\Components\Icon::class,
+        'image-gallery'       => View\Components\ImageGallery::class,
+        'image-library'       => View\Components\ImageLibrary::class,
+        'image-slider'        => View\Components\ImageSlider::class,
+        'input'               => View\Components\Input::class,
+        'kbd'                 => View\Components\Kbd::class,
+        'link'                => View\Components\Link::class,
+        'list-item'           => View\Components\ListItem::class,
+        'loading'             => View\Components\Loading::class,
+        'main'                => View\Components\Main::class,
+        'markdown'            => View\Components\Markdown::class,
+        'menu'                => View\Components\Menu::class,
+        'menu-item'           => View\Components\MenuItem::class,
+        'menu-separator'      => View\Components\MenuSeparator::class,
+        'menu-sub'            => View\Components\MenuSub::class,
+        'menu-title'          => View\Components\MenuTitle::class,
+        'modal'               => View\Components\Modal::class,
+        'nav'                 => View\Components\Nav::class,
+        'pagination'          => View\Components\Pagination::class,
+        'password'            => View\Components\Password::class,
+        'pin'                 => View\Components\Pin::class,
+        'popover'             => View\Components\Popover::class,
+        'profile'             => View\Components\Profile::class,
+        'progress'            => View\Components\Progress::class,
+        'progress-radial'     => View\Components\ProgressRadial::class,
+        'radio'               => View\Components\Radio::class,
+        'radio-group'         => View\Components\RadioGroup::class,
+        'range'               => View\Components\Range::class,
+        'rating'              => View\Components\Rating::class,
+        'select'              => View\Components\Select::class,
+        'select-group'        => View\Components\SelectGroup::class,
+        'separator'           => View\Components\Separator::class,
+        'signature'           => View\Components\Signature::class,
+        'sparkline'           => View\Components\Sparkline::class,
+        'spotlight'           => View\Components\Spotlight::class,
+        'stat'                => View\Components\Stat::class,
+        'streamable-content'  => View\Components\StreamableContent::class,
+        'step'                => View\Components\Step::class,
+        'steps'               => View\Components\Steps::class,
+        'subheading'          => View\Components\Subheading::class,
+        'swap'                => View\Components\Swap::class,
+        'tab'                 => View\Components\Tab::class,
+        'table'               => View\Components\Table::class,
+        'tabs'                => View\Components\Tabs::class,
+        'tags'                => View\Components\Tags::class,
+        'text'                => View\Components\Text::class,
+        'textarea'            => View\Components\Textarea::class,
+        'theme-toggle'        => View\Components\ThemeToggle::class,
+        'timeline-item'       => View\Components\TimelineItem::class,
+        'toast'               => View\Components\Toast::class,
+        'toggle'              => View\Components\Toggle::class,
     ];
 
     /**
@@ -237,6 +238,7 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
     public function registerBladeDirectives(): void
     {
         $this->registerScopeDirective();
+        $this->registerIslandDirectives();
     }
 
     /**
@@ -284,6 +286,93 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
             'endscope',
             function () {
                 return '<?php }); ?>';
+            },
+        );
+    }
+
+    /**
+     * Register the @island and @endisland Blade directives for Islands architecture.
+     *
+     * Islands allow isolated updates within complex components. Different parts
+     * of a component can update independently without affecting other regions.
+     *
+     * - Livewire 4+: Full Islands support with optimized partial updates
+     * - Livewire 3: Falls back to normal rendering (still works, just less optimized)
+     *
+     * Usage:
+     * - @island('name') ... @endisland - Basic island with wire:key isolation
+     * - @island('name', ['defer' => true]) ... @endisland - Deferred loading (Livewire 4+)
+     *
+     * @since 2.0.0
+     */
+    public function registerIslandDirectives(): void
+    {
+        /**
+         * @island directive - Creates an isolated region with wire:key.
+         *
+         * Syntax: @island('island-name') or @island('island-name', ['defer' => true])
+         *
+         * Island names are HTML-escaped using Blade's e() helper to prevent
+         * attribute injection and ensure safe output in wire:key and data-island attributes.
+         */
+        Blade::directive(
+            'island',
+            function ($expression) {
+                // Parse the expression to get name and options
+                $parts   = array_map('trim', explode(',', $expression, 2));
+                $options = isset($parts[1]) ? trim($parts[1]) : '[]';
+
+                return "<?php
+                    \$__islandName = {$parts[0]};
+                    \$__islandNameEscaped = e(\$__islandName);
+                    \$__islandOptions = {$options};
+                    \$__islandDefer = \$__islandOptions['defer'] ?? false;
+                    \$__islandSupportsOptimized = \\ArtisanPack\\LivewireUiComponents\\Support\\LivewireHelper::supportsIslands();
+                    \$__islandAttributes = 'wire:key=\"island-' . \$__islandNameEscaped . '\"';
+                    if (\$__islandDefer && \$__islandSupportsOptimized) {
+                        \$__islandAttributes .= ' wire:intersect.once=\"\$refresh\"';
+                    }
+                ?><div <?php echo \$__islandAttributes; ?> data-island=\"<?php echo \$__islandNameEscaped; ?>\"<?php if(\$__islandDefer): ?> data-island-defer=\"true\"<?php endif; ?>>";
+            },
+        );
+
+        /**
+         * @endisland directive - Closes an island region.
+         */
+        Blade::directive(
+            'endisland',
+            function () {
+                return '</div><?php unset($__islandName, $__islandNameEscaped, $__islandOptions, $__islandDefer, $__islandSupportsOptimized, $__islandAttributes); ?>';
+            },
+        );
+
+        /**
+         * @placeholder directive - Shows placeholder content while deferred island loads.
+         *
+         * Only renders in Livewire 4+ when the island is deferred.
+         * In Livewire 3, the placeholder is skipped and content renders immediately.
+         *
+         * Uses defensive checks for variables to safely handle usage outside @island blocks.
+         * The if block opens here and closes in @endplaceholder so the placeholder body
+         * is conditionally rendered.
+         */
+        Blade::directive(
+            'placeholder',
+            function () {
+                return '<?php if (($__islandDefer ?? false) && ($__islandSupportsOptimized ?? false)): ?><template x-if="false">';
+            },
+        );
+
+        /**
+         * @endplaceholder directive - Ends the placeholder region.
+         *
+         * Closes the template tag and the PHP if block opened by @placeholder.
+         * Uses defensive checks for variables to safely handle usage outside @island blocks.
+         */
+        Blade::directive(
+            'endplaceholder',
+            function () {
+                return '</template><?php endif; ?>';
             },
         );
     }

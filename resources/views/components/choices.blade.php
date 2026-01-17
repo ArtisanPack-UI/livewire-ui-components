@@ -283,7 +283,7 @@
                 >
 
                     {{-- PROGRESS --}}
-                    <progress wire:loading wire:target="{{ preg_replace('/\((.*?)\)/', '', $searchFunction) }}" class="progress absolute top-0 h-0.5"></progress>
+                    <progress class="progress absolute top-0 h-0.5 hidden data-loading:block" wire:loading.class.remove="hidden" wire:target="{{ preg_replace('/\((.*?)\)/', '', $searchFunction) }}"></progress>
 
                    {{-- SELECT ALL --}}
                    @if($allowAll)
@@ -329,6 +329,17 @@
                             @endif
                         </div>
                     @endforeach
+
+                    {{-- LAZY LOAD MORE OPTIONS (Livewire 4+) --}}
+                    @if($isLazyLoadEnabled() && $hasMoreOptions)
+                        <div
+                            wire:key="lazy-load-{{ $uuid }}"
+                            {{ $getLazyLoadDirective() }}="{{ $lazyLoadMethod }}"
+                            class="p-3 text-center border-s-4 border-base-content/10"
+                        >
+                            <x-artisanpack-loading class="loading-sm" />
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
