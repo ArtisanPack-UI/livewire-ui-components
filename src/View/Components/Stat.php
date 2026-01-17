@@ -58,8 +58,19 @@ class Stat extends Component
         public ?string $glassTint = null,
         public ?int $glassTintOpacity = null,
 
+        // Sparkline props
+        public ?array $sparklineData = null,
+        public string $sparklineType = 'line',
+        public ?string $sparklineColor = null,
+
+        // Trend indicator props
+        public ?float $change = null,
+        public ?string $changeLabel = null,
+
     ) {
-        $this->uuid            = 'artisanpack'.md5(serialize($this)).$id;
+        // Use a stable identifier: provided id or a unique id
+        // Avoid serialize($this) as it includes mutable state
+        $this->uuid            = 'artisanpack-stat-'.($id ?? uniqid('', true));
         $this->tooltip         = $this->tooltip ?? $this->tooltipLeft ?? $this->tooltipRight ?? $this->tooltipBottom;
         $this->tooltipPosition = $this->tooltipLeft ? 'lg:tooltip-left' : ($this->tooltipRight ? 'lg:tooltip-right' : ($this->tooltipBottom ? 'lg:tooltip-bottom' : 'lg:tooltip-top'));
     }
@@ -189,6 +200,123 @@ class Stat extends Component
     public function shouldRenderTitleFirst(): bool
     {
         return 'top' === $this->titlePosition;
+    }
+
+    /**
+     * Check if sparkline should be rendered.
+     *
+     * @since 2.0.0
+     *
+     * @return bool True if sparkline data is provided and not empty.
+     */
+    public function hasSparkline(): bool
+    {
+        return null !== $this->sparklineData && count($this->sparklineData) > 0;
+    }
+
+    /**
+     * Get the sparkline height based on stat size.
+     *
+     * Returns appropriate height values that scale with the stat component size.
+     *
+     * @since 2.0.0
+     *
+     * @return int The sparkline height in pixels.
+     */
+    public function sparklineHeight(): int
+    {
+        return match ($this->size) {
+            'xs'    => 24,
+            'sm'    => 32,
+            'md'    => 40,
+            'lg'    => 48,
+            'xl'    => 56,
+            default => 40,
+        };
+    }
+
+    /**
+     * Check if trend indicator should be rendered.
+     *
+     * @since 2.0.0
+     *
+     * @return bool True if change value is provided.
+     */
+    public function hasChange(): bool
+    {
+        return null !== $this->change;
+    }
+
+    /**
+     * Check if the change is positive.
+     *
+     * @since 2.0.0
+     *
+     * @return bool True if change is positive or zero.
+     */
+    public function isPositiveChange(): bool
+    {
+        return null !== $this->change && $this->change >= 0;
+    }
+
+    /**
+     * Get the formatted change percentage string.
+     *
+     * Returns the change value with a sign prefix and percent symbol.
+     *
+     * @since 2.0.0
+     *
+     * @return string The formatted change string (e.g., "+12.5%" or "-8.3%").
+     */
+    public function formattedChange(): string
+    {
+        if (null === $this->change) {
+            return '';
+        }
+
+        $sign = $this->change >= 0 ? '+' : '';
+
+        return $sign.number_format($this->change, 1).'%';
+    }
+
+    /**
+     * Get the CSS color classes for the trend indicator.
+     *
+     * Returns green classes for positive changes, red for negative.
+     *
+     * @since 2.0.0
+     *
+     * @return string Space-separated CSS classes.
+     */
+    public function changeColorClasses(): string
+    {
+        if (null === $this->change) {
+            return '';
+        }
+
+        return $this->change >= 0
+            ? 'text-success'
+            : 'text-error';
+    }
+
+    /**
+     * Get the icon name for the trend indicator arrow.
+     *
+     * Returns an up arrow for positive changes, down arrow for negative.
+     *
+     * @since 2.0.0
+     *
+     * @return string The icon name.
+     */
+    public function changeIcon(): string
+    {
+        if (null === $this->change) {
+            return '';
+        }
+
+        return $this->change >= 0
+            ? 'o-arrow-trending-up'
+            : 'o-arrow-trending-down';
     }
 
     public function render(): View|Closure|string

@@ -106,6 +106,7 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         'select-group'     => View\Components\SelectGroup::class,
         'separator'        => View\Components\Separator::class,
         'signature'        => View\Components\Signature::class,
+        'sparkline'        => View\Components\Sparkline::class,
         'spotlight'        => View\Components\Spotlight::class,
         'stat'             => View\Components\Stat::class,
         'step'             => View\Components\Step::class,
@@ -202,8 +203,6 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
      * set in the package's configuration file.
      *
      * @since 1.0.0
-     *
-     * @return void
      */
     public function registerComponents(): void
     {

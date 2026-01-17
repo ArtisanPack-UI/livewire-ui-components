@@ -19,6 +19,7 @@ Migration guides provide step-by-step instructions for updating your code when b
 
 ### Component Migrations
 
+- [**Chart Component Migration (v2.0)**](chart) - Guide for migrating from the Chart.js-based Chart component to the new ApexCharts implementation
 - [**ImageGallery Component Migration**](image-gallery) - Guide for migrating from the old carousel-based ImageGallery component to the new ImageSlider and grid-based ImageGallery components
 
 ## Migration Best Practices
