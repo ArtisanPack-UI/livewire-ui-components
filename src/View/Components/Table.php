@@ -130,6 +130,17 @@ class Table extends Component
         public string $infiniteScrollText = 'Scroll for more',
         public bool $hasMorePages = true,
 
+        // Virtual scrolling props
+        public bool $virtualScroll = false,
+        public int $virtualRowHeight = 48,
+        public int $virtualBuffer = 10,
+        public ?int $virtualContainerHeight = null,
+
+        // Export props
+        public bool $exportable = false,
+        public array $exportFormats = ['csv'],
+        public ?string $exportFilename = null,
+
         // Slots
         public mixed $actions = null,
         public mixed $tr = null,
@@ -145,9 +156,9 @@ class Table extends Component
         }
 
         // Temp
-        $rowDecoration  = $this->rowDecoration;
+        $rowDecoration = $this->rowDecoration;
         $cellDecoration = $this->cellDecoration;
-        $headers        = $this->headers;
+        $headers = $this->headers;
 
         // Remove them from serialization, because they are closures.
         unset($this->rowDecoration);
@@ -161,9 +172,9 @@ class Table extends Component
         }
 
         // Put them back
-        $this->rowDecoration  = $rowDecoration;
+        $this->rowDecoration = $rowDecoration;
         $this->cellDecoration = $cellDecoration;
-        $this->headers        = $headers;
+        $this->headers = $headers;
     }
 
     // Get all ids for selectable and expandable features
@@ -201,11 +212,11 @@ class Table extends Component
             return $format($row, $field);
         }
 
-        if ('currency' == $format[0]) {
+        if ($format[0] == 'currency') {
             return ($format[2] ?? '').number_format($field, ...str_split($format[1]));
         }
 
-        if ('date' == $format[0] && $field) {
+        if ($format[0] == 'date' && $field) {
             return Carbon::parse($field)->translatedFormat($format[1]);
         }
 
@@ -221,7 +232,7 @@ class Table extends Component
     // Check if is currently sorted by this header
     public function isSortedBy(mixed $header): bool
     {
-        if (0 == count($this->sortBy)) {
+        if (count($this->sortBy) == 0) {
             return false;
         }
 
@@ -235,12 +246,12 @@ class Table extends Component
             return false;
         }
 
-        if (0 == count($this->sortBy)) {
+        if (count($this->sortBy) == 0) {
             return ['column' => '', 'direction' => ''];
         }
 
         $direction = $this->isSortedBy($header)
-            ? ('asc' == $this->sortBy['direction']) ? 'desc' : 'asc'
+            ? ($this->sortBy['direction'] == 'asc') ? 'desc' : 'asc'
             : 'asc';
 
         return ['column' => $header['sortBy'] ?? $header['key'], 'direction' => $direction];
@@ -359,7 +370,6 @@ class Table extends Component
      * @since 2.0.0
      *
      * @param  mixed  $row  The row data.
-     *
      * @return mixed The sortable item identifier.
      */
     public function getSortableItemValue(mixed $row): mixed
@@ -391,11 +401,185 @@ class Table extends Component
         $directive = 'wire:intersect';
 
         if ($this->infiniteScrollModifier) {
-            $modifier  = ltrim($this->infiniteScrollModifier, '.');
+            $modifier = ltrim($this->infiniteScrollModifier, '.');
             $directive .= '.'.$modifier;
         }
 
         return $directive;
+    }
+
+    /**
+     * Check if virtual scrolling is enabled.
+     *
+     * @since 2.0.0
+     *
+     * @return bool True if virtualScroll is enabled and rows exist.
+     */
+    public function isVirtualScrollEnabled(): bool
+    {
+        $rowCount = is_array($this->rows) ? count($this->rows) : $this->rows->count();
+
+        return $this->virtualScroll && $rowCount > 0;
+    }
+
+    /**
+     * Get the total scrollable height based on row count.
+     *
+     * @since 2.0.0
+     *
+     * @return int Total height in pixels.
+     */
+    public function getTotalHeight(): int
+    {
+        $rowCount = is_array($this->rows) ? count($this->rows) : $this->rows->count();
+
+        return $rowCount * $this->virtualRowHeight;
+    }
+
+    /**
+     * Get the total row count.
+     *
+     * @since 2.0.0
+     *
+     * @return int Total number of rows.
+     */
+    public function getTotalRowCount(): int
+    {
+        return is_array($this->rows) ? count($this->rows) : $this->rows->count();
+    }
+
+    /**
+     * Get the visible rows based on start/end indices.
+     *
+     * @since 2.0.0
+     *
+     * @param  int  $startIndex  The starting index.
+     * @param  int  $endIndex  The ending index.
+     * @return array|ArrayAccess The visible rows.
+     */
+    public function getVisibleRows(int $startIndex, int $endIndex): array|ArrayAccess
+    {
+        if (is_array($this->rows)) {
+            return array_slice($this->rows, $startIndex, $endIndex - $startIndex);
+        }
+
+        return $this->rows->slice($startIndex, $endIndex - $startIndex);
+    }
+
+    /**
+     * Get the container height for virtual scrolling.
+     *
+     * @since 2.0.0
+     *
+     * @return string CSS height value.
+     */
+    public function getVirtualContainerHeight(): string
+    {
+        if ($this->virtualContainerHeight) {
+            return $this->virtualContainerHeight.'px';
+        }
+
+        return 'min(600px, 70vh)';
+    }
+
+    /**
+     * Get visible headers for export (excluding hidden columns).
+     *
+     * @since 2.0.0
+     *
+     * @return array Array of visible headers.
+     */
+    public function getExportHeaders(): array
+    {
+        return collect($this->headers)
+            ->filter(fn ($header) => ! $this->isHidden($header))
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Get the export filename with extension.
+     *
+     * @since 2.0.0
+     *
+     * @param  string  $format  The export format (csv, xlsx, pdf).
+     * @return string The filename with extension.
+     */
+    public function getExportFilename(string $format = 'csv'): string
+    {
+        $base = $this->exportFilename ?? 'table-export-'.date('Y-m-d');
+
+        return $base.'.'.$format;
+    }
+
+    /**
+     * Get export data as array for client-side export.
+     *
+     * Returns headers and rows formatted for CSV generation.
+     *
+     * @since 2.0.0
+     *
+     * @return array{headers: array, rows: array} Export data structure.
+     */
+    public function getExportData(): array
+    {
+        $visibleHeaders = $this->getExportHeaders();
+
+        // Extract header labels
+        $headerLabels = collect($visibleHeaders)
+            ->map(fn ($header) => $header['label'] ?? $header['key'])
+            ->all();
+
+        // Extract row data for visible columns only
+        $rowsData = collect($this->rows)
+            ->map(function ($row) use ($visibleHeaders) {
+                return collect($visibleHeaders)
+                    ->map(function ($header) use ($row) {
+                        $value = data_get($row, $header['key']);
+
+                        // Format the value if formatter exists
+                        if (isset($header['format'])) {
+                            $value = $this->format($row, $value, $header);
+                        }
+
+                        // Convert to string for export
+                        return is_array($value) || is_object($value)
+                            ? json_encode($value)
+                            : (string) $value;
+                    })
+                    ->all();
+            })
+            ->all();
+
+        return [
+            'headers' => $headerLabels,
+            'rows' => $rowsData,
+        ];
+    }
+
+    /**
+     * Check if export is enabled.
+     *
+     * @since 2.0.0
+     *
+     * @return bool True if export is enabled.
+     */
+    public function isExportEnabled(): bool
+    {
+        return $this->exportable;
+    }
+
+    /**
+     * Check if a specific export format is supported.
+     *
+     * @since 2.0.0
+     *
+     * @param  string  $format  The format to check.
+     * @return bool True if the format is supported.
+     */
+    public function supportsExportFormat(string $format): bool
+    {
+        return in_array($format, $this->exportFormats, true);
     }
 
     /**
