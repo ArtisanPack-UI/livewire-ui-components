@@ -126,6 +126,20 @@ php artisan artisanpack:generate-theme --primary=blue --secondary=slate --accent
 
 See the [Generating Color Themes](generating-themes) guide for more details.
 
+#### Glass Theme Presets
+
+ArtisanPack UI includes pre-built glassmorphism presets that provide ready-to-use glass effects:
+
+```blade
+<div class="glass-frosted-light">
+    <x-artisanpack-card>Content with glass effect</x-artisanpack-card>
+</div>
+```
+
+Available presets: `glass-frosted-light`, `glass-frosted-dark`, `glass-liquid-light`, `glass-liquid-dark`, `glass-minimal`, `glass-bold`.
+
+See the [Glass Theme Presets](glass-presets) guide for complete documentation.
+
 #### Customizing DaisyUI Theme Variables
 
 You can also directly modify the DaisyUI theme variables in your CSS:

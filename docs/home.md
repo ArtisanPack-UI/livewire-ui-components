@@ -85,6 +85,12 @@ ArtisanPack UI Livewire Components includes a wide range of components for vario
 
 For a complete list of components, see the [Components Overview](components).
 
+## Theming & Styling
+
+- [Generating Color Themes](generating-themes) - Create custom color themes
+- [Glass Theme Presets](glass-presets) - Pre-built glassmorphism styles
+- [Customization](customization) - Advanced styling and customization
+
 ## Resources
 
 - **Repository**: [GitLab Repository](https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components)
