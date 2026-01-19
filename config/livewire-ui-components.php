@@ -141,6 +141,40 @@ return [
 			'transparent-blur'    => null, // Default: 8px
 			'transparent-opacity' => null, // Default: 0.3
 		],
+
+		/*
+        |--------------------------------------------------------------------------
+        | Glass Theme Presets
+        |--------------------------------------------------------------------------
+        |
+        | Pre-built glass theme configurations for common use cases.
+        | These presets can be applied globally or per-component.
+        |
+        | Available presets:
+        | - glass-frosted-light: Light mode frosted glass theme
+        | - glass-frosted-dark: Dark mode frosted glass theme
+        | - glass-liquid-light: Light mode liquid glass theme
+        | - glass-liquid-dark: Dark mode liquid glass theme
+        | - glass-minimal: Subtle glass effects for understated designs
+        | - glass-bold: Strong glass effects for prominent UI elements
+        |
+        | @since 2.0.0
+        */
+		'presets' => [
+			// Whether to include glass presets in the generated theme CSS
+			'enabled' => true,
+
+			// Output path for standalone glass presets CSS file
+			'output_path' => resource_path( 'css/artisanpack-glass-presets.css' ),
+
+			// Default preset to apply globally (null for no default)
+			// Can be overridden per-component or per-container
+			'default' => null,
+
+			// List of presets to include (null or empty array includes all)
+			// Example: ['glass-frosted-light', 'glass-minimal', 'glass-bold']
+			'include' => null,
+		],
 	],
 
 	/*

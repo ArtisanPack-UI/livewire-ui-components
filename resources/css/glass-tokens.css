@@ -733,3 +733,390 @@
 .glass-tint-rose-800 { --glass-tint-color: #9f1239; }
 .glass-tint-rose-900 { --glass-tint-color: #881337; }
 .glass-tint-rose-950 { --glass-tint-color: #4c0519; }
+
+/**
+ * =========================================================================
+ * Glass Theme Presets
+ * =========================================================================
+ *
+ * Pre-built glass theme configurations for common use cases.
+ * Apply these classes to elements or containers to use preset glass styles.
+ *
+ * Available Presets:
+ * - .glass-frosted-light: Light mode frosted glass theme
+ * - .glass-frosted-dark: Dark mode frosted glass theme
+ * - .glass-liquid-light: Light mode liquid glass theme
+ * - .glass-liquid-dark: Dark mode liquid glass theme
+ * - .glass-minimal: Subtle glass effects
+ * - .glass-bold: Strong glass effects
+ *
+ * Usage:
+ * <div class="glass-frosted-light glass p-6 rounded-xl">
+ *     Content with frosted light preset
+ * </div>
+ *
+ * Presets can be applied:
+ * 1. Globally via :root by adding the class to the html element
+ * 2. Per-container by adding to a parent element
+ * 3. Per-component by adding directly to the element
+ *
+ * @since 2.0.0
+ */
+
+/* -------------------------------------------------------------------------
+ * glass-frosted-light
+ *
+ * Clean, professional frosted glass effect optimized for light backgrounds.
+ * Features high saturation and moderate blur for a premium feel.
+ * ------------------------------------------------------------------------- */
+.glass-frosted-light {
+	/* Base tokens */
+	--glass-blur: 14px;
+	--glass-opacity: 0.75;
+	--glass-border-width: 1px;
+	--glass-border-opacity: 0.25;
+	--glass-shadow-opacity: 0.08;
+
+	/* Tint tokens */
+	--glass-tint-color: transparent;
+	--glass-tint-opacity: 0.1;
+
+	/* Frosted variant (primary for this preset) */
+	--glass-frosted-blur: 18px;
+	--glass-frosted-opacity: 0.85;
+	--glass-frosted-saturation: 200%;
+
+	/* Liquid variant */
+	--glass-liquid-blur: 22px;
+	--glass-liquid-opacity: 0.65;
+	--glass-liquid-refraction: 0.4;
+	--glass-liquid-border-glow: 0.25;
+
+	/* Transparent variant */
+	--glass-transparent-blur: 10px;
+	--glass-transparent-opacity: 0.35;
+
+	/* Computed colors */
+	--glass-bg-color: rgba(255, 255, 255, 0.75);
+	--glass-border-color: rgba(255, 255, 255, 0.25);
+	--glass-shadow-color: rgba(0, 0, 0, 0.08);
+	--glass-frosted-bg-color: rgba(255, 255, 255, 0.85);
+	--glass-liquid-bg-color: rgba(255, 255, 255, 0.65);
+	--glass-liquid-border-glow-color: rgba(255, 255, 255, 0.25);
+	--glass-transparent-bg-color: rgba(255, 255, 255, 0.35);
+}
+
+/* -------------------------------------------------------------------------
+ * glass-frosted-dark
+ *
+ * Sophisticated frosted glass effect optimized for dark backgrounds.
+ * Features enhanced blur and border glow for visibility.
+ * ------------------------------------------------------------------------- */
+.glass-frosted-dark {
+	/* Base tokens */
+	--glass-blur: 16px;
+	--glass-opacity: 0.8;
+	--glass-border-width: 1px;
+	--glass-border-opacity: 0.3;
+	--glass-shadow-opacity: 0.2;
+
+	/* Tint tokens */
+	--glass-tint-color: transparent;
+	--glass-tint-opacity: 0.15;
+
+	/* Frosted variant (primary for this preset) */
+	--glass-frosted-blur: 22px;
+	--glass-frosted-opacity: 0.9;
+	--glass-frosted-saturation: 220%;
+
+	/* Liquid variant */
+	--glass-liquid-blur: 26px;
+	--glass-liquid-opacity: 0.7;
+	--glass-liquid-refraction: 0.5;
+	--glass-liquid-border-glow: 0.4;
+
+	/* Transparent variant */
+	--glass-transparent-blur: 14px;
+	--glass-transparent-opacity: 0.4;
+
+	/* Computed colors */
+	--glass-bg-color: rgba(20, 20, 25, 0.8);
+	--glass-border-color: rgba(255, 255, 255, 0.15);
+	--glass-shadow-color: rgba(0, 0, 0, 0.2);
+	--glass-frosted-bg-color: rgba(20, 20, 25, 0.9);
+	--glass-liquid-bg-color: rgba(20, 20, 25, 0.7);
+	--glass-liquid-border-glow-color: rgba(255, 255, 255, 0.2);
+	--glass-transparent-bg-color: rgba(20, 20, 25, 0.4);
+}
+
+/* -------------------------------------------------------------------------
+ * glass-liquid-light
+ *
+ * Premium liquid glass effect for light backgrounds with smooth,
+ * flowing visuals and enhanced refraction effects.
+ * ------------------------------------------------------------------------- */
+.glass-liquid-light {
+	/* Base tokens */
+	--glass-blur: 16px;
+	--glass-opacity: 0.6;
+	--glass-border-width: 1px;
+	--glass-border-opacity: 0.35;
+	--glass-shadow-opacity: 0.12;
+
+	/* Tint tokens */
+	--glass-tint-color: transparent;
+	--glass-tint-opacity: 0.12;
+
+	/* Frosted variant */
+	--glass-frosted-blur: 20px;
+	--glass-frosted-opacity: 0.7;
+	--glass-frosted-saturation: 170%;
+
+	/* Liquid variant (primary for this preset) */
+	--glass-liquid-blur: 28px;
+	--glass-liquid-opacity: 0.55;
+	--glass-liquid-refraction: 0.6;
+	--glass-liquid-border-glow: 0.35;
+
+	/* Transparent variant */
+	--glass-transparent-blur: 12px;
+	--glass-transparent-opacity: 0.25;
+
+	/* Computed colors */
+	--glass-bg-color: rgba(255, 255, 255, 0.6);
+	--glass-border-color: rgba(255, 255, 255, 0.35);
+	--glass-shadow-color: rgba(0, 0, 0, 0.12);
+	--glass-frosted-bg-color: rgba(255, 255, 255, 0.7);
+	--glass-liquid-bg-color: rgba(255, 255, 255, 0.55);
+	--glass-liquid-border-glow-color: rgba(255, 255, 255, 0.35);
+	--glass-transparent-bg-color: rgba(255, 255, 255, 0.25);
+}
+
+/* -------------------------------------------------------------------------
+ * glass-liquid-dark
+ *
+ * Premium liquid glass effect for dark backgrounds with enhanced
+ * glow effects and deeper transparency.
+ * ------------------------------------------------------------------------- */
+.glass-liquid-dark {
+	/* Base tokens */
+	--glass-blur: 18px;
+	--glass-opacity: 0.55;
+	--glass-border-width: 1px;
+	--glass-border-opacity: 0.4;
+	--glass-shadow-opacity: 0.25;
+
+	/* Tint tokens */
+	--glass-tint-color: transparent;
+	--glass-tint-opacity: 0.18;
+
+	/* Frosted variant */
+	--glass-frosted-blur: 22px;
+	--glass-frosted-opacity: 0.65;
+	--glass-frosted-saturation: 190%;
+
+	/* Liquid variant (primary for this preset) */
+	--glass-liquid-blur: 32px;
+	--glass-liquid-opacity: 0.5;
+	--glass-liquid-refraction: 0.65;
+	--glass-liquid-border-glow: 0.45;
+
+	/* Transparent variant */
+	--glass-transparent-blur: 16px;
+	--glass-transparent-opacity: 0.3;
+
+	/* Computed colors */
+	--glass-bg-color: rgba(15, 15, 20, 0.55);
+	--glass-border-color: rgba(255, 255, 255, 0.2);
+	--glass-shadow-color: rgba(0, 0, 0, 0.25);
+	--glass-frosted-bg-color: rgba(15, 15, 20, 0.65);
+	--glass-liquid-bg-color: rgba(15, 15, 20, 0.5);
+	--glass-liquid-border-glow-color: rgba(255, 255, 255, 0.25);
+	--glass-transparent-bg-color: rgba(15, 15, 20, 0.3);
+}
+
+/* -------------------------------------------------------------------------
+ * glass-minimal
+ *
+ * Subtle, understated glass effect for designs that need glass aesthetics
+ * without overwhelming visual presence. Works in both light and dark modes.
+ * ------------------------------------------------------------------------- */
+.glass-minimal {
+	/* Base tokens */
+	--glass-blur: 8px;
+	--glass-opacity: 0.5;
+	--glass-border-width: 1px;
+	--glass-border-opacity: 0.1;
+	--glass-shadow-opacity: 0.05;
+
+	/* Tint tokens */
+	--glass-tint-color: transparent;
+	--glass-tint-opacity: 0.05;
+
+	/* Frosted variant */
+	--glass-frosted-blur: 10px;
+	--glass-frosted-opacity: 0.55;
+	--glass-frosted-saturation: 120%;
+
+	/* Liquid variant */
+	--glass-liquid-blur: 14px;
+	--glass-liquid-opacity: 0.4;
+	--glass-liquid-refraction: 0.3;
+	--glass-liquid-border-glow: 0.15;
+
+	/* Transparent variant */
+	--glass-transparent-blur: 6px;
+	--glass-transparent-opacity: 0.2;
+
+	/* Computed colors (light mode) */
+	--glass-bg-color: rgba(255, 255, 255, 0.5);
+	--glass-border-color: rgba(255, 255, 255, 0.1);
+	--glass-shadow-color: rgba(0, 0, 0, 0.05);
+	--glass-frosted-bg-color: rgba(255, 255, 255, 0.55);
+	--glass-liquid-bg-color: rgba(255, 255, 255, 0.4);
+	--glass-liquid-border-glow-color: rgba(255, 255, 255, 0.15);
+	--glass-transparent-bg-color: rgba(255, 255, 255, 0.2);
+}
+
+/* glass-minimal dark mode overrides */
+[data-theme="dark"] .glass-minimal {
+	--glass-opacity: 0.55;
+	--glass-border-opacity: 0.12;
+	--glass-shadow-opacity: 0.1;
+	--glass-tint-opacity: 0.08;
+
+	--glass-frosted-opacity: 0.6;
+	--glass-frosted-blur: 12px;
+
+	--glass-liquid-opacity: 0.45;
+	--glass-liquid-border-glow: 0.2;
+
+	--glass-transparent-opacity: 0.25;
+	--glass-transparent-blur: 8px;
+
+	/* Computed colors (dark mode) */
+	--glass-bg-color: rgba(30, 30, 35, 0.55);
+	--glass-border-color: rgba(255, 255, 255, 0.08);
+	--glass-shadow-color: rgba(0, 0, 0, 0.1);
+	--glass-frosted-bg-color: rgba(30, 30, 35, 0.6);
+	--glass-liquid-bg-color: rgba(30, 30, 35, 0.45);
+	--glass-liquid-border-glow-color: rgba(255, 255, 255, 0.12);
+	--glass-transparent-bg-color: rgba(30, 30, 35, 0.25);
+}
+
+/* -------------------------------------------------------------------------
+ * glass-bold
+ *
+ * Strong, prominent glass effect for elements that need to stand out
+ * with dramatic visual impact. Works in both light and dark modes.
+ * ------------------------------------------------------------------------- */
+.glass-bold {
+	/* Base tokens */
+	--glass-blur: 20px;
+	--glass-opacity: 0.85;
+	--glass-border-width: 2px;
+	--glass-border-opacity: 0.4;
+	--glass-shadow-opacity: 0.2;
+
+	/* Tint tokens */
+	--glass-tint-color: transparent;
+	--glass-tint-opacity: 0.25;
+
+	/* Frosted variant */
+	--glass-frosted-blur: 26px;
+	--glass-frosted-opacity: 0.9;
+	--glass-frosted-saturation: 250%;
+
+	/* Liquid variant */
+	--glass-liquid-blur: 36px;
+	--glass-liquid-opacity: 0.75;
+	--glass-liquid-refraction: 0.7;
+	--glass-liquid-border-glow: 0.5;
+
+	/* Transparent variant */
+	--glass-transparent-blur: 16px;
+	--glass-transparent-opacity: 0.45;
+
+	/* Computed colors (light mode) */
+	--glass-bg-color: rgba(255, 255, 255, 0.85);
+	--glass-border-color: rgba(255, 255, 255, 0.4);
+	--glass-shadow-color: rgba(0, 0, 0, 0.2);
+	--glass-frosted-bg-color: rgba(255, 255, 255, 0.9);
+	--glass-liquid-bg-color: rgba(255, 255, 255, 0.75);
+	--glass-liquid-border-glow-color: rgba(255, 255, 255, 0.5);
+	--glass-transparent-bg-color: rgba(255, 255, 255, 0.45);
+}
+
+/* glass-bold dark mode overrides */
+[data-theme="dark"] .glass-bold {
+	--glass-opacity: 0.9;
+	--glass-border-opacity: 0.45;
+	--glass-shadow-opacity: 0.3;
+	--glass-tint-opacity: 0.3;
+
+	--glass-frosted-opacity: 0.92;
+	--glass-frosted-blur: 30px;
+	--glass-frosted-saturation: 280%;
+
+	--glass-liquid-opacity: 0.8;
+	--glass-liquid-blur: 40px;
+	--glass-liquid-border-glow: 0.55;
+
+	--glass-transparent-opacity: 0.5;
+	--glass-transparent-blur: 20px;
+
+	/* Computed colors (dark mode) */
+	--glass-bg-color: rgba(10, 10, 15, 0.9);
+	--glass-border-color: rgba(255, 255, 255, 0.25);
+	--glass-shadow-color: rgba(0, 0, 0, 0.3);
+	--glass-frosted-bg-color: rgba(10, 10, 15, 0.92);
+	--glass-liquid-bg-color: rgba(10, 10, 15, 0.8);
+	--glass-liquid-border-glow-color: rgba(255, 255, 255, 0.3);
+	--glass-transparent-bg-color: rgba(10, 10, 15, 0.5);
+}
+
+/**
+ * =========================================================================
+ * Preset Utility Classes
+ * =========================================================================
+ *
+ * Additional utility classes for working with glass presets.
+ * These can be combined with preset classes for enhanced customization.
+ */
+
+/* Apply glass effect with current preset's tokens */
+.glass-preset {
+	background: var(--glass-bg-color);
+	backdrop-filter: blur(var(--glass-blur));
+	-webkit-backdrop-filter: blur(var(--glass-blur));
+	border: var(--glass-border-width) solid var(--glass-border-color);
+	box-shadow: 0 4px 6px -1px var(--glass-shadow-color);
+}
+
+/* Apply frosted glass with current preset's tokens */
+.glass-preset-frosted {
+	background: var(--glass-frosted-bg-color);
+	backdrop-filter: blur(var(--glass-frosted-blur)) saturate(var(--glass-frosted-saturation));
+	-webkit-backdrop-filter: blur(var(--glass-frosted-blur)) saturate(var(--glass-frosted-saturation));
+	border: var(--glass-border-width) solid var(--glass-border-color);
+	box-shadow: 0 4px 6px -1px var(--glass-shadow-color);
+}
+
+/* Apply liquid glass with current preset's tokens */
+.glass-preset-liquid {
+	background: var(--glass-liquid-bg-color);
+	backdrop-filter: blur(var(--glass-liquid-blur));
+	-webkit-backdrop-filter: blur(var(--glass-liquid-blur));
+	border: var(--glass-border-width) solid var(--glass-liquid-border-glow-color);
+	box-shadow:
+		0 4px 6px -1px var(--glass-shadow-color),
+		inset 0 1px 0 0 var(--glass-liquid-border-glow-color);
+}
+
+/* Apply transparent glass with current preset's tokens */
+.glass-preset-transparent {
+	background: var(--glass-transparent-bg-color);
+	backdrop-filter: blur(var(--glass-transparent-blur));
+	-webkit-backdrop-filter: blur(var(--glass-transparent-blur));
+	border: var(--glass-border-width) solid var(--glass-border-color);
+}

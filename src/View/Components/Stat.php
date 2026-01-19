@@ -67,6 +67,10 @@ class Stat extends Component
         public ?float $change = null,
         public ?string $changeLabel = null,
 
+        // Animation props
+        public bool $animate = true,
+        public int $animateDuration = 1000,
+
     ) {
         // Use a stable identifier: provided id or a unique id
         // Avoid serialize($this) as it includes mutable state
@@ -317,6 +321,114 @@ class Stat extends Component
         return $this->change >= 0
             ? 'o-arrow-trending-up'
             : 'o-arrow-trending-down';
+    }
+
+    /**
+     * Extract the numeric value from the value string for animation.
+     *
+     * Parses values like "$1,234.56" -> 1234.56, "50%" -> 50, "1.5K" -> 1500.
+     *
+     * @since 2.0.0
+     *
+     * @return float|null The numeric value, or null if no numeric value found.
+     */
+    public function numericValue(): ?float
+    {
+        if (null === $this->value) {
+            return null;
+        }
+
+        $value = $this->value;
+
+        // Handle K/M/B suffixes (case insensitive)
+        $multiplier = 1;
+        if (preg_match('/(-?\s*[0-9.,\s]+)\s*([KMB])\s*$/i', $value, $matches)) {
+            $value      = $matches[1];
+            $multiplier = match (strtoupper($matches[2])) {
+                'K'     => 1000,
+                'M'     => 1000000,
+                'B'     => 1000000000,
+                default => 1,
+            };
+        }
+
+        // Remove all non-numeric characters except dots and minus
+        $cleaned = preg_replace('/[^0-9.\-]/', '', $value);
+
+        // Handle multiple dots (keep only first for decimal)
+        if (substr_count($cleaned, '.') > 1) {
+            $parts   = explode('.', $cleaned);
+            $cleaned = array_shift($parts).'.'.implode('', $parts);
+        }
+
+        if ('' === $cleaned || '-' === $cleaned) {
+            return null;
+        }
+
+        return (float) $cleaned * $multiplier;
+    }
+
+    /**
+     * Get the format pattern for the value (prefix, suffix, decimals).
+     *
+     * Analyzes the value string to extract formatting information.
+     *
+     * @since 2.0.0
+     *
+     * @return array{prefix: string, suffix: string, decimals: int, useCommas: bool} The format pattern.
+     */
+    public function valueFormat(): array
+    {
+        if (null === $this->value) {
+            return [
+                'prefix'    => '',
+                'suffix'    => '',
+                'decimals'  => 0,
+                'useCommas' => false,
+            ];
+        }
+
+        $value = $this->value;
+
+        // Extract prefix (currency symbols, etc.)
+        $prefix = '';
+        if (preg_match('/^([^\d\-\s]+)/', $value, $matches)) {
+            $prefix = $matches[1];
+        }
+
+        // Extract suffix (%, K, M, B, units, etc.)
+        $suffix = '';
+        if (preg_match('/([^\d.,\s]+)\s*$/', $value, $matches)) {
+            $suffix = $matches[1];
+        }
+
+        // Count decimal places
+        $decimals = 0;
+        if (preg_match('/\.(\d+)/', $value, $matches)) {
+            $decimals = strlen($matches[1]);
+        }
+
+        // Check if commas are used for thousands separator
+        $useCommas = str_contains($value, ',');
+
+        return [
+            'prefix'    => $prefix,
+            'suffix'    => $suffix,
+            'decimals'  => $decimals,
+            'useCommas' => $useCommas,
+        ];
+    }
+
+    /**
+     * Check if the value can be animated (is numeric).
+     *
+     * @since 2.0.0
+     *
+     * @return bool True if the value contains a parseable number.
+     */
+    public function canAnimate(): bool
+    {
+        return $this->animate && null !== $this->numericValue();
     }
 
     public function render(): View|Closure|string

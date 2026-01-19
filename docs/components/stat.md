@@ -247,6 +247,110 @@ The Stat component now supports:
 />
 ```
 
+## Animated Value Transitions
+
+The Stat component supports smooth number counting animations when values change. This is especially useful for dashboard widgets that update in real-time via Livewire.
+
+### Basic Animation
+
+Animation is enabled by default for numeric values:
+
+```php
+{{-- Values automatically animate when updated via Livewire --}}
+<x-artisanpack-stat
+    title="Active Users"
+    :value="$activeUsers"
+    icon="heroicon-o-users"
+/>
+```
+
+### Disabling Animation
+
+You can disable animation when needed:
+
+```php
+<x-artisanpack-stat
+    title="Status Code"
+    value="200"
+    :animate="false"
+/>
+```
+
+### Custom Animation Duration
+
+Adjust the animation duration (in milliseconds):
+
+```php
+{{-- Faster animation (500ms) --}}
+<x-artisanpack-stat
+    title="Quick Counter"
+    :value="$count"
+    :animate-duration="500"
+/>
+
+{{-- Slower animation (2000ms) --}}
+<x-artisanpack-stat
+    title="Gradual Update"
+    :value="$total"
+    :animate-duration="2000"
+/>
+```
+
+### Supported Value Formats
+
+The animation system automatically handles various numeric formats:
+
+```php
+{{-- Currency with commas and decimals --}}
+<x-artisanpack-stat title="Revenue" value="$1,234.56" />
+
+{{-- Percentages --}}
+<x-artisanpack-stat title="Conversion" value="45.5%" />
+
+{{-- Abbreviated numbers --}}
+<x-artisanpack-stat title="Users" value="2.5K" />
+<x-artisanpack-stat title="Views" value="1.2M" />
+<x-artisanpack-stat title="Value" value="3B" />
+
+{{-- Plain numbers with thousands separators --}}
+<x-artisanpack-stat title="Total" value="1,234,567" />
+
+{{-- Euro currency --}}
+<x-artisanpack-stat title="Price" value="€2.500,00" />
+```
+
+### Non-Numeric Values
+
+Values that cannot be parsed as numbers will display without animation:
+
+```php
+{{-- These will not animate (displayed as-is) --}}
+<x-artisanpack-stat title="Status" value="Active" />
+<x-artisanpack-stat title="Rating" value="★★★★☆" />
+```
+
+### Reduced Motion Support
+
+The animation automatically respects the user's `prefers-reduced-motion` preference. When reduced motion is enabled, values will update instantly without counting animation.
+
+### Animation with Other Features
+
+Animation works seamlessly with other Stat features:
+
+```php
+{{-- Animation with glass effect, sparkline, and trend indicator --}}
+<x-artisanpack-stat
+    title="Monthly Revenue"
+    :value="$revenue"
+    glass="frosted"
+    glass-tint="emerald-500"
+    :change="$revenueChange"
+    change-label="vs last month"
+    :sparkline-data="$sparklineData"
+    :animate-duration="1200"
+/>
+```
+
 ## Props
 
 | Prop | Type | Default | Description |
@@ -261,11 +365,14 @@ The Stat component now supports:
 | `tooltipLeft` | string | `null` | Tooltip text positioned to the left |
 | `tooltipRight` | string | `null` | Tooltip text positioned to the right |
 | `tooltipBottom` | string | `null` | Tooltip text positioned at the bottom |
-| **New Props** | | | |
+| **Size & Position Props** | | | |
 | `size` | string | `'md'` | Component size: `xs`, `sm`, `md`, `lg`, `xl` |
 | `iconPosition` | string | `'left'` | Icon position: `left`, `right`, `top`, `bottom` |
 | `titlePosition` | string | `'top'` | Title position relative to value: `top`, `bottom` |
 | `contentAlign` | string | `'left'` | Content alignment: `left`, `center`, `right` |
+| **Animation Props** | | | |
+| `animate` | bool | `true` | Enable/disable value animation |
+| `animateDuration` | int | `1000` | Animation duration in milliseconds |
 | `class` | string | `null` | Additional CSS classes to apply to the stat container |
 
 ## Behavior

@@ -707,4 +707,258 @@ class StatComponentTest extends ComponentTestCase
 
         $this->assertEquals('+12.6%', $component->formattedChange());
     }
+
+    // Animation Tests
+
+    public function test_stat_animate_props_exist(): void
+    {
+        $component = $this->createComponent([
+            'animate'         => true,
+            'animateDuration' => 1500,
+        ]);
+
+        $this->assertTrue($component->animate);
+        $this->assertEquals(1500, $component->animateDuration);
+    }
+
+    public function test_stat_animate_default_values(): void
+    {
+        $component = $this->createComponent();
+
+        $this->assertTrue($component->animate);
+        $this->assertEquals(1000, $component->animateDuration);
+    }
+
+    public function test_stat_animate_can_be_disabled(): void
+    {
+        $component = $this->createComponent([
+            'animate' => false,
+        ]);
+
+        $this->assertFalse($component->animate);
+    }
+
+    public function test_stat_numeric_value_with_currency(): void
+    {
+        $component = $this->createComponent([
+            'value' => '$1,234.56',
+        ]);
+
+        $this->assertEquals(1234.56, $component->numericValue());
+    }
+
+    public function test_stat_numeric_value_with_percentage(): void
+    {
+        $component = $this->createComponent([
+            'value' => '45.5%',
+        ]);
+
+        $this->assertEquals(45.5, $component->numericValue());
+    }
+
+    public function test_stat_numeric_value_with_k_suffix(): void
+    {
+        $component = $this->createComponent([
+            'value' => '2.5K',
+        ]);
+
+        $this->assertEquals(2500.0, $component->numericValue());
+    }
+
+    public function test_stat_numeric_value_with_m_suffix(): void
+    {
+        $component = $this->createComponent([
+            'value' => '1.2M',
+        ]);
+
+        $this->assertEquals(1200000.0, $component->numericValue());
+    }
+
+    public function test_stat_numeric_value_with_b_suffix(): void
+    {
+        $component = $this->createComponent([
+            'value' => '3B',
+        ]);
+
+        $this->assertEquals(3000000000.0, $component->numericValue());
+    }
+
+    public function test_stat_numeric_value_plain_number(): void
+    {
+        $component = $this->createComponent([
+            'value' => '12345',
+        ]);
+
+        $this->assertEquals(12345.0, $component->numericValue());
+    }
+
+    public function test_stat_numeric_value_negative(): void
+    {
+        $component = $this->createComponent([
+            'value' => '-$500',
+        ]);
+
+        $this->assertEquals(-500.0, $component->numericValue());
+    }
+
+    public function test_stat_numeric_value_with_null(): void
+    {
+        $component = $this->createComponent();
+
+        $this->assertNull($component->numericValue());
+    }
+
+    public function test_stat_numeric_value_with_non_numeric(): void
+    {
+        $component = $this->createComponent([
+            'value' => 'Active',
+        ]);
+
+        $this->assertNull($component->numericValue());
+    }
+
+    public function test_stat_value_format_with_currency(): void
+    {
+        $component = $this->createComponent([
+            'value' => '$1,234.56',
+        ]);
+
+        $format = $component->valueFormat();
+
+        $this->assertEquals('$', $format['prefix']);
+        $this->assertEquals('', $format['suffix']);
+        $this->assertEquals(2, $format['decimals']);
+        $this->assertTrue($format['useCommas']);
+    }
+
+    public function test_stat_value_format_with_percentage(): void
+    {
+        $component = $this->createComponent([
+            'value' => '45.5%',
+        ]);
+
+        $format = $component->valueFormat();
+
+        $this->assertEquals('', $format['prefix']);
+        $this->assertEquals('%', $format['suffix']);
+        $this->assertEquals(1, $format['decimals']);
+        $this->assertFalse($format['useCommas']);
+    }
+
+    public function test_stat_value_format_with_k_suffix(): void
+    {
+        $component = $this->createComponent([
+            'value' => '2.5K',
+        ]);
+
+        $format = $component->valueFormat();
+
+        $this->assertEquals('', $format['prefix']);
+        $this->assertEquals('K', $format['suffix']);
+        $this->assertEquals(1, $format['decimals']);
+    }
+
+    public function test_stat_value_format_without_value(): void
+    {
+        $component = $this->createComponent();
+
+        $format = $component->valueFormat();
+
+        $this->assertEquals('', $format['prefix']);
+        $this->assertEquals('', $format['suffix']);
+        $this->assertEquals(0, $format['decimals']);
+        $this->assertFalse($format['useCommas']);
+    }
+
+    public function test_stat_can_animate_with_numeric_value(): void
+    {
+        $component = $this->createComponent([
+            'value'   => '$1,234',
+            'animate' => true,
+        ]);
+
+        $this->assertTrue($component->canAnimate());
+    }
+
+    public function test_stat_cannot_animate_when_disabled(): void
+    {
+        $component = $this->createComponent([
+            'value'   => '$1,234',
+            'animate' => false,
+        ]);
+
+        $this->assertFalse($component->canAnimate());
+    }
+
+    public function test_stat_cannot_animate_with_non_numeric_value(): void
+    {
+        $component = $this->createComponent([
+            'value'   => 'Active',
+            'animate' => true,
+        ]);
+
+        $this->assertFalse($component->canAnimate());
+    }
+
+    public function test_stat_cannot_animate_without_value(): void
+    {
+        $component = $this->createComponent([
+            'animate' => true,
+        ]);
+
+        $this->assertFalse($component->canAnimate());
+    }
+
+    public function test_stat_animation_with_glass_variant(): void
+    {
+        $component = $this->createComponent([
+            'glass'           => 'frosted',
+            'glassTint'       => 'emerald-500',
+            'value'           => '$12,345',
+            'animate'         => true,
+            'animateDuration' => 1200,
+        ]);
+
+        $this->assertEquals('frosted', $component->glass);
+        $this->assertTrue($component->canAnimate());
+        $this->assertEquals(12345.0, $component->numericValue());
+        $this->assertEquals(1200, $component->animateDuration);
+    }
+
+    public function test_stat_animation_with_sparkline_and_change(): void
+    {
+        $component = $this->createComponent([
+            'value'           => '1,234',
+            'change'          => 15.5,
+            'sparklineData'   => [100, 120, 115, 140],
+            'animate'         => true,
+            'animateDuration' => 800,
+        ]);
+
+        $this->assertTrue($component->canAnimate());
+        $this->assertTrue($component->hasChange());
+        $this->assertTrue($component->hasSparkline());
+        $this->assertEquals(1234.0, $component->numericValue());
+    }
+
+    public function test_stat_value_format_euro_currency(): void
+    {
+        $component = $this->createComponent([
+            'value' => '€2.500,00',
+        ]);
+
+        $format = $component->valueFormat();
+
+        $this->assertEquals('€', $format['prefix']);
+        $this->assertTrue($format['useCommas']);
+    }
+
+    public function test_stat_numeric_value_with_spaces(): void
+    {
+        $component = $this->createComponent([
+            'value' => '1 234 567',
+        ]);
+
+        $this->assertEquals(1234567.0, $component->numericValue());
+    }
 }
