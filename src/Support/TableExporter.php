@@ -147,6 +147,108 @@ class TableExporter
     }
 
     /**
+     * Normalize headers for export.
+     *
+     * Handles both flat arrays (e.g., ['ID', 'Name']) and Table component format
+     * (e.g., [['key' => 'id', 'label' => 'ID'], ...]).
+     *
+     * @since 2.0.0
+     *
+     * @return array Flat array of header labels.
+     */
+    protected function normalizeHeaders(): array
+    {
+        if ( empty( $this->headers ) ) {
+            return [];
+        }
+
+        // Check if headers are in Table component format (array of arrays with 'label' key)
+        $firstHeader = reset( $this->headers );
+
+        if ( is_array( $firstHeader ) && isset( $firstHeader['label'] ) ) {
+            return array_map( fn ( $header ) => $header['label'] ?? '', $this->headers );
+        }
+
+        // Already flat array of strings
+        return $this->headers;
+    }
+
+    /**
+     * Get header keys for mapping row data.
+     *
+     * @since 2.0.0
+     *
+     * @return array Array of header keys.
+     */
+    protected function getHeaderKeys(): array
+    {
+        if ( empty( $this->headers ) ) {
+            return [];
+        }
+
+        // Check if headers are in Table component format
+        $firstHeader = reset( $this->headers );
+
+        if ( is_array( $firstHeader ) && isset( $firstHeader['key'] ) ) {
+            return array_map( fn ( $header ) => $header['key'] ?? '', $this->headers );
+        }
+
+        // For flat array headers, use them as keys
+        return $this->headers;
+    }
+
+    /**
+     * Normalize rows for export.
+     *
+     * Handles both flat arrays and associative arrays (e.g., ['id' => 1, 'name' => 'John']).
+     * Uses header keys to ensure correct column ordering.
+     *
+     * @since 2.0.0
+     *
+     * @return array Array of flat row arrays.
+     */
+    protected function normalizeRows(): array
+    {
+        if ( empty( $this->rows ) ) {
+            return [];
+        }
+
+        $keys = $this->getHeaderKeys();
+
+        return array_map( function ( $row ) use ( $keys ) {
+            // If row is already a flat indexed array, return as-is
+            if ( ! $this->isAssociativeArray( $row ) ) {
+                return array_values( $row );
+            }
+
+            // Map associative array to ordered values based on header keys
+            if ( ! empty( $keys ) ) {
+                return array_map( fn ( $key ) => $row[ $key ] ?? '', $keys );
+            }
+
+            // Fallback: just get values
+            return array_values( $row );
+        }, $this->rows );
+    }
+
+    /**
+     * Check if an array is associative.
+     *
+     * @since 2.0.0
+     *
+     * @param  array  $array  The array to check.
+     * @return bool True if associative, false if indexed.
+     */
+    protected function isAssociativeArray(array $array): bool
+    {
+        if ( empty( $array ) ) {
+            return false;
+        }
+
+        return array_keys( $array ) !== range( 0, count( $array ) - 1 );
+    }
+
+    /**
      * Set the filename.
      *
      * @since 2.0.0
@@ -409,29 +511,31 @@ class TableExporter
      */
     public function toCsv(): StreamedResponse
     {
-        $filename = $this->sanitizeFilename($this->filename.'.csv');
-        $headers = $this->headers;
-        $rows = $this->rows;
+        $filename = $this->sanitizeFilename( $this->filename . '.csv' );
+        $headers  = $this->normalizeHeaders();
+        $rows     = $this->normalizeRows();
 
-        return response()->streamDownload(function () use ($headers, $rows): void {
-            $handle = fopen('php://output', 'w');
+        return response()->streamDownload( function () use ( $headers, $rows ): void {
+            $handle = fopen( 'php://output', 'w' );
 
             // Add BOM for Excel UTF-8 compatibility
-            fwrite($handle, "\xEF\xBB\xBF");
+            fwrite( $handle, "\xEF\xBB\xBF" );
 
             // Write headers
-            fputcsv($handle, $headers);
-
-            // Write rows
-            foreach ($rows as $row) {
-                fputcsv($handle, $row);
+            if ( ! empty( $headers ) ) {
+                fputcsv( $handle, $headers );
             }
 
-            fclose($handle);
+            // Write rows
+            foreach ( $rows as $row ) {
+                fputcsv( $handle, $row );
+            }
+
+            fclose( $handle );
         }, $filename, [
             'Content-Type'        => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => $this->buildContentDisposition($filename),
-        ]);
+            'Content-Disposition' => $this->buildContentDisposition( $filename ),
+        ] );
     }
 
     /**
@@ -447,15 +551,15 @@ class TableExporter
      */
     public function toXlsx(): StreamedResponse
     {
-        if (! self::hasPhpSpreadsheet()) {
+        if ( ! self::hasPhpSpreadsheet() ) {
             throw new \RuntimeException(
                 'PhpSpreadsheet is required for XLSX export. Install it with: composer require phpoffice/phpspreadsheet'
             );
         }
 
-        $filename = $this->sanitizeFilename($this->filename.'.xlsx');
-        $headers = $this->headers;
-        $rows = $this->rows;
+        $filename = $this->sanitizeFilename( $this->filename . '.xlsx' );
+        $headers  = $this->normalizeHeaders();
+        $rows     = $this->normalizeRows();
 
         return response()->streamDownload(function () use ($headers, $rows): void {
             $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -467,14 +571,14 @@ class TableExporter
             // Write headers (row 1)
             $columnIndex = 1;
             foreach ($headers as $header) {
-                $cell = $sheet->getCellByColumnAndRow($columnIndex, 1);
-                $cell->setValue($header);
+                $cellRef = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columnIndex) . '1';
+                $sheet->getCell($cellRef)->setValue($header);
 
                 // Make headers bold
-                $sheet->getStyleByColumnAndRow($columnIndex, 1)->getFont()->setBold(true);
+                $sheet->getStyle($cellRef)->getFont()->setBold(true);
 
                 // Set background color for headers
-                $sheet->getStyleByColumnAndRow($columnIndex, 1)
+                $sheet->getStyle($cellRef)
                     ->getFill()
                     ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                     ->getStartColor()
@@ -488,7 +592,8 @@ class TableExporter
             foreach ($rows as $row) {
                 $columnIndex = 1;
                 foreach ($row as $value) {
-                    $sheet->getCellByColumnAndRow($columnIndex, $rowIndex)->setValue($value);
+                    $cellRef = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex;
+                    $sheet->getCell($cellRef)->setValue($value);
                     $columnIndex++;
                 }
                 $rowIndex++;
@@ -563,11 +668,11 @@ class TableExporter
      */
     protected function generatePdfHtml(): string
     {
-        $title = $this->pdfTitle ?? $this->filename;
-        $header = $this->pdfHeader;
-        $footer = $this->pdfFooter;
-        $headers = $this->headers;
-        $rows = $this->rows;
+        $title   = $this->pdfTitle ?? $this->filename;
+        $header  = $this->pdfHeader;
+        $footer  = $this->pdfFooter;
+        $headers = $this->normalizeHeaders();
+        $rows    = $this->normalizeRows();
 
         $html = '<!DOCTYPE html>
 <html>

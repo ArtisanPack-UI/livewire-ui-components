@@ -17,6 +17,10 @@ Migration guides provide step-by-step instructions for updating your code when b
 
 ## Available Migration Guides
 
+### Version Upgrades
+
+- [**Upgrading from v1.x to v2.0**](v1-to-v2) - Guide for upgrading to v2.0, including new dashboard components, table export, and streaming content (no breaking changes)
+
 ### Livewire 4 Features
 
 - [**Livewire 4 Features (v2.0)**](livewire-4-features) - Guide for using new Livewire 4-specific features including `wire:intersect`, `wire:sort`, and `data-loading` CSS variants

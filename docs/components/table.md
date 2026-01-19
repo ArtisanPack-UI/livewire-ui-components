@@ -709,6 +709,207 @@ Infinite scroll works alongside other table features:
 </x-artisanpack-table>
 ```
 
+### Data Export (v2.0+)
+
+The Table component supports exporting data to CSV, Excel (XLSX), and PDF formats. Export can be handled client-side (CSV) or server-side (XLSX, PDF) using the `WithTableExport` trait.
+
+#### Basic Export
+
+Enable export functionality with the `exportable` prop:
+
+```php
+<x-artisanpack-table
+    :headers="$headers"
+    :rows="$users"
+    exportable />
+```
+
+This will display an export button that downloads the table data as a CSV file.
+
+#### Multiple Export Formats
+
+Specify which export formats to allow using the `export-formats` prop:
+
+```php
+<x-artisanpack-table
+    :headers="$headers"
+    :rows="$users"
+    exportable
+    :export-formats="['csv', 'xlsx', 'pdf']" />
+```
+
+When multiple formats are enabled, a dropdown menu appears with all available options.
+
+**Note:** XLSX export requires `phpoffice/phpspreadsheet` to be installed. PDF export requires `barryvdh/laravel-dompdf`. If these packages are not installed, those export options will be automatically hidden.
+
+#### Custom Export Filename
+
+Set a custom filename for the exported file:
+
+```php
+<x-artisanpack-table
+    :headers="$headers"
+    :rows="$users"
+    exportable
+    export-filename="users-report-{{ date('Y-m-d') }}" />
+```
+
+#### Server-Side Export with WithTableExport Trait
+
+For XLSX and PDF exports, you need to use the `WithTableExport` trait in your Livewire component. This handles the server-side generation of these file formats.
+
+```php
+<?php
+
+use ArtisanPack\LivewireUiComponents\Traits\WithTableExport;
+use Livewire\Volt\Component;
+
+new class extends Component {
+    use WithTableExport;
+
+    public function with(): array
+    {
+        $headers = [
+            ['key' => 'id', 'label' => '#'],
+            ['key' => 'name', 'label' => 'Name'],
+            ['key' => 'email', 'label' => 'Email'],
+            ['key' => 'role', 'label' => 'Role'],
+        ];
+
+        $users = User::all()->toArray();
+
+        return [
+            'headers' => $headers,
+            'users' => $users,
+        ];
+    }
+
+    /**
+     * Required: Provide export data for the table.
+     */
+    public function getTableExportData(string $tableId = 'default'): array
+    {
+        return [
+            'headers' => [
+                ['key' => 'id', 'label' => '#'],
+                ['key' => 'name', 'label' => 'Name'],
+                ['key' => 'email', 'label' => 'Email'],
+                ['key' => 'role', 'label' => 'Role'],
+            ],
+            'rows' => User::all()->toArray(),
+            'filename' => 'users-export-' . date('Y-m-d'),
+        ];
+    }
+}; ?>
+
+<x-artisanpack-table
+    :headers="$headers"
+    :rows="$users"
+    exportable
+    :export-formats="['csv', 'xlsx', 'pdf']" />
+```
+
+#### Multiple Tables with Export
+
+When you have multiple exportable tables on the same page, use the `id` prop to distinguish them:
+
+```php
+<?php
+
+use ArtisanPack\LivewireUiComponents\Traits\WithTableExport;
+use Livewire\Volt\Component;
+
+new class extends Component {
+    use WithTableExport;
+
+    public function getTableExportData(string $tableId = 'default'): array
+    {
+        return match($tableId) {
+            'users-table' => [
+                'headers' => $this->userHeaders,
+                'rows' => User::all()->toArray(),
+                'filename' => 'users-export',
+            ],
+            'orders-table' => [
+                'headers' => $this->orderHeaders,
+                'rows' => Order::all()->toArray(),
+                'filename' => 'orders-export',
+            ],
+            default => ['headers' => [], 'rows' => []],
+        };
+    }
+}; ?>
+
+<x-artisanpack-table
+    id="users-table"
+    :headers="$userHeaders"
+    :rows="$users"
+    exportable
+    :export-formats="['csv', 'xlsx']" />
+
+<x-artisanpack-table
+    id="orders-table"
+    :headers="$orderHeaders"
+    :rows="$orders"
+    exportable
+    :export-formats="['csv', 'pdf']" />
+```
+
+#### Export with Formatted Data
+
+The exporter respects your header configuration, including custom formatting:
+
+```php
+<?php
+$headers = [
+    ['key' => 'id', 'label' => '#'],
+    ['key' => 'name', 'label' => 'Full Name'],
+    [
+        'key' => 'created_at',
+        'label' => 'Created',
+        'format' => ['date', 'M d, Y']
+    ],
+    [
+        'key' => 'price',
+        'label' => 'Price',
+        'format' => ['currency', '2', '$']
+    ],
+];
+?>
+
+<x-artisanpack-table
+    :headers="$headers"
+    :rows="$products"
+    exportable />
+```
+
+#### Hidden Columns in Export
+
+Columns marked as `hidden` in the headers will be excluded from exports:
+
+```php
+<?php
+$headers = [
+    ['key' => 'id', 'label' => '#', 'hidden' => true], // Not exported
+    ['key' => 'name', 'label' => 'Name'],
+    ['key' => 'email', 'label' => 'Email'],
+    ['key' => 'internal_code', 'label' => 'Code', 'hidden' => true], // Not exported
+];
+?>
+```
+
+#### Installing Export Dependencies
+
+For full export functionality, install the optional dependencies:
+
+```bash
+# For Excel (XLSX) export
+composer require phpoffice/phpspreadsheet
+
+# For PDF export
+composer require barryvdh/laravel-dompdf
+```
+
 ## Props
 
 | Prop | Type | Default | Description |
@@ -744,6 +945,9 @@ Infinite scroll works alongside other table features:
 | `infinite-scroll-modifier` | string\|null | `null` | Modifier for wire:intersect (`.once`, `.half`, `.full`) |
 | `infinite-scroll-text` | string | `'Scroll for more'` | Text to display while loading more items |
 | `has-more-pages` | bool | `true` | Whether there are more pages to load |
+| `exportable` | bool | `false` | Whether to enable data export functionality (v2.0+) |
+| `export-formats` | array | `['csv']` | Available export formats: `csv`, `xlsx`, `pdf` (v2.0+) |
+| `export-filename` | string\|null | `null` | Custom filename for exports (without extension) (v2.0+) |
 
 ## Header Configuration
 
@@ -781,6 +985,9 @@ The Table component supports the following events:
 | `row-selection` | `{row, selected}` | Fired when a row is selected/deselected |
 | `row-selection-all` | `{selected}` | Fired when all rows are selected/deselected |
 | `row-click` | row data | Fired when a row is clicked (requires `@row-click` attribute) |
+| `table-exported` | `{format, filename}` | Fired when a client-side export (CSV) completes successfully (v2.0+) |
+| `table-export-error` | `{error}` | Fired when an export fails (v2.0+) |
+| `table-export-request` | `{format, tableId}` | Dispatched to request server-side export (XLSX, PDF) (v2.0+) |
 
 ## Notes
 
@@ -792,6 +999,8 @@ The Table component supports the following events:
 - The table uses Alpine.js for interactive features like selection and expansion
 - Drag-and-drop sorting (`sortable` prop) requires Livewire 4 or higher and is gracefully ignored on Livewire 3
 - Infinite scroll (`infinite-scroll` prop) requires Livewire 4 or higher and is gracefully ignored on Livewire 3
+- Export functionality requires v2.0+. XLSX export requires `phpoffice/phpspreadsheet`, PDF export requires `barryvdh/laravel-dompdf`
+- For server-side exports (XLSX, PDF), use the `WithTableExport` trait in your Livewire component
 
 ## Related Components
 

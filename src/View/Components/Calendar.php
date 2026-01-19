@@ -6,6 +6,10 @@ declare(strict_types=1);
  *
  * A Livewire component for displaying a calendar with events.
  *
+ * @author     Jacob Martella
+ * @copyright  2026 Jacob Martella
+ * @license    MIT
+ *
  * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
  * @since      1.0.0
  */

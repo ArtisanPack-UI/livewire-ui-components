@@ -189,14 +189,15 @@
                 },
 
                 escapeCSVValue(value) {
-                    if (value === null || value === undefined) return '""';
+                    if (value === null || value === undefined) return '&quot;&quot;';
 
                     const stringValue = String(value);
+                    const dq = '&quot;';
 
                     // Check if value needs quoting (contains comma, quote, or newline)
-                    if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n') || stringValue.includes('\r')) {
+                    if (stringValue.includes(',') || stringValue.includes(dq) || stringValue.includes('\n') || stringValue.includes('\r')) {
                         // Escape double quotes by doubling them
-                        return '"' + stringValue.replace(/"/g, '""') + '"';
+                        return dq + stringValue.replace(new RegExp(dq, 'g'), dq + dq) + dq;
                     }
 
                     return stringValue;

@@ -2,12 +2,17 @@
 
 declare(strict_types=1);
 /**
- * Color and Theme Generator for ArtisanPack UI.
+ * Color Generator
  *
  * This class provides utilities for generating full color palettes from base colors,
  * calculating accessible contrast colors, and producing a complete CSS theme file
  * compatible with both ArtisanPack UI components and the DaisyUI framework.
  *
+ * @author     Jacob Martella
+ * @copyright  2026 Jacob Martella
+ * @license    MIT
+ *
+ * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
  * @since      1.0.0
  */
 

@@ -2,12 +2,18 @@
 
 declare(strict_types=1);
 /**
- * Artisan command to generate the CSS theme file for ArtisanPack UI.
+ * Generate Theme CSS Command
  *
+ * Artisan command to generate the CSS theme file for ArtisanPack UI.
  * This command allows developers to dynamically generate a theme file with
  * CSS variables for primary, secondary, and accent colors, including full
  * Tailwind-style color palettes and DaisyUI compatibility.
  *
+ * @author     Jacob Martella
+ * @copyright  2026 Jacob Martella
+ * @license    MIT
+ *
+ * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
  * @since      1.0.0
  */
 
