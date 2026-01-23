@@ -11,6 +11,7 @@ document.addEventListener( 'alpine:init', () => {
 		series: config.initialSeries,
 		chartId: config.chartId,
 		isUpdating: false,
+		pendingUpdate: null,
 		dataObserver: null,
 
 		init() {
@@ -39,7 +40,16 @@ document.addEventListener( 'alpine:init', () => {
 		},
 
 		updateChart( animate = true ) {
-			if ( this.isUpdating ) return;
+			// If already updating, queue the update
+			if ( this.isUpdating ) {
+				this.pendingUpdate = {
+					options: { ...this.options },
+					series: [ ...this.series ],
+					animate: animate
+				};
+				return;
+			}
+
 			this.isUpdating = true;
 
 			if ( this.chart ) {
@@ -49,9 +59,22 @@ document.addEventListener( 'alpine:init', () => {
 				this.renderChart();
 			}
 
-			// Reset updating flag after animation completes
+			// Reset updating flag and apply pending updates after animation completes
 			setTimeout( () => {
 				this.isUpdating = false;
+
+				// Apply pending update if one exists
+				if ( this.pendingUpdate ) {
+					const pending = this.pendingUpdate;
+					this.pendingUpdate = null;
+
+					// Update internal state
+					this.options = pending.options;
+					this.series = pending.series;
+
+					// Apply the queued update
+					this.updateChart( pending.animate );
+				}
 			}, 350 );
 		},
 

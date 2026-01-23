@@ -284,17 +284,24 @@ The computed glass colors also adjust automatically:
 
 ### Component Integration
 
-Glass effects will be integrated into components in future releases:
+Glass effects are available in v2.0+ components using the `glass`, `glass-tint`, and `glass-tint-opacity` props:
 
 @verbatim
-<code-snippet name="Future component glass props" lang="blade">
-<!-- Coming in v2.0 component updates -->
+<code-snippet name="Component glass props (v2.0+)" lang="blade">
+<!-- Available in v2.0+ -->
 <x-artisanpack-card glass="frosted">
     Frosted glass card
 </x-artisanpack-card>
 
-<x-artisanpack-modal glass="liquid" glass-tint="primary" glass-tint-opacity="20">
+<x-artisanpack-modal glass="liquid" glass-tint="primary" :glass-tint-opacity="20">
     Liquid glass modal with primary tint
 </x-artisanpack-modal>
+
+{{-- Use GlassHelper methods for custom implementations --}}
+@php
+use ArtisanPackUI\LivewireUiComponents\Helpers\GlassHelper;
+$glassClasses = GlassHelper::glassClasses('frosted', 'primary', 15);
+$glassStyles = GlassHelper::glassStyle('frosted', 'primary', 15);
+@endphp
 </code-snippet>
 @endverbatim

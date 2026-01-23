@@ -44,8 +44,8 @@
         "artisanpack-ui/icons": "^2.0"
     },
     "suggest": {
-        "phpoffice/phpspreadsheet": "Required for XLSX/Excel export functionality in Table component (^1.29 or ^2.0)",
-        "barryvdh/laravel-dompdf": "Required for PDF export functionality in Table component (^2.0 or ^3.0)"
+        "phpoffice/phpspreadsheet": "Required for XLSX/Excel export functionality in Table component (^2.0|^3.0)",
+        "barryvdh/laravel-dompdf": "Required for PDF export functionality in Table component (^3.0)"
     },
     "require-dev": {
         "orchestra/testbench": "^8|^9|^10",

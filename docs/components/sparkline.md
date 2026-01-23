@@ -292,7 +292,7 @@ Sparklines update smoothly when data changes:
 | type | string | 'line' | Chart type (line, area, bar) |
 | height | string\|int | 40 | Chart height in pixels |
 | width | string\|int | null | Chart width (auto if null) |
-| color | string | null | Color (Tailwind name or hex, defaults to emerald-500) |
+| color | string | null | Color (Tailwind name or hex, null falls back to emerald-500) |
 | strokeWidth | int | 2 | Line/area stroke width |
 | curve | string | 'smooth' | Curve style (smooth, straight, stepline) |
 | fillOpacity | float | 0.3 | Area fill gradient opacity (0-1) |

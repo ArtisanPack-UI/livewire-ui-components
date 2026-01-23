@@ -265,7 +265,7 @@ The `change` prop automatically:
 
 ## Animated Value Transitions
 
-The Stat component supports smooth number counting animations when values change. This is especially useful for dashboard widgets that update in real-time via Livewire.
+The Stat component supports smooth number-counting animations when values change. This is especially useful for dashboard widgets that update in real-time via Livewire.
 
 ### Basic Animation
 
@@ -386,7 +386,7 @@ The Stat component supports embedded sparkline charts to show historical data tr
 Choose from line, area, or bar chart types:
 
 ```php
-{{-- Area sparkline (default) --}}
+{{-- Area sparkline --}}
 <x-artisanpack-stat
     title="Revenue"
     value="$45,231"

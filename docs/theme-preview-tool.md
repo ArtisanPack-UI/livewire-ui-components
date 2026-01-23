@@ -38,7 +38,7 @@ ARTISANPACK_ENABLE_THEME_PREVIEW=true
 php artisan config:clear
 ```
 
-3. Access the tool at: `/v2-features/theme-preview`
+3. Access the tool at: `/artisanpack/theme-preview`
 
 **Production Warning**: Always set `ARTISANPACK_ENABLE_THEME_PREVIEW=false` (or remove the variable entirely) in production environments to prevent public access.
 
@@ -61,7 +61,7 @@ The route is registered in your `config/artisanpack.php`:
 Once enabled, navigate to:
 
 ```
-https://your-app.test/v2-features/theme-preview
+https://your-app.test/artisanpack/theme-preview
 ```
 
 ### Color Customization
