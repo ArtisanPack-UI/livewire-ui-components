@@ -240,12 +240,117 @@ The Choices component is an advanced form element that provides a searchable, mu
 ### Choices with Custom No Results Text
 
 ```php
-<x-artisanpack-choices 
-    label="Select Country" 
+<x-artisanpack-choices
+    label="Select Country"
     :options="['United States', 'Canada', 'United Kingdom', 'Australia']"
     searchable
     no-results-text="No countries found matching your search"
 />
+```
+
+### Lazy Loading Options (Livewire 4+)
+
+The Choices component supports lazy loading of options using Livewire 4's `wire:intersect` directive. This is useful when you have a large number of options and want to load them progressively as the user scrolls.
+
+**Note:** This feature requires Livewire 4 or higher. On Livewire 3, the `lazy-load` prop is gracefully ignored.
+
+#### Basic Lazy Loading
+
+```php
+<?php
+
+use Livewire\Volt\Component;
+
+new class extends Component {
+    public array $users = [];
+    public int $page = 1;
+    public int $perPage = 20;
+
+    public function mount(): void
+    {
+        $this->loadMoreOptions();
+    }
+
+    public function loadMoreOptions(): void
+    {
+        $newUsers = User::query()
+            ->skip(($this->page - 1) * $this->perPage)
+            ->take($this->perPage)
+            ->get()
+            ->map(fn ($user) => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'avatar' => $user->avatar_url,
+            ])
+            ->toArray();
+
+        $this->users = array_merge($this->users, $newUsers);
+        $this->page++;
+    }
+
+    public function hasMoreOptions(): bool
+    {
+        return User::count() > count($this->users);
+    }
+}; ?>
+
+<x-artisanpack-choices
+    label="Select User"
+    :options="$users"
+    option-value="id"
+    option-label="name"
+    wire:model="selectedUser"
+    lazy-load
+    :has-more-options="$this->hasMoreOptions()" />
+```
+
+#### Custom Load Method
+
+Specify a custom method name to call when loading more options:
+
+```php
+<x-artisanpack-choices
+    label="Select User"
+    :options="$users"
+    option-value="id"
+    option-label="name"
+    wire:model="selectedUser"
+    lazy-load
+    lazy-load-method="fetchMoreUsers"
+    :has-more-options="$hasMore" />
+```
+
+#### Using Modifiers
+
+The `lazy-load-modifier` prop supports Livewire 4's intersection modifiers:
+
+- `.once` - Only trigger once
+- `.half` - Trigger when element is 50% visible
+- `.full` - Trigger when element is fully visible
+
+```php
+{{-- Load more only once when scrolled into view --}}
+<x-artisanpack-choices
+    label="Select User"
+    :options="$users"
+    lazy-load
+    lazy-load-modifier="once"
+    :has-more-options="$hasMore" />
+```
+
+#### Combined with Search
+
+Lazy loading works alongside the searchable feature:
+
+```php
+<x-artisanpack-choices
+    label="Select User"
+    :options="$users"
+    option-value="id"
+    option-label="name"
+    searchable
+    lazy-load
+    :has-more-options="$hasMore" />
 ```
 
 ### Choices with Prefix and Suffix
@@ -289,6 +394,10 @@ The Choices component is an advanced form element that provides a searchable, mu
 | `disabled` | boolean | `false` | Whether the choices dropdown is disabled |
 | `helper` | string | `null` | Helper text displayed below the choices dropdown |
 | `error` | string | `null` | Error message to display |
+| `lazy-load` | boolean | `false` | Whether to enable lazy loading of options (Livewire 4+ only) |
+| `lazy-load-method` | string | `'loadMoreOptions'` | The Livewire method to call when loading more options |
+| `lazy-load-modifier` | string\|null | `null` | Modifier for wire:intersect (`.once`, `.half`, `.full`) |
+| `has-more-options` | boolean | `true` | Whether there are more options to load |
 
 ## Slots
 

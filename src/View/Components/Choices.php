@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
+use ArtisanPack\LivewireUiComponents\Support\LivewireHelper;
 use Closure;
 use Exception;
 use Illuminate\Contracts\View\View;
@@ -71,6 +72,12 @@ class Choices extends Component
         public ?bool $omitError = false,
         public ?bool $firstErrorOnly = false,
 
+        // Lazy loading props (Livewire 4+)
+        public bool $lazyLoad = false,
+        public string $lazyLoadMethod = 'loadMoreOptions',
+        public ?string $lazyLoadModifier = null,
+        public bool $hasMoreOptions = true,
+
         // Slots
         public mixed $item = null,
         public mixed $selection = null,
@@ -118,6 +125,37 @@ class Choices extends Component
         }
 
         return is_numeric($value) && ! str($value)->startsWith('0') ? $value : "'$value'";
+    }
+
+    /**
+     * Check if wire:intersect lazy loading is supported and enabled.
+     *
+     * @since 2.0.0
+     *
+     * @return bool True if lazyLoad is enabled and Livewire 4+.
+     */
+    public function isLazyLoadEnabled(): bool
+    {
+        return $this->lazyLoad && LivewireHelper::supportsWireIntersect();
+    }
+
+    /**
+     * Get the wire:intersect directive with optional modifier for lazy loading.
+     *
+     * @since 2.0.0
+     *
+     * @return string The wire:intersect directive (e.g., "wire:intersect" or "wire:intersect.once").
+     */
+    public function getLazyLoadDirective(): string
+    {
+        $directive = 'wire:intersect';
+
+        if ($this->lazyLoadModifier) {
+            $modifier  = ltrim($this->lazyLoadModifier, '.');
+            $directive .= '.'.$modifier;
+        }
+
+        return $directive;
     }
 
     public function render(): View|Closure|string

@@ -68,8 +68,8 @@
         @if($progressIndicator)
             <div class="h-0.5 -mt-4 mb-4">
                 <progress
-                    class="progress {{ $progressIndicatorClass }} w-full h-[var(--border)]"
-                    wire:loading
+                    class="progress {{ $progressIndicatorClass }} w-full h-[var(--border)] hidden data-loading:block"
+                    wire:loading.class.remove="hidden"
 
                     @if($progressTarget())
                         wire:target="{{ $progressTarget() }}"

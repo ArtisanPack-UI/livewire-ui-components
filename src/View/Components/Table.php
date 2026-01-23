@@ -18,6 +18,8 @@ declare(strict_types=1);
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
 use ArrayAccess;
+use ArtisanPack\LivewireUiComponents\Support\GlassHelper;
+use ArtisanPack\LivewireUiComponents\Support\LivewireHelper;
 use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Arr;
@@ -71,8 +73,19 @@ class Table extends Component
      * @param  mixed|null  $expansion  Slot for expanded row content.
      * @param  mixed|null  $empty  Slot for empty state content.
      * @param  mixed|null  $footer  Slot for table footer.
+     * @param  bool  $sortable  Whether rows can be drag-and-drop sorted (Livewire 4+ only).
+     * @param  string|null  $sortableKey  Key to use for sortable item identification. Defaults to $keyBy.
+     * @param  string|null  $sortGroup  Group name for cross-list dragging (wire:sort:group).
+     * @param  bool  $sortHandle  Whether to use a sort handle instead of the entire row.
+     * @param  bool  $infiniteScroll  Whether to enable infinite scrolling (Livewire 4+ only).
+     * @param  string  $infiniteScrollMethod  The Livewire method to call when scrolling (default 'loadMore').
+     * @param  string|null  $infiniteScrollModifier  Modifier for wire:intersect (.once, .half, .full).
+     * @param  string  $infiniteScrollText  Text to display while loading more items.
+     * @param  bool  $hasMorePages  Whether there are more pages to load (for infinite scroll).
      *
      * @since 1.0.0
+     * @since 2.0.0 Added sortable, sortableKey, sortGroup, and sortHandle props for Livewire 4 wire:sort support.
+     * @since 2.0.0 Added infiniteScroll, infiniteScrollMethod, infiniteScrollModifier, infiniteScrollText, and hasMorePages props for Livewire 4 wire:intersect support.
      */
     public function __construct(
         public array $headers,
@@ -99,6 +112,35 @@ class Table extends Component
         public string $uuid = '',
         public string $keyBy = 'id',
 
+        // Glass effect props (for header)
+        public ?string $headerGlass = null,
+        public ?string $headerGlassTint = null,
+        public ?int $headerGlassTintOpacity = null,
+
+        // Drag-and-drop sorting props (Livewire 4+)
+        public bool $sortable = false,
+        public ?string $sortableKey = null,
+        public ?string $sortGroup = null,
+        public bool $sortHandle = false,
+
+        // Infinite scroll props (Livewire 4+)
+        public bool $infiniteScroll = false,
+        public string $infiniteScrollMethod = 'loadMore',
+        public ?string $infiniteScrollModifier = null,
+        public string $infiniteScrollText = 'Scroll for more',
+        public bool $hasMorePages = true,
+
+        // Virtual scrolling props
+        public bool $virtualScroll = false,
+        public int $virtualRowHeight = 48,
+        public int $virtualBuffer = 10,
+        public ?int $virtualContainerHeight = null,
+
+        // Export props
+        public bool $exportable = false,
+        public array $exportFormats = ['csv'],
+        public ?string $exportFilename = null,
+
         // Slots
         public mixed $actions = null,
         public mixed $tr = null,
@@ -106,6 +148,7 @@ class Table extends Component
         public mixed $expansion = null,
         public mixed $empty = null,
         public mixed $footer = null,
+        public mixed $sortHandleSlot = null,
 
     ) {
         if ($this->selectable && $this->expandable) {
@@ -113,9 +156,9 @@ class Table extends Component
         }
 
         // Temp
-        $rowDecoration  = $this->rowDecoration;
+        $rowDecoration = $this->rowDecoration;
         $cellDecoration = $this->cellDecoration;
-        $headers        = $this->headers;
+        $headers = $this->headers;
 
         // Remove them from serialization, because they are closures.
         unset($this->rowDecoration);
@@ -129,9 +172,9 @@ class Table extends Component
         }
 
         // Put them back
-        $this->rowDecoration  = $rowDecoration;
+        $this->rowDecoration = $rowDecoration;
         $this->cellDecoration = $cellDecoration;
-        $this->headers        = $headers;
+        $this->headers = $headers;
     }
 
     // Get all ids for selectable and expandable features
@@ -169,11 +212,11 @@ class Table extends Component
             return $format($row, $field);
         }
 
-        if ('currency' == $format[0]) {
+        if ($format[0] == 'currency') {
             return ($format[2] ?? '').number_format($field, ...str_split($format[1]));
         }
 
-        if ('date' == $format[0] && $field) {
+        if ($format[0] == 'date' && $field) {
             return Carbon::parse($field)->translatedFormat($format[1]);
         }
 
@@ -189,7 +232,7 @@ class Table extends Component
     // Check if is currently sorted by this header
     public function isSortedBy(mixed $header): bool
     {
-        if (0 == count($this->sortBy)) {
+        if (count($this->sortBy) == 0) {
             return false;
         }
 
@@ -203,12 +246,12 @@ class Table extends Component
             return false;
         }
 
-        if (0 == count($this->sortBy)) {
+        if (count($this->sortBy) == 0) {
             return ['column' => '', 'direction' => ''];
         }
 
         $direction = $this->isSortedBy($header)
-            ? ('asc' == $this->sortBy['direction']) ? 'desc' : 'asc'
+            ? ($this->sortBy['direction'] == 'asc') ? 'desc' : 'asc'
             : 'asc';
 
         return ['column' => $header['sortBy'] ?? $header['key'], 'direction' => $direction];
@@ -264,11 +307,279 @@ class Table extends Component
         return is_string($this->getAllIds()[0] ?? null) ? '' : '.number';
     }
 
+    /**
+     * Get the glass effect CSS classes for the header.
+     *
+     * @since 2.0.0
+     *
+     * @return string Space-separated CSS classes.
+     */
+    public function headerGlassClasses(): string
+    {
+        return GlassHelper::getClasses($this->headerGlass, $this->headerGlassTint, $this->headerGlassTintOpacity);
+    }
+
+    /**
+     * Get the glass effect inline styles for custom header tint colors.
+     *
+     * @since 2.0.0
+     *
+     * @return string Inline style string.
+     */
+    public function headerGlassStyle(): string
+    {
+        return GlassHelper::getFullInlineStyle($this->headerGlassTint);
+    }
+
     public function getKeyValue($row, $key): mixed
     {
         $value = data_get($row, $this->$key);
 
         return is_numeric($value) && ! str($value)->startsWith('0') ? $value : "'$value'";
+    }
+
+    /**
+     * Check if wire:sort is supported and enabled.
+     *
+     * @since 2.0.0
+     *
+     * @return bool True if sortable and Livewire 4+.
+     */
+    public function isSortingEnabled(): bool
+    {
+        return $this->sortable && LivewireHelper::supportsWireSort();
+    }
+
+    /**
+     * Get the key to use for sortable item identification.
+     *
+     * Defaults to $keyBy if no specific sortableKey is provided.
+     *
+     * @since 2.0.0
+     *
+     * @return string The key to use for wire:sort:item.
+     */
+    public function getSortableKey(): string
+    {
+        return $this->sortableKey ?? $this->keyBy;
+    }
+
+    /**
+     * Get the sortable item value for a row.
+     *
+     * @since 2.0.0
+     *
+     * @param  mixed  $row  The row data.
+     * @return mixed The sortable item identifier.
+     */
+    public function getSortableItemValue(mixed $row): mixed
+    {
+        return data_get($row, $this->getSortableKey());
+    }
+
+    /**
+     * Check if wire:intersect infinite scroll is supported and enabled.
+     *
+     * @since 2.0.0
+     *
+     * @return bool True if infiniteScroll is enabled and Livewire 4+.
+     */
+    public function isInfiniteScrollEnabled(): bool
+    {
+        return $this->infiniteScroll && LivewireHelper::supportsWireIntersect();
+    }
+
+    /**
+     * Get the wire:intersect directive with optional modifier.
+     *
+     * @since 2.0.0
+     *
+     * @return string The wire:intersect directive (e.g., "wire:intersect" or "wire:intersect.once").
+     */
+    public function getInfiniteScrollDirective(): string
+    {
+        $directive = 'wire:intersect';
+
+        if ($this->infiniteScrollModifier) {
+            $modifier = ltrim($this->infiniteScrollModifier, '.');
+            $directive .= '.'.$modifier;
+        }
+
+        return $directive;
+    }
+
+    /**
+     * Check if virtual scrolling is enabled.
+     *
+     * @since 2.0.0
+     *
+     * @return bool True if virtualScroll is enabled and rows exist.
+     */
+    public function isVirtualScrollEnabled(): bool
+    {
+        $rowCount = is_array($this->rows) ? count($this->rows) : $this->rows->count();
+
+        return $this->virtualScroll && $rowCount > 0;
+    }
+
+    /**
+     * Get the total scrollable height based on row count.
+     *
+     * @since 2.0.0
+     *
+     * @return int Total height in pixels.
+     */
+    public function getTotalHeight(): int
+    {
+        $rowCount = is_array($this->rows) ? count($this->rows) : $this->rows->count();
+
+        return $rowCount * $this->virtualRowHeight;
+    }
+
+    /**
+     * Get the total row count.
+     *
+     * @since 2.0.0
+     *
+     * @return int Total number of rows.
+     */
+    public function getTotalRowCount(): int
+    {
+        return is_array($this->rows) ? count($this->rows) : $this->rows->count();
+    }
+
+    /**
+     * Get the visible rows based on start/end indices.
+     *
+     * @since 2.0.0
+     *
+     * @param  int  $startIndex  The starting index.
+     * @param  int  $endIndex  The ending index.
+     * @return array|ArrayAccess The visible rows.
+     */
+    public function getVisibleRows(int $startIndex, int $endIndex): array|ArrayAccess
+    {
+        if (is_array($this->rows)) {
+            return array_slice($this->rows, $startIndex, $endIndex - $startIndex);
+        }
+
+        return $this->rows->slice($startIndex, $endIndex - $startIndex);
+    }
+
+    /**
+     * Get the container height for virtual scrolling.
+     *
+     * @since 2.0.0
+     *
+     * @return string CSS height value.
+     */
+    public function getVirtualContainerHeight(): string
+    {
+        if ($this->virtualContainerHeight) {
+            return $this->virtualContainerHeight.'px';
+        }
+
+        return 'min(600px, 70vh)';
+    }
+
+    /**
+     * Get visible headers for export (excluding hidden columns).
+     *
+     * @since 2.0.0
+     *
+     * @return array Array of visible headers.
+     */
+    public function getExportHeaders(): array
+    {
+        return collect($this->headers)
+            ->filter(fn ($header) => ! $this->isHidden($header))
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Get the export filename with extension.
+     *
+     * @since 2.0.0
+     *
+     * @param  string  $format  The export format (csv, xlsx, pdf).
+     * @return string The filename with extension.
+     */
+    public function getExportFilename(string $format = 'csv'): string
+    {
+        $base = $this->exportFilename ?? 'table-export-'.date('Y-m-d');
+
+        return $base.'.'.$format;
+    }
+
+    /**
+     * Get export data as array for client-side export.
+     *
+     * Returns headers and rows formatted for CSV generation.
+     *
+     * @since 2.0.0
+     *
+     * @return array{headers: array, rows: array} Export data structure.
+     */
+    public function getExportData(): array
+    {
+        $visibleHeaders = $this->getExportHeaders();
+
+        // Extract header labels
+        $headerLabels = collect($visibleHeaders)
+            ->map(fn ($header) => $header['label'] ?? $header['key'])
+            ->all();
+
+        // Extract row data for visible columns only
+        $rowsData = collect($this->rows)
+            ->map(function ($row) use ($visibleHeaders) {
+                return collect($visibleHeaders)
+                    ->map(function ($header) use ($row) {
+                        $value = data_get($row, $header['key']);
+
+                        // Format the value if formatter exists
+                        if (isset($header['format'])) {
+                            $value = $this->format($row, $value, $header);
+                        }
+
+                        // Convert to string for export
+                        return is_array($value) || is_object($value)
+                            ? json_encode($value)
+                            : (string) $value;
+                    })
+                    ->all();
+            })
+            ->all();
+
+        return [
+            'headers' => $headerLabels,
+            'rows' => $rowsData,
+        ];
+    }
+
+    /**
+     * Check if export is enabled.
+     *
+     * @since 2.0.0
+     *
+     * @return bool True if export is enabled.
+     */
+    public function isExportEnabled(): bool
+    {
+        return $this->exportable;
+    }
+
+    /**
+     * Check if a specific export format is supported.
+     *
+     * @since 2.0.0
+     *
+     * @param  string  $format  The format to check.
+     * @return bool True if the format is supported.
+     */
+    public function supportsExportFormat(string $format): bool
+    {
+        return in_array($format, $this->exportFormats, true);
     }
 
     /**

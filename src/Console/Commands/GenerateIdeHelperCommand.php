@@ -2,8 +2,15 @@
 
 declare(strict_types=1);
 /**
+ * Generate IDE Helper Command
+ *
  * Artisan command to generate IDE helper file for component autocompletion.
  *
+ * @author     Jacob Martella
+ * @copyright  2026 Jacob Martella
+ * @license    MIT
+ *
+ * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
  * @since      1.0.0
  */
 

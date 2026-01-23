@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
+use ArtisanPack\LivewireUiComponents\Support\GlassHelper;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
@@ -46,16 +47,63 @@ class Stat extends Component
         public ?string $tooltipRight = null,
         public ?string $tooltipBottom = null,
 
-        // New size and positioning props
+        // Size and positioning props
         public ?string $size = 'md',
         public ?string $iconPosition = 'left',
         public ?string $titlePosition = 'top',
         public ?string $contentAlign = 'left',
 
+        // Glass effect props
+        public ?string $glass = null,
+        public ?string $glassTint = null,
+        public ?int $glassTintOpacity = null,
+
+        // Sparkline props
+        public ?array $sparklineData = null,
+        public string $sparklineType = 'line',
+        public ?string $sparklineColor = null,
+
+        // Trend indicator props
+        public ?float $change = null,
+        public ?string $changeLabel = null,
+
+        // Animation props
+        public bool $animate = true,
+        public int $animateDuration = 1000,
+
     ) {
-        $this->uuid            = 'artisanpack'.md5(serialize($this)).$id;
+        // Use a stable identifier: provided id or a unique id
+        // Avoid serialize($this) as it includes mutable state
+        $this->uuid            = 'artisanpack-stat-'.($id ?? uniqid('', true));
         $this->tooltip         = $this->tooltip ?? $this->tooltipLeft ?? $this->tooltipRight ?? $this->tooltipBottom;
         $this->tooltipPosition = $this->tooltipLeft ? 'lg:tooltip-left' : ($this->tooltipRight ? 'lg:tooltip-right' : ($this->tooltipBottom ? 'lg:tooltip-bottom' : 'lg:tooltip-top'));
+    }
+
+    /**
+     * Get the glass effect CSS classes.
+     *
+     * @since 2.0.0
+     *
+     * @return string Space-separated CSS classes.
+     */
+    public function glassClasses(): string
+    {
+        return GlassHelper::getClasses($this->glass, $this->glassTint, $this->glassTintOpacity);
+    }
+
+    /**
+     * Get the glass effect inline styles including accessible text color.
+     *
+     * Combines custom tint color CSS variable with accessible text color
+     * to ensure WCAG 2.0 AA compliance on tinted glass backgrounds.
+     *
+     * @since 2.0.0
+     *
+     * @return string Inline style string.
+     */
+    public function glassStyle(): string
+    {
+        return GlassHelper::getFullInlineStyle($this->glassTint);
     }
 
     /**
@@ -127,9 +175,9 @@ class Stat extends Component
         return [
             'container' => $isVertical ? 'flex flex-col items-center gap-3' : 'flex items-center gap-3',
             'content'   => match ($this->contentAlign) {
-                'center' => 'text-center',
-                'right'  => 'text-right rtl:text-left',
-                default  => 'text-left rtl:text-right'
+                'center' => 'text-center flex-1 min-w-0',
+                'right'  => 'text-right rtl:text-left flex-1 min-w-0',
+                default  => 'text-left rtl:text-right flex-1 min-w-0'
             },
         ];
     }
@@ -156,6 +204,258 @@ class Stat extends Component
     public function shouldRenderTitleFirst(): bool
     {
         return 'top' === $this->titlePosition;
+    }
+
+    /**
+     * Check if sparkline should be rendered.
+     *
+     * @since 2.0.0
+     *
+     * @return bool True if sparkline data is provided and not empty.
+     */
+    public function hasSparkline(): bool
+    {
+        return null !== $this->sparklineData && count($this->sparklineData) > 0;
+    }
+
+    /**
+     * Get the sparkline height based on stat size.
+     *
+     * Returns appropriate height values that scale with the stat component size.
+     *
+     * @since 2.0.0
+     *
+     * @return int The sparkline height in pixels.
+     */
+    public function sparklineHeight(): int
+    {
+        return match ($this->size) {
+            'xs'    => 24,
+            'sm'    => 32,
+            'md'    => 40,
+            'lg'    => 48,
+            'xl'    => 56,
+            default => 40,
+        };
+    }
+
+    /**
+     * Check if trend indicator should be rendered.
+     *
+     * @since 2.0.0
+     *
+     * @return bool True if change value is provided.
+     */
+    public function hasChange(): bool
+    {
+        return null !== $this->change;
+    }
+
+    /**
+     * Check if the change is positive.
+     *
+     * @since 2.0.0
+     *
+     * @return bool True if change is positive or zero.
+     */
+    public function isPositiveChange(): bool
+    {
+        return null !== $this->change && $this->change >= 0;
+    }
+
+    /**
+     * Get the formatted change percentage string.
+     *
+     * Returns the change value with a sign prefix and percent symbol.
+     *
+     * @since 2.0.0
+     *
+     * @return string The formatted change string (e.g., "+12.5%" or "-8.3%").
+     */
+    public function formattedChange(): string
+    {
+        if (null === $this->change) {
+            return '';
+        }
+
+        $sign = $this->change >= 0 ? '+' : '';
+
+        return $sign.number_format($this->change, 1).'%';
+    }
+
+    /**
+     * Get the CSS color classes for the trend indicator.
+     *
+     * Returns green classes for positive changes, red for negative.
+     *
+     * @since 2.0.0
+     *
+     * @return string Space-separated CSS classes.
+     */
+    public function changeColorClasses(): string
+    {
+        if (null === $this->change) {
+            return '';
+        }
+
+        return $this->change >= 0
+            ? 'text-success'
+            : 'text-error';
+    }
+
+    /**
+     * Get the icon name for the trend indicator arrow.
+     *
+     * Returns an up arrow for positive changes, down arrow for negative.
+     *
+     * @since 2.0.0
+     *
+     * @return string The icon name.
+     */
+    public function changeIcon(): string
+    {
+        if (null === $this->change) {
+            return '';
+        }
+
+        return $this->change >= 0
+            ? 'o-arrow-trending-up'
+            : 'o-arrow-trending-down';
+    }
+
+    /**
+     * Extract the numeric value from the value string for animation.
+     *
+     * Parses values like "$1,234.56" -> 1234.56, "50%" -> 50, "1.5K" -> 1500.
+     *
+     * @since 2.0.0
+     *
+     * @return float|null The numeric value, or null if no numeric value found.
+     */
+    public function numericValue(): ?float
+    {
+        if (null === $this->value) {
+            return null;
+        }
+
+        $value = $this->value;
+
+        // Handle K/M/B suffixes (case insensitive)
+        $multiplier = 1;
+        if (preg_match('/(-?\s*[0-9.,\s]+)\s*([KMB])\s*$/i', $value, $matches)) {
+            $value      = $matches[1];
+            $multiplier = match (strtoupper($matches[2])) {
+                'K'     => 1000,
+                'M'     => 1000000,
+                'B'     => 1000000000,
+                default => 1,
+            };
+        }
+
+        // Strip currency symbols and whitespace first
+        $cleaned = preg_replace('/[^\d.,\-]/', '', $value);
+
+        if ('' === $cleaned || '-' === $cleaned) {
+            return null;
+        }
+
+        // Detect separator patterns to handle both US and EU formats
+        $hasDot   = false !== strpos($cleaned, '.');
+        $hasComma = false !== strpos($cleaned, ',');
+
+        if ($hasDot && $hasComma) {
+            // Both separators present - determine which is decimal
+            $lastDot   = strrpos($cleaned, '.');
+            $lastComma = strrpos($cleaned, ',');
+
+            if ($lastComma > $lastDot) {
+                // EU format: "1.234.567,89" - comma is decimal
+                $cleaned = str_replace('.', '', $cleaned); // Remove thousand separators
+                $cleaned = str_replace(',', '.', $cleaned); // Replace decimal comma with dot
+            } else {
+                // US format: "1,234,567.89" - dot is decimal
+                $cleaned = str_replace(',', '', $cleaned); // Remove thousand separators
+            }
+        } elseif ($hasComma) {
+            // Only comma present - could be thousands or decimal
+            // If comma appears once and is followed by exactly 2-3 digits, treat as decimal
+            if (1 === substr_count($cleaned, ',') && preg_match('/,\d{2,3}$/', $cleaned)) {
+                $cleaned = str_replace(',', '.', $cleaned);
+            } else {
+                // Otherwise, treat as thousands separator
+                $cleaned = str_replace(',', '', $cleaned);
+            }
+        }
+        // If only dot(s) present, already in correct format
+
+        if ('' === $cleaned || '-' === $cleaned) {
+            return null;
+        }
+
+        return (float) $cleaned * $multiplier;
+    }
+
+    /**
+     * Get the format pattern for the value (prefix, suffix, decimals).
+     *
+     * Analyzes the value string to extract formatting information.
+     *
+     * @since 2.0.0
+     *
+     * @return array{prefix: string, suffix: string, decimals: int, useCommas: bool} The format pattern.
+     */
+    public function valueFormat(): array
+    {
+        if (null === $this->value) {
+            return [
+                'prefix'    => '',
+                'suffix'    => '',
+                'decimals'  => 0,
+                'useCommas' => false,
+            ];
+        }
+
+        $value = $this->value;
+
+        // Extract prefix (currency symbols, etc.)
+        $prefix = '';
+        if (preg_match('/^([^\d\-\s]+)/', $value, $matches)) {
+            $prefix = $matches[1];
+        }
+
+        // Extract suffix (%, K, M, B, units, etc.)
+        $suffix = '';
+        if (preg_match('/([^\d.,\s]+)\s*$/', $value, $matches)) {
+            $suffix = $matches[1];
+        }
+
+        // Count decimal places
+        $decimals = 0;
+        if (preg_match('/\.(\d+)/', $value, $matches)) {
+            $decimals = strlen($matches[1]);
+        }
+
+        // Check if commas are used for thousands separator
+        $useCommas = str_contains($value, ',');
+
+        return [
+            'prefix'    => $prefix,
+            'suffix'    => $suffix,
+            'decimals'  => $decimals,
+            'useCommas' => $useCommas,
+        ];
+    }
+
+    /**
+     * Check if the value can be animated (is numeric).
+     *
+     * @since 2.0.0
+     *
+     * @return bool True if the value contains a parseable number.
+     */
+    public function canAnimate(): bool
+    {
+        return $this->animate && null !== $this->numericValue();
     }
 
     public function render(): View|Closure|string

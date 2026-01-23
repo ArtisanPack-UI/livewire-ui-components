@@ -95,4 +95,132 @@ return [
     |
     */
 	'theme_output_path' => resource_path('css/artisanpack-ui-theme.css'),
+
+	/*
+    |--------------------------------------------------------------------------
+    | Glass Design Token Settings
+    |--------------------------------------------------------------------------
+    |
+    | These settings control the glassmorphism design system tokens.
+    | You can customize the default values for glass effects here.
+    |
+    | @since 2.0.0
+    */
+	'glass' => [
+		// Whether to include glass tokens in the generated theme CSS
+		'enabled' => true,
+
+		// Output path for standalone glass tokens CSS file
+		'output_path' => resource_path('css/artisanpack-glass-tokens.css'),
+
+		// Base glass token overrides (leave null to use defaults)
+		'tokens' => [
+			// Base glass tokens
+			'blur'           => null, // Default: 12px
+			'opacity'        => null, // Default: 0.7
+			'border-width'   => null, // Default: 1px
+			'border-opacity' => null, // Default: 0.2
+			'shadow-opacity' => null, // Default: 0.1
+
+			// Tint tokens
+			'tint-color'   => null, // Default: transparent
+			'tint-opacity' => null, // Default: 0.15
+
+			// Frosted variant
+			'frosted-blur'       => null, // Default: 16px
+			'frosted-opacity'    => null, // Default: 0.8
+			'frosted-saturation' => null, // Default: 180%
+
+			// Liquid variant
+			'liquid-blur'        => null, // Default: 24px
+			'liquid-opacity'     => null, // Default: 0.6
+			'liquid-refraction'  => null, // Default: 0.5
+			'liquid-border-glow' => null, // Default: 0.3
+
+			// Transparent variant
+			'transparent-blur'    => null, // Default: 8px
+			'transparent-opacity' => null, // Default: 0.3
+		],
+
+		/*
+        |--------------------------------------------------------------------------
+        | Glass Theme Presets
+        |--------------------------------------------------------------------------
+        |
+        | Pre-built glass theme configurations for common use cases.
+        | These presets can be applied globally or per-component.
+        |
+        | Available presets:
+        | - glass-frosted-light: Light mode frosted glass theme
+        | - glass-frosted-dark: Dark mode frosted glass theme
+        | - glass-liquid-light: Light mode liquid glass theme
+        | - glass-liquid-dark: Dark mode liquid glass theme
+        | - glass-minimal: Subtle glass effects for understated designs
+        | - glass-bold: Strong glass effects for prominent UI elements
+        |
+        | @since 2.0.0
+        */
+		'presets' => [
+			// Whether to include glass presets in the generated theme CSS
+			'enabled' => true,
+
+			// Output path for standalone glass presets CSS file
+			'output_path' => resource_path( 'css/artisanpack-glass-presets.css' ),
+
+			// Default preset to apply globally (null for no default)
+			// Can be overridden per-component or per-container
+			'default' => null,
+
+			// List of presets to include (null or empty array includes all)
+			// Example: ['glass-frosted-light', 'glass-minimal', 'glass-bold']
+			'include' => null,
+		],
+	],
+
+	/*
+    |--------------------------------------------------------------------------
+    | Design Tokens Settings
+    |--------------------------------------------------------------------------
+    |
+    | These settings control the comprehensive design token system including
+    | typography, spacing, border radius, shadows, and animations.
+    |
+    | @since 2.0.0
+    */
+	'design_tokens' => [
+		// Whether to include design tokens in the generated theme CSS
+		'enabled' => true,
+
+		// Output path for standalone design tokens CSS file
+		'output_path' => resource_path( 'css/artisanpack-design-tokens.css' ),
+
+		// Typography token overrides (leave null to use defaults)
+		'typography' => [
+			// 'font-family-sans' => null,  // Default: ui-sans-serif, system-ui, ...
+			// 'font-family-serif' => null, // Default: ui-serif, Georgia, ...
+			// 'font-family-mono' => null,  // Default: ui-monospace, SFMono-Regular, ...
+			// 'font-size-base' => null,    // Default: 1rem
+		],
+
+		// Spacing token overrides (leave null to use defaults)
+		'spacing' => [
+			// 'spacing-4' => null, // Default: 1rem
+		],
+
+		// Border radius token overrides (leave null to use defaults)
+		'radius' => [
+			// 'radius-lg' => null, // Default: 0.5rem
+		],
+
+		// Shadow token overrides (leave null to use defaults)
+		'shadow' => [
+			// 'shadow-md' => null, // Default: 0 4px 6px -1px rgb(0 0 0 / 0.1), ...
+		],
+
+		// Animation token overrides (leave null to use defaults)
+		'animation' => [
+			// 'duration-200' => null, // Default: 200ms
+			// 'ease-in-out' => null,  // Default: cubic-bezier(0.4, 0, 0.2, 1)
+		],
+	],
 ];

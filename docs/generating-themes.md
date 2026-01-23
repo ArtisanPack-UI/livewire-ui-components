@@ -244,6 +244,31 @@ To use the generated theme, import it in your main CSS file:
 /* Your other styles */
 ```
 
+## Glass Theme Presets
+
+In addition to color themes, ArtisanPack UI provides pre-built glass theme presets for glassmorphism effects. You can generate preset CSS alongside your color theme:
+
+```bash
+# Generate color theme with glass presets included
+php artisan artisanpack:generate-theme --primary=blue --secondary=slate --accent=amber
+
+# Generate only glass presets
+php artisan artisanpack:generate-theme --presets-only
+
+# Generate a specific glass preset
+php artisan artisanpack:generate-theme --preset=glass-minimal
+```
+
+Available glass presets:
+- `glass-frosted-light` - Light mode frosted glass
+- `glass-frosted-dark` - Dark mode frosted glass
+- `glass-liquid-light` - Light mode liquid glass
+- `glass-liquid-dark` - Dark mode liquid glass
+- `glass-minimal` - Subtle, adaptive glass effect
+- `glass-bold` - Strong, adaptive glass effect
+
+For complete glass preset documentation, see the [Glass Theme Presets](glass-presets) guide.
+
 ## Customizing Themes
 
 ### Modifying the Generated Theme

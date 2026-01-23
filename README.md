@@ -42,7 +42,7 @@ npm run dev
 - **🎯 70+ Pre-built Components**: From simple inputs to complex data tables and charts
 - **⚡ TALL Stack Integration**: Built specifically for Tailwind CSS, Alpine.js, Laravel, and Livewire
 - **🎨 DaisyUI Powered**: Leverages the beautiful daisyUI component library for consistent styling
-- **🔧 Livewire 3 Compatible**: Fully compatible with the latest version of Livewire
+- **🔧 Livewire 3 & 4 Compatible**: Fully compatible with Livewire 3 and 4
 - **🎨 Customizable Theming**: Generate custom color themes with a simple Artisan command
 - **📱 Responsive Design**: All components are fully responsive out of the box
 - **♿ Accessibility Focused**: Components designed with accessibility best practices
@@ -87,33 +87,87 @@ php artisan artisanpack:generate-theme
 
 This interactive command helps you create custom color schemes that work across all components.
 
-## 🚀 Migration Guide: Upgrading to Version 1.0.0
+## 📦 Optional Dependencies
 
-Version 1.0.0 introduces standardized naming for all Blade components. If you were using the old duplicated prefix (`artisanpack-artisanpack-`), you should migrate to the cleaner syntax.
+Some features require optional packages:
 
-### What Changed
+```bash
+# For Excel (XLSX) export
+composer require phpoffice/phpspreadsheet
 
-The duplicated prefix has been removed for a cleaner component syntax:
+# For PDF export
+composer require barryvdh/laravel-dompdf
+```
+
+CSV export works without any additional dependencies.
+
+## 📊 JavaScript Dependencies
+
+Some components require additional JavaScript packages and configuration.
+
+### Charts & Sparklines
+
+The Chart and Sparkline components require ApexCharts:
+
+```bash
+npm install apexcharts
+```
+
+Then add to your `resources/js/app.js`:
+
+```javascript
+import ApexCharts from 'apexcharts';
+window.ApexCharts = ApexCharts;
+
+// Import sparkline Alpine component
+import '../../vendor/artisanpack-ui/livewire-ui-components/resources/js/sparkline.js';
+```
+
+**Note:** For symlinked package development, use the path above. For production installations via Composer, the path would be different and you may need to adjust based on your setup.
+
+### Date Pickers
+
+The DatePicker component requires flatpickr:
+
+```bash
+npm install flatpickr
+```
+
+Configure in your `app.js`:
+
+```javascript
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
+window.flatpickr = flatpickr;
+```
+
+## 🚀 Migration Guides
+
+### Upgrading to v2.0
+
+Version 2.0 is **fully backwards compatible** with v1.x. All your existing code will continue to work without any modifications. Simply update the package:
+
+```bash
+composer require artisanpack-ui/livewire-ui-components:^2.0
+```
+
+See the complete [v1.x to v2.0 Migration Guide](docs/migration/v1-to-v2.md) for details on new features and optional enhancements.
+
+### Upgrading to v1.0
+
+Version 1.0.0 introduced standardized component naming. The duplicated prefix was removed:
 
 **Before (deprecated):**
 ```blade
 <x-artisanpack-artisanpack-button>Click Me</x-artisanpack-artisanpack-button>
-<x-artisanpack-artisanpack-input wire:model="name" />
 ```
 
 **After (v1.0.0+):**
 ```blade
 <x-artisanpack-button>Click Me</x-artisanpack-button>
-<x-artisanpack-input wire:model="name" />
 ```
 
-### How to Upgrade
-
-1. Update your `composer.json` version constraint to `^1.0`
-2. Run `composer update artisanpack-ui/livewire-ui-components`
-3. Search and replace `artisanpack-artisanpack-` with `artisanpack-` in your Blade files
-
-**Note:** Backwards compatibility is maintained for this version. The old `artisanpack-artisanpack-` component names still work but are deprecated and will be removed in v2.0.
+Search and replace `artisanpack-artisanpack-` with `artisanpack-` in your Blade files.
 
 ## Acknowledgements
 

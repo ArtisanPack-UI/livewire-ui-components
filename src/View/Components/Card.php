@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
+use ArtisanPack\LivewireUiComponents\Support\GlassHelper;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
@@ -38,7 +39,12 @@ class Card extends Component
         public ?bool $separator = false,
         public ?bool $shadow = false,
         public string|bool|null $progressIndicator = null,
-        public ?string $figurePosition = 'top', // New prop for figure position
+        public ?string $figurePosition = 'top',
+
+        // Glass effect props
+        public ?string $glass = null,
+        public ?string $glassTint = null,
+        public ?int $glassTintOpacity = null,
 
         // Slots
         public mixed $menu = null,
@@ -51,6 +57,33 @@ class Card extends Component
         $this->figurePosition = in_array($this->figurePosition, ['top', 'bottom', 'left', 'right'])
             ? $this->figurePosition
             : 'top';
+    }
+
+    /**
+     * Get the glass effect CSS classes.
+     *
+     * @since 2.0.0
+     *
+     * @return string Space-separated CSS classes.
+     */
+    public function glassClasses(): string
+    {
+        return GlassHelper::getClasses($this->glass, $this->glassTint, $this->glassTintOpacity);
+    }
+
+    /**
+     * Get the glass effect inline styles including accessible text color.
+     *
+     * Combines custom tint color CSS variable with accessible text color
+     * to ensure WCAG 2.0 AA compliance on tinted glass backgrounds.
+     *
+     * @since 2.0.0
+     *
+     * @return string Inline style string.
+     */
+    public function glassStyle(): string
+    {
+        return GlassHelper::getFullInlineStyle($this->glassTint);
     }
 
     public function progressTarget(): ?string

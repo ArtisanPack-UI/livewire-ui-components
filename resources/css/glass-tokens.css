@@ -1,0 +1,1122 @@
+/**
+ * ArtisanPack UI - Glass Design Tokens
+ *
+ * This file contains the foundational CSS custom properties for all glass effects.
+ * These tokens form the foundation of the glassmorphism design system.
+ *
+ * Tokens are configurable via Tailwind CSS @theme directive.
+ *
+ * @since 2.0.0
+ * @link https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
+ */
+
+/**
+ * Tailwind CSS v4 @theme integration
+ * These tokens can be extended or overridden in your app.css using @theme
+ *
+ * Example:
+ * @theme {
+ *   --glass-blur: 16px;
+ *   --glass-opacity: 0.8;
+ * }
+ */
+@theme {
+	/* =========================================================================
+	 * Base Glass Tokens
+	 * ========================================================================= */
+
+	/* Blur intensity for glass effect */
+	--glass-blur: 12px;
+
+	/* Background opacity for glass surfaces */
+	--glass-opacity: 0.7;
+
+	/* Border width for glass elements */
+	--glass-border-width: 1px;
+
+	/* Border opacity (white/black depending on theme) */
+	--glass-border-opacity: 0.2;
+
+	/* Shadow opacity for glass depth */
+	--glass-shadow-opacity: 0.1;
+
+	/* =========================================================================
+	 * Tint Tokens
+	 * ========================================================================= */
+
+	/* Color tint applied to glass surface (use Tailwind colors or hex) */
+	--glass-tint-color: transparent;
+
+	/* Opacity of the color tint overlay */
+	--glass-tint-opacity: 0.15;
+
+	/* =========================================================================
+	 * Frosted Variant
+	 * - Higher blur for strong frosted glass effect
+	 * - Higher opacity for more prominent surface
+	 * - Increased saturation for vivid backdrop
+	 * ========================================================================= */
+
+	/* Blur intensity for frosted variant */
+	--glass-frosted-blur: 16px;
+
+	/* Background opacity for frosted surfaces */
+	--glass-frosted-opacity: 0.8;
+
+	/* Backdrop saturation enhancement (percentage) */
+	--glass-frosted-saturation: 180%;
+
+	/* =========================================================================
+	 * Liquid Variant
+	 * - Maximum blur for smooth liquid effect
+	 * - Lower opacity for transparency
+	 * - Refraction effect intensity
+	 * - Border glow for premium feel
+	 * ========================================================================= */
+
+	/* Blur intensity for liquid variant */
+	--glass-liquid-blur: 24px;
+
+	/* Background opacity for liquid surfaces */
+	--glass-liquid-opacity: 0.6;
+
+	/* Refraction effect intensity (0-1) */
+	--glass-liquid-refraction: 0.5;
+
+	/* Border glow intensity (0-1) */
+	--glass-liquid-border-glow: 0.3;
+
+	/* =========================================================================
+	 * Transparent Variant
+	 * - Minimal blur for subtle effect
+	 * - Low opacity for maximum transparency
+	 * ========================================================================= */
+
+	/* Blur intensity for transparent variant */
+	--glass-transparent-blur: 8px;
+
+	/* Background opacity for transparent surfaces */
+	--glass-transparent-opacity: 0.3;
+}
+
+/**
+ * Root-level glass tokens
+ * These serve as the default values and can be overridden by the @theme directive
+ */
+:root {
+	/* =========================================================================
+	 * Base Glass Tokens
+	 * ========================================================================= */
+	--glass-blur: 12px;
+	--glass-opacity: 0.7;
+	--glass-border-width: 1px;
+	--glass-border-opacity: 0.2;
+	--glass-shadow-opacity: 0.1;
+
+	/* =========================================================================
+	 * Tint Tokens
+	 * ========================================================================= */
+	--glass-tint-color: transparent;
+	--glass-tint-opacity: 0.15;
+
+	/* =========================================================================
+	 * Frosted Variant
+	 * ========================================================================= */
+	--glass-frosted-blur: 16px;
+	--glass-frosted-opacity: 0.8;
+	--glass-frosted-saturation: 180%;
+
+	/* =========================================================================
+	 * Liquid Variant
+	 * ========================================================================= */
+	--glass-liquid-blur: 24px;
+	--glass-liquid-opacity: 0.6;
+	--glass-liquid-refraction: 0.5;
+	--glass-liquid-border-glow: 0.3;
+
+	/* =========================================================================
+	 * Transparent Variant
+	 * ========================================================================= */
+	--glass-transparent-blur: 8px;
+	--glass-transparent-opacity: 0.3;
+
+	/* =========================================================================
+	 * Computed Glass Colors (Light Mode)
+	 * These are computed based on the current theme
+	 * ========================================================================= */
+	--glass-bg-color: rgba(255, 255, 255, var(--glass-opacity));
+	--glass-border-color: rgba(255, 255, 255, var(--glass-border-opacity));
+	--glass-shadow-color: rgba(0, 0, 0, var(--glass-shadow-opacity));
+
+	/* Frosted variant computed colors */
+	--glass-frosted-bg-color: rgba(255, 255, 255, var(--glass-frosted-opacity));
+
+	/* Liquid variant computed colors */
+	--glass-liquid-bg-color: rgba(255, 255, 255, var(--glass-liquid-opacity));
+	--glass-liquid-border-glow-color: rgba(255, 255, 255, var(--glass-liquid-border-glow));
+
+	/* Transparent variant computed colors */
+	--glass-transparent-bg-color: rgba(255, 255, 255, var(--glass-transparent-opacity));
+}
+
+/**
+ * Dark Mode Overrides
+ * Adjusted values for optimal glass effects in dark mode
+ *
+ * Dark mode considerations:
+ * - Frosted: More opaque to stand out against dark backgrounds
+ * - Liquid: Enhanced border glow for premium feel
+ * - Transparent: Higher blur for better readability
+ * - Tints: Increased opacity for visibility
+ */
+[data-theme="dark"] {
+	/* =========================================================================
+	 * Base Glass Token Dark Mode Overrides
+	 * ========================================================================= */
+
+	/* Slightly increased base opacity for visibility against dark backgrounds */
+	--glass-opacity: 0.75;
+
+	/* Increased border opacity for better definition in dark mode */
+	--glass-border-opacity: 0.25;
+
+	/* Increased shadow opacity for depth in dark mode */
+	--glass-shadow-opacity: 0.25;
+
+	/* =========================================================================
+	 * Tint Token Dark Mode Overrides
+	 * ========================================================================= */
+
+	/* Increased tint opacity for better visibility in dark mode */
+	--glass-tint-opacity: 0.2;
+
+	/* =========================================================================
+	 * Frosted Variant Dark Mode Overrides
+	 * - More opaque to stand out against dark backgrounds
+	 * - Increased blur for stronger frosted effect
+	 * - Higher saturation for vivid appearance
+	 * ========================================================================= */
+
+	--glass-frosted-opacity: 0.85;
+	--glass-frosted-blur: 20px;
+	--glass-frosted-saturation: 200%;
+
+	/* =========================================================================
+	 * Liquid Variant Dark Mode Overrides
+	 * - Enhanced border glow for premium feel
+	 * - Slightly higher opacity for presence
+	 * ========================================================================= */
+
+	--glass-liquid-opacity: 0.65;
+	--glass-liquid-border-glow: 0.4;
+
+	/* =========================================================================
+	 * Transparent Variant Dark Mode Overrides
+	 * - Higher blur for better readability
+	 * - Slightly increased opacity for visibility
+	 * ========================================================================= */
+
+	--glass-transparent-blur: 12px;
+	--glass-transparent-opacity: 0.35;
+
+	/* =========================================================================
+	 * Computed Glass Colors (Dark Mode)
+	 * ========================================================================= */
+	--glass-bg-color: rgba(30, 30, 30, var(--glass-opacity));
+	--glass-border-color: rgba(255, 255, 255, var(--glass-border-opacity));
+	--glass-shadow-color: rgba(0, 0, 0, var(--glass-shadow-opacity));
+
+	/* Frosted variant computed colors */
+	--glass-frosted-bg-color: rgba(30, 30, 30, var(--glass-frosted-opacity));
+
+	/* Liquid variant computed colors */
+	--glass-liquid-bg-color: rgba(30, 30, 30, var(--glass-liquid-opacity));
+	--glass-liquid-border-glow-color: rgba(255, 255, 255, var(--glass-liquid-border-glow));
+
+	/* Transparent variant computed colors */
+	--glass-transparent-bg-color: rgba(30, 30, 30, var(--glass-transparent-opacity));
+}
+
+/**
+ * Utility Classes for Glass Effects
+ * These classes can be applied directly to elements
+ */
+
+/* Base glass effect */
+.glass {
+	background: var(--glass-bg-color);
+	backdrop-filter: blur(var(--glass-blur));
+	-webkit-backdrop-filter: blur(var(--glass-blur));
+	border: var(--glass-border-width) solid var(--glass-border-color);
+	box-shadow: 0 4px 6px -1px var(--glass-shadow-color);
+}
+
+/* Frosted glass variant */
+.glass-frosted {
+	background: var(--glass-frosted-bg-color);
+	backdrop-filter: blur(var(--glass-frosted-blur)) saturate(var(--glass-frosted-saturation));
+	-webkit-backdrop-filter: blur(var(--glass-frosted-blur)) saturate(var(--glass-frosted-saturation));
+	border: var(--glass-border-width) solid var(--glass-border-color);
+	box-shadow: 0 4px 6px -1px var(--glass-shadow-color);
+}
+
+/* Liquid glass variant */
+.glass-liquid {
+	background: var(--glass-liquid-bg-color);
+	backdrop-filter: blur(var(--glass-liquid-blur));
+	-webkit-backdrop-filter: blur(var(--glass-liquid-blur));
+	border: var(--glass-border-width) solid var(--glass-liquid-border-glow-color);
+	box-shadow:
+		0 4px 6px -1px var(--glass-shadow-color),
+		inset 0 1px 0 0 var(--glass-liquid-border-glow-color);
+}
+
+/* Transparent glass variant */
+.glass-transparent {
+	background: var(--glass-transparent-bg-color);
+	backdrop-filter: blur(var(--glass-transparent-blur));
+	-webkit-backdrop-filter: blur(var(--glass-transparent-blur));
+	border: var(--glass-border-width) solid var(--glass-border-color);
+}
+
+/**
+ * Tinted Glass Modifiers
+ * Apply these alongside the base glass classes for colored glass effects
+ *
+ * Usage: <div class="glass glass-tint-primary">
+ */
+.glass-tint-primary {
+	--glass-tint-color: var(--color-primary, #3b82f6);
+}
+
+.glass-tint-secondary {
+	--glass-tint-color: var(--color-secondary, #64748b);
+}
+
+.glass-tint-accent {
+	--glass-tint-color: var(--color-accent, #f59e0b);
+}
+
+.glass-tint-success {
+	--glass-tint-color: var(--color-success, #22c55e);
+}
+
+.glass-tint-warning {
+	--glass-tint-color: var(--color-warning, #f97316);
+}
+
+.glass-tint-error {
+	--glass-tint-color: var(--color-error, #ef4444);
+}
+
+.glass-tint-info {
+	--glass-tint-color: var(--color-info, #0ea5e9);
+}
+
+/* Apply tint overlay when tint color is set */
+.glass[class*="glass-tint-"]::before,
+.glass-frosted[class*="glass-tint-"]::before,
+.glass-liquid[class*="glass-tint-"]::before,
+.glass-transparent[class*="glass-tint-"]::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: var(--glass-tint-color);
+	opacity: var(--glass-tint-opacity);
+	pointer-events: none;
+	border-radius: inherit;
+}
+
+/* Ensure tinted glass elements have relative positioning */
+.glass[class*="glass-tint-"],
+.glass-frosted[class*="glass-tint-"],
+.glass-liquid[class*="glass-tint-"],
+.glass-transparent[class*="glass-tint-"] {
+	position: relative;
+	overflow: hidden;
+}
+
+/**
+ * Tint Opacity Modifiers
+ * Control the intensity of the color tint
+ */
+.glass-tint-opacity-10 {
+	--glass-tint-opacity: 0.1;
+}
+
+.glass-tint-opacity-20 {
+	--glass-tint-opacity: 0.2;
+}
+
+.glass-tint-opacity-30 {
+	--glass-tint-opacity: 0.3;
+}
+
+.glass-tint-opacity-40 {
+	--glass-tint-opacity: 0.4;
+}
+
+.glass-tint-opacity-50 {
+	--glass-tint-opacity: 0.5;
+}
+
+.glass-tint-opacity-60 {
+	--glass-tint-opacity: 0.6;
+}
+
+.glass-tint-opacity-70 {
+	--glass-tint-opacity: 0.7;
+}
+
+.glass-tint-opacity-80 {
+	--glass-tint-opacity: 0.8;
+}
+
+.glass-tint-opacity-90 {
+	--glass-tint-opacity: 0.9;
+}
+
+.glass-tint-opacity-100 {
+	--glass-tint-opacity: 1;
+}
+
+/**
+ * Custom Tint Class
+ * Allows setting a custom tint color via CSS variable or inline style
+ *
+ * Usage:
+ * <div class="glass-frosted glass-tint-custom" style="--glass-tint-color: #8b5cf6;">
+ * or
+ * <div class="glass-frosted glass-tint-custom" style="--custom-tint: #8b5cf6;">
+ */
+.glass-tint-custom {
+	--glass-tint-color: var(--custom-tint, transparent);
+}
+
+/**
+ * =========================================================================
+ * Tailwind Color Tint Classes
+ * =========================================================================
+ *
+ * These classes provide tint options for all default Tailwind CSS colors.
+ * Use them alongside glass variant classes for colored glass effects.
+ *
+ * Usage: <div class="glass-frosted glass-tint-blue-500 glass-tint-opacity-20">
+ */
+
+/* -------------------------------------------------------------------------
+ * Slate
+ * ------------------------------------------------------------------------- */
+.glass-tint-slate-50 { --glass-tint-color: #f8fafc; }
+.glass-tint-slate-100 { --glass-tint-color: #f1f5f9; }
+.glass-tint-slate-200 { --glass-tint-color: #e2e8f0; }
+.glass-tint-slate-300 { --glass-tint-color: #cbd5e1; }
+.glass-tint-slate-400 { --glass-tint-color: #94a3b8; }
+.glass-tint-slate-500 { --glass-tint-color: #64748b; }
+.glass-tint-slate-600 { --glass-tint-color: #475569; }
+.glass-tint-slate-700 { --glass-tint-color: #334155; }
+.glass-tint-slate-800 { --glass-tint-color: #1e293b; }
+.glass-tint-slate-900 { --glass-tint-color: #0f172a; }
+.glass-tint-slate-950 { --glass-tint-color: #020617; }
+
+/* -------------------------------------------------------------------------
+ * Gray
+ * ------------------------------------------------------------------------- */
+.glass-tint-gray-50 { --glass-tint-color: #f9fafb; }
+.glass-tint-gray-100 { --glass-tint-color: #f3f4f6; }
+.glass-tint-gray-200 { --glass-tint-color: #e5e7eb; }
+.glass-tint-gray-300 { --glass-tint-color: #d1d5db; }
+.glass-tint-gray-400 { --glass-tint-color: #9ca3af; }
+.glass-tint-gray-500 { --glass-tint-color: #6b7280; }
+.glass-tint-gray-600 { --glass-tint-color: #4b5563; }
+.glass-tint-gray-700 { --glass-tint-color: #374151; }
+.glass-tint-gray-800 { --glass-tint-color: #1f2937; }
+.glass-tint-gray-900 { --glass-tint-color: #111827; }
+.glass-tint-gray-950 { --glass-tint-color: #030712; }
+
+/* -------------------------------------------------------------------------
+ * Zinc
+ * ------------------------------------------------------------------------- */
+.glass-tint-zinc-50 { --glass-tint-color: #fafafa; }
+.glass-tint-zinc-100 { --glass-tint-color: #f4f4f5; }
+.glass-tint-zinc-200 { --glass-tint-color: #e4e4e7; }
+.glass-tint-zinc-300 { --glass-tint-color: #d4d4d8; }
+.glass-tint-zinc-400 { --glass-tint-color: #a1a1aa; }
+.glass-tint-zinc-500 { --glass-tint-color: #71717a; }
+.glass-tint-zinc-600 { --glass-tint-color: #52525b; }
+.glass-tint-zinc-700 { --glass-tint-color: #3f3f46; }
+.glass-tint-zinc-800 { --glass-tint-color: #27272a; }
+.glass-tint-zinc-900 { --glass-tint-color: #18181b; }
+.glass-tint-zinc-950 { --glass-tint-color: #09090b; }
+
+/* -------------------------------------------------------------------------
+ * Neutral
+ * ------------------------------------------------------------------------- */
+.glass-tint-neutral-50 { --glass-tint-color: #fafafa; }
+.glass-tint-neutral-100 { --glass-tint-color: #f5f5f5; }
+.glass-tint-neutral-200 { --glass-tint-color: #e5e5e5; }
+.glass-tint-neutral-300 { --glass-tint-color: #d4d4d4; }
+.glass-tint-neutral-400 { --glass-tint-color: #a3a3a3; }
+.glass-tint-neutral-500 { --glass-tint-color: #737373; }
+.glass-tint-neutral-600 { --glass-tint-color: #525252; }
+.glass-tint-neutral-700 { --glass-tint-color: #404040; }
+.glass-tint-neutral-800 { --glass-tint-color: #262626; }
+.glass-tint-neutral-900 { --glass-tint-color: #171717; }
+.glass-tint-neutral-950 { --glass-tint-color: #0a0a0a; }
+
+/* -------------------------------------------------------------------------
+ * Stone
+ * ------------------------------------------------------------------------- */
+.glass-tint-stone-50 { --glass-tint-color: #fafaf9; }
+.glass-tint-stone-100 { --glass-tint-color: #f5f5f4; }
+.glass-tint-stone-200 { --glass-tint-color: #e7e5e4; }
+.glass-tint-stone-300 { --glass-tint-color: #d6d3d1; }
+.glass-tint-stone-400 { --glass-tint-color: #a8a29e; }
+.glass-tint-stone-500 { --glass-tint-color: #78716c; }
+.glass-tint-stone-600 { --glass-tint-color: #57534e; }
+.glass-tint-stone-700 { --glass-tint-color: #44403c; }
+.glass-tint-stone-800 { --glass-tint-color: #292524; }
+.glass-tint-stone-900 { --glass-tint-color: #1c1917; }
+.glass-tint-stone-950 { --glass-tint-color: #0c0a09; }
+
+/* -------------------------------------------------------------------------
+ * Red
+ * ------------------------------------------------------------------------- */
+.glass-tint-red-50 { --glass-tint-color: #fef2f2; }
+.glass-tint-red-100 { --glass-tint-color: #fee2e2; }
+.glass-tint-red-200 { --glass-tint-color: #fecaca; }
+.glass-tint-red-300 { --glass-tint-color: #fca5a5; }
+.glass-tint-red-400 { --glass-tint-color: #f87171; }
+.glass-tint-red-500 { --glass-tint-color: #ef4444; }
+.glass-tint-red-600 { --glass-tint-color: #dc2626; }
+.glass-tint-red-700 { --glass-tint-color: #b91c1c; }
+.glass-tint-red-800 { --glass-tint-color: #991b1b; }
+.glass-tint-red-900 { --glass-tint-color: #7f1d1d; }
+.glass-tint-red-950 { --glass-tint-color: #450a0a; }
+
+/* -------------------------------------------------------------------------
+ * Orange
+ * ------------------------------------------------------------------------- */
+.glass-tint-orange-50 { --glass-tint-color: #fff7ed; }
+.glass-tint-orange-100 { --glass-tint-color: #ffedd5; }
+.glass-tint-orange-200 { --glass-tint-color: #fed7aa; }
+.glass-tint-orange-300 { --glass-tint-color: #fdba74; }
+.glass-tint-orange-400 { --glass-tint-color: #fb923c; }
+.glass-tint-orange-500 { --glass-tint-color: #f97316; }
+.glass-tint-orange-600 { --glass-tint-color: #ea580c; }
+.glass-tint-orange-700 { --glass-tint-color: #c2410c; }
+.glass-tint-orange-800 { --glass-tint-color: #9a3412; }
+.glass-tint-orange-900 { --glass-tint-color: #7c2d12; }
+.glass-tint-orange-950 { --glass-tint-color: #431407; }
+
+/* -------------------------------------------------------------------------
+ * Amber
+ * ------------------------------------------------------------------------- */
+.glass-tint-amber-50 { --glass-tint-color: #fffbeb; }
+.glass-tint-amber-100 { --glass-tint-color: #fef3c7; }
+.glass-tint-amber-200 { --glass-tint-color: #fde68a; }
+.glass-tint-amber-300 { --glass-tint-color: #fcd34d; }
+.glass-tint-amber-400 { --glass-tint-color: #fbbf24; }
+.glass-tint-amber-500 { --glass-tint-color: #f59e0b; }
+.glass-tint-amber-600 { --glass-tint-color: #d97706; }
+.glass-tint-amber-700 { --glass-tint-color: #b45309; }
+.glass-tint-amber-800 { --glass-tint-color: #92400e; }
+.glass-tint-amber-900 { --glass-tint-color: #78350f; }
+.glass-tint-amber-950 { --glass-tint-color: #451a03; }
+
+/* -------------------------------------------------------------------------
+ * Yellow
+ * ------------------------------------------------------------------------- */
+.glass-tint-yellow-50 { --glass-tint-color: #fefce8; }
+.glass-tint-yellow-100 { --glass-tint-color: #fef9c3; }
+.glass-tint-yellow-200 { --glass-tint-color: #fef08a; }
+.glass-tint-yellow-300 { --glass-tint-color: #fde047; }
+.glass-tint-yellow-400 { --glass-tint-color: #facc15; }
+.glass-tint-yellow-500 { --glass-tint-color: #eab308; }
+.glass-tint-yellow-600 { --glass-tint-color: #ca8a04; }
+.glass-tint-yellow-700 { --glass-tint-color: #a16207; }
+.glass-tint-yellow-800 { --glass-tint-color: #854d0e; }
+.glass-tint-yellow-900 { --glass-tint-color: #713f12; }
+.glass-tint-yellow-950 { --glass-tint-color: #422006; }
+
+/* -------------------------------------------------------------------------
+ * Lime
+ * ------------------------------------------------------------------------- */
+.glass-tint-lime-50 { --glass-tint-color: #f7fee7; }
+.glass-tint-lime-100 { --glass-tint-color: #ecfccb; }
+.glass-tint-lime-200 { --glass-tint-color: #d9f99d; }
+.glass-tint-lime-300 { --glass-tint-color: #bef264; }
+.glass-tint-lime-400 { --glass-tint-color: #a3e635; }
+.glass-tint-lime-500 { --glass-tint-color: #84cc16; }
+.glass-tint-lime-600 { --glass-tint-color: #65a30d; }
+.glass-tint-lime-700 { --glass-tint-color: #4d7c0f; }
+.glass-tint-lime-800 { --glass-tint-color: #3f6212; }
+.glass-tint-lime-900 { --glass-tint-color: #365314; }
+.glass-tint-lime-950 { --glass-tint-color: #1a2e05; }
+
+/* -------------------------------------------------------------------------
+ * Green
+ * ------------------------------------------------------------------------- */
+.glass-tint-green-50 { --glass-tint-color: #f0fdf4; }
+.glass-tint-green-100 { --glass-tint-color: #dcfce7; }
+.glass-tint-green-200 { --glass-tint-color: #bbf7d0; }
+.glass-tint-green-300 { --glass-tint-color: #86efac; }
+.glass-tint-green-400 { --glass-tint-color: #4ade80; }
+.glass-tint-green-500 { --glass-tint-color: #22c55e; }
+.glass-tint-green-600 { --glass-tint-color: #16a34a; }
+.glass-tint-green-700 { --glass-tint-color: #15803d; }
+.glass-tint-green-800 { --glass-tint-color: #166534; }
+.glass-tint-green-900 { --glass-tint-color: #14532d; }
+.glass-tint-green-950 { --glass-tint-color: #052e16; }
+
+/* -------------------------------------------------------------------------
+ * Emerald
+ * ------------------------------------------------------------------------- */
+.glass-tint-emerald-50 { --glass-tint-color: #ecfdf5; }
+.glass-tint-emerald-100 { --glass-tint-color: #d1fae5; }
+.glass-tint-emerald-200 { --glass-tint-color: #a7f3d0; }
+.glass-tint-emerald-300 { --glass-tint-color: #6ee7b7; }
+.glass-tint-emerald-400 { --glass-tint-color: #34d399; }
+.glass-tint-emerald-500 { --glass-tint-color: #10b981; }
+.glass-tint-emerald-600 { --glass-tint-color: #059669; }
+.glass-tint-emerald-700 { --glass-tint-color: #047857; }
+.glass-tint-emerald-800 { --glass-tint-color: #065f46; }
+.glass-tint-emerald-900 { --glass-tint-color: #064e3b; }
+.glass-tint-emerald-950 { --glass-tint-color: #022c22; }
+
+/* -------------------------------------------------------------------------
+ * Teal
+ * ------------------------------------------------------------------------- */
+.glass-tint-teal-50 { --glass-tint-color: #f0fdfa; }
+.glass-tint-teal-100 { --glass-tint-color: #ccfbf1; }
+.glass-tint-teal-200 { --glass-tint-color: #99f6e4; }
+.glass-tint-teal-300 { --glass-tint-color: #5eead4; }
+.glass-tint-teal-400 { --glass-tint-color: #2dd4bf; }
+.glass-tint-teal-500 { --glass-tint-color: #14b8a6; }
+.glass-tint-teal-600 { --glass-tint-color: #0d9488; }
+.glass-tint-teal-700 { --glass-tint-color: #0f766e; }
+.glass-tint-teal-800 { --glass-tint-color: #115e59; }
+.glass-tint-teal-900 { --glass-tint-color: #134e4a; }
+.glass-tint-teal-950 { --glass-tint-color: #042f2e; }
+
+/* -------------------------------------------------------------------------
+ * Cyan
+ * ------------------------------------------------------------------------- */
+.glass-tint-cyan-50 { --glass-tint-color: #ecfeff; }
+.glass-tint-cyan-100 { --glass-tint-color: #cffafe; }
+.glass-tint-cyan-200 { --glass-tint-color: #a5f3fc; }
+.glass-tint-cyan-300 { --glass-tint-color: #67e8f9; }
+.glass-tint-cyan-400 { --glass-tint-color: #22d3ee; }
+.glass-tint-cyan-500 { --glass-tint-color: #06b6d4; }
+.glass-tint-cyan-600 { --glass-tint-color: #0891b2; }
+.glass-tint-cyan-700 { --glass-tint-color: #0e7490; }
+.glass-tint-cyan-800 { --glass-tint-color: #155e75; }
+.glass-tint-cyan-900 { --glass-tint-color: #164e63; }
+.glass-tint-cyan-950 { --glass-tint-color: #083344; }
+
+/* -------------------------------------------------------------------------
+ * Sky
+ * ------------------------------------------------------------------------- */
+.glass-tint-sky-50 { --glass-tint-color: #f0f9ff; }
+.glass-tint-sky-100 { --glass-tint-color: #e0f2fe; }
+.glass-tint-sky-200 { --glass-tint-color: #bae6fd; }
+.glass-tint-sky-300 { --glass-tint-color: #7dd3fc; }
+.glass-tint-sky-400 { --glass-tint-color: #38bdf8; }
+.glass-tint-sky-500 { --glass-tint-color: #0ea5e9; }
+.glass-tint-sky-600 { --glass-tint-color: #0284c7; }
+.glass-tint-sky-700 { --glass-tint-color: #0369a1; }
+.glass-tint-sky-800 { --glass-tint-color: #075985; }
+.glass-tint-sky-900 { --glass-tint-color: #0c4a6e; }
+.glass-tint-sky-950 { --glass-tint-color: #082f49; }
+
+/* -------------------------------------------------------------------------
+ * Blue
+ * ------------------------------------------------------------------------- */
+.glass-tint-blue-50 { --glass-tint-color: #eff6ff; }
+.glass-tint-blue-100 { --glass-tint-color: #dbeafe; }
+.glass-tint-blue-200 { --glass-tint-color: #bfdbfe; }
+.glass-tint-blue-300 { --glass-tint-color: #93c5fd; }
+.glass-tint-blue-400 { --glass-tint-color: #60a5fa; }
+.glass-tint-blue-500 { --glass-tint-color: #3b82f6; }
+.glass-tint-blue-600 { --glass-tint-color: #2563eb; }
+.glass-tint-blue-700 { --glass-tint-color: #1d4ed8; }
+.glass-tint-blue-800 { --glass-tint-color: #1e40af; }
+.glass-tint-blue-900 { --glass-tint-color: #1e3a8a; }
+.glass-tint-blue-950 { --glass-tint-color: #172554; }
+
+/* -------------------------------------------------------------------------
+ * Indigo
+ * ------------------------------------------------------------------------- */
+.glass-tint-indigo-50 { --glass-tint-color: #eef2ff; }
+.glass-tint-indigo-100 { --glass-tint-color: #e0e7ff; }
+.glass-tint-indigo-200 { --glass-tint-color: #c7d2fe; }
+.glass-tint-indigo-300 { --glass-tint-color: #a5b4fc; }
+.glass-tint-indigo-400 { --glass-tint-color: #818cf8; }
+.glass-tint-indigo-500 { --glass-tint-color: #6366f1; }
+.glass-tint-indigo-600 { --glass-tint-color: #4f46e5; }
+.glass-tint-indigo-700 { --glass-tint-color: #4338ca; }
+.glass-tint-indigo-800 { --glass-tint-color: #3730a3; }
+.glass-tint-indigo-900 { --glass-tint-color: #312e81; }
+.glass-tint-indigo-950 { --glass-tint-color: #1e1b4b; }
+
+/* -------------------------------------------------------------------------
+ * Violet
+ * ------------------------------------------------------------------------- */
+.glass-tint-violet-50 { --glass-tint-color: #f5f3ff; }
+.glass-tint-violet-100 { --glass-tint-color: #ede9fe; }
+.glass-tint-violet-200 { --glass-tint-color: #ddd6fe; }
+.glass-tint-violet-300 { --glass-tint-color: #c4b5fd; }
+.glass-tint-violet-400 { --glass-tint-color: #a78bfa; }
+.glass-tint-violet-500 { --glass-tint-color: #8b5cf6; }
+.glass-tint-violet-600 { --glass-tint-color: #7c3aed; }
+.glass-tint-violet-700 { --glass-tint-color: #6d28d9; }
+.glass-tint-violet-800 { --glass-tint-color: #5b21b6; }
+.glass-tint-violet-900 { --glass-tint-color: #4c1d95; }
+.glass-tint-violet-950 { --glass-tint-color: #2e1065; }
+
+/* -------------------------------------------------------------------------
+ * Purple
+ * ------------------------------------------------------------------------- */
+.glass-tint-purple-50 { --glass-tint-color: #faf5ff; }
+.glass-tint-purple-100 { --glass-tint-color: #f3e8ff; }
+.glass-tint-purple-200 { --glass-tint-color: #e9d5ff; }
+.glass-tint-purple-300 { --glass-tint-color: #d8b4fe; }
+.glass-tint-purple-400 { --glass-tint-color: #c084fc; }
+.glass-tint-purple-500 { --glass-tint-color: #a855f7; }
+.glass-tint-purple-600 { --glass-tint-color: #9333ea; }
+.glass-tint-purple-700 { --glass-tint-color: #7e22ce; }
+.glass-tint-purple-800 { --glass-tint-color: #6b21a8; }
+.glass-tint-purple-900 { --glass-tint-color: #581c87; }
+.glass-tint-purple-950 { --glass-tint-color: #3b0764; }
+
+/* -------------------------------------------------------------------------
+ * Fuchsia
+ * ------------------------------------------------------------------------- */
+.glass-tint-fuchsia-50 { --glass-tint-color: #fdf4ff; }
+.glass-tint-fuchsia-100 { --glass-tint-color: #fae8ff; }
+.glass-tint-fuchsia-200 { --glass-tint-color: #f5d0fe; }
+.glass-tint-fuchsia-300 { --glass-tint-color: #f0abfc; }
+.glass-tint-fuchsia-400 { --glass-tint-color: #e879f9; }
+.glass-tint-fuchsia-500 { --glass-tint-color: #d946ef; }
+.glass-tint-fuchsia-600 { --glass-tint-color: #c026d3; }
+.glass-tint-fuchsia-700 { --glass-tint-color: #a21caf; }
+.glass-tint-fuchsia-800 { --glass-tint-color: #86198f; }
+.glass-tint-fuchsia-900 { --glass-tint-color: #701a75; }
+.glass-tint-fuchsia-950 { --glass-tint-color: #4a044e; }
+
+/* -------------------------------------------------------------------------
+ * Pink
+ * ------------------------------------------------------------------------- */
+.glass-tint-pink-50 { --glass-tint-color: #fdf2f8; }
+.glass-tint-pink-100 { --glass-tint-color: #fce7f3; }
+.glass-tint-pink-200 { --glass-tint-color: #fbcfe8; }
+.glass-tint-pink-300 { --glass-tint-color: #f9a8d4; }
+.glass-tint-pink-400 { --glass-tint-color: #f472b6; }
+.glass-tint-pink-500 { --glass-tint-color: #ec4899; }
+.glass-tint-pink-600 { --glass-tint-color: #db2777; }
+.glass-tint-pink-700 { --glass-tint-color: #be185d; }
+.glass-tint-pink-800 { --glass-tint-color: #9d174d; }
+.glass-tint-pink-900 { --glass-tint-color: #831843; }
+.glass-tint-pink-950 { --glass-tint-color: #500724; }
+
+/* -------------------------------------------------------------------------
+ * Rose
+ * ------------------------------------------------------------------------- */
+.glass-tint-rose-50 { --glass-tint-color: #fff1f2; }
+.glass-tint-rose-100 { --glass-tint-color: #ffe4e6; }
+.glass-tint-rose-200 { --glass-tint-color: #fecdd3; }
+.glass-tint-rose-300 { --glass-tint-color: #fda4af; }
+.glass-tint-rose-400 { --glass-tint-color: #fb7185; }
+.glass-tint-rose-500 { --glass-tint-color: #f43f5e; }
+.glass-tint-rose-600 { --glass-tint-color: #e11d48; }
+.glass-tint-rose-700 { --glass-tint-color: #be123c; }
+.glass-tint-rose-800 { --glass-tint-color: #9f1239; }
+.glass-tint-rose-900 { --glass-tint-color: #881337; }
+.glass-tint-rose-950 { --glass-tint-color: #4c0519; }
+
+/**
+ * =========================================================================
+ * Glass Theme Presets
+ * =========================================================================
+ *
+ * Pre-built glass theme configurations for common use cases.
+ * Apply these classes to elements or containers to use preset glass styles.
+ *
+ * Available Presets:
+ * - .glass-frosted-light: Light mode frosted glass theme
+ * - .glass-frosted-dark: Dark mode frosted glass theme
+ * - .glass-liquid-light: Light mode liquid glass theme
+ * - .glass-liquid-dark: Dark mode liquid glass theme
+ * - .glass-minimal: Subtle glass effects
+ * - .glass-bold: Strong glass effects
+ *
+ * Usage:
+ * <div class="glass-frosted-light glass p-6 rounded-xl">
+ *     Content with frosted light preset
+ * </div>
+ *
+ * Presets can be applied:
+ * 1. Globally via :root by adding the class to the html element
+ * 2. Per-container by adding to a parent element
+ * 3. Per-component by adding directly to the element
+ *
+ * @since 2.0.0
+ */
+
+/* -------------------------------------------------------------------------
+ * glass-frosted-light
+ *
+ * Clean, professional frosted glass effect optimized for light backgrounds.
+ * Features high saturation and moderate blur for a premium feel.
+ * ------------------------------------------------------------------------- */
+.glass-frosted-light {
+	/* Base tokens */
+	--glass-blur: 14px;
+	--glass-opacity: 0.75;
+	--glass-border-width: 1px;
+	--glass-border-opacity: 0.25;
+	--glass-shadow-opacity: 0.08;
+
+	/* Tint tokens */
+	--glass-tint-color: transparent;
+	--glass-tint-opacity: 0.1;
+
+	/* Frosted variant (primary for this preset) */
+	--glass-frosted-blur: 18px;
+	--glass-frosted-opacity: 0.85;
+	--glass-frosted-saturation: 200%;
+
+	/* Liquid variant */
+	--glass-liquid-blur: 22px;
+	--glass-liquid-opacity: 0.65;
+	--glass-liquid-refraction: 0.4;
+	--glass-liquid-border-glow: 0.25;
+
+	/* Transparent variant */
+	--glass-transparent-blur: 10px;
+	--glass-transparent-opacity: 0.35;
+
+	/* Computed colors */
+	--glass-bg-color: rgba(255, 255, 255, 0.75);
+	--glass-border-color: rgba(255, 255, 255, 0.25);
+	--glass-shadow-color: rgba(0, 0, 0, 0.08);
+	--glass-frosted-bg-color: rgba(255, 255, 255, 0.85);
+	--glass-liquid-bg-color: rgba(255, 255, 255, 0.65);
+	--glass-liquid-border-glow-color: rgba(255, 255, 255, 0.25);
+	--glass-transparent-bg-color: rgba(255, 255, 255, 0.35);
+}
+
+/* -------------------------------------------------------------------------
+ * glass-frosted-dark
+ *
+ * Sophisticated frosted glass effect optimized for dark backgrounds.
+ * Features enhanced blur and border glow for visibility.
+ * ------------------------------------------------------------------------- */
+.glass-frosted-dark {
+	/* Base tokens */
+	--glass-blur: 16px;
+	--glass-opacity: 0.8;
+	--glass-border-width: 1px;
+	--glass-border-opacity: 0.3;
+	--glass-shadow-opacity: 0.2;
+
+	/* Tint tokens */
+	--glass-tint-color: transparent;
+	--glass-tint-opacity: 0.15;
+
+	/* Frosted variant (primary for this preset) */
+	--glass-frosted-blur: 22px;
+	--glass-frosted-opacity: 0.9;
+	--glass-frosted-saturation: 220%;
+
+	/* Liquid variant */
+	--glass-liquid-blur: 26px;
+	--glass-liquid-opacity: 0.7;
+	--glass-liquid-refraction: 0.5;
+	--glass-liquid-border-glow: 0.4;
+
+	/* Transparent variant */
+	--glass-transparent-blur: 14px;
+	--glass-transparent-opacity: 0.4;
+
+	/* Computed colors */
+	--glass-bg-color: rgba(20, 20, 25, 0.8);
+	--glass-border-color: rgba(255, 255, 255, 0.15);
+	--glass-shadow-color: rgba(0, 0, 0, 0.2);
+	--glass-frosted-bg-color: rgba(20, 20, 25, 0.9);
+	--glass-liquid-bg-color: rgba(20, 20, 25, 0.7);
+	--glass-liquid-border-glow-color: rgba(255, 255, 255, 0.2);
+	--glass-transparent-bg-color: rgba(20, 20, 25, 0.4);
+}
+
+/* -------------------------------------------------------------------------
+ * glass-liquid-light
+ *
+ * Premium liquid glass effect for light backgrounds with smooth,
+ * flowing visuals and enhanced refraction effects.
+ * ------------------------------------------------------------------------- */
+.glass-liquid-light {
+	/* Base tokens */
+	--glass-blur: 16px;
+	--glass-opacity: 0.6;
+	--glass-border-width: 1px;
+	--glass-border-opacity: 0.35;
+	--glass-shadow-opacity: 0.12;
+
+	/* Tint tokens */
+	--glass-tint-color: transparent;
+	--glass-tint-opacity: 0.12;
+
+	/* Frosted variant */
+	--glass-frosted-blur: 20px;
+	--glass-frosted-opacity: 0.7;
+	--glass-frosted-saturation: 170%;
+
+	/* Liquid variant (primary for this preset) */
+	--glass-liquid-blur: 28px;
+	--glass-liquid-opacity: 0.55;
+	--glass-liquid-refraction: 0.6;
+	--glass-liquid-border-glow: 0.35;
+
+	/* Transparent variant */
+	--glass-transparent-blur: 12px;
+	--glass-transparent-opacity: 0.25;
+
+	/* Computed colors */
+	--glass-bg-color: rgba(255, 255, 255, 0.6);
+	--glass-border-color: rgba(255, 255, 255, 0.35);
+	--glass-shadow-color: rgba(0, 0, 0, 0.12);
+	--glass-frosted-bg-color: rgba(255, 255, 255, 0.7);
+	--glass-liquid-bg-color: rgba(255, 255, 255, 0.55);
+	--glass-liquid-border-glow-color: rgba(255, 255, 255, 0.35);
+	--glass-transparent-bg-color: rgba(255, 255, 255, 0.25);
+}
+
+/* -------------------------------------------------------------------------
+ * glass-liquid-dark
+ *
+ * Premium liquid glass effect for dark backgrounds with enhanced
+ * glow effects and deeper transparency.
+ * ------------------------------------------------------------------------- */
+.glass-liquid-dark {
+	/* Base tokens */
+	--glass-blur: 18px;
+	--glass-opacity: 0.55;
+	--glass-border-width: 1px;
+	--glass-border-opacity: 0.4;
+	--glass-shadow-opacity: 0.25;
+
+	/* Tint tokens */
+	--glass-tint-color: transparent;
+	--glass-tint-opacity: 0.18;
+
+	/* Frosted variant */
+	--glass-frosted-blur: 22px;
+	--glass-frosted-opacity: 0.65;
+	--glass-frosted-saturation: 190%;
+
+	/* Liquid variant (primary for this preset) */
+	--glass-liquid-blur: 32px;
+	--glass-liquid-opacity: 0.5;
+	--glass-liquid-refraction: 0.65;
+	--glass-liquid-border-glow: 0.45;
+
+	/* Transparent variant */
+	--glass-transparent-blur: 16px;
+	--glass-transparent-opacity: 0.3;
+
+	/* Computed colors */
+	--glass-bg-color: rgba(15, 15, 20, 0.55);
+	--glass-border-color: rgba(255, 255, 255, 0.2);
+	--glass-shadow-color: rgba(0, 0, 0, 0.25);
+	--glass-frosted-bg-color: rgba(15, 15, 20, 0.65);
+	--glass-liquid-bg-color: rgba(15, 15, 20, 0.5);
+	--glass-liquid-border-glow-color: rgba(255, 255, 255, 0.25);
+	--glass-transparent-bg-color: rgba(15, 15, 20, 0.3);
+}
+
+/* -------------------------------------------------------------------------
+ * glass-minimal
+ *
+ * Subtle, understated glass effect for designs that need glass aesthetics
+ * without overwhelming visual presence. Works in both light and dark modes.
+ * ------------------------------------------------------------------------- */
+.glass-minimal {
+	/* Base tokens */
+	--glass-blur: 8px;
+	--glass-opacity: 0.5;
+	--glass-border-width: 1px;
+	--glass-border-opacity: 0.1;
+	--glass-shadow-opacity: 0.05;
+
+	/* Tint tokens */
+	--glass-tint-color: transparent;
+	--glass-tint-opacity: 0.05;
+
+	/* Frosted variant */
+	--glass-frosted-blur: 10px;
+	--glass-frosted-opacity: 0.55;
+	--glass-frosted-saturation: 120%;
+
+	/* Liquid variant */
+	--glass-liquid-blur: 14px;
+	--glass-liquid-opacity: 0.4;
+	--glass-liquid-refraction: 0.3;
+	--glass-liquid-border-glow: 0.15;
+
+	/* Transparent variant */
+	--glass-transparent-blur: 6px;
+	--glass-transparent-opacity: 0.2;
+
+	/* Computed colors (light mode) */
+	--glass-bg-color: rgba(255, 255, 255, 0.5);
+	--glass-border-color: rgba(255, 255, 255, 0.1);
+	--glass-shadow-color: rgba(0, 0, 0, 0.05);
+	--glass-frosted-bg-color: rgba(255, 255, 255, 0.55);
+	--glass-liquid-bg-color: rgba(255, 255, 255, 0.4);
+	--glass-liquid-border-glow-color: rgba(255, 255, 255, 0.15);
+	--glass-transparent-bg-color: rgba(255, 255, 255, 0.2);
+}
+
+/* glass-minimal dark mode overrides */
+[data-theme="dark"] .glass-minimal {
+	--glass-opacity: 0.55;
+	--glass-border-opacity: 0.12;
+	--glass-shadow-opacity: 0.1;
+	--glass-tint-opacity: 0.08;
+
+	--glass-frosted-opacity: 0.6;
+	--glass-frosted-blur: 12px;
+
+	--glass-liquid-opacity: 0.45;
+	--glass-liquid-border-glow: 0.2;
+
+	--glass-transparent-opacity: 0.25;
+	--glass-transparent-blur: 8px;
+
+	/* Computed colors (dark mode) */
+	--glass-bg-color: rgba(30, 30, 35, 0.55);
+	--glass-border-color: rgba(255, 255, 255, 0.08);
+	--glass-shadow-color: rgba(0, 0, 0, 0.1);
+	--glass-frosted-bg-color: rgba(30, 30, 35, 0.6);
+	--glass-liquid-bg-color: rgba(30, 30, 35, 0.45);
+	--glass-liquid-border-glow-color: rgba(255, 255, 255, 0.12);
+	--glass-transparent-bg-color: rgba(30, 30, 35, 0.25);
+}
+
+/* -------------------------------------------------------------------------
+ * glass-bold
+ *
+ * Strong, prominent glass effect for elements that need to stand out
+ * with dramatic visual impact. Works in both light and dark modes.
+ * ------------------------------------------------------------------------- */
+.glass-bold {
+	/* Base tokens */
+	--glass-blur: 20px;
+	--glass-opacity: 0.85;
+	--glass-border-width: 2px;
+	--glass-border-opacity: 0.4;
+	--glass-shadow-opacity: 0.2;
+
+	/* Tint tokens */
+	--glass-tint-color: transparent;
+	--glass-tint-opacity: 0.25;
+
+	/* Frosted variant */
+	--glass-frosted-blur: 26px;
+	--glass-frosted-opacity: 0.9;
+	--glass-frosted-saturation: 250%;
+
+	/* Liquid variant */
+	--glass-liquid-blur: 36px;
+	--glass-liquid-opacity: 0.75;
+	--glass-liquid-refraction: 0.7;
+	--glass-liquid-border-glow: 0.5;
+
+	/* Transparent variant */
+	--glass-transparent-blur: 16px;
+	--glass-transparent-opacity: 0.45;
+
+	/* Computed colors (light mode) */
+	--glass-bg-color: rgba(255, 255, 255, 0.85);
+	--glass-border-color: rgba(255, 255, 255, 0.4);
+	--glass-shadow-color: rgba(0, 0, 0, 0.2);
+	--glass-frosted-bg-color: rgba(255, 255, 255, 0.9);
+	--glass-liquid-bg-color: rgba(255, 255, 255, 0.75);
+	--glass-liquid-border-glow-color: rgba(255, 255, 255, 0.5);
+	--glass-transparent-bg-color: rgba(255, 255, 255, 0.45);
+}
+
+/* glass-bold dark mode overrides */
+[data-theme="dark"] .glass-bold {
+	--glass-opacity: 0.9;
+	--glass-border-opacity: 0.45;
+	--glass-shadow-opacity: 0.3;
+	--glass-tint-opacity: 0.3;
+
+	--glass-frosted-opacity: 0.92;
+	--glass-frosted-blur: 30px;
+	--glass-frosted-saturation: 280%;
+
+	--glass-liquid-opacity: 0.8;
+	--glass-liquid-blur: 40px;
+	--glass-liquid-border-glow: 0.55;
+
+	--glass-transparent-opacity: 0.5;
+	--glass-transparent-blur: 20px;
+
+	/* Computed colors (dark mode) */
+	--glass-bg-color: rgba(10, 10, 15, 0.9);
+	--glass-border-color: rgba(255, 255, 255, 0.25);
+	--glass-shadow-color: rgba(0, 0, 0, 0.3);
+	--glass-frosted-bg-color: rgba(10, 10, 15, 0.92);
+	--glass-liquid-bg-color: rgba(10, 10, 15, 0.8);
+	--glass-liquid-border-glow-color: rgba(255, 255, 255, 0.3);
+	--glass-transparent-bg-color: rgba(10, 10, 15, 0.5);
+}
+
+/**
+ * =========================================================================
+ * Preset Utility Classes
+ * =========================================================================
+ *
+ * Additional utility classes for working with glass presets.
+ * These can be combined with preset classes for enhanced customization.
+ */
+
+/* Apply glass effect with current preset's tokens */
+.glass-preset {
+	background: var(--glass-bg-color);
+	backdrop-filter: blur(var(--glass-blur));
+	-webkit-backdrop-filter: blur(var(--glass-blur));
+	border: var(--glass-border-width) solid var(--glass-border-color);
+	box-shadow: 0 4px 6px -1px var(--glass-shadow-color);
+}
+
+/* Apply frosted glass with current preset's tokens */
+.glass-preset-frosted {
+	background: var(--glass-frosted-bg-color);
+	backdrop-filter: blur(var(--glass-frosted-blur)) saturate(var(--glass-frosted-saturation));
+	-webkit-backdrop-filter: blur(var(--glass-frosted-blur)) saturate(var(--glass-frosted-saturation));
+	border: var(--glass-border-width) solid var(--glass-border-color);
+	box-shadow: 0 4px 6px -1px var(--glass-shadow-color);
+}
+
+/* Apply liquid glass with current preset's tokens */
+.glass-preset-liquid {
+	background: var(--glass-liquid-bg-color);
+	backdrop-filter: blur(var(--glass-liquid-blur));
+	-webkit-backdrop-filter: blur(var(--glass-liquid-blur));
+	border: var(--glass-border-width) solid var(--glass-liquid-border-glow-color);
+	box-shadow:
+		0 4px 6px -1px var(--glass-shadow-color),
+		inset 0 1px 0 0 var(--glass-liquid-border-glow-color);
+}
+
+/* Apply transparent glass with current preset's tokens */
+.glass-preset-transparent {
+	background: var(--glass-transparent-bg-color);
+	backdrop-filter: blur(var(--glass-transparent-blur));
+	-webkit-backdrop-filter: blur(var(--glass-transparent-blur));
+	border: var(--glass-border-width) solid var(--glass-border-color);
+}

@@ -18,6 +18,7 @@ declare(strict_types=1);
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
 use ArtisanPack\LivewireUiComponents\Styling\ColorGenerator;
+use ArtisanPack\LivewireUiComponents\Support\GlassHelper;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
@@ -38,6 +39,9 @@ class Alert extends Component
      * @param  ?bool  $dismissible  Whether the alert can be dismissed by the user.
      * @param  ?string  $color  Color variant, Tailwind color, or hex code.
      * @param  ?string  $colorAdjustment  Background adjustment (lighter, darker, transparent, subtle).
+     * @param  ?string  $glass  Glass effect variant ('frosted', 'liquid', 'transparent').
+     * @param  ?string  $glassTint  Tailwind color name or hex code for glass tint.
+     * @param  ?int  $glassTintOpacity  Tint opacity (10-100).
      * @param  string  $uuid  Unique identifier for the alert instance.
      *
      * @slot  mixed  $actions  Slots for actionable elements like buttons or links.
@@ -51,6 +55,11 @@ class Alert extends Component
         public ?bool $dismissible = false,
         public ?string $color = null,
         public ?string $colorAdjustment = null,
+
+        // Glass effect props
+        public ?string $glass = null,
+        public ?string $glassTint = null,
+        public ?int $glassTintOpacity = null,
 
         // Slots
         public mixed $actions = null,
@@ -83,6 +92,33 @@ class Alert extends Component
         );
 
         return $colorClasses;
+    }
+
+    /**
+     * Get the glass effect CSS classes.
+     *
+     * @since 2.0.0
+     *
+     * @return string Space-separated CSS classes.
+     */
+    public function glassClasses(): string
+    {
+        return GlassHelper::getClasses($this->glass, $this->glassTint, $this->glassTintOpacity);
+    }
+
+    /**
+     * Get the glass effect inline styles including accessible text color.
+     *
+     * Combines custom tint color CSS variable with accessible text color
+     * to ensure WCAG 2.0 AA compliance on tinted glass backgrounds.
+     *
+     * @since 2.0.0
+     *
+     * @return string Inline style string.
+     */
+    public function glassStyle(): string
+    {
+        return GlassHelper::getFullInlineStyle($this->glassTint);
     }
 
     public function render(): View
