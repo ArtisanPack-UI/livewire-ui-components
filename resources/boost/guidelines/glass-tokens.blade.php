@@ -297,11 +297,16 @@ Glass effects are available in v2.0+ components using the `glass`, `glass-tint`,
     Liquid glass modal with primary tint
 </x-artisanpack-modal>
 
-{{-- Use GlassHelper methods for custom implementations --}}
+{{-- Use GlassHelper static methods for custom implementations --}}
 @php
-use ArtisanPackUI\LivewireUiComponents\Helpers\GlassHelper;
-$glassClasses = GlassHelper::glassClasses('frosted', 'primary', 15);
-$glassStyles = GlassHelper::glassStyle('frosted', 'primary', 15);
+use ArtisanPack\LivewireUiComponents\Support\GlassHelper;
+
+$glassClasses = GlassHelper::getClasses('frosted', 'primary', 15);
+$glassStyles = GlassHelper::getFullInlineStyle('primary', true);
 @endphp
+
+<div class="{{ $glassClasses }}" style="{{ $glassStyles }}">
+    Custom glass effect element
+</div>
 </code-snippet>
 @endverbatim

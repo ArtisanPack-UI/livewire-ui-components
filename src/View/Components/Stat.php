@@ -352,14 +352,41 @@ class Stat extends Component
             };
         }
 
-        // Remove all non-numeric characters except dots and minus
-        $cleaned = preg_replace('/[^0-9.\-]/', '', $value);
+        // Strip currency symbols and whitespace first
+        $cleaned = preg_replace('/[^\d.,\-]/', '', $value);
 
-        // Handle multiple dots (keep only first for decimal)
-        if (substr_count($cleaned, '.') > 1) {
-            $parts   = explode('.', $cleaned);
-            $cleaned = array_shift($parts).'.'.implode('', $parts);
+        if ('' === $cleaned || '-' === $cleaned) {
+            return null;
         }
+
+        // Detect separator patterns to handle both US and EU formats
+        $hasDot   = false !== strpos($cleaned, '.');
+        $hasComma = false !== strpos($cleaned, ',');
+
+        if ($hasDot && $hasComma) {
+            // Both separators present - determine which is decimal
+            $lastDot   = strrpos($cleaned, '.');
+            $lastComma = strrpos($cleaned, ',');
+
+            if ($lastComma > $lastDot) {
+                // EU format: "1.234.567,89" - comma is decimal
+                $cleaned = str_replace('.', '', $cleaned); // Remove thousand separators
+                $cleaned = str_replace(',', '.', $cleaned); // Replace decimal comma with dot
+            } else {
+                // US format: "1,234,567.89" - dot is decimal
+                $cleaned = str_replace(',', '', $cleaned); // Remove thousand separators
+            }
+        } elseif ($hasComma) {
+            // Only comma present - could be thousands or decimal
+            // If comma appears once and is followed by exactly 2-3 digits, treat as decimal
+            if (1 === substr_count($cleaned, ',') && preg_match('/,\d{2,3}$/', $cleaned)) {
+                $cleaned = str_replace(',', '.', $cleaned);
+            } else {
+                // Otherwise, treat as thousands separator
+                $cleaned = str_replace(',', '', $cleaned);
+            }
+        }
+        // If only dot(s) present, already in correct format
 
         if ('' === $cleaned || '-' === $cleaned) {
             return null;
