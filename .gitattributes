@@ -14,6 +14,7 @@
 
 # Release planning documents
 /LIVEWIRE-UI-1.0-PLAN.md export-ignore
+/RELEASE-CHECKLIST.md export-ignore
 
 # Lock file (not needed for package releases)
 /composer.lock export-ignore

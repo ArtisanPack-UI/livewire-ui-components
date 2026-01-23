@@ -71,17 +71,17 @@
 
     <!-- SPINNER LEFT -->
     @if($spinner && !$iconRight && !$loading)
-        <span class="loading loading-spinner w-5 h-5 hidden" wire:loading.class.remove="hidden" wire:target="{{ $spinnerTarget() }}"></span>
+        <span class="loading loading-spinner w-5 h-5 hidden data-loading:block" wire:loading.class.remove="hidden" wire:target="{{ $spinnerTarget() }}"></span>
     @endif
 
     <!-- LOADING CONTENT (icon or text, shows during loading) -->
     @if($loading)
         @if($isLoadingIcon())
-            <span class="hidden" wire:loading.class.remove="hidden" wire:target="{{ $spinnerTarget() }}">
+            <span class="hidden data-loading:block" wire:loading.class.remove="hidden" wire:target="{{ $spinnerTarget() }}">
                 <x-artisanpack-icon :name="$loading" />
             </span>
         @else
-            <span class="hidden" wire:loading.class.remove="hidden" wire:target="{{ $spinnerTarget() }}">
+            <span class="hidden data-loading:block" wire:loading.class.remove="hidden" wire:target="{{ $spinnerTarget() }}">
                 {{ $loading }}
             </span>
         @endif
@@ -89,35 +89,35 @@
 
     <!-- ICON -->
     @if($icon)
-        <span class="block" @if($spinner) wire:loading.class="hidden" wire:target="{{ $spinnerTarget() }}" @endif>
+        <span @class(["block", "data-loading:hidden" => $spinner]) @if($spinner) wire:loading.class="hidden" wire:target="{{ $spinnerTarget() }}" @endif>
             <x-artisanpack-icon :name="$icon" />
         </span>
     @endif
 
     <!-- LABEL / SLOT -->
     @if($label)
-        <span @class(["hidden lg:block" => $responsive ]) @if($spinner && $loading) wire:loading.class="hidden" wire:target="{{ $spinnerTarget() }}" @endif>
+        <span @class(["hidden lg:block" => $responsive, "data-loading:hidden" => $spinner && $loading]) @if($spinner && $loading) wire:loading.class="hidden" wire:target="{{ $spinnerTarget() }}" @endif>
             {{ $label }}
         </span>
         @if(strlen($badge ?? '') > 0)
             <span class="badge badge-sm {{ $badgeClasses }}">{{ $badge }}</span>
         @endif
     @else
-        <span @if($spinner && $loading) wire:loading.class="hidden" wire:target="{{ $spinnerTarget() }}" @endif>
+        <span @class(["data-loading:hidden" => $spinner && $loading]) @if($spinner && $loading) wire:loading.class="hidden" wire:target="{{ $spinnerTarget() }}" @endif>
             {{ $slot }}
         </span>
     @endif
 
     <!-- ICON RIGHT -->
     @if($iconRight)
-        <span class="block" @if($spinner) wire:loading.class="hidden" wire:target="{{ $spinnerTarget() }}" @endif>
+        <span @class(["block", "data-loading:hidden" => $spinner]) @if($spinner) wire:loading.class="hidden" wire:target="{{ $spinnerTarget() }}" @endif>
             <x-artisanpack-icon :name="$iconRight" />
         </span>
     @endif
 
     <!-- SPINNER RIGHT -->
     @if($spinner && $iconRight && !$loading)
-        <span class="loading loading-spinner w-5 h-5 hidden" wire:loading.class.remove="hidden" wire:target="{{ $spinnerTarget() }}"></span>
+        <span class="loading loading-spinner w-5 h-5 hidden data-loading:block" wire:loading.class.remove="hidden" wire:target="{{ $spinnerTarget() }}"></span>
     @endif
 
 @if(!$link)

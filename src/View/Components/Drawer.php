@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
+use ArtisanPack\LivewireUiComponents\Support\GlassHelper;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
@@ -42,8 +43,13 @@ class Drawer extends Component
         public ?bool $withCloseButton = false,
         public ?bool $closeOnEscape = false,
         public ?bool $withoutTrapFocus = false,
-        public ?string $openOn = null,   // <-- ADD: Event name to listen for to open.
-        public ?string $closeOn = null,  // <-- ADD: Event name to listen for to close.
+        public ?string $openOn = null,
+        public ?string $closeOn = null,
+
+        // Glass effect props
+        public ?string $glass = null,
+        public ?string $glassTint = null,
+        public ?int $glassTintOpacity = null,
 
         // Slots
         public ?string $actions = null,
@@ -68,6 +74,33 @@ class Drawer extends Component
     public function modelName(): WireDirective
     {
         return $this->attributes->wire('model');
+    }
+
+    /**
+     * Get the glass effect CSS classes.
+     *
+     * @since 2.0.0
+     *
+     * @return string Space-separated CSS classes.
+     */
+    public function glassClasses(): string
+    {
+        return GlassHelper::getClasses($this->glass, $this->glassTint, $this->glassTintOpacity);
+    }
+
+    /**
+     * Get the glass effect inline styles including accessible text color.
+     *
+     * Combines custom tint color CSS variable with accessible text color
+     * to ensure WCAG 2.0 AA compliance on tinted glass backgrounds.
+     *
+     * @since 2.0.0
+     *
+     * @return string Inline style string.
+     */
+    public function glassStyle(): string
+    {
+        return GlassHelper::getFullInlineStyle($this->glassTint);
     }
 
     public function render(): View|Closure|string

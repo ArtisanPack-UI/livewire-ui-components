@@ -12,10 +12,14 @@ ArtisanPack UI Livewire Components is a powerful UI component library for Larave
 
 ### Key Features and Benefits
 
-- **60+ Pre-built Components**: From simple buttons to complex data tables and charts
-- **Livewire 3 Compatible**: Built specifically for the latest version of Livewire
+- **70+ Pre-built Components**: From simple buttons to complex data tables and charts
+- **Livewire 3 & 4 Compatible**: Built for the latest versions of Livewire with graceful feature detection
 - **DaisyUI Integration**: Leverages DaisyUI for beautiful, consistent styling
 - **Customizable Theming**: Generate custom color themes with a simple Artisan command
+- **Dashboard Components**: KPI cards, widget grids, and sparklines for building dashboards (v2.0+)
+- **Data Export**: Export table data to CSV, Excel, and PDF formats (v2.0+)
+- **Streaming Content**: Support for real-time AI response streaming in Livewire 4 (v2.0+)
+- **Glass Effects**: Frosted glass UI effects for modern aesthetics (v2.0+)
 - **Responsive Design**: All components are fully responsive out of the box
 - **Accessibility**: Components are designed with accessibility in mind
 - **Easy Installation**: Simple installation process with an interactive installer
@@ -23,9 +27,9 @@ ArtisanPack UI Livewire Components is a powerful UI component library for Larave
 
 ### Technology Stack
 
-- **Laravel 12+**: Built for the latest version of Laravel
-- **Livewire 3**: Utilizes Livewire for dynamic, reactive components
-- **Tailwind CSS**: Uses Tailwind CSS for styling
+- **Laravel 10, 11, & 12**: Compatible with Laravel 10.x and later
+- **Livewire 3 & 4**: Utilizes Livewire for dynamic, reactive components with version-specific features
+- **Tailwind CSS 4**: Uses Tailwind CSS for styling
 - **DaisyUI**: Integrates with DaisyUI for additional styling and components
 - **Alpine.js**: Uses Alpine.js for client-side interactivity
 
@@ -79,11 +83,27 @@ ArtisanPack UI Livewire Components includes a wide range of components for vario
 - [Tabs](components/tabs) - Tabbed interfaces
 
 ### Data Display Components
-- [Table](components/table) - Data tables
+- [Table](components/table) - Data tables with sorting, export, and more
 - [Chart](components/chart) - Data visualization
 - [Pagination](components/pagination) - Page navigation
 
+### Dashboard Components (v2.0+)
+- [KpiCard](components/kpi-card) - KPI cards with sparklines and trend indicators
+- [WidgetGrid](components/widget-grid) - Responsive grid for dashboard layouts
+- [Sparkline](components/sparkline) - Inline sparkline charts
+
+### AI/Streaming Components (v2.0+)
+- [StreamableContent](components/streamable-content) - Real-time streaming content display
+
 For a complete list of components, see the [Components Overview](components).
+
+## Theming & Styling
+
+- [Generating Color Themes](generating-themes) - Create custom color themes
+- [Glass Theme Presets](glass-presets) - Pre-built glassmorphism styles
+- [Theme Preview Tool](theme-preview-tool) - Browser-based theme customization (v2.0+, development only)
+- [High Contrast Theme](high-contrast-theme) - Accessibility-focused themes (v2.0+)
+- [Customization](customization) - Advanced styling and customization
 
 ## Resources
 

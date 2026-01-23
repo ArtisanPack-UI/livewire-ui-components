@@ -248,6 +248,25 @@ This approach ensures:
 - Works reliably regardless of JavaScript initialization timing
 - Compatible with all browsers and Livewire versions
 
+#### Livewire 4 data-loading Support
+
+For Livewire 4 users, the button component also supports the new CSS-based `data-loading` attribute system. This provides an additional CSS variant approach alongside the traditional `wire:loading` directives:
+
+```html
+<!-- Elements use both approaches for dual compatibility -->
+<span class="hidden data-loading:block" wire:loading.class.remove="hidden">
+    Loading...
+</span>
+```
+
+**CSS classes used:**
+- `data-loading:block` - Shows element during loading state
+- `data-loading:hidden` - Hides element during loading state
+
+This dual-support approach ensures buttons work optimally on both Livewire 3 and Livewire 4, with Livewire 4 users benefiting from enhanced CSS-based state management.
+
+See the [Livewire 4 Features Migration Guide](../migration/livewire-4-features) for more details.
+
 ### Button as Link
 
 ```php

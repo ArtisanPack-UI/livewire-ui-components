@@ -211,23 +211,39 @@ The Stat component now supports:
 
 ### Stat with Trend Indicators
 
+Trend indicators automatically display percentage changes with appropriate colors and arrows:
+
 ```php
+{{-- Positive trend (green with up arrow) --}}
 <x-artisanpack-stat
     title="Conversion Rate"
     value="3.2%"
-    description="↗︎ 0.5% from last month"
+    :change="12.5"
     icon="heroicon-o-trending-up"
-    color="text-success"
 />
 
+{{-- Negative trend (red with down arrow) --}}
 <x-artisanpack-stat
     title="Bounce Rate"
     value="42%"
-    description="↘︎ 3% from last month"
+    :change="-8.3"
     icon="heroicon-o-trending-down"
-    color="text-error"
+/>
+
+{{-- Trend with custom label --}}
+<x-artisanpack-stat
+    title="Monthly Revenue"
+    value="$45,231"
+    :change="5.4"
+    change-label="vs last month"
+    icon="heroicon-o-currency-dollar"
 />
 ```
+
+The `change` prop automatically:
+- Displays green text and up arrow for positive values
+- Displays red text and down arrow for negative values
+- Formats the value with a sign and percent symbol (e.g., "+12.5%" or "-8.3%")
 
 ### Tooltips
 
@@ -247,6 +263,181 @@ The Stat component now supports:
 />
 ```
 
+## Animated Value Transitions
+
+The Stat component supports smooth number-counting animations when values change. This is especially useful for dashboard widgets that update in real-time via Livewire.
+
+### Basic Animation
+
+Animation is enabled by default for numeric values:
+
+```php
+{{-- Values automatically animate when updated via Livewire --}}
+<x-artisanpack-stat
+    title="Active Users"
+    :value="$activeUsers"
+    icon="heroicon-o-users"
+/>
+```
+
+### Disabling Animation
+
+You can disable animation when needed:
+
+```php
+<x-artisanpack-stat
+    title="Status Code"
+    value="200"
+    :animate="false"
+/>
+```
+
+### Custom Animation Duration
+
+Adjust the animation duration (in milliseconds):
+
+```php
+{{-- Faster animation (500ms) --}}
+<x-artisanpack-stat
+    title="Quick Counter"
+    :value="$count"
+    :animate-duration="500"
+/>
+
+{{-- Slower animation (2000ms) --}}
+<x-artisanpack-stat
+    title="Gradual Update"
+    :value="$total"
+    :animate-duration="2000"
+/>
+```
+
+### Supported Value Formats
+
+The animation system automatically handles various numeric formats:
+
+```php
+{{-- Currency with commas and decimals --}}
+<x-artisanpack-stat title="Revenue" value="$1,234.56" />
+
+{{-- Percentages --}}
+<x-artisanpack-stat title="Conversion" value="45.5%" />
+
+{{-- Abbreviated numbers --}}
+<x-artisanpack-stat title="Users" value="2.5K" />
+<x-artisanpack-stat title="Views" value="1.2M" />
+<x-artisanpack-stat title="Value" value="3B" />
+
+{{-- Plain numbers with thousands separators --}}
+<x-artisanpack-stat title="Total" value="1,234,567" />
+
+{{-- Euro currency --}}
+<x-artisanpack-stat title="Price" value="€2.500,00" />
+```
+
+### Non-Numeric Values
+
+Values that cannot be parsed as numbers will display without animation:
+
+```php
+{{-- These will not animate (displayed as-is) --}}
+<x-artisanpack-stat title="Status" value="Active" />
+<x-artisanpack-stat title="Rating" value="★★★★☆" />
+```
+
+### Reduced Motion Support
+
+The animation automatically respects the user's `prefers-reduced-motion` preference. When reduced motion is enabled, values will update instantly without counting animation.
+
+### Animation with Other Features
+
+Animation works seamlessly with other Stat features:
+
+```php
+{{-- Animation with glass effect, sparkline, and trend indicator --}}
+<x-artisanpack-stat
+    title="Monthly Revenue"
+    :value="$revenue"
+    glass="frosted"
+    glass-tint="emerald-500"
+    :change="$revenueChange"
+    change-label="vs last month"
+    :sparkline-data="$sparklineData"
+    :animate-duration="1200"
+/>
+```
+
+## Embedded Sparklines
+
+The Stat component supports embedded sparkline charts to show historical data trends alongside your metrics.
+
+### Basic Sparkline
+
+```php
+<x-artisanpack-stat
+    title="Revenue"
+    value="$45,231"
+    :sparkline-data="[10, 15, 8, 20, 18, 25, 30, 28, 35]"
+/>
+```
+
+### Sparkline Types
+
+Choose from line, area, or bar chart types:
+
+```php
+{{-- Area sparkline --}}
+<x-artisanpack-stat
+    title="Revenue"
+    value="$45,231"
+    :change="12.5"
+    :sparkline-data="[10, 15, 8, 20, 18, 25, 30, 28, 35]"
+    sparkline-type="area"
+    sparkline-color="success"
+/>
+
+{{-- Line sparkline --}}
+<x-artisanpack-stat
+    title="Expenses"
+    value="$12,450"
+    :change="3.2"
+    :sparkline-data="[5, 8, 6, 10, 9, 12, 14, 13, 15]"
+    sparkline-type="line"
+    sparkline-color="error"
+/>
+
+{{-- Bar sparkline --}}
+<x-artisanpack-stat
+    title="Orders"
+    value="1,234"
+    :change="18.7"
+    :sparkline-data="[20, 15, 25, 18, 22, 30, 28, 32, 35]"
+    sparkline-type="bar"
+    sparkline-color="primary"
+/>
+```
+
+### Sparkline with Glass Effect
+
+Combine sparklines with glass morphism for modern dashboards:
+
+```php
+<x-artisanpack-stat
+    title="Revenue"
+    value="$45,231"
+    glass="frosted"
+    glass-tint="primary"
+    :change="12.5"
+    :sparkline-data="[10, 15, 8, 20, 18, 25, 30, 28, 35]"
+    sparkline-type="area"
+    sparkline-color="primary"
+/>
+```
+
+### Requirements
+
+Sparklines require ApexCharts. See the [Sparkline component documentation](sparkline) for installation instructions.
+
 ## Props
 
 | Prop | Type | Default | Description |
@@ -258,14 +449,28 @@ The Stat component now supports:
 | `title` | string | `null` | The title or label for the stat |
 | `description` | string | `null` | Additional context or trend information |
 | `tooltip` | string | `null` | Tooltip text to display on hover |
-| `tooltipLeft` | string | `null` | Tooltip text positioned to the left |
-| `tooltipRight` | string | `null` | Tooltip text positioned to the right |
-| `tooltipBottom` | string | `null` | Tooltip text positioned at the bottom |
-| **New Props** | | | |
+| `tooltip-left` | string | `null` | Tooltip text positioned to the left |
+| `tooltip-right` | string | `null` | Tooltip text positioned to the right |
+| `tooltip-bottom` | string | `null` | Tooltip text positioned at the bottom |
+| **Size & Position Props** | | | |
 | `size` | string | `'md'` | Component size: `xs`, `sm`, `md`, `lg`, `xl` |
-| `iconPosition` | string | `'left'` | Icon position: `left`, `right`, `top`, `bottom` |
-| `titlePosition` | string | `'top'` | Title position relative to value: `top`, `bottom` |
-| `contentAlign` | string | `'left'` | Content alignment: `left`, `center`, `right` |
+| `icon-position` | string | `'left'` | Icon position: `left`, `right`, `top`, `bottom` |
+| `title-position` | string | `'top'` | Title position relative to value: `top`, `bottom` |
+| `content-align` | string | `'left'` | Content alignment: `left`, `center`, `right` |
+| **Glass Effect Props** | | | |
+| `glass` | string | `null` | Glass variant (frosted, liquid, transparent) |
+| `glass-tint` | string | `null` | Glass tint color |
+| `glass-tint-opacity` | int | `null` | Glass tint opacity (0-100) |
+| **Trend Indicator Props** | | | |
+| `change` | float | `null` | Change percentage as number (e.g., 12.5 or -5.2). Automatically displays arrow and color based on sign. |
+| `change-label` | string | `null` | Optional label to show after the change percentage |
+| **Sparkline Props** | | | |
+| `sparkline-data` | array | `null` | Array of numeric values for embedded sparkline chart |
+| `sparkline-type` | string | `'line'` | Sparkline chart type (line, area, bar) |
+| `sparkline-color` | string | `null` | Sparkline color (primary, success, error, info, etc.) |
+| **Animation Props** | | | |
+| `animate` | bool | `true` | Enable/disable value animation |
+| `animate-duration` | int | `1000` | Animation duration in milliseconds |
 | `class` | string | `null` | Additional CSS classes to apply to the stat container |
 
 ## Behavior

@@ -2,7 +2,7 @@
     "name": "artisanpack-ui/livewire-ui-components",
     "description": "A Livewire UI component library for the TALL stack, forked from MaryUI and adapted for the ArtisanPack UI ecosystem.",
     "license": "MIT",
-    "version": "1.0.2",
+    "version": "2.0.0",
     "authors": [
         {
             "name": "Jacob Martella",
@@ -42,6 +42,10 @@
         "owenvoke/blade-fontawesome": "^2.9",
         "artisanpack-ui/core": "^1.0",
         "artisanpack-ui/icons": "^2.0"
+    },
+    "suggest": {
+        "phpoffice/phpspreadsheet": "Required for XLSX/Excel export functionality in Table component (^2.0|^3.0)",
+        "barryvdh/laravel-dompdf": "Required for PDF export functionality in Table component (^3.0)"
     },
     "require-dev": {
         "orchestra/testbench": "^8|^9|^10",

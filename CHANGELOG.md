@@ -1,5 +1,122 @@
 # ArtisanPack UI Livewire UI Components
 
+## [2.0.0] - 2026-01-23
+
+### Added
+
+#### Dashboard Components
+- **KpiCard**: New component for displaying KPIs with sparklines, trend indicators, and glass effects
+  - Supports sparkline visualization (area, line, bar charts)
+  - Automatic trend indicator coloring (green for positive, red for negative)
+  - Glass effect support with customizable tints
+  - Footer slot for additional content
+- **WidgetGrid**: Responsive grid helper for dashboard layouts
+  - Configurable column count (1-6 columns)
+  - Automatic responsive breakpoints
+  - Configurable gap spacing
+- **Sparkline**: Inline sparkline chart component
+  - Supports area, line, and bar chart types
+  - Customizable colors
+
+#### Table Data Export
+- **TableExporter**: New utility class for exporting table data
+  - CSV export (client-side)
+  - XLSX export via PhpSpreadsheet (server-side)
+  - PDF export via DomPDF (server-side)
+  - Automatic header normalization for Table component format
+  - Hidden column filtering
+- **WithTableExport**: New trait for Livewire components
+  - Handles `table-export-request` events
+  - Provides `exportTableToCsv()` and `exportTableToXlsx()` methods
+  - Abstract `getTableExportData()` method for customization
+- **Table component**: New export props
+  - `exportable` - Enable export functionality
+  - `export-formats` - Configure available formats (csv, xlsx, pdf)
+  - `export-filename` - Custom filename for exports
+
+#### Streaming Content (Livewire 4+)
+- **StreamableContent**: New component for displaying real-time streaming content
+  - Supports Livewire 4's `wire:stream` directive
+  - Blinking cursor animation option
+  - Placeholder text support
+  - Prose styling for rich text
+  - Graceful degradation on Livewire 3
+
+#### Glass Effects
+- **GlassHelper**: New utility class for frosted glass UI effects
+  - Three glass variants: frost, blur, subtle
+  - Customizable tint colors with accessible text colors
+  - WCAG 2.0 AA compliant contrast handling
+- **GlassPresets**: Six pre-built glass theme configurations
+  - `glass-frosted-light` - Professional frosted glass for light backgrounds
+  - `glass-frosted-dark` - Sophisticated frosted glass for dark backgrounds
+  - `glass-liquid-light` - Premium liquid glass effect for light backgrounds
+  - `glass-liquid-dark` - Dramatic liquid glass with enhanced glow
+  - `glass-minimal` - Subtle, accessibility-friendly glass effect (adaptive)
+  - `glass-bold` - Strong, prominent glass for CTAs and heroes (adaptive)
+  - CSS class-based application system
+  - Programmatic API for generating custom presets
+
+#### Accessibility & High Contrast Themes
+- **HighContrastTheme**: WCAG AAA compliant high-contrast theme system
+  - `high-contrast-light` - Maximum contrast on light backgrounds (WCAG AAA)
+  - `high-contrast-dark` - Maximum contrast on dark backgrounds (WCAG AAA)
+  - `enhanced-contrast-light` - Improved contrast on light (WCAG AA)
+  - `enhanced-contrast-dark` - Improved contrast on dark (WCAG AA)
+  - Automatic `prefers-contrast` and `prefers-reduced-motion` media query support
+  - Enhanced focus indicators for keyboard navigation
+  - Text scaling classes (`.text-larger`, `.text-extra-large`)
+  - Skip link styling for accessibility
+
+#### Theme Preview Tool
+- **ThemePreview**: Browser-based interactive theme customization tool
+  - Real-time color adjustment with Tailwind colors or custom hex
+  - Component preview gallery organized by category
+  - Glass effect customization with presets and tint options
+  - Accessibility preset selection
+  - Dark mode toggle
+  - Export to CSS or JSON
+  - Shareable preview URLs with all settings encoded
+  - Generated artisan command output
+  - Available at `/artisanpack/theme-preview` route
+
+#### Livewire 4 Features
+- **Table component**: Native drag-and-drop sorting via `wire:sort`
+  - `sortable` prop with sort handles
+  - Cross-list dragging via `sort-group`
+- **Table component**: Infinite scroll via `wire:intersect`
+  - `infinite-scroll` prop with customizable loading text
+  - Modifier support (once, half, full)
+- **LivewireHelper**: Version detection utility for feature compatibility
+
+### Changed
+- Updated component count from 60+ to 70+ in documentation
+- Table component now supports associative array rows with automatic normalization
+- Updated home.md and components.md with v2.0 features
+- Added Dashboard Components category to documentation
+- **GenerateThemeCss command**: Enhanced with new options
+  - `--preset` option for applying glass presets
+  - `--presets-only` to generate only glass preset CSS
+  - `--high-contrast-only` to generate only accessibility CSS
+  - `--accessibility-preset` to apply specific accessibility preset
+  - `--no-high-contrast` to skip high contrast CSS generation
+  - `--json` to export theme configuration as JSON
+  - `--interactive` mode for guided theme creation
+
+### Dependencies
+- Added `phpoffice/phpspreadsheet` as suggested dependency for XLSX export
+- Added `barryvdh/laravel-dompdf` as suggested dependency for PDF export
+
+### Notes
+- Livewire 4-specific features (wire:stream, wire:sort, wire:intersect) are gracefully ignored on Livewire 3
+- XLSX and PDF exports require optional dependencies to be installed
+- Theme preview tool available at `/artisanpack/theme-preview` (named route: `artisanpack.theme-preview`)
+- Glass presets use CSS custom properties for easy theming
+- High contrast themes respect system `prefers-contrast` and `prefers-reduced-motion` media queries
+- All v2.0 features are additive with no breaking changes from v1.x
+
+---
+
 ## [1.0.2] - 2026-01-10
 
 ### Fixed

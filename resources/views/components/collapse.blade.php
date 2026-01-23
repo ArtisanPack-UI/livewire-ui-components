@@ -6,9 +6,13 @@
             'collapse border-[length:var(--border)] border-base-content/10',
             'join-item' => !$noJoin,
             'collapse-arrow' => (!$collapsePlusMinus && !$usePlusMinus) && !$noIcon,
-            'collapse-plus' => ($collapsePlusMinus || $usePlusMinus) && !$noIcon
+            'collapse-plus' => ($collapsePlusMinus || $usePlusMinus) && !$noIcon,
+            $glassClasses() => $glass,
         ])
     }}
+    @if($glassStyle())
+        style="{{ $glassStyle() }}"
+    @endif
 
     wire:key="collapse-{{ $uuid }}"
 >

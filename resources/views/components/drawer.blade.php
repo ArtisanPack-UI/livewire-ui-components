@@ -50,6 +50,9 @@
             :title="$title"
             :subtitle="$subtitle"
             :separator="$separator"
+            :glass="$glass"
+            :glass-tint="$glassTint"
+            :glass-tint-opacity="$glassTintOpacity"
             wire:key="drawer-card"
             {{ $attributes->except('wire:model')->class(['min-h-screen rounded-none px-8']) }}
         >

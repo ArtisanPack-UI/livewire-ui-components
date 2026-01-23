@@ -48,10 +48,10 @@
             @if($icon || $spinner)
                 <div class="w-5">
                     @if($spinner)
-                        <span wire:loading wire:target="{{ $spinnerTarget() }}" class="loading loading-spinner w-5 h-5"></span>
+                        <span class="loading loading-spinner w-5 h-5 hidden data-loading:block" wire:loading.class.remove="hidden" wire:target="{{ $spinnerTarget() }}"></span>
                     @endif
                     @if($icon)
-                        <span class="block py-0.5" @if($spinner) wire:loading.class="hidden" wire:target="{{ $spinnerTarget() }}" @endif>
+                        <span @class(["block py-0.5", "data-loading:hidden" => $spinner]) @if($spinner) wire:loading.class="hidden" wire:target="{{ $spinnerTarget() }}" @endif>
                             <x-artisanpack-icon :name="$icon" @class(['mb-0.5', $iconClasses]) />
                         </span>
                     @endif
@@ -82,10 +82,10 @@
             @if($icon || $spinner)
                 <div class="w-5">
                     @if($spinner)
-                        <span wire:loading wire:target="{{ $spinnerTarget() }}" class="loading loading-spinner w-5 h-5"></span>
+                        <span class="loading loading-spinner w-5 h-5 hidden data-loading:block" wire:loading.class.remove="hidden" wire:target="{{ $spinnerTarget() }}"></span>
                     @endif
                     @if($icon)
-                        <span class="block py-0.5" @if($spinner) wire:loading.class="hidden" wire:target="{{ $spinnerTarget() }}" @endif>
+                        <span @class(["block py-0.5", "data-loading:hidden" => $spinner]) @if($spinner) wire:loading.class="hidden" wire:target="{{ $spinnerTarget() }}" @endif>
                             <x-artisanpack-icon :name="$icon" @class(['mb-0.5', $iconClasses]) />
                         </span>
                     @endif

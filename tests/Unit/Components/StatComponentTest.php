@@ -220,4 +220,745 @@ class StatComponentTest extends ComponentTestCase
             throw $e;
         }
     }
+
+    public function test_stat_glass_props_exist(): void
+    {
+        $component = $this->createComponent([
+            'glass'            => 'frosted',
+            'glassTint'        => 'emerald-500',
+            'glassTintOpacity' => 15,
+        ]);
+
+        $this->assertEquals('frosted', $component->glass);
+        $this->assertEquals('emerald-500', $component->glassTint);
+        $this->assertEquals(15, $component->glassTintOpacity);
+    }
+
+    public function test_stat_glass_classes_without_glass(): void
+    {
+        $component = $this->createComponent();
+
+        $this->assertNull($component->glass);
+        $this->assertEquals('', $component->glassClasses());
+    }
+
+    public function test_stat_glass_classes_with_frosted_variant(): void
+    {
+        $component = $this->createComponent(['glass' => 'frosted']);
+
+        $classes = $component->glassClasses();
+
+        $this->assertStringContainsString('glass-frosted', $classes);
+    }
+
+    public function test_stat_glass_classes_with_transparent_variant(): void
+    {
+        $component = $this->createComponent(['glass' => 'transparent']);
+
+        $classes = $component->glassClasses();
+
+        $this->assertStringContainsString('glass-transparent', $classes);
+    }
+
+    public function test_stat_glass_classes_with_liquid_variant(): void
+    {
+        $component = $this->createComponent(['glass' => 'liquid']);
+
+        $classes = $component->glassClasses();
+
+        $this->assertStringContainsString('glass-liquid', $classes);
+    }
+
+    public function test_stat_glass_classes_with_tailwind_tint(): void
+    {
+        $component = $this->createComponent([
+            'glass'     => 'frosted',
+            'glassTint' => 'blue-500',
+        ]);
+
+        $classes = $component->glassClasses();
+
+        $this->assertStringContainsString('glass-frosted', $classes);
+        $this->assertStringContainsString('glass-tint-blue-500', $classes);
+    }
+
+    public function test_stat_glass_classes_with_hex_tint(): void
+    {
+        $component = $this->createComponent([
+            'glass'     => 'frosted',
+            'glassTint' => '#8b5cf6',
+        ]);
+
+        $classes = $component->glassClasses();
+
+        $this->assertStringContainsString('glass-frosted', $classes);
+        $this->assertStringContainsString('glass-tint-custom', $classes);
+    }
+
+    public function test_stat_glass_classes_with_opacity(): void
+    {
+        $component = $this->createComponent([
+            'glass'            => 'frosted',
+            'glassTint'        => 'emerald-500',
+            'glassTintOpacity' => 60,
+        ]);
+
+        $classes = $component->glassClasses();
+
+        $this->assertStringContainsString('glass-frosted', $classes);
+        $this->assertStringContainsString('glass-tint-emerald-500', $classes);
+        $this->assertStringContainsString('glass-tint-opacity-60', $classes);
+    }
+
+    public function test_stat_glass_style_with_hex_color(): void
+    {
+        $component = $this->createComponent([
+            'glass'     => 'liquid',
+            'glassTint' => '#3b82f6',
+        ]);
+
+        $style = $component->glassStyle();
+
+        $this->assertStringContainsString('--glass-tint-color: #3b82f6', $style);
+    }
+
+    public function test_stat_glass_style_empty_without_custom_tint(): void
+    {
+        $component = $this->createComponent([
+            'glass'     => 'frosted',
+            'glassTint' => 'blue-500', // Tailwind color, not custom hex
+        ]);
+
+        $style = $component->glassStyle();
+
+        // Tailwind colors don't need inline styles (they use CSS classes)
+        // Only hex colors need inline styles
+        $this->assertStringNotContainsString('--glass-tint-color:', $style);
+    }
+
+    public function test_stat_glass_with_value_and_icon(): void
+    {
+        $component = $this->createComponent([
+            'glass'       => 'frosted',
+            'glassTint'   => 'emerald-500',
+            'value'       => '$12,345',
+            'icon'        => 'o-currency-dollar',
+            'title'       => 'Revenue',
+            'description' => '+15% from last month',
+        ]);
+
+        $this->assertEquals('frosted', $component->glass);
+        $this->assertEquals('$12,345', $component->value);
+        $this->assertEquals('o-currency-dollar', $component->icon);
+        $this->assertEquals('Revenue', $component->title);
+        $this->assertStringContainsString('glass-frosted', $component->glassClasses());
+    }
+
+    public function test_stat_sparkline_props_exist(): void
+    {
+        $component = $this->createComponent([
+            'sparklineData'  => [100, 120, 115, 140, 135, 160],
+            'sparklineType'  => 'area',
+            'sparklineColor' => 'blue-500',
+        ]);
+
+        $this->assertEquals([100, 120, 115, 140, 135, 160], $component->sparklineData);
+        $this->assertEquals('area', $component->sparklineType);
+        $this->assertEquals('blue-500', $component->sparklineColor);
+    }
+
+    public function test_stat_sparkline_default_type(): void
+    {
+        $component = $this->createComponent([
+            'sparklineData' => [10, 20, 30],
+        ]);
+
+        $this->assertEquals('line', $component->sparklineType);
+    }
+
+    public function test_stat_has_sparkline_with_data(): void
+    {
+        $component = $this->createComponent([
+            'sparklineData' => [100, 120, 115, 140],
+        ]);
+
+        $this->assertTrue($component->hasSparkline());
+    }
+
+    public function test_stat_has_sparkline_without_data(): void
+    {
+        $component = $this->createComponent();
+
+        $this->assertFalse($component->hasSparkline());
+    }
+
+    public function test_stat_has_sparkline_with_empty_array(): void
+    {
+        $component = $this->createComponent([
+            'sparklineData' => [],
+        ]);
+
+        $this->assertFalse($component->hasSparkline());
+    }
+
+    public function test_stat_sparkline_height_for_xs_size(): void
+    {
+        $component = $this->createComponent([
+            'size'          => 'xs',
+            'sparklineData' => [10, 20, 30],
+        ]);
+
+        $this->assertEquals(24, $component->sparklineHeight());
+    }
+
+    public function test_stat_sparkline_height_for_sm_size(): void
+    {
+        $component = $this->createComponent([
+            'size'          => 'sm',
+            'sparklineData' => [10, 20, 30],
+        ]);
+
+        $this->assertEquals(32, $component->sparklineHeight());
+    }
+
+    public function test_stat_sparkline_height_for_md_size(): void
+    {
+        $component = $this->createComponent([
+            'size'          => 'md',
+            'sparklineData' => [10, 20, 30],
+        ]);
+
+        $this->assertEquals(40, $component->sparklineHeight());
+    }
+
+    public function test_stat_sparkline_height_for_lg_size(): void
+    {
+        $component = $this->createComponent([
+            'size'          => 'lg',
+            'sparklineData' => [10, 20, 30],
+        ]);
+
+        $this->assertEquals(48, $component->sparklineHeight());
+    }
+
+    public function test_stat_sparkline_height_for_xl_size(): void
+    {
+        $component = $this->createComponent([
+            'size'          => 'xl',
+            'sparklineData' => [10, 20, 30],
+        ]);
+
+        $this->assertEquals(56, $component->sparklineHeight());
+    }
+
+    public function test_stat_sparkline_height_for_default_size(): void
+    {
+        $component = $this->createComponent([
+            'sparklineData' => [10, 20, 30],
+        ]);
+
+        $this->assertEquals(40, $component->sparklineHeight());
+    }
+
+    public function test_stat_sparkline_with_glass_variant(): void
+    {
+        $component = $this->createComponent([
+            'glass'          => 'liquid',
+            'glassTint'      => 'emerald-500',
+            'sparklineData'  => [100, 120, 115, 140, 135, 160],
+            'sparklineType'  => 'area',
+            'sparklineColor' => 'emerald-400',
+            'value'          => '1,234',
+            'title'          => 'Users',
+        ]);
+
+        $this->assertEquals('liquid', $component->glass);
+        $this->assertTrue($component->hasSparkline());
+        $this->assertEquals([100, 120, 115, 140, 135, 160], $component->sparklineData);
+        $this->assertStringContainsString('glass-liquid', $component->glassClasses());
+    }
+
+    public function test_stat_sparkline_bar_type(): void
+    {
+        $component = $this->createComponent([
+            'sparklineData' => [10, 20, 15, 25, 30],
+            'sparklineType' => 'bar',
+        ]);
+
+        $this->assertEquals('bar', $component->sparklineType);
+        $this->assertTrue($component->hasSparkline());
+    }
+
+    public function test_stat_sparkline_with_hex_color(): void
+    {
+        $component = $this->createComponent([
+            'sparklineData'  => [10, 20, 30],
+            'sparklineColor' => '#3b82f6',
+        ]);
+
+        $this->assertEquals('#3b82f6', $component->sparklineColor);
+    }
+
+    public function test_stat_trend_props_exist(): void
+    {
+        $component = $this->createComponent([
+            'change'      => 12.5,
+            'changeLabel' => 'vs last month',
+        ]);
+
+        $this->assertEquals(12.5, $component->change);
+        $this->assertEquals('vs last month', $component->changeLabel);
+    }
+
+    public function test_stat_has_change_with_value(): void
+    {
+        $component = $this->createComponent([
+            'change' => 12.5,
+        ]);
+
+        $this->assertTrue($component->hasChange());
+    }
+
+    public function test_stat_has_change_without_value(): void
+    {
+        $component = $this->createComponent();
+
+        $this->assertFalse($component->hasChange());
+    }
+
+    public function test_stat_has_change_with_zero(): void
+    {
+        $component = $this->createComponent([
+            'change' => 0.0,
+        ]);
+
+        $this->assertTrue($component->hasChange());
+    }
+
+    public function test_stat_is_positive_change_with_positive_value(): void
+    {
+        $component = $this->createComponent([
+            'change' => 12.5,
+        ]);
+
+        $this->assertTrue($component->isPositiveChange());
+    }
+
+    public function test_stat_is_positive_change_with_negative_value(): void
+    {
+        $component = $this->createComponent([
+            'change' => -8.3,
+        ]);
+
+        $this->assertFalse($component->isPositiveChange());
+    }
+
+    public function test_stat_is_positive_change_with_zero(): void
+    {
+        $component = $this->createComponent([
+            'change' => 0.0,
+        ]);
+
+        $this->assertTrue($component->isPositiveChange());
+    }
+
+    public function test_stat_formatted_change_positive(): void
+    {
+        $component = $this->createComponent([
+            'change' => 12.5,
+        ]);
+
+        $this->assertEquals('+12.5%', $component->formattedChange());
+    }
+
+    public function test_stat_formatted_change_negative(): void
+    {
+        $component = $this->createComponent([
+            'change' => -8.3,
+        ]);
+
+        $this->assertEquals('-8.3%', $component->formattedChange());
+    }
+
+    public function test_stat_formatted_change_zero(): void
+    {
+        $component = $this->createComponent([
+            'change' => 0.0,
+        ]);
+
+        $this->assertEquals('+0.0%', $component->formattedChange());
+    }
+
+    public function test_stat_formatted_change_without_value(): void
+    {
+        $component = $this->createComponent();
+
+        $this->assertEquals('', $component->formattedChange());
+    }
+
+    public function test_stat_change_color_classes_positive(): void
+    {
+        $component = $this->createComponent([
+            'change' => 12.5,
+        ]);
+
+        $this->assertEquals('text-success', $component->changeColorClasses());
+    }
+
+    public function test_stat_change_color_classes_negative(): void
+    {
+        $component = $this->createComponent([
+            'change' => -8.3,
+        ]);
+
+        $this->assertEquals('text-error', $component->changeColorClasses());
+    }
+
+    public function test_stat_change_color_classes_zero(): void
+    {
+        $component = $this->createComponent([
+            'change' => 0.0,
+        ]);
+
+        $this->assertEquals('text-success', $component->changeColorClasses());
+    }
+
+    public function test_stat_change_color_classes_without_value(): void
+    {
+        $component = $this->createComponent();
+
+        $this->assertEquals('', $component->changeColorClasses());
+    }
+
+    public function test_stat_change_icon_positive(): void
+    {
+        $component = $this->createComponent([
+            'change' => 12.5,
+        ]);
+
+        $this->assertEquals('o-arrow-trending-up', $component->changeIcon());
+    }
+
+    public function test_stat_change_icon_negative(): void
+    {
+        $component = $this->createComponent([
+            'change' => -8.3,
+        ]);
+
+        $this->assertEquals('o-arrow-trending-down', $component->changeIcon());
+    }
+
+    public function test_stat_change_icon_zero(): void
+    {
+        $component = $this->createComponent([
+            'change' => 0.0,
+        ]);
+
+        $this->assertEquals('o-arrow-trending-up', $component->changeIcon());
+    }
+
+    public function test_stat_change_icon_without_value(): void
+    {
+        $component = $this->createComponent();
+
+        $this->assertEquals('', $component->changeIcon());
+    }
+
+    public function test_stat_trend_with_glass_variant(): void
+    {
+        $component = $this->createComponent([
+            'glass'       => 'frosted',
+            'glassTint'   => 'emerald-500',
+            'change'      => 15.2,
+            'changeLabel' => 'vs last week',
+            'value'       => '$12,345',
+            'title'       => 'Revenue',
+        ]);
+
+        $this->assertEquals('frosted', $component->glass);
+        $this->assertTrue($component->hasChange());
+        $this->assertEquals('+15.2%', $component->formattedChange());
+        $this->assertStringContainsString('glass-frosted', $component->glassClasses());
+    }
+
+    public function test_stat_trend_with_sparkline(): void
+    {
+        $component = $this->createComponent([
+            'change'        => -5.7,
+            'changeLabel'   => 'vs yesterday',
+            'sparklineData' => [100, 95, 90, 85, 80],
+            'sparklineType' => 'area',
+            'value'         => '1,234',
+            'title'         => 'Active Users',
+        ]);
+
+        $this->assertTrue($component->hasChange());
+        $this->assertTrue($component->hasSparkline());
+        $this->assertFalse($component->isPositiveChange());
+        $this->assertEquals('-5.7%', $component->formattedChange());
+        $this->assertEquals('text-error', $component->changeColorClasses());
+    }
+
+    public function test_stat_formatted_change_rounds_correctly(): void
+    {
+        $component = $this->createComponent([
+            'change' => 12.567,
+        ]);
+
+        $this->assertEquals('+12.6%', $component->formattedChange());
+    }
+
+    // Animation Tests
+
+    public function test_stat_animate_props_exist(): void
+    {
+        $component = $this->createComponent([
+            'animate'         => true,
+            'animateDuration' => 1500,
+        ]);
+
+        $this->assertTrue($component->animate);
+        $this->assertEquals(1500, $component->animateDuration);
+    }
+
+    public function test_stat_animate_default_values(): void
+    {
+        $component = $this->createComponent();
+
+        $this->assertTrue($component->animate);
+        $this->assertEquals(1000, $component->animateDuration);
+    }
+
+    public function test_stat_animate_can_be_disabled(): void
+    {
+        $component = $this->createComponent([
+            'animate' => false,
+        ]);
+
+        $this->assertFalse($component->animate);
+    }
+
+    public function test_stat_numeric_value_with_currency(): void
+    {
+        $component = $this->createComponent([
+            'value' => '$1,234.56',
+        ]);
+
+        $this->assertEquals(1234.56, $component->numericValue());
+    }
+
+    public function test_stat_numeric_value_with_percentage(): void
+    {
+        $component = $this->createComponent([
+            'value' => '45.5%',
+        ]);
+
+        $this->assertEquals(45.5, $component->numericValue());
+    }
+
+    public function test_stat_numeric_value_with_k_suffix(): void
+    {
+        $component = $this->createComponent([
+            'value' => '2.5K',
+        ]);
+
+        $this->assertEquals(2500.0, $component->numericValue());
+    }
+
+    public function test_stat_numeric_value_with_m_suffix(): void
+    {
+        $component = $this->createComponent([
+            'value' => '1.2M',
+        ]);
+
+        $this->assertEquals(1200000.0, $component->numericValue());
+    }
+
+    public function test_stat_numeric_value_with_b_suffix(): void
+    {
+        $component = $this->createComponent([
+            'value' => '3B',
+        ]);
+
+        $this->assertEquals(3000000000.0, $component->numericValue());
+    }
+
+    public function test_stat_numeric_value_plain_number(): void
+    {
+        $component = $this->createComponent([
+            'value' => '12345',
+        ]);
+
+        $this->assertEquals(12345.0, $component->numericValue());
+    }
+
+    public function test_stat_numeric_value_negative(): void
+    {
+        $component = $this->createComponent([
+            'value' => '-$500',
+        ]);
+
+        $this->assertEquals(-500.0, $component->numericValue());
+    }
+
+    public function test_stat_numeric_value_with_null(): void
+    {
+        $component = $this->createComponent();
+
+        $this->assertNull($component->numericValue());
+    }
+
+    public function test_stat_numeric_value_with_non_numeric(): void
+    {
+        $component = $this->createComponent([
+            'value' => 'Active',
+        ]);
+
+        $this->assertNull($component->numericValue());
+    }
+
+    public function test_stat_value_format_with_currency(): void
+    {
+        $component = $this->createComponent([
+            'value' => '$1,234.56',
+        ]);
+
+        $format = $component->valueFormat();
+
+        $this->assertEquals('$', $format['prefix']);
+        $this->assertEquals('', $format['suffix']);
+        $this->assertEquals(2, $format['decimals']);
+        $this->assertTrue($format['useCommas']);
+    }
+
+    public function test_stat_value_format_with_percentage(): void
+    {
+        $component = $this->createComponent([
+            'value' => '45.5%',
+        ]);
+
+        $format = $component->valueFormat();
+
+        $this->assertEquals('', $format['prefix']);
+        $this->assertEquals('%', $format['suffix']);
+        $this->assertEquals(1, $format['decimals']);
+        $this->assertFalse($format['useCommas']);
+    }
+
+    public function test_stat_value_format_with_k_suffix(): void
+    {
+        $component = $this->createComponent([
+            'value' => '2.5K',
+        ]);
+
+        $format = $component->valueFormat();
+
+        $this->assertEquals('', $format['prefix']);
+        $this->assertEquals('K', $format['suffix']);
+        $this->assertEquals(1, $format['decimals']);
+    }
+
+    public function test_stat_value_format_without_value(): void
+    {
+        $component = $this->createComponent();
+
+        $format = $component->valueFormat();
+
+        $this->assertEquals('', $format['prefix']);
+        $this->assertEquals('', $format['suffix']);
+        $this->assertEquals(0, $format['decimals']);
+        $this->assertFalse($format['useCommas']);
+    }
+
+    public function test_stat_can_animate_with_numeric_value(): void
+    {
+        $component = $this->createComponent([
+            'value'   => '$1,234',
+            'animate' => true,
+        ]);
+
+        $this->assertTrue($component->canAnimate());
+    }
+
+    public function test_stat_cannot_animate_when_disabled(): void
+    {
+        $component = $this->createComponent([
+            'value'   => '$1,234',
+            'animate' => false,
+        ]);
+
+        $this->assertFalse($component->canAnimate());
+    }
+
+    public function test_stat_cannot_animate_with_non_numeric_value(): void
+    {
+        $component = $this->createComponent([
+            'value'   => 'Active',
+            'animate' => true,
+        ]);
+
+        $this->assertFalse($component->canAnimate());
+    }
+
+    public function test_stat_cannot_animate_without_value(): void
+    {
+        $component = $this->createComponent([
+            'animate' => true,
+        ]);
+
+        $this->assertFalse($component->canAnimate());
+    }
+
+    public function test_stat_animation_with_glass_variant(): void
+    {
+        $component = $this->createComponent([
+            'glass'           => 'frosted',
+            'glassTint'       => 'emerald-500',
+            'value'           => '$12,345',
+            'animate'         => true,
+            'animateDuration' => 1200,
+        ]);
+
+        $this->assertEquals('frosted', $component->glass);
+        $this->assertTrue($component->canAnimate());
+        $this->assertEquals(12345.0, $component->numericValue());
+        $this->assertEquals(1200, $component->animateDuration);
+    }
+
+    public function test_stat_animation_with_sparkline_and_change(): void
+    {
+        $component = $this->createComponent([
+            'value'           => '1,234',
+            'change'          => 15.5,
+            'sparklineData'   => [100, 120, 115, 140],
+            'animate'         => true,
+            'animateDuration' => 800,
+        ]);
+
+        $this->assertTrue($component->canAnimate());
+        $this->assertTrue($component->hasChange());
+        $this->assertTrue($component->hasSparkline());
+        $this->assertEquals(1234.0, $component->numericValue());
+    }
+
+    public function test_stat_value_format_euro_currency(): void
+    {
+        $component = $this->createComponent([
+            'value' => '€2.500,00',
+        ]);
+
+        $format = $component->valueFormat();
+
+        $this->assertEquals('€', $format['prefix']);
+        $this->assertTrue($format['useCommas']);
+    }
+
+    public function test_stat_numeric_value_with_spaces(): void
+    {
+        $component = $this->createComponent([
+            'value' => '1 234 567',
+        ]);
+
+        $this->assertEquals(1234567.0, $component->numericValue());
+    }
 }

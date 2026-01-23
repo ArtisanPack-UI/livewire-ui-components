@@ -14,8 +14,9 @@ The components are organized into the following categories:
 2. **Layout Components** - Components for structuring and organizing content
 3. **Navigation Components** - Components for navigation and menus
 4. **Data Display Components** - Components for displaying and visualizing data
-5. **Feedback Components** - Components for providing feedback to users
-6. **Utility Components** - Miscellaneous utility components
+5. **Dashboard Components** - Components for building dashboards (v2.0+)
+6. **Feedback Components** - Components for providing feedback to users
+7. **Utility Components** - Miscellaneous utility components
 
 ## Usage Patterns
 
@@ -162,9 +163,18 @@ Many components share common props and slots:
 | [Steps](steps) | Step indicator | [View Docs](steps) |
 | [Step](step) | Individual step for Steps component | [View Docs](step) |
 | [Subheading](subheading) | Styled subheading text | [View Docs](subheading) |
-| [Table](table) | Data table | [View Docs](table) |
+| [Sparkline](sparkline) | Inline sparkline charts | [View Docs](sparkline) |
+| [Table](table) | Data table with sorting, export, and more | [View Docs](table) |
 | [Text](text) | Styled text component | [View Docs](text) |
 | [TimelineItem](timeline-item) | Timeline item display | [View Docs](timeline-item) |
+
+### Dashboard Components (v2.0+)
+
+| Component | Description | Documentation |
+|-----------|-------------|---------------|
+| [KpiCard](kpi-card) | KPI card with sparkline and trend indicator | [View Docs](kpi-card) |
+| [WidgetGrid](widget-grid) | Responsive grid for dashboard layouts | [View Docs](widget-grid) |
+| [StreamableContent](streamable-content) | Container for streaming content (AI responses) | [View Docs](streamable-content) |
 
 ### Feedback Components
 
@@ -223,27 +233,79 @@ ArtisanPack UI components are designed to work together seamlessly. Here are som
 </x-artisanpack-card>
 ```
 
-### Data Table with Pagination
+### Data Table with Export (v2.0+)
 
 ```php
-<x-artisanpack-table :headers="['Name', 'Email', 'Role', 'Actions']">
-    @foreach($users as $user)
-        <tr>
-            <td>{{ $user->name }}</td>
-            <td>{{ $user->email }}</td>
-            <td>{{ $user->role }}</td>
-            <td>
-                <x-artisanpack-button size="sm" wire:click="edit({{ $user->id }})">
-                    Edit
-                </x-artisanpack-button>
-            </td>
-        </tr>
-    @endforeach
-    
-    <x-slot:pagination>
-        {{ $users->links() }}
-    </x-slot:pagination>
-</x-artisanpack-table>
+<?php
+use ArtisanPack\LivewireUiComponents\Traits\WithTableExport;
+use Livewire\Volt\Component;
+
+new class extends Component {
+    use WithTableExport;
+
+    public function with(): array
+    {
+        return [
+            'headers' => [
+                ['key' => 'name', 'label' => 'Name'],
+                ['key' => 'email', 'label' => 'Email'],
+                ['key' => 'role', 'label' => 'Role'],
+            ],
+            'users' => User::paginate(10),
+        ];
+    }
+
+    public function getTableExportData(string $tableId = 'default'): array
+    {
+        return [
+            'headers' => $this->with()['headers'],
+            'rows' => User::all()->toArray(),
+            'filename' => 'users-export',
+        ];
+    }
+}; ?>
+
+<x-artisanpack-table
+    :headers="$headers"
+    :rows="$users"
+    exportable
+    :export-formats="['csv', 'xlsx', 'pdf']"
+    with-pagination />
+```
+
+### Dashboard with KPI Cards (v2.0+)
+
+```php
+<x-artisanpack-widget-grid :cols="4" :gap="4">
+    <x-artisanpack-kpi-card
+        title="Total Revenue"
+        value="$45,231"
+        icon="o-currency-dollar"
+        :change="12.5"
+        change-label="vs last month"
+        :sparkline-data="[1200, 1350, 1100, 1500, 1400, 1600, 1800]" />
+
+    <x-artisanpack-kpi-card
+        title="Active Users"
+        value="2,345"
+        icon="o-users"
+        :change="8.2"
+        change-label="vs last month" />
+
+    <x-artisanpack-kpi-card
+        title="Orders"
+        value="1,234"
+        icon="o-shopping-cart"
+        :change="-2.4"
+        change-label="vs last month" />
+
+    <x-artisanpack-kpi-card
+        title="Conversion"
+        value="3.24%"
+        icon="o-arrow-path"
+        :change="0.8"
+        change-label="improvement" />
+</x-artisanpack-widget-grid>
 ```
 
 ## Next Steps
