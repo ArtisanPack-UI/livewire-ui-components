@@ -62,6 +62,58 @@ Responsive grid helper for dashboard layouts:
 </x-artisanpack-widget-grid>
 ```
 
+### Enhanced Stat Component
+
+The existing Stat component now includes trend indicators and embedded sparklines:
+
+#### Trend Indicators
+
+Display percentage changes with automatic color coding:
+
+```php
+{{-- Positive trend (green with up arrow) --}}
+<x-artisanpack-stat
+    title="Revenue"
+    value="$45,231"
+    :change="12.5"
+    icon="o-currency-dollar" />
+
+{{-- Negative trend (red with down arrow) --}}
+<x-artisanpack-stat
+    title="Bounce Rate"
+    value="32.4%"
+    :change="-8.3"
+    icon="o-arrow-trending-down" />
+
+{{-- With custom label --}}
+<x-artisanpack-stat
+    title="Monthly Sales"
+    value="$12,450"
+    :change="5.4"
+    change-label="vs last month" />
+```
+
+#### Embedded Sparklines
+
+Add sparkline visualizations directly to stats:
+
+```php
+<x-artisanpack-stat
+    title="Revenue"
+    value="$45,231"
+    :change="12.5"
+    :sparkline-data="[10, 15, 8, 20, 18, 25, 30, 28, 35]"
+    sparkline-type="area"
+    sparkline-color="success" />
+```
+
+Sparkline types:
+- `line` - Line chart (default)
+- `area` - Filled area chart
+- `bar` - Bar chart
+
+**Requirements:** Sparklines require ApexCharts. See the [Sparkline component documentation](../components/sparkline) for installation instructions.
+
 ### Table Data Export
 
 The Table component now supports exporting data to CSV, XLSX, and PDF formats:
@@ -166,6 +218,23 @@ Glass variants:
 - `blur` - Medium blur effect  
 - `subtle` - Light glass effect
 
+### Theme Preview Tool
+
+New browser-based theme customization tool for development environments:
+
+```bash
+# Enable in .env file (development only)
+ARTISANPACK_ENABLE_THEME_PREVIEW=true
+```
+
+Access at `/v2-features/theme-preview` to:
+- Live preview theme colors and glass effects
+- Export themes as CSS or JSON
+- Share theme configurations via URL
+- Test themes with interactive component examples
+
+**Security Notice**: The theme preview route is disabled by default and should only be enabled in development/local environments. See the [Theme Preview Tool documentation](../theme-preview-tool) for complete details.
+
 ### Livewire 4 Features
 
 See [Livewire 4 Features](livewire-4-features) for details on:
@@ -190,6 +259,24 @@ If you have custom grid layouts for dashboards, consider using `WidgetGrid` for 
 ### 3. Upgrade to Livewire 4
 
 To take advantage of streaming content, `wire:sort`, and `wire:intersect`, consider upgrading to Livewire 4.
+
+### 4. Enable Theme Preview Tool (Development Only)
+
+If you want to use the theme preview tool for development:
+
+1. Add to your `.env` file:
+   ```env
+   ARTISANPACK_ENABLE_THEME_PREVIEW=true
+   ```
+
+2. Clear config cache:
+   ```bash
+   php artisan config:clear
+   ```
+
+3. Access at `/v2-features/theme-preview`
+
+**Important**: Never enable this in production environments.
 
 ## Troubleshooting
 
@@ -221,6 +308,43 @@ composer show barryvdh/laravel-dompdf
 
 - Verify you're using Livewire 4+
 - Check that the `target` prop matches your `$this->stream()` target
+
+### Sparklines Not Rendering
+
+**Symptom**: Console error "Can't find variable: artisanpackSparkline"
+
+**Solution**: Ensure you've imported the sparkline component in your `resources/js/app.js`:
+
+```javascript
+// Import Sparkline Alpine component
+import '../../vendor/artisanpack-ui/livewire-ui-components/resources/js/sparkline.js';
+```
+
+Then rebuild assets:
+
+```bash
+npm run build
+```
+
+For symlinked package development, the path is correct as shown above. For production Composer installations, adjust the path based on your vendor directory structure.
+
+### Theme Preview Route Not Found
+
+**Symptom**: 404 error when accessing `/v2-features/theme-preview`
+
+**Solution**: The route is disabled by default. Enable it in your `.env` file:
+
+```env
+ARTISANPACK_ENABLE_THEME_PREVIEW=true
+```
+
+Then clear the config cache:
+
+```bash
+php artisan config:clear
+```
+
+**Important**: Only enable in development/local environments.
 
 ## Getting Help
 

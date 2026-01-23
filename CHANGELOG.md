@@ -1,6 +1,6 @@
 # ArtisanPack UI Livewire UI Components
 
-## [2.0.0-beta1] - 2026-01-19
+## [2.0.0] - 2026-01-23
 
 ### Added
 

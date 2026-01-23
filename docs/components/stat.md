@@ -211,23 +211,39 @@ The Stat component now supports:
 
 ### Stat with Trend Indicators
 
+Trend indicators automatically display percentage changes with appropriate colors and arrows:
+
 ```php
+{{-- Positive trend (green with up arrow) --}}
 <x-artisanpack-stat
     title="Conversion Rate"
     value="3.2%"
-    description="↗︎ 0.5% from last month"
+    :change="12.5"
     icon="heroicon-o-trending-up"
-    color="text-success"
 />
 
+{{-- Negative trend (red with down arrow) --}}
 <x-artisanpack-stat
     title="Bounce Rate"
     value="42%"
-    description="↘︎ 3% from last month"
+    :change="-8.3"
     icon="heroicon-o-trending-down"
-    color="text-error"
+/>
+
+{{-- Trend with custom label --}}
+<x-artisanpack-stat
+    title="Monthly Revenue"
+    value="$45,231"
+    :change="5.4"
+    change-label="vs last month"
+    icon="heroicon-o-currency-dollar"
 />
 ```
+
+The `change` prop automatically:
+- Displays green text and up arrow for positive values
+- Displays red text and down arrow for negative values
+- Formats the value with a sign and percent symbol (e.g., "+12.5%" or "-8.3%")
 
 ### Tooltips
 
@@ -351,6 +367,77 @@ Animation works seamlessly with other Stat features:
 />
 ```
 
+## Embedded Sparklines
+
+The Stat component supports embedded sparkline charts to show historical data trends alongside your metrics.
+
+### Basic Sparkline
+
+```php
+<x-artisanpack-stat
+    title="Revenue"
+    value="$45,231"
+    :sparkline-data="[10, 15, 8, 20, 18, 25, 30, 28, 35]"
+/>
+```
+
+### Sparkline Types
+
+Choose from line, area, or bar chart types:
+
+```php
+{{-- Area sparkline (default) --}}
+<x-artisanpack-stat
+    title="Revenue"
+    value="$45,231"
+    :change="12.5"
+    :sparkline-data="[10, 15, 8, 20, 18, 25, 30, 28, 35]"
+    sparkline-type="area"
+    sparkline-color="success"
+/>
+
+{{-- Line sparkline --}}
+<x-artisanpack-stat
+    title="Expenses"
+    value="$12,450"
+    :change="3.2"
+    :sparkline-data="[5, 8, 6, 10, 9, 12, 14, 13, 15]"
+    sparkline-type="line"
+    sparkline-color="error"
+/>
+
+{{-- Bar sparkline --}}
+<x-artisanpack-stat
+    title="Orders"
+    value="1,234"
+    :change="18.7"
+    :sparkline-data="[20, 15, 25, 18, 22, 30, 28, 32, 35]"
+    sparkline-type="bar"
+    sparkline-color="primary"
+/>
+```
+
+### Sparkline with Glass Effect
+
+Combine sparklines with glass morphism for modern dashboards:
+
+```php
+<x-artisanpack-stat
+    title="Revenue"
+    value="$45,231"
+    glass="frosted"
+    glass-tint="primary"
+    :change="12.5"
+    :sparkline-data="[10, 15, 8, 20, 18, 25, 30, 28, 35]"
+    sparkline-type="area"
+    sparkline-color="primary"
+/>
+```
+
+### Requirements
+
+Sparklines require ApexCharts. See the [Sparkline component documentation](sparkline) for installation instructions.
+
 ## Props
 
 | Prop | Type | Default | Description |
@@ -370,6 +457,17 @@ Animation works seamlessly with other Stat features:
 | `iconPosition` | string | `'left'` | Icon position: `left`, `right`, `top`, `bottom` |
 | `titlePosition` | string | `'top'` | Title position relative to value: `top`, `bottom` |
 | `contentAlign` | string | `'left'` | Content alignment: `left`, `center`, `right` |
+| **Glass Effect Props** | | | |
+| `glass` | string | `null` | Glass variant (frosted, liquid, transparent) |
+| `glass-tint` | string | `null` | Glass tint color |
+| `glass-tint-opacity` | int | `null` | Glass tint opacity (0-100) |
+| **Trend Indicator Props** | | | |
+| `change` | float | `null` | Change percentage as number (e.g., 12.5 or -5.2). Automatically displays arrow and color based on sign. |
+| `change-label` | string | `null` | Optional label to show after the change percentage |
+| **Sparkline Props** | | | |
+| `sparkline-data` | array | `null` | Array of numeric values for embedded sparkline chart |
+| `sparkline-type` | string | `'line'` | Sparkline chart type (line, area, bar) |
+| `sparkline-color` | string | `null` | Sparkline color (primary, success, error, info, etc.) |
 | **Animation Props** | | | |
 | `animate` | bool | `true` | Enable/disable value animation |
 | `animateDuration` | int | `1000` | Animation duration in milliseconds |

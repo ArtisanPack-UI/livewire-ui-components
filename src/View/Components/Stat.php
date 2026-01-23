@@ -175,9 +175,9 @@ class Stat extends Component
         return [
             'container' => $isVertical ? 'flex flex-col items-center gap-3' : 'flex items-center gap-3',
             'content'   => match ($this->contentAlign) {
-                'center' => 'text-center',
-                'right'  => 'text-right rtl:text-left',
-                default  => 'text-left rtl:text-right'
+                'center' => 'text-center flex-1 min-w-0',
+                'right'  => 'text-right rtl:text-left flex-1 min-w-0',
+                default  => 'text-left rtl:text-right flex-1 min-w-0'
             },
         ];
     }

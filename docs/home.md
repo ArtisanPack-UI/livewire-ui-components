@@ -101,6 +101,8 @@ For a complete list of components, see the [Components Overview](components).
 
 - [Generating Color Themes](generating-themes) - Create custom color themes
 - [Glass Theme Presets](glass-presets) - Pre-built glassmorphism styles
+- [Theme Preview Tool](theme-preview-tool) - Browser-based theme customization (v2.0+, development only)
+- [High Contrast Theme](high-contrast-theme) - Accessibility-focused themes (v2.0+)
 - [Customization](customization) - Advanced styling and customization
 
 ## Resources

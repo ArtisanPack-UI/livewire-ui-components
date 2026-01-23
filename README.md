@@ -2,25 +2,6 @@
 
 ArtisanPack UI Livewire UI Components is a comprehensive set of UI components for Livewire powered by daisyUI and Tailwind CSS. This package provides a collection of beautiful, responsive, and customizable components to accelerate your Laravel application development.
 
-## v2.0 Beta Available
-
-Version 2.0 is now in beta with exciting new features:
-
-- **Dashboard Components** - KpiCard with sparklines and trend indicators, WidgetGrid for responsive layouts
-- **Table Data Export** - Export table data to CSV, XLSX, and PDF formats
-- **Streaming Content** - Real-time streaming content component for AI chat interfaces (Livewire 4+)
-- **Glass Effects** - Frosted glass UI effects with six pre-built presets (frosted-light, frosted-dark, liquid-light, liquid-dark, minimal, bold)
-- **Accessibility Themes** - WCAG AAA high-contrast presets with automatic system preference detection
-- **Theme Preview Tool** - Browser-based theme builder with real-time preview, component gallery, and export functionality
-- **Livewire 4 Features** - Support for `wire:sort`, `wire:intersect`, and `data-loading` CSS variants
-
-Install the beta:
-```bash
-composer require artisanpack-ui/livewire-ui-components:^2.0@beta
-```
-
-See the [v1.x to v2.0 Migration Guide](docs/migration/v1-to-v2.md) for details. **No breaking changes** - all existing code continues to work.
-
 ## 🚀 Quick Start
 
 ### Installation
@@ -119,6 +100,46 @@ composer require barryvdh/laravel-dompdf
 ```
 
 CSV export works without any additional dependencies.
+
+## 📊 JavaScript Dependencies
+
+Some components require additional JavaScript packages and configuration.
+
+### Charts & Sparklines
+
+The Chart and Sparkline components require ApexCharts:
+
+```bash
+npm install apexcharts
+```
+
+Then add to your `resources/js/app.js`:
+
+```javascript
+import ApexCharts from 'apexcharts';
+window.ApexCharts = ApexCharts;
+
+// Import sparkline Alpine component
+import '../../vendor/artisanpack-ui/livewire-ui-components/resources/js/sparkline.js';
+```
+
+**Note:** For symlinked package development, use the path above. For production installations via Composer, the path would be different and you may need to adjust based on your setup.
+
+### Date Pickers
+
+The DatePicker component requires flatpickr:
+
+```bash
+npm install flatpickr
+```
+
+Configure in your `app.js`:
+
+```javascript
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
+window.flatpickr = flatpickr;
+```
 
 ## 🚀 Migration Guides
 

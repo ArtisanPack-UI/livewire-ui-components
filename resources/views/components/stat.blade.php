@@ -151,12 +151,14 @@
 
             {{-- Sparkline --}}
             @if($hasSparkline())
-                <div class="mt-2 w-full">
+                <div class="mt-2 w-full overflow-hidden">
                     <x-artisanpack-sparkline
                         :data="$sparklineData"
                         :type="$sparklineType"
                         :color="$sparklineColor"
                         :height="$sparklineHeight()"
+                        width="100%"
+                        class="w-full block"
                     />
                 </div>
             @endif

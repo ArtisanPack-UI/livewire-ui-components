@@ -8,17 +8,36 @@ The Sparkline component provides lightweight inline charts for use in stats, das
 
 ## Installation
 
-The Sparkline component requires ApexCharts. Install it via npm:
+The Sparkline component requires ApexCharts and the sparkline Alpine component.
+
+### 1. Install ApexCharts
 
 ```bash
 npm install apexcharts
 ```
 
-Then import it in your JavaScript:
+### 2. Configure Your JavaScript
+
+Add these imports to your `resources/js/app.js`:
 
 ```javascript
 import ApexCharts from 'apexcharts';
 window.ApexCharts = ApexCharts;
+
+// Import sparkline Alpine component
+import '../../vendor/artisanpack-ui/livewire-ui-components/resources/js/sparkline.js';
+```
+
+**Note:** The path to `sparkline.js` may vary depending on your setup:
+- **Symlinked package (development)**: `../../vendor/artisanpack-ui/livewire-ui-components/resources/js/sparkline.js`
+- **Production installation**: Adjust the path based on your vendor directory structure
+
+### 3. Build Assets
+
+```bash
+npm run dev
+# or for production
+npm run build
 ```
 
 ## Basic Usage
