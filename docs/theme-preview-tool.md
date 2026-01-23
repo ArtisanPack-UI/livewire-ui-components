@@ -125,8 +125,8 @@ The tool displays a live preview section showing:
 
 Click the "Copy Share URL" button to generate a URL containing all current theme settings:
 
-```
-https://your-app.test/v2-features/theme-preview?primary=%236366f1&secondary=%238b5cf6&accent=%23ec4899&blur=12&opacity=0.7&saturation=180
+```text
+https://your-app.test/artisanpack/theme-preview?primary=%236366f1&secondary=%238b5cf6&accent=%23ec4899&blur=12&opacity=0.7&saturation=180
 ```
 
 Share this URL with team members to show exact theme configurations.
@@ -293,7 +293,7 @@ The route is conditionally registered based on configuration:
 ```php
 // routes/web.php
 if (config('artisanpack.livewire-ui-components.development.enable_theme_preview', false)) {
-    Route::view('/theme-preview', 'v2-features.theme-preview')->name('theme-preview');
+    Route::view('/artisanpack/theme-preview', 'v2-features.theme-preview')->name('theme-preview');
 }
 ```
 

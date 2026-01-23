@@ -449,14 +449,14 @@ Sparklines require ApexCharts. See the [Sparkline component documentation](spark
 | `title` | string | `null` | The title or label for the stat |
 | `description` | string | `null` | Additional context or trend information |
 | `tooltip` | string | `null` | Tooltip text to display on hover |
-| `tooltipLeft` | string | `null` | Tooltip text positioned to the left |
-| `tooltipRight` | string | `null` | Tooltip text positioned to the right |
-| `tooltipBottom` | string | `null` | Tooltip text positioned at the bottom |
+| `tooltip-left` | string | `null` | Tooltip text positioned to the left |
+| `tooltip-right` | string | `null` | Tooltip text positioned to the right |
+| `tooltip-bottom` | string | `null` | Tooltip text positioned at the bottom |
 | **Size & Position Props** | | | |
 | `size` | string | `'md'` | Component size: `xs`, `sm`, `md`, `lg`, `xl` |
-| `iconPosition` | string | `'left'` | Icon position: `left`, `right`, `top`, `bottom` |
-| `titlePosition` | string | `'top'` | Title position relative to value: `top`, `bottom` |
-| `contentAlign` | string | `'left'` | Content alignment: `left`, `center`, `right` |
+| `icon-position` | string | `'left'` | Icon position: `left`, `right`, `top`, `bottom` |
+| `title-position` | string | `'top'` | Title position relative to value: `top`, `bottom` |
+| `content-align` | string | `'left'` | Content alignment: `left`, `center`, `right` |
 | **Glass Effect Props** | | | |
 | `glass` | string | `null` | Glass variant (frosted, liquid, transparent) |
 | `glass-tint` | string | `null` | Glass tint color |
@@ -470,7 +470,7 @@ Sparklines require ApexCharts. See the [Sparkline component documentation](spark
 | `sparkline-color` | string | `null` | Sparkline color (primary, success, error, info, etc.) |
 | **Animation Props** | | | |
 | `animate` | bool | `true` | Enable/disable value animation |
-| `animateDuration` | int | `1000` | Animation duration in milliseconds |
+| `animate-duration` | int | `1000` | Animation duration in milliseconds |
 | `class` | string | `null` | Additional CSS classes to apply to the stat container |
 
 ## Behavior

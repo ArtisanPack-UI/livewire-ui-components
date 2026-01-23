@@ -236,7 +236,7 @@ Customize glass token defaults in your configuration file:
 
 @verbatim
 <code-snippet name="Config customization" lang="php">
-// config/artisanpack/livewire-ui-components.php
+// config/livewire-ui-components.php
 return [
     'glass' => [
         'enabled' => true,
