@@ -1,5 +1,12 @@
 # ArtisanPack UI Livewire UI Components
 
+## [2.0.1] - 2026-01-28
+
+### Changed
+- Updated Livewire dependency constraint from `^3.6` to `^3.6|^4.0` to support Livewire 4.0
+
+---
+
 ## [2.0.0] - 2026-01-23
 
 ### Added
