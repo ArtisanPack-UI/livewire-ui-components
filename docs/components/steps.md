@@ -177,6 +177,6 @@ For better accessibility:
 
 ## Related Components
 
-- [Step](step) - Individual step component used within Steps
-- [Progress](progress) - Alternative way to show completion status
-- [Breadcrumbs](breadcrumbs) - Navigation component showing the user's location in a hierarchy
+- [Step](Step) - Individual step component used within Steps
+- [Progress](Progress) - Alternative way to show completion status
+- [Breadcrumbs](Breadcrumbs) - Navigation component showing the user's location in a hierarchy

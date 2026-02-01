@@ -170,6 +170,6 @@ The Radio Group component follows accessibility best practices:
 
 ## Related Components
 
-- [Radio](radio) - Single radio button input
-- [Checkbox Group](checkbox-group) - Group of checkboxes (multiple selection)
-- [Select](select) - Dropdown selection
+- [Radio](Radio) - Single radio button input
+- [Checkbox Group](Checkbox-Group) - Group of checkboxes (multiple selection)
+- [Select](Select) - Dropdown selection

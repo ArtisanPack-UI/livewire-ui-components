@@ -305,6 +305,6 @@ The Signature component follows accessibility best practices:
 
 ## Related Components
 
-- [Form](form) - Container for form elements
-- [Input](input) - Standard text input
-- [File](file) - File upload component
+- [Form](Form) - Container for form elements
+- [Input](Input) - Standard text input
+- [File](File) - File upload component

@@ -225,6 +225,6 @@ The Main component follows accessibility best practices:
 
 ## Related Components
 
-- [Nav](nav) - Navigation bar component that works with the Main component
-- [Menu](menu) - Menu component commonly used in the sidebar
-- [MenuItem](menu-item) - Menu item component for navigation links
+- [Nav](Nav) - Navigation bar component that works with the Main component
+- [Menu](Menu) - Menu component commonly used in the sidebar
+- [MenuItem](Menu-Item) - Menu item component for navigation links

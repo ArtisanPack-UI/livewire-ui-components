@@ -227,6 +227,6 @@ For better accessibility:
 
 ## Related Components
 
-- [Tabs](tabs) - Container component for multiple tabs
-- [Accordion](accordion) - Alternative way to organize content in collapsible sections
-- [Card](card) - Container for content with similar styling
+- [Tabs](Tabs) - Container component for multiple tabs
+- [Accordion](Accordion) - Alternative way to organize content in collapsible sections
+- [Card](Card) - Container for content with similar styling

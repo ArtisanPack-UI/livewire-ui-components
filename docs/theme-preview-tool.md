@@ -371,7 +371,7 @@ npm run build
 
 ## See Also
 
-- [Glass Theme Presets](glass-presets) - Pre-built glass theme configurations
-- [High Contrast Theme](high-contrast-theme) - Accessibility-focused themes
-- [Customization Guide](customization) - General customization documentation
-- [Color System](advanced/color-system) - Understanding the color system
+- [Glass Theme Presets](Glass-Presets) - Pre-built glass theme configurations
+- [High Contrast Theme](High-Contrast-Theme) - Accessibility-focused themes
+- [Customization Guide](Customization) - General customization documentation
+- [Color System](Advanced-Color-System) - Understanding the color system

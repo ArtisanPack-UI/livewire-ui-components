@@ -8,7 +8,7 @@ The Event Modal Content component is a Livewire component that provides the defa
 
 ## Overview
 
-This component is automatically used by the [Calendar Enhanced](calendar-enhanced) component as the default child component for displaying event details in a modal. You can extend or replace it with your own custom implementation.
+This component is automatically used by the [Calendar Enhanced](Calendar-Enhanced) component as the default child component for displaying event details in a modal. You can extend or replace it with your own custom implementation.
 
 ## Basic Usage
 
@@ -231,6 +231,6 @@ $this->dispatch('eventUpdated', eventId: $this->event['id']);
 
 ## Related Components
 
-- [Calendar Enhanced](calendar-enhanced) - The main calendar component that uses this component
-- [Modal](modal) - Generic modal component
-- [Calendar](calendar) - Basic calendar component
+- [Calendar Enhanced](Calendar-Enhanced) - The main calendar component that uses this component
+- [Modal](Modal) - Generic modal component
+- [Calendar](Calendar) - Basic calendar component

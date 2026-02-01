@@ -169,6 +169,6 @@ The Checkbox Group component follows accessibility best practices:
 
 ## Related Components
 
-- [Checkbox](checkbox) - Single checkbox input
-- [Radio Group](radio-group) - Group of radio buttons (single selection)
-- [Select](select) - Dropdown selection
+- [Checkbox](Checkbox) - Single checkbox input
+- [Radio Group](Radio-Group) - Group of radio buttons (single selection)
+- [Select](Select) - Dropdown selection

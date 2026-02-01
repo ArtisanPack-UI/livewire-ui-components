@@ -124,7 +124,7 @@ The easiest way to customize the styling is to use the theme generator command:
 php artisan artisanpack:generate-theme --primary=blue --secondary=slate --accent=amber
 ```
 
-See the [Generating Color Themes](generating-themes) guide for more details.
+See the [Generating Color Themes](Generating-Themes) guide for more details.
 
 #### Glass Theme Presets
 
@@ -138,7 +138,7 @@ ArtisanPack UI includes pre-built glassmorphism presets that provide ready-to-us
 
 Available presets: `glass-frosted-light`, `glass-frosted-dark`, `glass-liquid-light`, `glass-liquid-dark`, `glass-minimal`, `glass-bold`.
 
-See the [Glass Theme Presets](glass-presets) guide for complete documentation.
+See the [Glass Theme Presets](Glass-Presets) guide for complete documentation.
 
 #### Customizing DaisyUI Theme Variables
 

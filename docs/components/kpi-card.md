@@ -251,14 +251,14 @@ The change value automatically determines:
 
 ## Notes
 
-- The KpiCard is designed to work seamlessly with the [WidgetGrid](widget-grid) component for dashboard layouts
+- The KpiCard is designed to work seamlessly with the [WidgetGrid](Widget-Grid) component for dashboard layouts
 - Sparkline visualization requires numeric data; non-numeric values will be ignored
 - Glass effects work best on backgrounds with content visible beneath them
 - The component automatically handles WCAG 2.0 AA compliant text colors when using glass effects with custom tints
 
 ## Related Components
 
-- [WidgetGrid](widget-grid) - Grid layout for dashboard widgets
-- [Sparkline](sparkline) - Standalone sparkline chart
-- [Stat](stat) - Simple statistic display
-- [Card](card) - Generic card container
+- [WidgetGrid](Widget-Grid) - Grid layout for dashboard widgets
+- [Sparkline](Sparkline) - Standalone sparkline chart
+- [Stat](Stat) - Simple statistic display
+- [Card](Card) - Generic card container

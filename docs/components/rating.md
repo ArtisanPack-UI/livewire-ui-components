@@ -239,6 +239,6 @@ The Rating component follows accessibility best practices:
 
 ## Related Components
 
-- [Form](form) - Container for form elements
-- [Input](input) - Standard text input
-- [Range](range) - Range slider input
+- [Form](Form) - Container for form elements
+- [Input](Input) - Standard text input
+- [Range](Range) - Range slider input

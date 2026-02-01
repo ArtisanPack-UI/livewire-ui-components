@@ -1004,7 +1004,7 @@ The Table component supports the following events:
 
 ## Related Components
 
-- [Pagination](pagination) - Pagination controls
-- [Button](button) - Interactive button element
-- [Checkbox](checkbox) - Checkbox input for row selection
-- [Icon](icon) - Icon component used in sort indicators
+- [Pagination](Pagination) - Pagination controls
+- [Button](Button) - Interactive button element
+- [Checkbox](Checkbox) - Checkbox input for row selection
+- [Icon](Icon) - Icon component used in sort indicators

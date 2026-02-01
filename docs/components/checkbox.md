@@ -225,6 +225,6 @@ The Checkbox component follows accessibility best practices:
 
 ## Related Components
 
-- [Form](form) - Container for form elements
-- [Radio](radio) - Radio button input
-- [Toggle](toggle) - Toggle switch input
+- [Form](Form) - Container for form elements
+- [Radio](Radio) - Radio button input
+- [Toggle](Toggle) - Toggle switch input

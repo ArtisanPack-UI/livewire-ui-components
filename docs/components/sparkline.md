@@ -307,5 +307,5 @@ Sparklines update smoothly when data changes:
 
 ## See Also
 
-- [Chart Component](chart) - Full-featured charts with all ApexCharts options
-- [Stat Component](stat) - Statistics display with sparkline support
+- [Chart Component](Chart) - Full-featured charts with all ApexCharts options
+- [Stat Component](Stat) - Statistics display with sparkline support

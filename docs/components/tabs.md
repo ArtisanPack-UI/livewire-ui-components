@@ -436,6 +436,6 @@ The component also handles cleanup during Livewire navigation (using `wire:navig
 
 ## Related Components
 
-- [Tab](tab) - Individual tab component used within Tabs
-- [Accordion](accordion) - Alternative way to organize content in collapsible sections
-- [Card](card) - Container for content with similar styling
+- [Tab](Tab) - Individual tab component used within Tabs
+- [Accordion](Accordion) - Alternative way to organize content in collapsible sections
+- [Card](Card) - Container for content with similar styling

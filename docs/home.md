@@ -49,7 +49,7 @@ composer require artisanpack-ui/livewire-ui-components
 php artisan livewire-ui-components:install
 ```
 
-For detailed installation instructions, see the [Installation Guide](installation).
+For detailed installation instructions, see the [Installation Guide](Installation).
 
 ### Basic Usage Example
 
@@ -72,41 +72,41 @@ For detailed installation instructions, see the [Installation Guide](installatio
 ArtisanPack UI Livewire Components includes a wide range of components for various use cases:
 
 ### Form Components
-- [Input](components/input) - Text input fields
-- [Checkbox](components/checkbox) - Checkbox inputs
-- [Select](components/select) - Dropdown select menus
-- [Button](components/button) - Various button styles
+- [Input](Components-Input) - Text input fields
+- [Checkbox](Components-Checkbox) - Checkbox inputs
+- [Select](Components-Select) - Dropdown select menus
+- [Button](Components-Button) - Various button styles
 
 ### Layout Components
-- [Card](components/card) - Content containers
-- [Modal](components/modal) - Modal dialogs
-- [Tabs](components/tabs) - Tabbed interfaces
+- [Card](Components-Card) - Content containers
+- [Modal](Components-Modal) - Modal dialogs
+- [Tabs](Components-Tabs) - Tabbed interfaces
 
 ### Data Display Components
-- [Table](components/table) - Data tables with sorting, export, and more
-- [Chart](components/chart) - Data visualization
-- [Pagination](components/pagination) - Page navigation
+- [Table](Components-Table) - Data tables with sorting, export, and more
+- [Chart](Components-Chart) - Data visualization
+- [Pagination](Components-Pagination) - Page navigation
 
 ### Dashboard Components (v2.0+)
-- [KpiCard](components/kpi-card) - KPI cards with sparklines and trend indicators
-- [WidgetGrid](components/widget-grid) - Responsive grid for dashboard layouts
-- [Sparkline](components/sparkline) - Inline sparkline charts
+- [KpiCard](Components-Kpi-Card) - KPI cards with sparklines and trend indicators
+- [WidgetGrid](Components-Widget-Grid) - Responsive grid for dashboard layouts
+- [Sparkline](Components-Sparkline) - Inline sparkline charts
 
 ### AI/Streaming Components (v2.0+)
-- [StreamableContent](components/streamable-content) - Real-time streaming content display
+- [StreamableContent](Components-Streamable-Content) - Real-time streaming content display
 
-For a complete list of components, see the [Components Overview](components).
+For a complete list of components, see the [Components Overview](Components).
 
 ## Theming & Styling
 
-- [Generating Color Themes](generating-themes) - Create custom color themes
-- [Glass Theme Presets](glass-presets) - Pre-built glassmorphism styles
-- [Theme Preview Tool](theme-preview-tool) - Browser-based theme customization (v2.0+, development only)
-- [High Contrast Theme](high-contrast-theme) - Accessibility-focused themes (v2.0+)
-- [Customization](customization) - Advanced styling and customization
+- [Generating Color Themes](Generating-Themes) - Create custom color themes
+- [Glass Theme Presets](Glass-Presets) - Pre-built glassmorphism styles
+- [Theme Preview Tool](Theme-Preview-Tool) - Browser-based theme customization (v2.0+, development only)
+- [High Contrast Theme](High-Contrast-Theme) - Accessibility-focused themes (v2.0+)
+- [Customization](Customization) - Advanced styling and customization
 
 ## Resources
 
 - **Repository**: [GitLab Repository](https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components)
 - **Issues**: [GitLab Issues](https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components/-/issues)
-- **Support**: For support, please open an issue on GitLab or contact the maintainer at [me@jacobmartella.com](mailto:me@jacobmartella.com)
+- **Support**: For support, please open an issue on GitLab or contact the maintainer at [me@jacobmartella.com](Mailto:Me@Jacobmartella.Com)

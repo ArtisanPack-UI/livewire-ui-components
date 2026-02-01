@@ -110,6 +110,6 @@ The Subheading component follows accessibility best practices:
 
 ## Related Components
 
-- [Heading](heading) - For main headings
-- [Text](text) - For paragraph text
-- [Link](link) - For hyperlinks
+- [Heading](Heading) - For main headings
+- [Text](Text) - For paragraph text
+- [Link](Link) - For hyperlinks

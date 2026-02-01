@@ -226,5 +226,5 @@ If you're seeing multiple prefixes (e.g., `<x-prefix1-prefix2-button>`), you mig
 
 ## Related Topics
 
-- [Custom Components](custom-components) - Learn how to create your own components that integrate with ArtisanPack UI
-- [Customization](../customization) - General customization options for ArtisanPack UI components
+- [Custom Components](Custom-Components) - Learn how to create your own components that integrate with ArtisanPack UI
+- [Customization](Customization) - General customization options for ArtisanPack UI components

@@ -457,7 +457,7 @@ The Choices component follows accessibility best practices:
 
 ## Related Components
 
-- [Form](form) - Container for form elements
-- [Select](select) - Standard select dropdown
-- [ChoicesOffline](choices-offline) - Offline version of the Choices component
-- [Tags](tags) - Tags input component
+- [Form](Form) - Container for form elements
+- [Select](Select) - Standard select dropdown
+- [ChoicesOffline](Choices-Offline) - Offline version of the Choices component
+- [Tags](Tags) - Tags input component

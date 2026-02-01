@@ -148,6 +148,6 @@ For better accessibility:
 
 ## Related Components
 
-- [Select](select) - The parent component for select inputs
-- [Choices](choices) - Enhanced select with search and multiple selection
-- [ChoicesOffline](choices-offline) - Client-side version of the Choices component
+- [Select](Select) - The parent component for select inputs
+- [Choices](Choices) - Enhanced select with search and multiple selection
+- [ChoicesOffline](Choices-Offline) - Client-side version of the Choices component

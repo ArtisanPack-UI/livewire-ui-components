@@ -261,5 +261,5 @@ $slides = [
 
 ## Related Components
 
-- [ImageGallery](image-gallery) - Grid display of images
-- [ImageLibrary](image-library) - Image management component
+- [ImageGallery](Image-Gallery) - Grid display of images
+- [ImageLibrary](Image-Library) - Image management component

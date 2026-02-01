@@ -298,7 +298,7 @@ The Tags component follows accessibility best practices:
 
 ## Related Components
 
-- [Form](form) - Container for form elements
-- [Input](input) - Standard text input
-- [Choices](choices) - Multi-select dropdown with search
-- [ChoicesOffline](choices-offline) - Offline version of the Choices component
+- [Form](Form) - Container for form elements
+- [Input](Input) - Standard text input
+- [Choices](Choices) - Multi-select dropdown with search
+- [ChoicesOffline](Choices-Offline) - Offline version of the Choices component

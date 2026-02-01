@@ -219,7 +219,7 @@ The grid automatically adjusts columns based on screen size:
 
 ## Related Components
 
-- [KpiCard](kpi-card) - KPI card for dashboards
-- [Stat](stat) - Simple statistic display
-- [Card](card) - Generic card container
-- [Grid](grid) - More flexible grid component
+- [KpiCard](Kpi-Card) - KPI card for dashboards
+- [Stat](Stat) - Simple statistic display
+- [Card](Card) - Generic card container
+- [Grid](Grid) - More flexible grid component

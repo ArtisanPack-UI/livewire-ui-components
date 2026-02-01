@@ -131,5 +131,5 @@ The Kbd component follows accessibility best practices:
 
 ## Related Components
 
-- [Button](button) - Interactive button element
-- [Icon](icon) - SVG icon display
+- [Button](Button) - Interactive button element
+- [Icon](Icon) - SVG icon display
