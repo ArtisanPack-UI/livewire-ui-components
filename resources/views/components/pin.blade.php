@@ -1,7 +1,7 @@
 <div>
     <div
         x-data="{
-                value: $wire.entangle('{{ $attributes->wire('model') }}'),
+                value: $wire.entangle('{{ $attributes->wire('model')->value() }}'),
                 inputs: [],
                 init() {
                     // Copy & Paste

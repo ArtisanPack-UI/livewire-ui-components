@@ -8,7 +8,7 @@
 @endphp
 
 <div x-data="{
-                selection: $wire.entangle('{{ $attributes->wire('model') }}'),
+                selection: $wire.entangle('{{ $attributes->wire('model')->value() }}'),
                 pageIds: {{ json_encode($getAllIds()) }},
                 isSelectable: {{ json_encode($selectable) }},
                 colspanSize: 0,

@@ -5,7 +5,7 @@
                 @if($selected)
                     '{{ $selected }}'
                 @else
-                    $wire.entangle('{{ $attributes->wire('model') }}')
+                    $wire.entangle('{{ $attributes->wire('model')->value() }}')
                 @endif
              ,
              morphRemovedCleanup: null,

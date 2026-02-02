@@ -1,7 +1,7 @@
 <div
         x-data="{
                 steps: [],
-                current: $wire.entangle('{{ $attributes->wire('model') }}'),
+                current: $wire.entangle('{{ $attributes->wire('model')->value() }}'),
                 init() {
                     // Fix weird issue when navigating back
                     document.addEventListener('livewire:navigating', () => {

@@ -1,5 +1,5 @@
 <div
-        x-data="{ model: $wire.entangle('{{ $attributes->wire('model') }}') }"
+        x-data="{ model: $wire.entangle('{{ $attributes->wire('model')->value() }}') }"
         {{
             $attributes
                 ->whereDoesntStartWith('wire:model')

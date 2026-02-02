@@ -8,7 +8,7 @@
             wire:ignore
             x-data="{
                 editor: null,
-                modelValue: $wire.entangle('{{ $attributes->wire('model') }}'),
+                modelValue: $wire.entangle('{{ $attributes->wire('model')->value() }}'),
                 class: $persist(window.matchMedia('(prefers-color-scheme: dark)').matches ? '{{ $darkClass }}' : '{{ $lightClass }}').as('mary-class'),
                 init() {
                     ace.require('ace/ext/language_tools');
