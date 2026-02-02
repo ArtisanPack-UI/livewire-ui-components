@@ -1,13 +1,7 @@
 <div
         x-data="{
             tabs: [],
-            selected:
-                @if($selected)
-                    '{{ $selected }}'
-                @else
-                    $wire.entangle('{{ $attributes->wire('model')->value() }}')
-                @endif
-             ,
+            selected: @if($selected)'{{ $selected }}'@else $wire.entangle('{{ $attributes->wire('model')->value() }}')@endif,
              morphRemovedCleanup: null,
              _onNavigating: null,
              init() {
