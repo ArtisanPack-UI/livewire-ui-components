@@ -1,5 +1,5 @@
 <div x-data="{
-        tags: @entangle($attributes->wire('model')),
+        tags: $wire.entangle($attributes->wire('model')),
         tag: null,
         focused: false,
         isReadonly: {{ json_encode($isReadonly()) }},

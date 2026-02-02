@@ -2,7 +2,7 @@
     x-data="{
         open:
             @if($modelName()->value)
-                @entangle($modelName())
+                $wire.entangle($modelName())
             @else
                 false
             @endif

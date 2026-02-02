@@ -4,7 +4,7 @@
     @if($id)
         id="{{ $id }}"
     @else
-        x-data="{open: @entangle($attributes->wire('model')).live }"
+        x-data="{open: $wire.entangle($attributes->wire('model')).live }"
         x-init="$watch('open', value => { if (!value){ $dispatch('close') }else{ $dispatch('open') } })"
         :class="{'modal-open !animate-none': open}"
         :open="open"

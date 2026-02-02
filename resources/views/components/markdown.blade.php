@@ -16,7 +16,7 @@
             x-data="
                 {
                     editor: null,
-                    value: @entangle($attributes->wire('model')),
+                    value: $wire.entangle($attributes->wire('model')),
                     uploadUrl: '{{ $uploadUrl }}?disk={{ $disk }}&folder={{ $folder }}&_token={{ csrf_token() }}',
                     uploading: false,
                     init() {

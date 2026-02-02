@@ -8,7 +8,7 @@
        imageCrop: null,
        originalImageUrl: null,
        cropAfterChange: {{ json_encode($cropAfterChange) }},
-       file: @entangle($attributes->wire('model')),
+       file: $wire.entangle($attributes->wire('model')),
        isDragOver: false,
        dragCounter: 0,
        init () {
