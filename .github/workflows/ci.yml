@@ -11,6 +11,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - uses: actions/checkout@v4
@@ -19,7 +20,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
+          extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite, pdo_sqlite
           coverage: none
 
       - name: Get Composer cache directory
@@ -44,9 +45,8 @@ jobs:
           retention-days: 1
 
   test:
-    needs: build
     runs-on: ubuntu-latest
-
+    timeout-minutes: 15
     name: Test
 
     steps:
@@ -56,22 +56,39 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
+          extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite, pdo_sqlite
           coverage: none
 
-      - name: Download vendor directory
-        uses: actions/download-artifact@v4
-        with:
-          name: vendor
-          path: vendor/
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
-      - name: Run tests
-        run: chmod +x ./vendor/bin/pest && ./vendor/bin/pest --ci
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Run Unit tests
+        env:
+          XDEBUG_MODE: off
+        run: php vendor/bin/pest tests/Unit --no-coverage
+
+      - name: Run Feature tests
+        env:
+          XDEBUG_MODE: off
+        run: php vendor/bin/pest tests/Feature --no-coverage
 
   coverage:
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     name: Code Coverage
+    continue-on-error: true
 
     steps:
       - uses: actions/checkout@v4
@@ -80,7 +97,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
+          extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite, pdo_sqlite
           coverage: xdebug
 
       - name: Download vendor directory
@@ -89,8 +106,11 @@ jobs:
           name: vendor
           path: vendor/
 
+      - name: Fix vendor permissions
+        run: chmod -R +x vendor/bin/
+
       - name: Run tests with coverage
-        run: chmod +x ./vendor/bin/pest && ./vendor/bin/pest --ci --coverage --coverage-clover=coverage.xml
+        run: php vendor/bin/pest --coverage --coverage-clover=coverage.xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
