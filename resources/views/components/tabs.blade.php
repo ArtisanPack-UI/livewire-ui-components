@@ -61,7 +61,6 @@
             aria-orientation="vertical"
         @endif
         x-on:livewire:navigating.window="destroy()"
-        x-class="font-semibold pb-1 border-b-[length:var(--border)] border-b-base-content/50 border-b-base-content/10 flex overflow-x-auto scrollbar-hide relative w-full"
 >
     @if($isVerticalRight())
         <div role="tablist" {{ $attributes->except(['wire:model', 'wire:model.live'])->class([$verticalContentClass]) }}>
