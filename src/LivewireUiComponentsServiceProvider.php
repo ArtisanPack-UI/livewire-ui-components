@@ -226,10 +226,15 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
             Blade::component($class, $newName);
         }
 
-        // Register all Livewire components.
-        foreach ($this->livewireComponents as $alias => $class) {
-            $componentName = $prefix ? $prefix.'-'.$alias : $alias;
-            Livewire::component($componentName, $class);
+        // Register all Livewire components using Livewire 4+ API.
+        if ( class_exists( \Livewire\Livewire::class ) ) {
+            foreach ( $this->livewireComponents as $alias => $class ) {
+                $componentName = $prefix ? $prefix . '-' . $alias : $alias;
+                Livewire::addComponent(
+                    name: $componentName,
+                    class: $class
+                );
+            }
         }
     }
 
