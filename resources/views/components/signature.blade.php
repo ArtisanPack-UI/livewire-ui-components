@@ -1,7 +1,7 @@
 <div>
     <div
         x-data="{
-            value: $wire.entangle($attributes->wire('model')),
+            value: $wire.entangle('{{ $attributes->wire('model') }}'),
             signature: null,
             init() {
                 let canvas = document.getElementById('{{ $uuid }}signature')

@@ -1,4 +1,4 @@
-<div x-data="{ focused: false, selection: $wire.entangle($attributes->wire('model')) }">
+<div x-data="{ focused: false, selection: $wire.entangle('{{ $attributes->wire('model') }}') }">
     <div
         @click.outside = "clear()"
         @keyup.esc = "clear()"
