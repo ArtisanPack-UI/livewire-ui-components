@@ -57,7 +57,7 @@
                         @endif
 
                         @foreach ($options as $option)
-                            <option value="{{ data_get($option, $optionValue) }}" @if(data_get($option, 'disabled')) disabled @endif>{{ data_get($option, $optionLabel) }}</option>
+                            <option value="{{ data_get($option, $optionValue) }}" @if(data_get($option, 'disabled')) disabled @endif @if(data_get($option, 'selected')) selected @endif>{{ data_get($option, $optionLabel) }}</option>
                         @endforeach
                     </select>
 
