@@ -436,7 +436,7 @@ Combine sparklines with glass morphism for modern dashboards:
 
 ### Requirements
 
-Sparklines require ApexCharts. See the [Sparkline component documentation](Sparkline) for installation instructions.
+Sparklines require ApexCharts. See the [Sparkline component documentation](sparkline) for installation instructions.
 
 ## Props
 
@@ -557,6 +557,6 @@ If you're upgrading from a previous version that used slot-based API, here's how
 
 ## Related Components
 
-- [Card](Card) - Container for content with similar styling
-- [Progress](Progress) - Visual indicator of progress
-- [Chart](Chart) - More complex data visualization
+- [Card](card) - Container for content with similar styling
+- [Progress](progress) - Visual indicator of progress
+- [Chart](chart) - More complex data visualization

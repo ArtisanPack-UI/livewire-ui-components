@@ -228,6 +228,6 @@ For better accessibility, consider the following:
 
 ## Related Components
 
-- [Tooltip](Tooltip) - Simpler version for short text hints
-- [Dropdown](Dropdown) - Click-triggered menu with options
-- [Modal](Modal) - Dialog box for more complex interactions
+- [Tooltip](tooltip) - Simpler version for short text hints
+- [Dropdown](dropdown) - Click-triggered menu with options
+- [Modal](modal) - Dialog box for more complex interactions

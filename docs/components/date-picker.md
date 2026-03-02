@@ -274,6 +274,6 @@ The DatePicker component is compatible with all modern browsers that support Fla
 
 ## Related Components
 
-- [DateTime](Date-Time) - Date and time picker combined
-- [Input](Input) - Basic text input
-- [Calendar](Calendar-Enhanced) - Full calendar view
+- [DateTime](date-time) - Date and time picker combined
+- [Input](input) - Basic text input
+- [Calendar](calendar) - Full calendar view

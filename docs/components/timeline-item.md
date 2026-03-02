@@ -225,5 +225,5 @@ For better accessibility:
 ## Related Components
 
 - There is no specific container component for timelines; use a `<div class="timeline">` as the container
-- [Icon](Icon) - Component for displaying SVG icons in the timeline dot
-- [Card](Card) - Can be used within timeline items for more structured content
+- [Icon](icon) - Component for displaying SVG icons in the timeline dot
+- [Card](card) - Can be used within timeline items for more structured content

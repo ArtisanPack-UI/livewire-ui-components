@@ -350,4 +350,4 @@ php artisan config:clear
 
 - [GitLab Issues](https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components/-/issues)
 - [Component Documentation](Components)
-- [Email Support](Mailto:Me@Jacobmartella.Com)
+- [Email Support](mailto:me@jacobmartella.com)
