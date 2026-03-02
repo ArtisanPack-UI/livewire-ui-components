@@ -108,6 +108,6 @@ The Errors component follows accessibility best practices:
 
 ## Related Components
 
-- [Alert](alert) - General purpose alert messages
-- [Toast](toast) - Temporary notifications
-- [Form](form) - Form container component
+- [Alert](Alert) - General purpose alert messages
+- [Toast](Toast) - Temporary notifications
+- [Form](Form) - Form container component

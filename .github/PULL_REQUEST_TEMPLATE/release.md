@@ -1,6 +1,5 @@
 <!--- Title format: Release v1.0.0 -->
 
-/label ~"release" ~"Status::In Review"
 
 ## Release Information
 
@@ -40,15 +39,15 @@
 <!--- Security fixes -->
 - 
 
-## Issues and Merge Requests
+## Issues and Pull Requests
 
 **Issues Fixed:**
 - Closes #
 - Closes #
 
-**Related MRs:**
-- !<!-- MR number -->
-- !<!-- MR number -->
+**Related PRs:**
+- #<!-- PR number -->
+- #<!-- PR number -->
 
 ## Breaking Changes
 

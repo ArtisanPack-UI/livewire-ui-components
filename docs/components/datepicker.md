@@ -368,6 +368,6 @@ The DatePicker component follows accessibility best practices:
 
 ## Related Components
 
-- [Form](form) - Container for form elements
-- [Input](input) - Standard text input
-- [DateTime](datetime) - Date and time picker component
+- [Form](Form) - Container for form elements
+- [Input](Input) - Standard text input
+- [DateTime](Datetime) - Date and time picker component

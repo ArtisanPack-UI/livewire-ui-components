@@ -178,7 +178,7 @@ The Fieldset component is ideal for:
 
 ## Related Components
 
-- [Form](form) - Main form container
-- [Card](card) - General content container
-- [Header](header) - Standalone header component
-- [Group](group) - Group form elements horizontally
+- [Form](Form) - Main form container
+- [Card](Card) - General content container
+- [Header](Header) - Standalone header component
+- [Group](Group) - Group form elements horizontally

@@ -266,7 +266,7 @@ The Card component follows accessibility best practices:
 
 ## Related Components
 
-- [Button](button) - Interactive button element
-- [Tabs](tabs) - Tabbed interface
-- [Modal](modal) - Modal dialog
-- [Collapse](collapse) - Collapsible content
+- [Button](Button) - Interactive button element
+- [Tabs](Tabs) - Tabbed interface
+- [Modal](Modal) - Modal dialog
+- [Collapse](Collapse) - Collapsible content

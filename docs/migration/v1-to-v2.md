@@ -112,7 +112,7 @@ Sparkline types:
 - `area` - Filled area chart
 - `bar` - Bar chart
 
-**Requirements:** Sparklines require ApexCharts. See the [Sparkline component documentation](../components/sparkline) for installation instructions.
+**Requirements:** Sparklines require ApexCharts. See the [Sparkline component documentation](Components-Sparkline) for installation instructions.
 
 ### Table Data Export
 
@@ -233,11 +233,11 @@ Access at `/v2-features/theme-preview` to:
 - Share theme configurations via URL
 - Test themes with interactive component examples
 
-**Security Notice**: The theme preview route is disabled by default and should only be enabled in development/local environments. See the [Theme Preview Tool documentation](../theme-preview-tool) for complete details.
+**Security Notice**: The theme preview route is disabled by default and should only be enabled in development/local environments. See the [Theme Preview Tool documentation](Theme-Preview-Tool) for complete details.
 
 ### Livewire 4 Features
 
-See [Livewire 4 Features](livewire-4-features) for details on:
+See [Livewire 4 Features](Livewire-4-Features) for details on:
 
 - `wire:sort` - Native drag-and-drop sorting for tables
 - `wire:intersect` - Infinite scroll support
@@ -349,5 +349,5 @@ php artisan config:clear
 ## Getting Help
 
 - [GitLab Issues](https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components/-/issues)
-- [Component Documentation](../components.md)
+- [Component Documentation](Components)
 - [Email Support](mailto:me@jacobmartella.com)

@@ -6,7 +6,7 @@ title: Chart Component
 
 The Chart component provides a powerful wrapper for ApexCharts, allowing you to easily create interactive, animated charts in your Laravel application with support for theming, glass effects, and real-time updates.
 
-> **Note:** In version 2.0, the Chart component was migrated from Chart.js to ApexCharts. If you're upgrading from 1.x, see the [Chart Migration Guide](/migration/chart).
+> **Note:** In version 2.0, the Chart component was migrated from Chart.js to ApexCharts. If you're upgrading from 1.x, see the [Chart Migration Guide](Migration-Chart).
 
 ## Installation
 
@@ -429,6 +429,6 @@ class LiveDashboard extends Component
 
 ## See Also
 
-- [Sparkline Component](sparkline) - Lightweight inline charts
-- [Stat Component](stat) - Display statistics with optional sparklines
+- [Sparkline Component](Sparkline) - Lightweight inline charts
+- [Stat Component](Stat) - Display statistics with optional sparklines
 - [ApexCharts Documentation](https://apexcharts.com/docs/)

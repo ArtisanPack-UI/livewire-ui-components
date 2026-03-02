@@ -160,6 +160,6 @@ The Diff component follows accessibility best practices:
 
 ## Related Components
 
-- [Code](code) - Code editor with syntax highlighting
-- [Markdown](markdown) - Markdown editor and renderer
-- [Editor](editor) - Rich text editor
+- [Code](Code) - Code editor with syntax highlighting
+- [Markdown](Markdown) - Markdown editor and renderer
+- [Editor](Editor) - Rich text editor

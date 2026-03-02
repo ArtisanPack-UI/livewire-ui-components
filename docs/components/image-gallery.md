@@ -449,14 +449,14 @@ The component fully supports dark mode with automatic theme detection:
 
 ## Related Components
 
-- [ImageSlider](image-slider) - Carousel/slider for sequential image navigation
-- [ImageLibrary](image-library) - Component for managing and selecting images
-- [File](file) - File upload component for image uploads
-- [Modal](modal) - Modal dialogs for image viewing
+- [ImageSlider](Image-Slider) - Carousel/slider for sequential image navigation
+- [ImageLibrary](Image-Library) - Component for managing and selecting images
+- [File](File) - File upload component for image uploads
+- [Modal](Modal) - Modal dialogs for image viewing
 
 ## Migration from Old ImageGallery
 
-The old carousel-based ImageGallery has been replaced with this grid-based version. For carousel functionality, use the new [ImageSlider](image-slider) component:
+The old carousel-based ImageGallery has been replaced with this grid-based version. For carousel functionality, use the new [ImageSlider](Image-Slider) component:
 
 ```blade
 <!-- Old carousel-style ImageGallery -->
@@ -469,4 +469,4 @@ The old carousel-based ImageGallery has been replaced with this grid-based versi
 <x-image-slider :images="$images" :with-arrows="true" />
 ```
 
-See the [Migration Guide](../migration/image-gallery) for detailed migration instructions.
+See the [Migration Guide](Migration-Image-Gallery) for detailed migration instructions.

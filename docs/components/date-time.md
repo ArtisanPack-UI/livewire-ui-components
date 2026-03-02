@@ -144,4 +144,4 @@ The DateTime component follows accessibility best practices:
 
 - [DatePicker](date-picker) - Date picker only
 - [Input](input) - Basic text input
-- [Calendar](calendar-enhanced) - Full calendar view
+- [Calendar](calendar) - Full calendar view

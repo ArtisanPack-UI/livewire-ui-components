@@ -18,11 +18,11 @@ The color system is built around the `ColorGenerator` class, which provides inte
 
 All major UI components support the color system:
 
-- [Button](../components/button)
-- [Badge](../components/badge)
-- [Alert](../components/alert)
-- [Avatar](../components/avatar)
-- [Toast](../components/toast)
+- [Button](button)
+- [Badge](badge)
+- [Alert](alert)
+- [Avatar](avatar)
+- [Toast](toast)
 
 ## Color Input Types
 

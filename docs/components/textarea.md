@@ -258,6 +258,6 @@ The Textarea component follows accessibility best practices:
 
 ## Related Components
 
-- [Form](form) - Container for form elements
-- [Input](input) - Single-line text input
-- [Editor](editor) - Rich text editor
+- [Form](Form) - Container for form elements
+- [Input](Input) - Single-line text input
+- [Editor](Editor) - Rich text editor

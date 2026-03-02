@@ -832,7 +832,7 @@ Livewire 4's `wire:intersect` directive enables intersection observer-based lazy
     :has-more-pages="$hasMorePages" />
 ```
 
-See the [Table Component documentation](../components/table.md#infinite-scroll-livewire-4) for full details.
+See the [Table Component documentation](Components-Table#infinite-scroll-livewire-4) for full details.
 
 ### Choices Component - Lazy Loading
 
@@ -845,7 +845,7 @@ See the [Table Component documentation](../components/table.md#infinite-scroll-l
     :has-more-options="$hasMore" />
 ```
 
-See the [Choices Component documentation](../components/choices.md#lazy-loading-options-livewire-4) for full details.
+See the [Choices Component documentation](Components-Choices#lazy-loading-options-livewire-4) for full details.
 
 ### Modifiers
 
@@ -880,7 +880,7 @@ Livewire 4's native `wire:sort` directive enables drag-and-drop row reordering i
     wire:sort="updateOrder" />
 ```
 
-See the [Table Component documentation](../components/table.md#sortable-rows-livewire-4) for full details.
+See the [Table Component documentation](Components-Table#sortable-rows-livewire-4) for full details.
 
 ## Feature Detection
 

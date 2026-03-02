@@ -193,7 +193,7 @@ The MenuItem component follows accessibility best practices:
 
 ## Related Components
 
-- [Menu](menu) - Container for menu items
-- [MenuSeparator](menu-separator) - Separator between menu items
-- [MenuSub](menu-sub) - Submenu container
-- [MenuTitle](menu-title) - Title for a group of menu items
+- [Menu](Menu) - Container for menu items
+- [MenuSeparator](Menu-Separator) - Separator between menu items
+- [MenuSub](Menu-Sub) - Submenu container
+- [MenuTitle](Menu-Title) - Title for a group of menu items

@@ -250,6 +250,6 @@ The Password component follows accessibility best practices:
 
 ## Related Components
 
-- [Form](form) - Container for form elements
-- [Input](input) - Standard text input
-- [Pin](pin) - PIN code input
+- [Form](Form) - Container for form elements
+- [Input](Input) - Standard text input
+- [Pin](Pin) - PIN code input

@@ -79,121 +79,121 @@ Many components share common props and slots:
 
 | Component | Description | Documentation |
 |-----------|-------------|---------------|
-| [Button](button) | Interactive button element | [View Docs](button) |
-| [Checkbox](checkbox) | Checkbox input | [View Docs](checkbox) |
-| [CheckboxGroup](checkbox-group) | Group of checkbox inputs | [View Docs](checkbox-group) |
-| [Choices](choices) | Multi-select dropdown with search | [View Docs](choices) |
-| [ChoicesOffline](choices-offline) | Offline version of Choices | [View Docs](choices-offline) |
-| [Colorpicker](colorpicker) | Color selection input | [View Docs](colorpicker) |
-| [DatePicker](date-picker) | Date selection input | [View Docs](date-picker) |
-| [DateTime](date-time) | Date and time selection input | [View Docs](date-time) |
-| [Editor](editor) | Rich text editor | [View Docs](editor) |
-| [Fieldset](fieldset) | Styled container for form fields | [View Docs](fieldset) |
-| [File](file) | File upload input | [View Docs](file) |
-| [Form](form) | Form container with validation | [View Docs](form) |
-| [Group](group) | Group of form elements | [View Docs](group) |
-| [Input](input) | Text input field | [View Docs](input) |
-| [Password](password) | Password input with toggle | [View Docs](password) |
-| [Pin](pin) | PIN code input | [View Docs](pin) |
-| [Radio](radio) | Radio button input | [View Docs](radio) |
-| [RadioGroup](radio-group) | Group of radio button inputs | [View Docs](radio-group) |
-| [Range](range) | Range slider input | [View Docs](range) |
-| [Rating](rating) | Star rating input | [View Docs](rating) |
-| [Select](select) | Dropdown select input | [View Docs](select) |
-| [SelectGroup](select-group) | Grouped select input | [View Docs](select-group) |
-| [Signature](signature) | Signature pad input | [View Docs](signature) |
-| [Tags](tags) | Tags input | [View Docs](tags) |
-| [Textarea](textarea) | Multi-line text input | [View Docs](textarea) |
-| [Toggle](toggle) | Toggle switch input | [View Docs](toggle) |
+| [Button](button) | Interactive button element | [Button docs](button) |
+| [Checkbox](checkbox) | Checkbox input | [Checkbox docs](checkbox) |
+| [CheckboxGroup](checkbox-group) | Group of checkbox inputs | [CheckboxGroup docs](checkbox-group) |
+| [Choices](choices) | Multi-select dropdown with search | [Choices docs](choices) |
+| [ChoicesOffline](choices-offline) | Offline version of Choices | [ChoicesOffline docs](choices-offline) |
+| [Colorpicker](colorpicker) | Color selection input | [Colorpicker docs](colorpicker) |
+| [DatePicker](date-picker) | Date selection input | [DatePicker docs](date-picker) |
+| [DateTime](date-time) | Date and time selection input | [DateTime docs](date-time) |
+| [Editor](editor) | Rich text editor | [Editor docs](editor) |
+| [Fieldset](fieldset) | Styled container for form fields | [Fieldset docs](fieldset) |
+| [File](file) | File upload input | [File docs](file) |
+| [Form](form) | Form container with validation | [Form docs](form) |
+| [Group](group) | Group of form elements | [Group docs](group) |
+| [Input](input) | Text input field | [Input docs](input) |
+| [Password](password) | Password input with toggle | [Password docs](password) |
+| [Pin](pin) | PIN code input | [Pin docs](pin) |
+| [Radio](radio) | Radio button input | [Radio docs](radio) |
+| [RadioGroup](radio-group) | Group of radio button inputs | [RadioGroup docs](radio-group) |
+| [Range](range) | Range slider input | [Range docs](range) |
+| [Rating](rating) | Star rating input | [Rating docs](rating) |
+| [Select](select) | Dropdown select input | [Select docs](select) |
+| [SelectGroup](select-group) | Grouped select input | [SelectGroup docs](select-group) |
+| [Signature](signature) | Signature pad input | [Signature docs](signature) |
+| [Tags](tags) | Tags input | [Tags docs](tags) |
+| [Textarea](textarea) | Multi-line text input | [Textarea docs](textarea) |
+| [Toggle](toggle) | Toggle switch input | [Toggle docs](toggle) |
 
 ### Layout Components
 
 | Component | Description | Documentation |
 |-----------|-------------|---------------|
-| [Accordion](accordion) | Collapsible content panels | [View Docs](accordion) |
-| [Card](card) | Content container with header and footer | [View Docs](card) |
-| [Collapse](collapse) | Collapsible content | [View Docs](collapse) |
-| [Drawer](drawer) | Side drawer/panel | [View Docs](drawer) |
-| [Dropdown](dropdown) | Dropdown menu | [View Docs](dropdown) |
-| [Separator](separator) | Horizontal rule with styling | [View Docs](separator) |
-| [Main](main) | Main content container | [View Docs](main) |
-| [Modal](modal) | Modal dialog | [View Docs](modal) |
-| [Popover](popover) | Popover tooltip | [View Docs](popover) |
-| [Tabs](tabs) | Tabbed interface | [View Docs](tabs) |
-| [Tab](tab) | Individual tab for Tabs component | [View Docs](tab) |
+| [Accordion](accordion) | Collapsible content panels | [Accordion docs](accordion) |
+| [Card](card) | Content container with header and footer | [Card docs](card) |
+| [Collapse](collapse) | Collapsible content | [Collapse docs](collapse) |
+| [Drawer](drawer) | Side drawer/panel | [Drawer docs](drawer) |
+| [Dropdown](dropdown) | Dropdown menu | [Dropdown docs](dropdown) |
+| [Separator](separator) | Horizontal rule with styling | [Separator docs](separator) |
+| [Main](main) | Main content container | [Main docs](main) |
+| [Modal](modal) | Modal dialog | [Modal docs](modal) |
+| [Popover](popover) | Popover tooltip | [Popover docs](popover) |
+| [Tabs](tabs) | Tabbed interface | [Tabs docs](tabs) |
+| [Tab](tab) | Individual tab for Tabs component | [Tab docs](tab) |
 
 ### Navigation Components
 
 | Component | Description | Documentation |
 |-----------|-------------|---------------|
-| [Breadcrumbs](breadcrumbs) | Breadcrumb navigation | [View Docs](breadcrumbs) |
-| [Menu](menu) | Navigation menu | [View Docs](menu) |
-| [MenuItem](menu-item) | Menu item for Menu component | [View Docs](menu-item) |
-| [MenuSeparator](menu-separator) | Separator for Menu component | [View Docs](menu-separator) |
-| [MenuSub](menu-sub) | Submenu for Menu component | [View Docs](menu-sub) |
-| [MenuTitle](menu-title) | Title for Menu component | [View Docs](menu-title) |
-| [Nav](nav) | Navigation bar | [View Docs](nav) |
-| [Pagination](pagination) | Pagination controls | [View Docs](pagination) |
-| [Spotlight](spotlight) | Command palette/search | [View Docs](spotlight) |
+| [Breadcrumbs](breadcrumbs) | Breadcrumb navigation | [Breadcrumbs docs](breadcrumbs) |
+| [Menu](menu) | Navigation menu | [Menu docs](menu) |
+| [MenuItem](menu-item) | Menu item for Menu component | [MenuItem docs](menu-item) |
+| [MenuSeparator](menu-separator) | Separator for Menu component | [MenuSeparator docs](menu-separator) |
+| [MenuSub](menu-sub) | Submenu for Menu component | [MenuSub docs](menu-sub) |
+| [MenuTitle](menu-title) | Title for Menu component | [MenuTitle docs](menu-title) |
+| [Nav](nav) | Navigation bar | [Nav docs](nav) |
+| [Pagination](pagination) | Pagination controls | [Pagination docs](pagination) |
+| [Spotlight](spotlight) | Command palette/search | [Spotlight docs](spotlight) |
 
 ### Data Display Components
 
 | Component | Description | Documentation |
 |-----------|-------------|---------------|
-| [Avatar](avatar) | User avatar/profile image | [View Docs](avatar) |
-| [Badge](badge) | Small status indicator | [View Docs](badge) |
-| [Calendar](calendar) | Calendar display | [View Docs](calendar) |
-| [CalendarEnhanced](calendar-enhanced) | Enhanced calendar with events and views | [View Docs](calendar-enhanced) |
-| [Chart](chart) | Data visualization charts | [View Docs](chart) |
-| [Code](code) | Code display with syntax highlighting | [View Docs](code) |
-| [Diff](diff) | Text difference display | [View Docs](diff) |
-| [EventModalContent](event-modal-content) | Calendar event modal content | [View Docs](event-modal-content) |
-| [Heading](heading) | Styled heading text | [View Docs](heading) |
-| [ImageGallery](image-gallery) | Image gallery display | [View Docs](image-gallery) |
-| [ImageLibrary](image-library) | Image library/picker | [View Docs](image-library) |
-| [ImageSlider](image-slider) | Image slider/carousel component | [View Docs](image-slider) |
-| [Kbd](kbd) | Keyboard key display | [View Docs](kbd) |
-| [Link](link) | Styled link element | [View Docs](link) |
-| [ListItem](list-item) | List item with various layouts | [View Docs](list-item) |
-| [Markdown](markdown) | Markdown content display | [View Docs](markdown) |
-| [Profile](profile) | User profile display | [View Docs](profile) |
-| [Progress](progress) | Progress bar | [View Docs](progress) |
-| [ProgressRadial](progress-radial) | Radial progress indicator | [View Docs](progress-radial) |
-| [Stat](stat) | Statistics display | [View Docs](stat) |
-| [Steps](steps) | Step indicator | [View Docs](steps) |
-| [Step](step) | Individual step for Steps component | [View Docs](step) |
-| [Subheading](subheading) | Styled subheading text | [View Docs](subheading) |
-| [Sparkline](sparkline) | Inline sparkline charts | [View Docs](sparkline) |
-| [Table](table) | Data table with sorting, export, and more | [View Docs](table) |
-| [Text](text) | Styled text component | [View Docs](text) |
-| [TimelineItem](timeline-item) | Timeline item display | [View Docs](timeline-item) |
+| [Avatar](avatar) | User avatar/profile image | [Avatar docs](avatar) |
+| [Badge](badge) | Small status indicator | [Badge docs](badge) |
+| [Calendar](calendar) | Calendar display | [Calendar docs](calendar) |
+| [CalendarEnhanced](calendar-enhanced) | Enhanced calendar with events and views | [CalendarEnhanced docs](calendar-enhanced) |
+| [Chart](chart) | Data visualization charts | [Chart docs](chart) |
+| [Code](code) | Code display with syntax highlighting | [Code docs](code) |
+| [Diff](diff) | Text difference display | [Diff docs](diff) |
+| [EventModalContent](event-modal-content) | Calendar event modal content | [EventModalContent docs](event-modal-content) |
+| [Heading](heading) | Styled heading text | [Heading docs](heading) |
+| [ImageGallery](image-gallery) | Image gallery display | [ImageGallery docs](image-gallery) |
+| [ImageLibrary](image-library) | Image library/picker | [ImageLibrary docs](image-library) |
+| [ImageSlider](image-slider) | Image slider/carousel component | [ImageSlider docs](image-slider) |
+| [Kbd](kbd) | Keyboard key display | [Kbd docs](kbd) |
+| [Link](link) | Styled link element | [Link docs](link) |
+| [ListItem](list-item) | List item with various layouts | [ListItem docs](list-item) |
+| [Markdown](markdown) | Markdown content display | [Markdown docs](markdown) |
+| [Profile](profile) | User profile display | [Profile docs](profile) |
+| [Progress](progress) | Progress bar | [Progress docs](progress) |
+| [ProgressRadial](progress-radial) | Radial progress indicator | [ProgressRadial docs](progress-radial) |
+| [Stat](stat) | Statistics display | [Stat docs](stat) |
+| [Steps](steps) | Step indicator | [Steps docs](steps) |
+| [Step](step) | Individual step for Steps component | [Step docs](step) |
+| [Subheading](subheading) | Styled subheading text | [Subheading docs](subheading) |
+| [Sparkline](sparkline) | Inline sparkline charts | [Sparkline docs](sparkline) |
+| [Table](table) | Data table with sorting, export, and more | [Table docs](table) |
+| [Text](text) | Styled text component | [Text docs](text) |
+| [TimelineItem](timeline-item) | Timeline item display | [TimelineItem docs](timeline-item) |
 
 ### Dashboard Components (v2.0+)
 
 | Component | Description | Documentation |
 |-----------|-------------|---------------|
-| [KpiCard](kpi-card) | KPI card with sparkline and trend indicator | [View Docs](kpi-card) |
-| [WidgetGrid](widget-grid) | Responsive grid for dashboard layouts | [View Docs](widget-grid) |
-| [StreamableContent](streamable-content) | Container for streaming content (AI responses) | [View Docs](streamable-content) |
+| [KpiCard](kpi-card) | KPI card with sparkline and trend indicator | [KpiCard docs](kpi-card) |
+| [WidgetGrid](widget-grid) | Responsive grid for dashboard layouts | [WidgetGrid docs](widget-grid) |
+| [StreamableContent](streamable-content) | Container for streaming content (AI responses) | [StreamableContent docs](streamable-content) |
 
 ### Feedback Components
 
 | Component | Description | Documentation |
 |-----------|-------------|---------------|
-| [Alert](alert) | Alert/notification message | [View Docs](alert) |
-| [Errors](errors) | Form validation errors display | [View Docs](errors) |
-| [Loading](loading) | Loading indicator | [View Docs](loading) |
-| [Toast](toast) | Toast notification | [View Docs](toast) |
+| [Alert](alert) | Alert/notification message | [Alert docs](alert) |
+| [Errors](errors) | Form validation errors display | [Errors docs](errors) |
+| [Loading](loading) | Loading indicator | [Loading docs](loading) |
+| [Toast](toast) | Toast notification | [Toast docs](toast) |
 
 ### Utility Components
 
 | Component | Description | Documentation |
 |-----------|-------------|---------------|
-| [Carousel](carousel) | Image/content carousel | [View Docs](carousel) |
-| [Header](header) | Page header with actions | [View Docs](header) |
-| [Icon](icon) | SVG icon display | [View Docs](icon) |
-| [Swap](swap) | Element that swaps content on interaction | [View Docs](swap) |
-| [ThemeToggle](theme-toggle) | Light/dark theme toggle | [View Docs](theme-toggle) |
+| [Carousel](carousel) | Image/content carousel | [Carousel docs](carousel) |
+| [Header](header) | Page header with actions | [Header docs](header) |
+| [Icon](icon) | SVG icon display | [Icon docs](icon) |
+| [Swap](swap) | Element that swaps content on interaction | [Swap docs](swap) |
+| [ThemeToggle](theme-toggle) | Light/dark theme toggle | [ThemeToggle docs](theme-toggle) |
 
 ## Component Composition
 

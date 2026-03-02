@@ -122,6 +122,6 @@ When using icons that convey meaning (rather than just decoration), it's importa
 
 ## Related Components
 
-- [Button](button) - Interactive button element
-- [Alert](alert) - Alert messages
-- [Toast](toast) - Toast notifications
+- [Button](Button) - Interactive button element
+- [Alert](Alert) - Alert messages
+- [Toast](Toast) - Toast notifications

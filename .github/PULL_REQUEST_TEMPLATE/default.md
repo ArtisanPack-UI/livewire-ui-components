@@ -1,6 +1,5 @@
-<!--- Provide a clear, descriptive title for this merge request -->
+<!--- Provide a clear, descriptive title for this pull request -->
 
-/label ~"Status::In Review"
 
 ## Description
 
@@ -23,8 +22,8 @@
 
 ## Related Issue
 
-<!--- This project only accepts merge requests related to open issues -->
-<!--- Link to the issue this MR addresses -->
+<!--- This project only accepts pull requests related to open issues -->
+<!--- Link to the issue this PR addresses -->
 
 **Issue:** #
 
@@ -99,7 +98,7 @@
 Before requesting review, confirm:
 
 - [ ] Followed contributing guidelines
-- [ ] Checked for other open MRs for same update
+- [ ] Checked for other open PRs for same update
 - [ ] Code passes all tests
 - [ ] Code has been linted
 - [ ] Accessibility tests completed
@@ -107,37 +106,3 @@ Before requesting review, confirm:
 - [ ] Self-review completed
 - [ ] Comments added for complex code
 - [ ] No new warnings generated
-
-## Labels
-
-Ensure these labels are applied:
-
-- [ ] `Status::In Review` (automatically applied)
-- [ ] `Type::*` (Bug, Feature, Enhancement, etc.)
-- [ ] `Area::*` (Frontend, Backend, etc.)
-- [ ] `Priority::*` (if urgent)
-
-**Quick Actions Available:**
-```
-/assign @reviewer              # Assign reviewer
-/label ~"Type::Bug"           # If bug fix
-/label ~"Type::Feature"       # If new feature
-/label ~"Area::Frontend"      # If UI changes
-/label ~"Area::Backend"       # If API changes
-/label ~"breaking change"     # If breaks compatibility
-/milestone %v1.0              # Assign to milestone
-```
-
-## Reviewer Notes
-
-<!--- Anything specific reviewers should focus on? -->
-
-## Deployment Notes
-
-<!--- Any special deployment considerations? -->
-<!--- Database migrations? Configuration changes? Environment variables? -->
-
----
-
-**For Reviewers:**  
-After approval, change label to `Status::Approved` before merging.

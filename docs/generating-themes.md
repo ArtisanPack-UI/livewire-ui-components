@@ -267,7 +267,7 @@ Available glass presets:
 - `glass-minimal` - Subtle, adaptive glass effect
 - `glass-bold` - Strong, adaptive glass effect
 
-For complete glass preset documentation, see the [Glass Theme Presets](glass-presets) guide.
+For complete glass preset documentation, see the [Glass Theme Presets](Glass-Presets) guide.
 
 ## Customizing Themes
 

@@ -212,7 +212,7 @@ The MenuSub component follows accessibility best practices:
 
 ## Related Components
 
-- [Menu](menu) - Container for menu items and submenus
-- [MenuItem](menu-item) - Individual menu item
-- [MenuSeparator](menu-separator) - Separator between menu items
-- [MenuTitle](menu-title) - Title for a group of menu items
+- [Menu](Menu) - Container for menu items and submenus
+- [MenuItem](Menu-Item) - Individual menu item
+- [MenuSeparator](Menu-Separator) - Separator between menu items
+- [MenuTitle](Menu-Title) - Title for a group of menu items

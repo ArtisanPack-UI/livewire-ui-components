@@ -277,7 +277,7 @@ The File component follows accessibility best practices:
 
 ## Related Components
 
-- [Form](form) - Container for form elements
-- [Input](input) - Standard text input
-- [ImageGallery](image-gallery) - Display a gallery of images
-- [ImageLibrary](image-library) - Image library/picker component
+- [Form](Form) - Container for form elements
+- [Input](Input) - Standard text input
+- [ImageGallery](Image-Gallery) - Display a gallery of images
+- [ImageLibrary](Image-Library) - Image library/picker component

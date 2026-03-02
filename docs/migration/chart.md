@@ -490,6 +490,6 @@ Some Chart.js features don't have direct equivalents:
 
 ## Need Help?
 
-- Review the [Chart Component Documentation](/components/chart)
+- Review the [Chart Component Documentation](Components-Chart)
 - Check the [ApexCharts Documentation](https://apexcharts.com/docs/)
 - Open an issue on [GitLab](https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components/-/issues)

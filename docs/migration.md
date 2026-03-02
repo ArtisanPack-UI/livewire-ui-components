@@ -19,16 +19,16 @@ Migration guides provide step-by-step instructions for updating your code when b
 
 ### Version Upgrades
 
-- [**Upgrading from v1.x to v2.0**](migration/v1-to-v2) - Guide for upgrading to v2.0, including new dashboard components, table export, streaming content, and theme preview tool (no breaking changes)
+- [**Upgrading from v1.x to v2.0**](Migration-V1-To-V2) - Guide for upgrading to v2.0, including new dashboard components, table export, streaming content, and theme preview tool (no breaking changes)
 
 ### Livewire 4 Features
 
-- [**Livewire 4 Features (v2.0)**](migration/livewire-4-features) - Guide for using new Livewire 4-specific features including `wire:intersect`, `wire:sort`, and `data-loading` CSS variants
+- [**Livewire 4 Features (v2.0)**](Migration-Livewire-4-Features) - Guide for using new Livewire 4-specific features including `wire:intersect`, `wire:sort`, and `data-loading` CSS variants
 
 ### Component Migrations
 
-- [**Chart Component Migration (v2.0)**](migration/chart) - Guide for migrating from the Chart.js-based Chart component to the new ApexCharts implementation
-- [**ImageGallery Component Migration**](migration/image-gallery) - Guide for migrating from the old carousel-based ImageGallery component to the new ImageSlider and grid-based ImageGallery components
+- [**Chart Component Migration (v2.0)**](Migration-Chart) - Guide for migrating from the Chart.js-based Chart component to the new ApexCharts implementation
+- [**ImageGallery Component Migration**](Migration-Image-Gallery) - Guide for migrating from the old carousel-based ImageGallery component to the new ImageSlider and grid-based ImageGallery components
 
 ## Migration Best Practices
 

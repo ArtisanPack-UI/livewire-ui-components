@@ -51,7 +51,7 @@
                     @endif
 
                     {{-- SELECT --}}
-                    <select id="{{ $uuid }}" {{ $attributes->whereDoesntStartWith('class') }}>
+                    <select id="{{ $uuid }}" class="items-center" {{ $attributes->whereDoesntStartWith('class') }}>
                         @if($placeholder)
                             <option value="{{ $placeholderValue }}">{{ $placeholder }}</option>
                         @endif

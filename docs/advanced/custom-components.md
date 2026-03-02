@@ -666,4 +666,4 @@ class FormField extends Component
 ## Related Topics
 
 - [Component Prefixing](component-prefixing) - Learn how to use component prefixing to avoid naming collisions
-- [Customization](../customization) - General customization options for ArtisanPack UI components
+- [Customization](customization) - General customization options for ArtisanPack UI components

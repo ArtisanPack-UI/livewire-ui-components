@@ -257,10 +257,10 @@ The Form component follows accessibility best practices:
 
 ## Related Components
 
-- [Input](input) - Text input field
-- [Textarea](textarea) - Multi-line text input
-- [Select](select) - Dropdown select input
-- [Checkbox](checkbox) - Checkbox input
-- [Radio](radio) - Radio button input
-- [Button](button) - Button element
-- [Errors](errors) - Form validation errors display
+- [Input](Input) - Text input field
+- [Textarea](Textarea) - Multi-line text input
+- [Select](Select) - Dropdown select input
+- [Checkbox](Checkbox) - Checkbox input
+- [Radio](Radio) - Radio button input
+- [Button](Button) - Button element
+- [Errors](Errors) - Form validation errors display

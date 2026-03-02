@@ -265,7 +265,7 @@ For Livewire 4 users, the button component also supports the new CSS-based `data
 
 This dual-support approach ensures buttons work optimally on both Livewire 3 and Livewire 4, with Livewire 4 users benefiting from enhanced CSS-based state management.
 
-See the [Livewire 4 Features Migration Guide](../migration/livewire-4-features) for more details.
+See the [Livewire 4 Features Migration Guide](migration-livewire-4-features) for more details.
 
 ### Button as Link
 

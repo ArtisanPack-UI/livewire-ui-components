@@ -174,6 +174,6 @@ For better accessibility:
 
 ## Related Components
 
-- [Steps](steps) - Container component for multiple steps
-- [Progress](progress) - Alternative way to show completion status
-- [Breadcrumbs](breadcrumbs) - Navigation component showing the user's location in a hierarchy
+- [Steps](Steps) - Container component for multiple steps
+- [Progress](Progress) - Alternative way to show completion status
+- [Breadcrumbs](Breadcrumbs) - Navigation component showing the user's location in a hierarchy

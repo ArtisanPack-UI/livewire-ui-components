@@ -139,6 +139,6 @@ The Text component follows accessibility best practices:
 
 ## Related Components
 
-- [Heading](heading) - For main headings
-- [Subheading](subheading) - For secondary headings or subtitles
-- [Link](link) - For hyperlinks
+- [Heading](Heading) - For main headings
+- [Subheading](Subheading) - For secondary headings or subtitles
+- [Link](Link) - For hyperlinks

@@ -281,7 +281,7 @@ The Select component follows accessibility best practices:
 
 ## Related Components
 
-- [Form](form) - Container for form elements
-- [SelectGroup](select-group) - Enhanced select with search and other advanced features
-- [Choices](choices) - Multi-select dropdown with search
-- [Input](input) - Text input field
+- [Form](Form) - Container for form elements
+- [SelectGroup](Select-Group) - Enhanced select with search and other advanced features
+- [Choices](Choices) - Multi-select dropdown with search
+- [Input](Input) - Text input field

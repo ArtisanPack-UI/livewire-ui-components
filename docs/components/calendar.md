@@ -603,5 +603,5 @@ The Calendar component follows accessibility best practices:
 
 ## Related Components
 
-- [DatePicker](datepicker) - Date selection input
-- [DateTime](datetime) - Date and time selection input
+- [DatePicker](Datepicker) - Date selection input
+- [DateTime](Datetime) - Date and time selection input

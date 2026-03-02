@@ -165,6 +165,6 @@ The ThemeToggle component:
 
 ## Related Components
 
-- [Swap](swap) - The underlying component used for toggling between states
-- [Toggle](toggle) - Form control for boolean values
-- [Icon](icon) - Component for displaying SVG icons
+- [Swap](Swap) - The underlying component used for toggling between states
+- [Toggle](Toggle) - Form control for boolean values
+- [Icon](Icon) - Component for displaying SVG icons

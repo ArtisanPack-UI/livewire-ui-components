@@ -196,6 +196,6 @@ For better accessibility:
 
 ## Related Components
 
-- [Toggle](toggle) - Form control for boolean values
-- [ThemeToggle](theme-toggle) - Specialized component for toggling between light and dark themes
-- [Dropdown](dropdown) - Shows/hides content with more complex interaction
+- [Toggle](Toggle) - Form control for boolean values
+- [ThemeToggle](Theme-Toggle) - Specialized component for toggling between light and dark themes
+- [Dropdown](Dropdown) - Shows/hides content with more complex interaction
