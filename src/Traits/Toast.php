@@ -67,7 +67,7 @@ trait Toast
             'duration'    => $duration,
         ];
 
-        $this->js('toast('.json_encode(['toast' => $toast]).')');
+        $this->js('if(typeof toast==="function"){toast('.json_encode(['toast' => $toast]).')}');
 
         session()->flash('artisanpack.toast.title', $title);
         session()->flash('artisanpack.toast.description', $description);
