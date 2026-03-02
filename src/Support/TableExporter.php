@@ -16,6 +16,8 @@ declare(strict_types=1);
 
 namespace ArtisanPack\LivewireUiComponents\Support;
 
+use InvalidArgumentException;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
@@ -95,7 +97,7 @@ class TableExporter
     public function __construct(array $headers = [], array $rows = [], ?string $filename = null)
     {
         $this->headers = $headers;
-        $this->rows = $rows;
+        $this->rows    = $rows;
 
         if ($filename) {
             $this->filename = $filename;
@@ -122,6 +124,7 @@ class TableExporter
      * @since 2.0.0
      *
      * @param  array  $headers  The column headers.
+     *
      * @return $this
      */
     public function setHeaders(array $headers): static
@@ -137,6 +140,7 @@ class TableExporter
      * @since 2.0.0
      *
      * @param  array  $rows  The data rows.
+     *
      * @return $this
      */
     public function setRows(array $rows): static
@@ -144,108 +148,6 @@ class TableExporter
         $this->rows = $rows;
 
         return $this;
-    }
-
-    /**
-     * Normalize headers for export.
-     *
-     * Handles both flat arrays (e.g., ['ID', 'Name']) and Table component format
-     * (e.g., [['key' => 'id', 'label' => 'ID'], ...]).
-     *
-     * @since 2.0.0
-     *
-     * @return array Flat array of header labels.
-     */
-    protected function normalizeHeaders(): array
-    {
-        if ( empty( $this->headers ) ) {
-            return [];
-        }
-
-        // Check if headers are in Table component format (array of arrays with 'label' key)
-        $firstHeader = reset( $this->headers );
-
-        if ( is_array( $firstHeader ) && isset( $firstHeader['label'] ) ) {
-            return array_map( fn ( $header ) => $header['label'] ?? '', $this->headers );
-        }
-
-        // Already flat array of strings
-        return $this->headers;
-    }
-
-    /**
-     * Get header keys for mapping row data.
-     *
-     * @since 2.0.0
-     *
-     * @return array Array of header keys.
-     */
-    protected function getHeaderKeys(): array
-    {
-        if ( empty( $this->headers ) ) {
-            return [];
-        }
-
-        // Check if headers are in Table component format
-        $firstHeader = reset( $this->headers );
-
-        if ( is_array( $firstHeader ) && isset( $firstHeader['key'] ) ) {
-            return array_map( fn ( $header ) => $header['key'] ?? '', $this->headers );
-        }
-
-        // For flat array headers, use them as keys
-        return $this->headers;
-    }
-
-    /**
-     * Normalize rows for export.
-     *
-     * Handles both flat arrays and associative arrays (e.g., ['id' => 1, 'name' => 'John']).
-     * Uses header keys to ensure correct column ordering.
-     *
-     * @since 2.0.0
-     *
-     * @return array Array of flat row arrays.
-     */
-    protected function normalizeRows(): array
-    {
-        if ( empty( $this->rows ) ) {
-            return [];
-        }
-
-        $keys = $this->getHeaderKeys();
-
-        return array_map( function ( $row ) use ( $keys ) {
-            // If row is already a flat indexed array, return as-is
-            if ( ! $this->isAssociativeArray( $row ) ) {
-                return array_values( $row );
-            }
-
-            // Map associative array to ordered values based on header keys
-            if ( ! empty( $keys ) ) {
-                return array_map( fn ( $key ) => $row[ $key ] ?? '', $keys );
-            }
-
-            // Fallback: just get values
-            return array_values( $row );
-        }, $this->rows );
-    }
-
-    /**
-     * Check if an array is associative.
-     *
-     * @since 2.0.0
-     *
-     * @param  array  $array  The array to check.
-     * @return bool True if associative, false if indexed.
-     */
-    protected function isAssociativeArray(array $array): bool
-    {
-        if ( empty( $array ) ) {
-            return false;
-        }
-
-        return array_keys( $array ) !== range( 0, count( $array ) - 1 );
     }
 
     /**
@@ -355,42 +257,6 @@ class TableExporter
     }
 
     /**
-     * Sanitize HTML content to prevent XSS attacks.
-     *
-     * Removes dangerous elements while preserving safe formatting HTML.
-     *
-     * @since 2.0.0
-     *
-     * @param  string  $html  The HTML content to sanitize.
-     *
-     * @return string The sanitized HTML.
-     */
-    protected function sanitizeHtml(string $html): string
-    {
-        // Remove script tags and their contents
-        $html = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', '', $html);
-
-        // Remove style tags and their contents
-        $html = preg_replace('/<style\b[^>]*>(.*?)<\/style>/is', '', $html);
-
-        // Remove dangerous tags (keep content)
-        $html = preg_replace('/<(iframe|object|embed|form|input|button|textarea|select|link|meta|base)[^>]*>/i', '', $html);
-        $html = preg_replace('/<\/(iframe|object|embed|form|input|button|textarea|select)>/i', '', $html);
-
-        // Remove event handlers from remaining tags
-        $html = preg_replace('/\s+on\w+\s*=\s*(["\'])[^"\']*\1/i', '', $html);
-        $html = preg_replace('/\s+on\w+\s*=\s*[^\s>]+/i', '', $html);
-
-        // Remove javascript: and data: URLs
-        $html = preg_replace('/\s+href\s*=\s*(["\'])?\s*javascript:[^"\'>\s]*/i', '', $html);
-        $html = preg_replace('/\s+src\s*=\s*(["\'])?\s*javascript:[^"\'>\s]*/i', '', $html);
-        $html = preg_replace('/\s+href\s*=\s*(["\'])?\s*data:[^"\'>\s]*/i', '', $html);
-        $html = preg_replace('/\s+src\s*=\s*(["\'])?\s*data:[^"\'>\s]*/i', '', $html);
-
-        return $html;
-    }
-
-    /**
      * Check if PhpSpreadsheet is available.
      *
      * @since 2.0.0
@@ -437,6 +303,352 @@ class TableExporter
     public static function supportsPdf(): bool
     {
         return self::hasDomPdf();
+    }
+
+    /**
+     * Export to CSV format.
+     *
+     * @since 2.0.0
+     *
+     * @return StreamedResponse The CSV download response.
+     */
+    public function toCsv(): StreamedResponse
+    {
+        $filename = $this->sanitizeFilename($this->filename.'.csv');
+        $headers  = $this->normalizeHeaders();
+        $rows     = $this->normalizeRows();
+
+        return response()->streamDownload(function () use ($headers, $rows): void {
+            $handle = fopen('php://output', 'w');
+
+            // Add BOM for Excel UTF-8 compatibility
+            fwrite($handle, "\xEF\xBB\xBF");
+
+            // Write headers
+            if (! empty($headers)) {
+                fputcsv($handle, $headers);
+            }
+
+            // Write rows
+            foreach ($rows as $row) {
+                fputcsv($handle, $row);
+            }
+
+            fclose($handle);
+        }, $filename, [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => $this->buildContentDisposition($filename),
+        ]);
+    }
+
+    /**
+     * Export to XLSX format.
+     *
+     * Requires phpoffice/phpspreadsheet to be installed.
+     *
+     * @since 2.0.0
+     *
+     * @throws RuntimeException If PhpSpreadsheet is not installed.
+     *
+     * @return StreamedResponse The XLSX download response.
+     */
+    public function toXlsx(): StreamedResponse
+    {
+        if (! self::hasPhpSpreadsheet()) {
+            throw new RuntimeException(
+                'PhpSpreadsheet is required for XLSX export. Install it with: composer require phpoffice/phpspreadsheet',
+            );
+        }
+
+        $filename = $this->sanitizeFilename($this->filename.'.xlsx');
+        $headers  = $this->normalizeHeaders();
+        $rows     = $this->normalizeRows();
+
+        return response()->streamDownload(function () use ($headers, $rows): void {
+            $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet;
+            $sheet       = $spreadsheet->getActiveSheet();
+
+            // Set sheet title
+            $sheet->setTitle('Export');
+
+            // Write headers (row 1)
+            $columnIndex = 1;
+            foreach ($headers as $header) {
+                $cellRef = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columnIndex).'1';
+                $sheet->getCell($cellRef)->setValue($header);
+
+                // Make headers bold
+                $sheet->getStyle($cellRef)->getFont()->setBold(true);
+
+                // Set background color for headers
+                $sheet->getStyle($cellRef)
+                    ->getFill()
+                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                    ->getStartColor()
+                    ->setRGB('E5E7EB');
+
+                $columnIndex++;
+            }
+
+            // Write rows (starting at row 2)
+            $rowIndex = 2;
+            foreach ($rows as $row) {
+                $columnIndex = 1;
+                foreach ($row as $value) {
+                    $cellRef = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columnIndex).$rowIndex;
+                    $sheet->getCell($cellRef)->setValue($value);
+                    $columnIndex++;
+                }
+                $rowIndex++;
+            }
+
+            // Auto-size columns
+            $highestColumn      = $sheet->getHighestColumn();
+            $highestColumnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($highestColumn);
+
+            for ($col = 1; $col <= $highestColumnIndex; $col++) {
+                $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col);
+                $sheet->getColumnDimension($columnLetter)->setAutoSize(true);
+            }
+
+            // Freeze header row
+            $sheet->freezePane('A2');
+
+            // Enable auto-filter
+            $sheet->setAutoFilter($sheet->calculateWorksheetDimension());
+
+            // Write to output
+            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+            $writer->save('php://output');
+
+            // Clean up
+            $spreadsheet->disconnectWorksheets();
+            unset($spreadsheet);
+        }, $filename, [
+            'Content-Type'        => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition' => $this->buildContentDisposition($filename),
+            'Cache-Control'       => 'max-age=0',
+        ]);
+    }
+
+    /**
+     * Export to PDF format.
+     *
+     * Requires barryvdh/laravel-dompdf to be installed.
+     *
+     * @since 2.0.0
+     *
+     * @throws RuntimeException If DomPDF is not installed.
+     *
+     * @return \Illuminate\Http\Response The PDF download response.
+     */
+    public function toPdf(): \Illuminate\Http\Response
+    {
+        if (! self::hasDomPdf()) {
+            throw new RuntimeException(
+                'DomPDF is required for PDF export. Install it with: composer require barryvdh/laravel-dompdf',
+            );
+        }
+
+        $filename = $this->sanitizeFilename($this->filename.'.pdf');
+
+        // Generate HTML content for PDF
+        $html = $this->generatePdfHtml();
+
+        // Create PDF using DomPDF
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadHTML($html)
+            ->setPaper($this->pdfPaperSize, $this->pdfOrientation);
+
+        return $pdf->download($filename);
+    }
+
+    /**
+     * Export to the specified format.
+     *
+     * @since 2.0.0
+     *
+     * @param  string  $format  The export format (csv, xlsx, or pdf).
+     *
+     * @throws InvalidArgumentException If the format is not supported.
+     *
+     * @return \Illuminate\Http\Response|StreamedResponse The download response.
+     */
+    public function export(string $format = 'csv'): StreamedResponse|\Illuminate\Http\Response
+    {
+        return match ($format) {
+            'csv' => $this->toCsv(),
+            'xlsx', 'excel' => $this->toXlsx(),
+            'pdf'   => $this->toPdf(),
+            default => throw new InvalidArgumentException("Unsupported export format: {$format}"),
+        };
+    }
+
+    /**
+     * Get the raw CSV content as a string.
+     *
+     * @since 2.0.0
+     *
+     * @return string The CSV content.
+     */
+    public function getCsvContent(): string
+    {
+        $handle = fopen('php://temp', 'r+');
+
+        // Add BOM for Excel UTF-8 compatibility
+        fwrite($handle, "\xEF\xBB\xBF");
+
+        // Write headers
+        fputcsv($handle, $this->headers);
+
+        // Write rows
+        foreach ($this->rows as $row) {
+            fputcsv($handle, $row);
+        }
+
+        rewind($handle);
+        $content = stream_get_contents($handle);
+        fclose($handle);
+
+        return $content;
+    }
+
+    /**
+     * Normalize headers for export.
+     *
+     * Handles both flat arrays (e.g., ['ID', 'Name']) and Table component format
+     * (e.g., [['key' => 'id', 'label' => 'ID'], ...]).
+     *
+     * @since 2.0.0
+     *
+     * @return array Flat array of header labels.
+     */
+    protected function normalizeHeaders(): array
+    {
+        if (empty($this->headers)) {
+            return [];
+        }
+
+        // Check if headers are in Table component format (array of arrays with 'label' key)
+        $firstHeader = reset($this->headers);
+
+        if (is_array($firstHeader) && isset($firstHeader['label'])) {
+            return array_map(fn ($header) => $header['label'] ?? '', $this->headers);
+        }
+
+        // Already flat array of strings
+        return $this->headers;
+    }
+
+    /**
+     * Get header keys for mapping row data.
+     *
+     * @since 2.0.0
+     *
+     * @return array Array of header keys.
+     */
+    protected function getHeaderKeys(): array
+    {
+        if (empty($this->headers)) {
+            return [];
+        }
+
+        // Check if headers are in Table component format
+        $firstHeader = reset($this->headers);
+
+        if (is_array($firstHeader) && isset($firstHeader['key'])) {
+            return array_map(fn ($header) => $header['key'] ?? '', $this->headers);
+        }
+
+        // For flat array headers, use them as keys
+        return $this->headers;
+    }
+
+    /**
+     * Normalize rows for export.
+     *
+     * Handles both flat arrays and associative arrays (e.g., ['id' => 1, 'name' => 'John']).
+     * Uses header keys to ensure correct column ordering.
+     *
+     * @since 2.0.0
+     *
+     * @return array Array of flat row arrays.
+     */
+    protected function normalizeRows(): array
+    {
+        if (empty($this->rows)) {
+            return [];
+        }
+
+        $keys = $this->getHeaderKeys();
+
+        return array_map(function ($row) use ($keys) {
+            // If row is already a flat indexed array, return as-is
+            if (! $this->isAssociativeArray($row)) {
+                return array_values($row);
+            }
+
+            // Map associative array to ordered values based on header keys
+            if (! empty($keys)) {
+                return array_map(fn ($key) => $row[$key] ?? '', $keys);
+            }
+
+            // Fallback: just get values
+            return array_values($row);
+        }, $this->rows);
+    }
+
+    /**
+     * Check if an array is associative.
+     *
+     * @since 2.0.0
+     *
+     * @param  array  $array  The array to check.
+     *
+     * @return bool True if associative, false if indexed.
+     */
+    protected function isAssociativeArray(array $array): bool
+    {
+        if (empty($array)) {
+            return false;
+        }
+
+        return array_keys($array) !== range(0, count($array) - 1);
+    }
+
+    /**
+     * Sanitize HTML content to prevent XSS attacks.
+     *
+     * Removes dangerous elements while preserving safe formatting HTML.
+     *
+     * @since 2.0.0
+     *
+     * @param  string  $html  The HTML content to sanitize.
+     *
+     * @return string The sanitized HTML.
+     */
+    protected function sanitizeHtml(string $html): string
+    {
+        // Remove script tags and their contents
+        $html = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', '', $html);
+
+        // Remove style tags and their contents
+        $html = preg_replace('/<style\b[^>]*>(.*?)<\/style>/is', '', $html);
+
+        // Remove dangerous tags (keep content)
+        $html = preg_replace('/<(iframe|object|embed|form|input|button|textarea|select|link|meta|base)[^>]*>/i', '', $html);
+        $html = preg_replace('/<\/(iframe|object|embed|form|input|button|textarea|select)>/i', '', $html);
+
+        // Remove event handlers from remaining tags
+        $html = preg_replace('/\s+on\w+\s*=\s*(["\'])[^"\']*\1/i', '', $html);
+        $html = preg_replace('/\s+on\w+\s*=\s*[^\s>]+/i', '', $html);
+
+        // Remove javascript: and data: URLs
+        $html = preg_replace('/\s+href\s*=\s*(["\'])?\s*javascript:[^"\'>\s]*/i', '', $html);
+        $html = preg_replace('/\s+src\s*=\s*(["\'])?\s*javascript:[^"\'>\s]*/i', '', $html);
+        $html = preg_replace('/\s+href\s*=\s*(["\'])?\s*data:[^"\'>\s]*/i', '', $html);
+        $html = preg_replace('/\s+src\s*=\s*(["\'])?\s*data:[^"\'>\s]*/i', '', $html);
+
+        return $html;
     }
 
     /**
@@ -498,165 +710,8 @@ class TableExporter
         return sprintf(
             'attachment; filename="%s"; filename*=%s',
             $asciiFallback,
-            $utf8Encoded
+            $utf8Encoded,
         );
-    }
-
-    /**
-     * Export to CSV format.
-     *
-     * @since 2.0.0
-     *
-     * @return StreamedResponse The CSV download response.
-     */
-    public function toCsv(): StreamedResponse
-    {
-        $filename = $this->sanitizeFilename( $this->filename . '.csv' );
-        $headers  = $this->normalizeHeaders();
-        $rows     = $this->normalizeRows();
-
-        return response()->streamDownload( function () use ( $headers, $rows ): void {
-            $handle = fopen( 'php://output', 'w' );
-
-            // Add BOM for Excel UTF-8 compatibility
-            fwrite( $handle, "\xEF\xBB\xBF" );
-
-            // Write headers
-            if ( ! empty( $headers ) ) {
-                fputcsv( $handle, $headers );
-            }
-
-            // Write rows
-            foreach ( $rows as $row ) {
-                fputcsv( $handle, $row );
-            }
-
-            fclose( $handle );
-        }, $filename, [
-            'Content-Type'        => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => $this->buildContentDisposition( $filename ),
-        ] );
-    }
-
-    /**
-     * Export to XLSX format.
-     *
-     * Requires phpoffice/phpspreadsheet to be installed.
-     *
-     * @since 2.0.0
-     *
-     * @return StreamedResponse The XLSX download response.
-     *
-     * @throws \RuntimeException If PhpSpreadsheet is not installed.
-     */
-    public function toXlsx(): StreamedResponse
-    {
-        if ( ! self::hasPhpSpreadsheet() ) {
-            throw new \RuntimeException(
-                'PhpSpreadsheet is required for XLSX export. Install it with: composer require phpoffice/phpspreadsheet'
-            );
-        }
-
-        $filename = $this->sanitizeFilename( $this->filename . '.xlsx' );
-        $headers  = $this->normalizeHeaders();
-        $rows     = $this->normalizeRows();
-
-        return response()->streamDownload(function () use ($headers, $rows): void {
-            $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet;
-            $sheet = $spreadsheet->getActiveSheet();
-
-            // Set sheet title
-            $sheet->setTitle('Export');
-
-            // Write headers (row 1)
-            $columnIndex = 1;
-            foreach ($headers as $header) {
-                $cellRef = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columnIndex) . '1';
-                $sheet->getCell($cellRef)->setValue($header);
-
-                // Make headers bold
-                $sheet->getStyle($cellRef)->getFont()->setBold(true);
-
-                // Set background color for headers
-                $sheet->getStyle($cellRef)
-                    ->getFill()
-                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                    ->getStartColor()
-                    ->setRGB('E5E7EB');
-
-                $columnIndex++;
-            }
-
-            // Write rows (starting at row 2)
-            $rowIndex = 2;
-            foreach ($rows as $row) {
-                $columnIndex = 1;
-                foreach ($row as $value) {
-                    $cellRef = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($columnIndex) . $rowIndex;
-                    $sheet->getCell($cellRef)->setValue($value);
-                    $columnIndex++;
-                }
-                $rowIndex++;
-            }
-
-            // Auto-size columns
-            $highestColumn = $sheet->getHighestColumn();
-            $highestColumnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($highestColumn);
-
-            for ($col = 1; $col <= $highestColumnIndex; $col++) {
-                $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col);
-                $sheet->getColumnDimension($columnLetter)->setAutoSize(true);
-            }
-
-            // Freeze header row
-            $sheet->freezePane('A2');
-
-            // Enable auto-filter
-            $sheet->setAutoFilter($sheet->calculateWorksheetDimension());
-
-            // Write to output
-            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-            $writer->save('php://output');
-
-            // Clean up
-            $spreadsheet->disconnectWorksheets();
-            unset($spreadsheet);
-        }, $filename, [
-            'Content-Type'        => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'Content-Disposition' => $this->buildContentDisposition($filename),
-            'Cache-Control'       => 'max-age=0',
-        ]);
-    }
-
-    /**
-     * Export to PDF format.
-     *
-     * Requires barryvdh/laravel-dompdf to be installed.
-     *
-     * @since 2.0.0
-     *
-     * @return \Illuminate\Http\Response The PDF download response.
-     *
-     * @throws \RuntimeException If DomPDF is not installed.
-     */
-    public function toPdf(): \Illuminate\Http\Response
-    {
-        if (! self::hasDomPdf()) {
-            throw new \RuntimeException(
-                'DomPDF is required for PDF export. Install it with: composer require barryvdh/laravel-dompdf'
-            );
-        }
-
-        $filename = $this->sanitizeFilename($this->filename.'.pdf');
-
-        // Generate HTML content for PDF
-        $html = $this->generatePdfHtml();
-
-        // Create PDF using DomPDF
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadHTML($html)
-            ->setPaper($this->pdfPaperSize, $this->pdfOrientation);
-
-        return $pdf->download($filename);
     }
 
     /**
@@ -678,7 +733,7 @@ class TableExporter
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>'.e( $title ).'</title>
+    <title>'.e($title).'</title>
     <style>
         body {
             font-family: DejaVu Sans, sans-serif;
@@ -739,7 +794,7 @@ class TableExporter
         if ($header) {
             $html .= '<div class="header">'.$this->sanitizeHtml($header).'</div>';
         } else {
-            $html .= '<div class="header"><h1>'.e( $title ).'</h1></div>';
+            $html .= '<div class="header"><h1>'.e($title).'</h1></div>';
         }
 
         // Add table
@@ -748,7 +803,7 @@ class TableExporter
         <tr>';
 
         foreach ($headers as $headerText) {
-            $html .= '<th>'.e( $headerText ).'</th>';
+            $html .= '<th>'.e($headerText).'</th>';
         }
 
         $html .= '
@@ -759,7 +814,7 @@ class TableExporter
         foreach ($rows as $row) {
             $html .= '<tr>';
             foreach ($row as $cell) {
-                $html .= '<td>'.e( $cell ).'</td>';
+                $html .= '<td>'.e($cell).'</td>';
             }
             $html .= '</tr>';
         }
@@ -778,55 +833,5 @@ class TableExporter
 </html>';
 
         return $html;
-    }
-
-    /**
-     * Export to the specified format.
-     *
-     * @since 2.0.0
-     *
-     * @param  string  $format  The export format (csv, xlsx, or pdf).
-     *
-     * @return StreamedResponse|\Illuminate\Http\Response The download response.
-     *
-     * @throws \InvalidArgumentException If the format is not supported.
-     */
-    public function export(string $format = 'csv'): StreamedResponse|\Illuminate\Http\Response
-    {
-        return match ($format) {
-            'csv' => $this->toCsv(),
-            'xlsx', 'excel' => $this->toXlsx(),
-            'pdf' => $this->toPdf(),
-            default => throw new \InvalidArgumentException("Unsupported export format: {$format}"),
-        };
-    }
-
-    /**
-     * Get the raw CSV content as a string.
-     *
-     * @since 2.0.0
-     *
-     * @return string The CSV content.
-     */
-    public function getCsvContent(): string
-    {
-        $handle = fopen('php://temp', 'r+');
-
-        // Add BOM for Excel UTF-8 compatibility
-        fwrite($handle, "\xEF\xBB\xBF");
-
-        // Write headers
-        fputcsv($handle, $this->headers);
-
-        // Write rows
-        foreach ($this->rows as $row) {
-            fputcsv($handle, $row);
-        }
-
-        rewind($handle);
-        $content = stream_get_contents($handle);
-        fclose($handle);
-
-        return $content;
     }
 }

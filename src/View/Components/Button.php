@@ -191,7 +191,7 @@ class Button extends Component
      */
     public function spinnerTarget(): ?string
     {
-        if ("1" === $this->spinner) {
+        if ('1' === $this->spinner) {
             return $this->attributes->whereStartsWith('wire:click')->first();
         }
 
@@ -209,12 +209,12 @@ class Button extends Component
      */
     public function isLoadingIcon(): bool
     {
-        if (!$this->loading) {
+        if (! $this->loading) {
             return false;
         }
 
         // Check if it starts with common icon prefixes
-        return preg_match('/^(o-|s-|fa-|c-|heroicon-|icon-)/', $this->loading) === 1;
+        return 1 === preg_match('/^(o-|s-|fa-|c-|heroicon-|icon-)/', $this->loading);
     }
 
     public function render(): View

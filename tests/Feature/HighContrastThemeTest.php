@@ -306,7 +306,7 @@ test('command can generate only high-contrast CSS', function (): void {
 test('command can generate high-contrast with specific preset', function (): void {
     $this->artisan('artisanpack:generate-theme', [
         '--high-contrast-only'     => true,
-        '--accessibility-preset' => 'high-contrast-dark',
+        '--accessibility-preset'   => 'high-contrast-dark',
     ])
         ->assertExitCode(0);
 
@@ -322,7 +322,7 @@ test('command excludes high-contrast when --no-high-contrast is passed', functio
     }
 
     $this->artisan('artisanpack:generate-theme', [
-        '--primary'         => 'blue',
+        '--primary'          => 'blue',
         '--no-high-contrast' => true,
     ])
         ->assertExitCode(0);

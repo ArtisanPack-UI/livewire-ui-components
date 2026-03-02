@@ -1,6 +1,6 @@
 <?php
 
-declare( strict_types=1 );
+declare(strict_types=1);
 /**
  * Glass Theme Presets for ArtisanPack UI.
  *
@@ -12,6 +12,8 @@ declare( strict_types=1 );
  */
 
 namespace ArtisanPack\LivewireUiComponents\Styling;
+
+use InvalidArgumentException;
 
 /**
  * Provides pre-built glass theme presets for the glassmorphism design system.
@@ -78,13 +80,13 @@ class GlassPresets
         'glass-transparent-opacity' => '0.35',
 
         // Computed colors
-        'glass-bg-color'           => 'rgba(255, 255, 255, 0.75)',
-        'glass-border-color'       => 'rgba(255, 255, 255, 0.25)',
-        'glass-shadow-color'       => 'rgba(0, 0, 0, 0.08)',
-        'glass-frosted-bg-color'   => 'rgba(255, 255, 255, 0.85)',
-        'glass-liquid-bg-color'    => 'rgba(255, 255, 255, 0.65)',
+        'glass-bg-color'                 => 'rgba(255, 255, 255, 0.75)',
+        'glass-border-color'             => 'rgba(255, 255, 255, 0.25)',
+        'glass-shadow-color'             => 'rgba(0, 0, 0, 0.08)',
+        'glass-frosted-bg-color'         => 'rgba(255, 255, 255, 0.85)',
+        'glass-liquid-bg-color'          => 'rgba(255, 255, 255, 0.65)',
         'glass-liquid-border-glow-color' => 'rgba(255, 255, 255, 0.25)',
-        'glass-transparent-bg-color' => 'rgba(255, 255, 255, 0.35)',
+        'glass-transparent-bg-color'     => 'rgba(255, 255, 255, 0.35)',
     ];
 
     /**
@@ -123,13 +125,13 @@ class GlassPresets
         'glass-transparent-opacity' => '0.4',
 
         // Computed colors
-        'glass-bg-color'           => 'rgba(20, 20, 25, 0.8)',
-        'glass-border-color'       => 'rgba(255, 255, 255, 0.15)',
-        'glass-shadow-color'       => 'rgba(0, 0, 0, 0.2)',
-        'glass-frosted-bg-color'   => 'rgba(20, 20, 25, 0.9)',
-        'glass-liquid-bg-color'    => 'rgba(20, 20, 25, 0.7)',
+        'glass-bg-color'                 => 'rgba(20, 20, 25, 0.8)',
+        'glass-border-color'             => 'rgba(255, 255, 255, 0.15)',
+        'glass-shadow-color'             => 'rgba(0, 0, 0, 0.2)',
+        'glass-frosted-bg-color'         => 'rgba(20, 20, 25, 0.9)',
+        'glass-liquid-bg-color'          => 'rgba(20, 20, 25, 0.7)',
         'glass-liquid-border-glow-color' => 'rgba(255, 255, 255, 0.2)',
-        'glass-transparent-bg-color' => 'rgba(20, 20, 25, 0.4)',
+        'glass-transparent-bg-color'     => 'rgba(20, 20, 25, 0.4)',
     ];
 
     /**
@@ -168,13 +170,13 @@ class GlassPresets
         'glass-transparent-opacity' => '0.25',
 
         // Computed colors
-        'glass-bg-color'           => 'rgba(255, 255, 255, 0.6)',
-        'glass-border-color'       => 'rgba(255, 255, 255, 0.35)',
-        'glass-shadow-color'       => 'rgba(0, 0, 0, 0.12)',
-        'glass-frosted-bg-color'   => 'rgba(255, 255, 255, 0.7)',
-        'glass-liquid-bg-color'    => 'rgba(255, 255, 255, 0.55)',
+        'glass-bg-color'                 => 'rgba(255, 255, 255, 0.6)',
+        'glass-border-color'             => 'rgba(255, 255, 255, 0.35)',
+        'glass-shadow-color'             => 'rgba(0, 0, 0, 0.12)',
+        'glass-frosted-bg-color'         => 'rgba(255, 255, 255, 0.7)',
+        'glass-liquid-bg-color'          => 'rgba(255, 255, 255, 0.55)',
         'glass-liquid-border-glow-color' => 'rgba(255, 255, 255, 0.35)',
-        'glass-transparent-bg-color' => 'rgba(255, 255, 255, 0.25)',
+        'glass-transparent-bg-color'     => 'rgba(255, 255, 255, 0.25)',
     ];
 
     /**
@@ -213,13 +215,13 @@ class GlassPresets
         'glass-transparent-opacity' => '0.3',
 
         // Computed colors
-        'glass-bg-color'           => 'rgba(15, 15, 20, 0.55)',
-        'glass-border-color'       => 'rgba(255, 255, 255, 0.2)',
-        'glass-shadow-color'       => 'rgba(0, 0, 0, 0.25)',
-        'glass-frosted-bg-color'   => 'rgba(15, 15, 20, 0.65)',
-        'glass-liquid-bg-color'    => 'rgba(15, 15, 20, 0.5)',
+        'glass-bg-color'                 => 'rgba(15, 15, 20, 0.55)',
+        'glass-border-color'             => 'rgba(255, 255, 255, 0.2)',
+        'glass-shadow-color'             => 'rgba(0, 0, 0, 0.25)',
+        'glass-frosted-bg-color'         => 'rgba(15, 15, 20, 0.65)',
+        'glass-liquid-bg-color'          => 'rgba(15, 15, 20, 0.5)',
         'glass-liquid-border-glow-color' => 'rgba(255, 255, 255, 0.25)',
-        'glass-transparent-bg-color' => 'rgba(15, 15, 20, 0.3)',
+        'glass-transparent-bg-color'     => 'rgba(15, 15, 20, 0.3)',
     ];
 
     /**
@@ -258,13 +260,13 @@ class GlassPresets
         'glass-transparent-opacity' => '0.2',
 
         // Computed colors (light mode)
-        'glass-bg-color'           => 'rgba(255, 255, 255, 0.5)',
-        'glass-border-color'       => 'rgba(255, 255, 255, 0.1)',
-        'glass-shadow-color'       => 'rgba(0, 0, 0, 0.05)',
-        'glass-frosted-bg-color'   => 'rgba(255, 255, 255, 0.55)',
-        'glass-liquid-bg-color'    => 'rgba(255, 255, 255, 0.4)',
+        'glass-bg-color'                 => 'rgba(255, 255, 255, 0.5)',
+        'glass-border-color'             => 'rgba(255, 255, 255, 0.1)',
+        'glass-shadow-color'             => 'rgba(0, 0, 0, 0.05)',
+        'glass-frosted-bg-color'         => 'rgba(255, 255, 255, 0.55)',
+        'glass-liquid-bg-color'          => 'rgba(255, 255, 255, 0.4)',
         'glass-liquid-border-glow-color' => 'rgba(255, 255, 255, 0.15)',
-        'glass-transparent-bg-color' => 'rgba(255, 255, 255, 0.2)',
+        'glass-transparent-bg-color'     => 'rgba(255, 255, 255, 0.2)',
     ];
 
     /**
@@ -288,13 +290,13 @@ class GlassPresets
         'glass-transparent-blur'    => '8px',
 
         // Computed colors (dark mode)
-        'glass-bg-color'           => 'rgba(30, 30, 35, 0.55)',
-        'glass-border-color'       => 'rgba(255, 255, 255, 0.08)',
-        'glass-shadow-color'       => 'rgba(0, 0, 0, 0.1)',
-        'glass-frosted-bg-color'   => 'rgba(30, 30, 35, 0.6)',
-        'glass-liquid-bg-color'    => 'rgba(30, 30, 35, 0.45)',
+        'glass-bg-color'                 => 'rgba(30, 30, 35, 0.55)',
+        'glass-border-color'             => 'rgba(255, 255, 255, 0.08)',
+        'glass-shadow-color'             => 'rgba(0, 0, 0, 0.1)',
+        'glass-frosted-bg-color'         => 'rgba(30, 30, 35, 0.6)',
+        'glass-liquid-bg-color'          => 'rgba(30, 30, 35, 0.45)',
         'glass-liquid-border-glow-color' => 'rgba(255, 255, 255, 0.12)',
-        'glass-transparent-bg-color' => 'rgba(30, 30, 35, 0.25)',
+        'glass-transparent-bg-color'     => 'rgba(30, 30, 35, 0.25)',
     ];
 
     /**
@@ -333,13 +335,13 @@ class GlassPresets
         'glass-transparent-opacity' => '0.45',
 
         // Computed colors (light mode)
-        'glass-bg-color'           => 'rgba(255, 255, 255, 0.85)',
-        'glass-border-color'       => 'rgba(255, 255, 255, 0.4)',
-        'glass-shadow-color'       => 'rgba(0, 0, 0, 0.2)',
-        'glass-frosted-bg-color'   => 'rgba(255, 255, 255, 0.9)',
-        'glass-liquid-bg-color'    => 'rgba(255, 255, 255, 0.75)',
+        'glass-bg-color'                 => 'rgba(255, 255, 255, 0.85)',
+        'glass-border-color'             => 'rgba(255, 255, 255, 0.4)',
+        'glass-shadow-color'             => 'rgba(0, 0, 0, 0.2)',
+        'glass-frosted-bg-color'         => 'rgba(255, 255, 255, 0.9)',
+        'glass-liquid-bg-color'          => 'rgba(255, 255, 255, 0.75)',
         'glass-liquid-border-glow-color' => 'rgba(255, 255, 255, 0.5)',
-        'glass-transparent-bg-color' => 'rgba(255, 255, 255, 0.45)',
+        'glass-transparent-bg-color'     => 'rgba(255, 255, 255, 0.45)',
     ];
 
     /**
@@ -365,13 +367,13 @@ class GlassPresets
         'glass-transparent-blur'    => '20px',
 
         // Computed colors (dark mode)
-        'glass-bg-color'           => 'rgba(10, 10, 15, 0.9)',
-        'glass-border-color'       => 'rgba(255, 255, 255, 0.25)',
-        'glass-shadow-color'       => 'rgba(0, 0, 0, 0.3)',
-        'glass-frosted-bg-color'   => 'rgba(10, 10, 15, 0.92)',
-        'glass-liquid-bg-color'    => 'rgba(10, 10, 15, 0.8)',
+        'glass-bg-color'                 => 'rgba(10, 10, 15, 0.9)',
+        'glass-border-color'             => 'rgba(255, 255, 255, 0.25)',
+        'glass-shadow-color'             => 'rgba(0, 0, 0, 0.3)',
+        'glass-frosted-bg-color'         => 'rgba(10, 10, 15, 0.92)',
+        'glass-liquid-bg-color'          => 'rgba(10, 10, 15, 0.8)',
         'glass-liquid-border-glow-color' => 'rgba(255, 255, 255, 0.3)',
-        'glass-transparent-bg-color' => 'rgba(10, 10, 15, 0.5)',
+        'glass-transparent-bg-color'     => 'rgba(10, 10, 15, 0.5)',
     ];
 
     /**
@@ -395,9 +397,9 @@ class GlassPresets
      *
      * @return bool True if the preset exists.
      */
-    public function isValidPreset( string $presetName ): bool
+    public function isValidPreset(string $presetName): bool
     {
-        return in_array( $presetName, self::PRESETS, true );
+        return in_array($presetName, self::PRESETS, true);
     }
 
     /**
@@ -407,19 +409,19 @@ class GlassPresets
      *
      * @param  string  $presetName  The name of the preset.
      *
-     * @return array The token configuration for the preset.
+     * @throws InvalidArgumentException If the preset name is not valid.
      *
-     * @throws \InvalidArgumentException If the preset name is not valid.
+     * @return array The token configuration for the preset.
      */
-    public function getPresetTokens( string $presetName ): array
+    public function getPresetTokens(string $presetName): array
     {
-        if ( ! $this->isValidPreset( $presetName ) ) {
-            throw new \InvalidArgumentException(
-                sprintf( "Invalid glass preset '%s'. Available presets: %s", $presetName, implode( ', ', self::PRESETS ) )
+        if (! $this->isValidPreset($presetName)) {
+            throw new InvalidArgumentException(
+                sprintf("Invalid glass preset '%s'. Available presets: %s", $presetName, implode(', ', self::PRESETS)),
             );
         }
 
-        return match ( $presetName ) {
+        return match ($presetName) {
             'glass-frosted-light' => $this->frostedLightPreset,
             'glass-frosted-dark'  => $this->frostedDarkPreset,
             'glass-liquid-light'  => $this->liquidLightPreset,
@@ -441,9 +443,9 @@ class GlassPresets
      *
      * @return array The dark mode override tokens.
      */
-    public function getDarkModeOverrides( string $presetName ): array
+    public function getDarkModeOverrides(string $presetName): array
     {
-        return match ( $presetName ) {
+        return match ($presetName) {
             'glass-minimal' => $this->minimalDarkOverrides,
             'glass-bold'    => $this->boldDarkOverrides,
             default         => [],
@@ -459,15 +461,15 @@ class GlassPresets
      *
      * @return string The human-readable description.
      */
-    public function getPresetDescription( string $presetName ): string
+    public function getPresetDescription(string $presetName): string
     {
         $descriptions = [
-            'glass-frosted-light' => __( 'Clean, professional frosted glass effect optimized for light backgrounds with high saturation and moderate blur.' ),
-            'glass-frosted-dark'  => __( 'Sophisticated frosted glass effect optimized for dark backgrounds with enhanced blur and border glow.' ),
-            'glass-liquid-light'  => __( 'Premium liquid glass effect for light backgrounds with smooth, flowing visuals and enhanced refraction.' ),
-            'glass-liquid-dark'   => __( 'Premium liquid glass effect for dark backgrounds with enhanced glow effects and deeper transparency.' ),
-            'glass-minimal'       => __( 'Subtle, understated glass effect for designs that need glass aesthetics without overwhelming visual presence.' ),
-            'glass-bold'          => __( 'Strong, prominent glass effect for elements that need to stand out with dramatic visual impact.' ),
+            'glass-frosted-light' => __('Clean, professional frosted glass effect optimized for light backgrounds with high saturation and moderate blur.'),
+            'glass-frosted-dark'  => __('Sophisticated frosted glass effect optimized for dark backgrounds with enhanced blur and border glow.'),
+            'glass-liquid-light'  => __('Premium liquid glass effect for light backgrounds with smooth, flowing visuals and enhanced refraction.'),
+            'glass-liquid-dark'   => __('Premium liquid glass effect for dark backgrounds with enhanced glow effects and deeper transparency.'),
+            'glass-minimal'       => __('Subtle, understated glass effect for designs that need glass aesthetics without overwhelming visual presence.'),
+            'glass-bold'          => __('Strong, prominent glass effect for elements that need to stand out with dramatic visual impact.'),
         ];
 
         return $descriptions[$presetName] ?? '';
@@ -483,29 +485,29 @@ class GlassPresets
      *
      * @return string The CSS custom properties.
      */
-    public function generatePresetCss( string $presetName, bool $includeSelector = true ): string
+    public function generatePresetCss(string $presetName, bool $includeSelector = true): string
     {
-        $tokens = $this->getPresetTokens( $presetName );
+        $tokens = $this->getPresetTokens($presetName);
         $css    = '';
 
-        if ( $includeSelector ) {
+        if ($includeSelector) {
             $css .= ".{$presetName} {\n";
         }
 
-        foreach ( $tokens as $property => $value ) {
+        foreach ($tokens as $property => $value) {
             $indent = $includeSelector ? '    ' : '';
             $css .= "{$indent}--{$property}: {$value};\n";
         }
 
-        if ( $includeSelector ) {
+        if ($includeSelector) {
             $css .= "}\n";
         }
 
         // Add dark mode overrides if available
-        $darkOverrides = $this->getDarkModeOverrides( $presetName );
-        if ( ! empty( $darkOverrides ) && $includeSelector ) {
+        $darkOverrides = $this->getDarkModeOverrides($presetName);
+        if (! empty($darkOverrides) && $includeSelector) {
             $css .= "\n[data-theme=\"dark\"] .{$presetName} {\n";
-            foreach ( $darkOverrides as $property => $value ) {
+            foreach ($darkOverrides as $property => $value) {
                 $css .= "    --{$property}: {$value};\n";
             }
             $css .= "}\n";
@@ -525,16 +527,16 @@ class GlassPresets
     {
         $css = "/**\n * ArtisanPack UI - Glass Theme Presets\n * \n * Pre-built glass theme configurations for common use cases.\n * Apply these classes to elements or containers to use preset glass styles.\n *\n * Available Presets:\n";
 
-        foreach ( self::PRESETS as $preset ) {
-            $description = $this->getPresetDescription( $preset );
+        foreach (self::PRESETS as $preset) {
+            $description = $this->getPresetDescription($preset);
             $css .= " * - .{$preset}: {$description}\n";
         }
 
         $css .= " *\n * @since 2.0.0\n */\n\n";
 
-        foreach ( self::PRESETS as $preset ) {
+        foreach (self::PRESETS as $preset) {
             $css .= "/* {$preset} */\n";
-            $css .= $this->generatePresetCss( $preset );
+            $css .= $this->generatePresetCss($preset);
             $css .= "\n";
         }
 
@@ -552,14 +554,14 @@ class GlassPresets
     {
         $metadata = [];
 
-        foreach ( self::PRESETS as $preset ) {
+        foreach (self::PRESETS as $preset) {
             $metadata[$preset] = [
-                'name'        => $preset,
-                'description' => $this->getPresetDescription( $preset ),
-                'mode'        => $this->getPresetMode( $preset ),
-                'intensity'   => $this->getPresetIntensity( $preset ),
-                'tokens'      => $this->getPresetTokens( $preset ),
-                'has_dark_overrides' => ! empty( $this->getDarkModeOverrides( $preset ) ),
+                'name'               => $preset,
+                'description'        => $this->getPresetDescription($preset),
+                'mode'               => $this->getPresetMode($preset),
+                'intensity'          => $this->getPresetIntensity($preset),
+                'tokens'             => $this->getPresetTokens($preset),
+                'has_dark_overrides' => ! empty($this->getDarkModeOverrides($preset)),
             ];
         }
 
@@ -575,13 +577,13 @@ class GlassPresets
      *
      * @return string The mode: 'light', 'dark', or 'adaptive'.
      */
-    protected function getPresetMode( string $presetName ): string
+    protected function getPresetMode(string $presetName): string
     {
-        if ( str_ends_with( $presetName, '-light' ) ) {
+        if (str_ends_with($presetName, '-light')) {
             return 'light';
         }
 
-        if ( str_ends_with( $presetName, '-dark' ) ) {
+        if (str_ends_with($presetName, '-dark')) {
             return 'dark';
         }
 
@@ -597,13 +599,13 @@ class GlassPresets
      *
      * @return string The intensity: 'subtle', 'normal', or 'bold'.
      */
-    protected function getPresetIntensity( string $presetName ): string
+    protected function getPresetIntensity(string $presetName): string
     {
-        if ( 'glass-minimal' === $presetName ) {
+        if ('glass-minimal' === $presetName) {
             return 'subtle';
         }
 
-        if ( 'glass-bold' === $presetName ) {
+        if ('glass-bold' === $presetName) {
             return 'bold';
         }
 

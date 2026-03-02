@@ -57,7 +57,6 @@ class LivewireUiComponentsBootcampCommand extends Command
      *
      * Sets up the application for bootcamp by installing dependencies, copying files, and seeding the database.
      *
-     * @return void
      *
      * @since 1.0.0
      */

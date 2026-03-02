@@ -1,5 +1,14 @@
 # ArtisanPack UI Livewire UI Components
 
+## [2.0.2] - 2026-03-02
+
+### Fixed
+- Fixed alignment issue with the select component
+- Guard toast JS call against missing function
+- Fix CodeRabbit review findings from GitHub migration
+
+---
+
 ## [2.0.1] - 2026-01-28
 
 ### Changed

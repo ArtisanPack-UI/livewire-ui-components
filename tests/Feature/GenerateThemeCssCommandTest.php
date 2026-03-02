@@ -165,7 +165,7 @@ test('command applies glass preset', function (): void {
     // Check that presets file was generated
     $presetsFile = storage_path('test-glass-presets.css');
     expect(File::exists($presetsFile))->toBeTrue();
-    
+
     $cssContent = File::get($presetsFile);
     expect($cssContent)->toContain('.glass-frosted-light');
 });

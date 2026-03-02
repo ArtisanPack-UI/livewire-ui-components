@@ -31,7 +31,7 @@ class KpiCardComponentTest extends ComponentTestCase
      */
     public function test_kpi_card_can_be_instantiated_with_minimal_props(): void
     {
-        $component = new KpiCard();
+        $component = new KpiCard;
 
         $this->assertInstanceOf(KpiCard::class, $component);
     }
@@ -77,7 +77,7 @@ class KpiCardComponentTest extends ComponentTestCase
      */
     public function test_has_change_returns_false_when_change_is_null(): void
     {
-        $component = new KpiCard();
+        $component = new KpiCard;
 
         $this->assertFalse($component->hasChange());
     }
@@ -137,7 +137,7 @@ class KpiCardComponentTest extends ComponentTestCase
      */
     public function test_formatted_change_returns_empty_when_no_change(): void
     {
-        $component = new KpiCard();
+        $component = new KpiCard;
 
         $this->assertEquals('', $component->formattedChange());
     }
@@ -167,7 +167,7 @@ class KpiCardComponentTest extends ComponentTestCase
      */
     public function test_change_color_classes_returns_empty_when_no_change(): void
     {
-        $component = new KpiCard();
+        $component = new KpiCard;
 
         $this->assertEquals('', $component->changeColorClasses());
     }
@@ -197,7 +197,7 @@ class KpiCardComponentTest extends ComponentTestCase
      */
     public function test_change_icon_returns_empty_when_no_change(): void
     {
-        $component = new KpiCard();
+        $component = new KpiCard;
 
         $this->assertEquals('', $component->changeIcon());
     }
@@ -219,7 +219,7 @@ class KpiCardComponentTest extends ComponentTestCase
      */
     public function test_has_sparkline_returns_false_when_data_is_null(): void
     {
-        $component = new KpiCard();
+        $component = new KpiCard;
 
         $this->assertFalse($component->hasSparkline());
     }
@@ -239,7 +239,7 @@ class KpiCardComponentTest extends ComponentTestCase
      */
     public function test_sparkline_type_defaults_to_area(): void
     {
-        $component = new KpiCard();
+        $component = new KpiCard;
 
         $this->assertEquals('area', $component->sparklineType);
     }
@@ -332,7 +332,7 @@ class KpiCardComponentTest extends ComponentTestCase
      */
     public function test_uuid_is_generated(): void
     {
-        $component = new KpiCard();
+        $component = new KpiCard;
 
         $this->assertNotEmpty($component->uuid);
         $this->assertStringStartsWith('artisanpack-kpi-card-', $component->uuid);

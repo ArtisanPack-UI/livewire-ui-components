@@ -42,7 +42,7 @@ class WidgetGrid extends Component
 
         // Ensure cols and gap are integers
         $this->cols = (int) $this->cols;
-        $this->gap = (int) $this->gap;
+        $this->gap  = (int) $this->gap;
     }
 
     /**
@@ -58,12 +58,12 @@ class WidgetGrid extends Component
     public function gridColsClasses(): string
     {
         return match ($this->cols) {
-            1 => 'grid-cols-1',
-            2 => 'grid-cols-1 sm:grid-cols-2',
-            3 => 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
-            4 => 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4',
-            5 => 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5',
-            6 => 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6',
+            1       => 'grid-cols-1',
+            2       => 'grid-cols-1 sm:grid-cols-2',
+            3       => 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
+            4       => 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4',
+            5       => 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5',
+            6       => 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6',
             default => 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4',
         };
     }
@@ -80,16 +80,16 @@ class WidgetGrid extends Component
     public function gapClass(): string
     {
         return match ($this->gap) {
-            0 => 'gap-0',
-            1 => 'gap-1',
-            2 => 'gap-2',
-            3 => 'gap-3',
-            4 => 'gap-4',
-            5 => 'gap-5',
-            6 => 'gap-6',
-            8 => 'gap-8',
-            10 => 'gap-10',
-            12 => 'gap-12',
+            0       => 'gap-0',
+            1       => 'gap-1',
+            2       => 'gap-2',
+            3       => 'gap-3',
+            4       => 'gap-4',
+            5       => 'gap-5',
+            6       => 'gap-6',
+            8       => 'gap-8',
+            10      => 'gap-10',
+            12      => 'gap-12',
             default => 'gap-6',
         };
     }

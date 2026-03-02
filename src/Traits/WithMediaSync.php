@@ -72,8 +72,6 @@ trait WithMediaSync
      *
      * @param  string  $filesModelName  The name of the files model property.
      * @param  string  $library  The name of the library property.
-     *
-     * @return void
      */
     public function refreshMediaSources(string $filesModelName, string $library): void
     {
