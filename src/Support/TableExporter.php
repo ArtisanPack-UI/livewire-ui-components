@@ -492,16 +492,20 @@ class TableExporter
      */
     public function getCsvContent(): string
     {
-        $handle = fopen('php://temp', 'r+');
+        $headers = $this->normalizeHeaders();
+        $rows    = $this->normalizeRows();
+        $handle  = fopen('php://temp', 'r+');
 
         // Add BOM for Excel UTF-8 compatibility
         fwrite($handle, "\xEF\xBB\xBF");
 
         // Write headers
-        fputcsv($handle, $this->headers);
+        if (! empty($headers)) {
+            fputcsv($handle, $headers);
+        }
 
         // Write rows
-        foreach ($this->rows as $row) {
+        foreach ($rows as $row) {
             fputcsv($handle, $row);
         }
 

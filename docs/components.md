@@ -153,7 +153,7 @@ Many components share common props and slots:
 | [ImageLibrary](image-library) | Image library/picker | [ImageLibrary docs](image-library) |
 | [ImageSlider](image-slider) | Image slider/carousel component | [ImageSlider docs](image-slider) |
 | [Kbd](kbd) | Keyboard key display | [Kbd docs](kbd) |
-| [Link](link) | Styled link element | [Link docs](link) |
+| [Link component](link) | Styled link element | [Link component docs](link) |
 | [ListItem](list-item) | List item with various layouts | [ListItem docs](list-item) |
 | [Markdown](markdown) | Markdown content display | [Markdown docs](markdown) |
 | [Profile](profile) | User profile display | [Profile docs](profile) |

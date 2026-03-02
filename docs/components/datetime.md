@@ -288,5 +288,5 @@ The DateTime component follows accessibility best practices:
 ## Related Components
 
 - [Form](Form) - Container for form elements
-- [DatePicker](datepicker) - Date picker component
+- [DatePicker](date-picker) - Date picker component
 - [Input](Input) - Standard text input
