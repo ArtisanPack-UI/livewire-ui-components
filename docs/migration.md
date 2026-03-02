@@ -47,7 +47,7 @@ If you encounter issues during migration:
 - Check the troubleshooting section in the relevant migration guide
 - Review the [GitLab Issues](https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components/-/issues) for similar problems
 - Create a new issue with details about your migration problem
-- Contact support at [me@jacobmartella.com](Mailto:Me@Jacobmartella.Com)
+- Contact support at [me@jacobmartella.com](mailto:me@jacobmartella.com)
 
 ## Contributing
 

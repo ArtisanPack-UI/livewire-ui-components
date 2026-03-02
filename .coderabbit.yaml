@@ -14,10 +14,6 @@ reviews:
     base_branches:
       - ".*" # Regex to match all branches
 
-  # Increase file review limits
-  limits:
-    files: 100
-
   # ------------------------------------------------------------------
   # IGNORE PATTERNS
   # ------------------------------------------------------------------

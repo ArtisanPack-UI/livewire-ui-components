@@ -32,7 +32,7 @@ class WidgetGridComponentTest extends ComponentTestCase
      */
     public function test_widget_grid_can_be_instantiated_with_defaults(): void
     {
-        $component = new WidgetGrid();
+        $component = new WidgetGrid;
 
         $this->assertInstanceOf(WidgetGrid::class, $component);
         $this->assertEquals(4, $component->cols);
@@ -190,7 +190,7 @@ class WidgetGridComponentTest extends ComponentTestCase
      */
     public function test_uuid_is_generated(): void
     {
-        $component = new WidgetGrid();
+        $component = new WidgetGrid;
 
         $this->assertNotEmpty($component->uuid);
         $this->assertStringStartsWith('artisanpack-widget-grid-', $component->uuid);
@@ -211,7 +211,7 @@ class WidgetGridComponentTest extends ComponentTestCase
      */
     public function test_widget_grid_renders(): void
     {
-        $component = new WidgetGrid();
+        $component = new WidgetGrid;
 
         try {
             $view = $component->render();
@@ -272,8 +272,8 @@ class WidgetGridComponentTest extends ComponentTestCase
      */
     public function test_two_instances_have_different_uuids(): void
     {
-        $component1 = new WidgetGrid();
-        $component2 = new WidgetGrid();
+        $component1 = new WidgetGrid;
+        $component2 = new WidgetGrid;
 
         $this->assertNotEquals($component1->uuid, $component2->uuid);
     }
@@ -283,7 +283,7 @@ class WidgetGridComponentTest extends ComponentTestCase
      */
     public function test_grid_cols_classes_returns_string(): void
     {
-        $component = new WidgetGrid();
+        $component = new WidgetGrid;
 
         $this->assertIsString($component->gridColsClasses());
     }
@@ -293,7 +293,7 @@ class WidgetGridComponentTest extends ComponentTestCase
      */
     public function test_gap_class_returns_string(): void
     {
-        $component = new WidgetGrid();
+        $component = new WidgetGrid;
 
         $this->assertIsString($component->gapClass());
     }

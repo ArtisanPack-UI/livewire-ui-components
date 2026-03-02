@@ -297,6 +297,6 @@ When using loading indicators, it's recommended to:
 
 ## Related Components
 
-- [Button](Button) - Can contain loading indicators
-- [Hr](Hr) - Horizontal rule with loading indicator
-- [Progress](Progress) - Progress bar for determinate loading states
+- [Button](button) - Can contain loading indicators
+- [Hr](hr) - Horizontal rule with loading indicator
+- [Progress](progress) - Progress bar for determinate loading states

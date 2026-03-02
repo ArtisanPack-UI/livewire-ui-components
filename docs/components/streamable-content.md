@@ -351,6 +351,6 @@ The blinking cursor animation can be customized by overriding the CSS:
 
 ## Related Components
 
-- [Loading](Loading) - Loading indicators
-- [Skeleton](Skeleton) - Placeholder loading states
-- [Markdown](Markdown) - Markdown rendering component
+- [Loading](loading) - Loading indicators
+- [Skeleton](skeleton) - Placeholder loading states
+- [Markdown](markdown) - Markdown rendering component

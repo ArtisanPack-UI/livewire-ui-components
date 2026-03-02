@@ -67,7 +67,7 @@ trait Toast
             'duration'    => $duration,
         ];
 
-        $this->js('toast('.json_encode(['toast' => $toast]).')');
+        $this->js('if(typeof toast==="function"){toast('.json_encode(['toast' => $toast]).')}');
 
         session()->flash('artisanpack.toast.title', $title);
         session()->flash('artisanpack.toast.description', $description);
@@ -192,16 +192,16 @@ trait Toast
      *
      * @param  string  $icon  The icon name to validate.
      *
-     * @return string The validated icon name.
-     *
      * @throws InvalidArgumentException If the icon name is invalid.
+     *
+     * @return string The validated icon name.
      */
     private function validateIconName(string $icon): string
     {
         // Allow only alphanumeric characters, hyphens, and underscores
-        if (!preg_match('/^[a-zA-Z0-9_-]+$/', $icon)) {
+        if (! preg_match('/^[a-zA-Z0-9_-]+$/', $icon)) {
             throw new InvalidArgumentException(
-                "Invalid icon name: '{$icon}'. Icon names must contain only alphanumeric characters, hyphens, and underscores."
+                "Invalid icon name: '{$icon}'. Icon names must contain only alphanumeric characters, hyphens, and underscores.",
             );
         }
 

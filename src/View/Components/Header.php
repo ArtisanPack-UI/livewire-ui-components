@@ -48,7 +48,7 @@ class Header extends Component
      * @param  string|null  $title  Optional. The title text. Default null.
      * @param  string|null  $subtitle  Optional. The subtitle text. Default null.
      * @param  bool  $separator  Optional. Whether to show a separator. Default false.
-     * @param  string|bool|null  $progressIndicator  Optional. The wire target for the progress indicator or true for bare attribute. Default null.
+     * @param  bool|string|null  $progressIndicator  Optional. The wire target for the progress indicator or true for bare attribute. Default null.
      * @param  string  $progressIndicatorClass  Optional. The class for the progress indicator. Default 'progress-primary'.
      * @param  bool  $withAnchor  Optional. Whether to wrap the title in an anchor link. Default false.
      * @param  string  $size  Optional. The text size class. Default 'text-2xl'.

@@ -281,8 +281,8 @@ The Input component follows accessibility best practices:
 
 ## Related Components
 
-- [Form](Form) - Container for form elements
-- [Password](Password) - Specialized input for password fields with visibility toggle
-- [Textarea](Textarea) - Multi-line text input
-- [Select](Select) - Dropdown select input
-- [Checkbox](Checkbox) - Checkbox input
+- [Form](form) - Container for form elements
+- [Password](password) - Specialized input for password fields with visibility toggle
+- [Textarea](textarea) - Multi-line text input
+- [Select](select) - Dropdown select input
+- [Checkbox](checkbox) - Checkbox input

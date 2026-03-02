@@ -156,9 +156,9 @@ class Table extends Component
         }
 
         // Temp
-        $rowDecoration = $this->rowDecoration;
+        $rowDecoration  = $this->rowDecoration;
         $cellDecoration = $this->cellDecoration;
-        $headers = $this->headers;
+        $headers        = $this->headers;
 
         // Remove them from serialization, because they are closures.
         unset($this->rowDecoration);
@@ -172,9 +172,9 @@ class Table extends Component
         }
 
         // Put them back
-        $this->rowDecoration = $rowDecoration;
+        $this->rowDecoration  = $rowDecoration;
         $this->cellDecoration = $cellDecoration;
-        $this->headers = $headers;
+        $this->headers        = $headers;
     }
 
     // Get all ids for selectable and expandable features
@@ -212,11 +212,11 @@ class Table extends Component
             return $format($row, $field);
         }
 
-        if ($format[0] == 'currency') {
+        if ('currency' == $format[0]) {
             return ($format[2] ?? '').number_format($field, ...str_split($format[1]));
         }
 
-        if ($format[0] == 'date' && $field) {
+        if ('date' == $format[0] && $field) {
             return Carbon::parse($field)->translatedFormat($format[1]);
         }
 
@@ -232,7 +232,7 @@ class Table extends Component
     // Check if is currently sorted by this header
     public function isSortedBy(mixed $header): bool
     {
-        if (count($this->sortBy) == 0) {
+        if (0 == count($this->sortBy)) {
             return false;
         }
 
@@ -246,12 +246,12 @@ class Table extends Component
             return false;
         }
 
-        if (count($this->sortBy) == 0) {
+        if (0 == count($this->sortBy)) {
             return ['column' => '', 'direction' => ''];
         }
 
         $direction = $this->isSortedBy($header)
-            ? ($this->sortBy['direction'] == 'asc') ? 'desc' : 'asc'
+            ? ('asc' == $this->sortBy['direction']) ? 'desc' : 'asc'
             : 'asc';
 
         return ['column' => $header['sortBy'] ?? $header['key'], 'direction' => $direction];
@@ -370,6 +370,7 @@ class Table extends Component
      * @since 2.0.0
      *
      * @param  mixed  $row  The row data.
+     *
      * @return mixed The sortable item identifier.
      */
     public function getSortableItemValue(mixed $row): mixed
@@ -455,6 +456,7 @@ class Table extends Component
      *
      * @param  int  $startIndex  The starting index.
      * @param  int  $endIndex  The ending index.
+     *
      * @return array|ArrayAccess The visible rows.
      */
     public function getVisibleRows(int $startIndex, int $endIndex): array|ArrayAccess
@@ -503,6 +505,7 @@ class Table extends Component
      * @since 2.0.0
      *
      * @param  string  $format  The export format (csv, xlsx, pdf).
+     *
      * @return string The filename with extension.
      */
     public function getExportFilename(string $format = 'csv'): string
@@ -553,7 +556,7 @@ class Table extends Component
 
         return [
             'headers' => $headerLabels,
-            'rows' => $rowsData,
+            'rows'    => $rowsData,
         ];
     }
 
@@ -575,6 +578,7 @@ class Table extends Component
      * @since 2.0.0
      *
      * @param  string  $format  The format to check.
+     *
      * @return bool True if the format is supported.
      */
     public function supportsExportFormat(string $format): bool

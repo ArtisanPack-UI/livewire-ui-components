@@ -70,12 +70,12 @@ Icon, Theme Toggle, Carousel, and various utility components.
 
 ## 📖 Documentation
 
-Comprehensive documentation is available in our [Documentation Wiki](https://github.com/ArtisanPack-UI/livewire-ui-components/-/wikis/home):
+Comprehensive documentation is available in our [Documentation Wiki](https://github.com/ArtisanPack-UI/livewire-ui-components/wiki/home):
 
-- **[Installation Guide](https://github.com/ArtisanPack-UI/livewire-ui-components/-/wikis/installation)** - Detailed setup instructions
-- **[Components Overview](https://github.com/ArtisanPack-UI/livewire-ui-components/-/wikis/components)** - Complete component reference
-- **[Customization Guide](https://github.com/ArtisanPack-UI/livewire-ui-components/-/wikis/customization)** - Theming and customization options
-- **[Advanced Topics](https://github.com/ArtisanPack-UI/livewire-ui-components/-/wikis/advanced)** - Color system, custom components, and more
+- **[Installation Guide](https://github.com/ArtisanPack-UI/livewire-ui-components/wiki/installation)** - Detailed setup instructions
+- **[Components Overview](https://github.com/ArtisanPack-UI/livewire-ui-components/wiki/components)** - Complete component reference
+- **[Customization Guide](https://github.com/ArtisanPack-UI/livewire-ui-components/wiki/customization)** - Theming and customization options
+- **[Advanced Topics](https://github.com/ArtisanPack-UI/livewire-ui-components/wiki/advanced)** - Color system, custom components, and more
 
 ## 🎨 Theming
 

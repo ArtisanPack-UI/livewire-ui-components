@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
 
+use ArgumentCountError;
 use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
 use ArtisanPack\LivewireUiComponents\View\Components\StreamableContent;
 use Error;
@@ -27,19 +28,6 @@ class StreamableContentComponentTest extends ComponentTestCase
     ];
 
     protected array $requiredProperties = ['target'];
-
-    /**
-     * Override createComponent to always provide the required target parameter.
-     */
-    protected function createComponent(array $properties = []): \Illuminate\View\Component
-    {
-        // Ensure target is always provided since it's required
-        if (! isset($properties['target'])) {
-            $properties['target'] = 'test-target-'.uniqid();
-        }
-
-        return parent::createComponent($properties);
-    }
 
     /**
      * Override base UUID test because StreamableContent uses deterministic UUID
@@ -74,9 +62,9 @@ class StreamableContentComponentTest extends ComponentTestCase
      */
     public function test_streamable_content_requires_target(): void
     {
-        $this->expectException(\ArgumentCountError::class);
+        $this->expectException(ArgumentCountError::class);
 
-        new StreamableContent();
+        new StreamableContent;
     }
 
     /**
@@ -379,5 +367,18 @@ class StreamableContentComponentTest extends ComponentTestCase
         $component = new StreamableContent(target: 'response', showCursor: true);
 
         $this->assertIsBool($component->showCursor);
+    }
+
+    /**
+     * Override createComponent to always provide the required target parameter.
+     */
+    protected function createComponent(array $properties = []): \Illuminate\View\Component
+    {
+        // Ensure target is always provided since it's required
+        if (! isset($properties['target'])) {
+            $properties['target'] = 'test-target-'.uniqid();
+        }
+
+        return parent::createComponent($properties);
     }
 }

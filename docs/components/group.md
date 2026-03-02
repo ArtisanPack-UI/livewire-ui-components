@@ -185,6 +185,6 @@ The Group component follows accessibility best practices:
 
 ## Related Components
 
-- [Radio](Radio) - Standard radio button input
-- [Button](Button) - Button component
-- [Toggle](Toggle) - Toggle switch component
+- [Radio](radio) - Standard radio button input
+- [Button](button) - Button component
+- [Toggle](toggle) - Toggle switch component

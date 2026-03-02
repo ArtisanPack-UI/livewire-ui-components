@@ -164,6 +164,6 @@ The Dropdown component follows accessibility best practices:
 
 ## Related Components
 
-- [Menu](Menu) - Static menu component
-- [Button](Button) - Button component
-- [Icon](Icon) - Icon component
+- [Menu](menu) - Static menu component
+- [Button](button) - Button component
+- [Icon](icon) - Icon component

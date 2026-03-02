@@ -68,7 +68,6 @@ class LivewireUiComponentsInstallCommand extends Command
      *
      * This is the main method that orchestrates the installation process.
      *
-     * @return void
      *
      * @since 1.0.0
      */
@@ -111,8 +110,6 @@ class LivewireUiComponentsInstallCommand extends Command
      *
      * @param  string  $shouldInstallVolt  Whether to install Volt ('Yes' or 'No').
      *
-     * @return void
-     *
      * @since 1.0.0
      */
     public function installLivewire(string $shouldInstallVolt): void
@@ -134,8 +131,6 @@ class LivewireUiComponentsInstallCommand extends Command
      * Installs the necessary npm packages and configures the CSS file.
      *
      * @param  string  $packageManagerCommand  The package manager command to use (npm, yarn, etc.).
-     *
-     * @return void
      *
      * @since 1.0.0
      */
@@ -200,7 +195,6 @@ class LivewireUiComponentsInstallCommand extends Command
      * If Jetstream or Breeze are detected, we publish config file and add a global prefix
      * to Livewire UI Components components, in order to avoid name collision with existing components.
      *
-     * @return void
      *
      * @since 1.0.0
      */

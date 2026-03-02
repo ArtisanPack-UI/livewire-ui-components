@@ -96,7 +96,7 @@ class KpiCard extends Component
      */
     public function hasSparkline(): bool
     {
-        return $this->sparklineData !== null && count($this->sparklineData) > 0;
+        return null !== $this->sparklineData && count($this->sparklineData) > 0;
     }
 
     /**
@@ -108,7 +108,7 @@ class KpiCard extends Component
      */
     public function hasChange(): bool
     {
-        return $this->change !== null;
+        return null !== $this->change;
     }
 
     /**
@@ -120,7 +120,7 @@ class KpiCard extends Component
      */
     public function isPositiveChange(): bool
     {
-        return $this->change !== null && $this->change >= 0;
+        return null !== $this->change && $this->change >= 0;
     }
 
     /**
@@ -134,7 +134,7 @@ class KpiCard extends Component
      */
     public function formattedChange(): string
     {
-        if ($this->change === null) {
+        if (null === $this->change) {
             return '';
         }
 
@@ -154,7 +154,7 @@ class KpiCard extends Component
      */
     public function changeColorClasses(): string
     {
-        if ($this->change === null) {
+        if (null === $this->change) {
             return '';
         }
 
@@ -174,7 +174,7 @@ class KpiCard extends Component
      */
     public function changeIcon(): string
     {
-        if ($this->change === null) {
+        if (null === $this->change) {
             return '';
         }
 

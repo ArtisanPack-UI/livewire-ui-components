@@ -6,6 +6,10 @@ namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Support;
 
 use ArtisanPack\LivewireUiComponents\Support\TableExporter;
 use ArtisanPack\LivewireUiComponents\Tests\TestCase;
+use InvalidArgumentException;
+use ReflectionClass;
+use ReflectionMethod;
+use RuntimeException;
 
 /**
  * Comprehensive unit tests for the TableExporter class.
@@ -22,7 +26,7 @@ class TableExporterTest extends TestCase
      */
     public function test_table_exporter_can_be_instantiated(): void
     {
-        $exporter = new TableExporter();
+        $exporter = new TableExporter;
 
         $this->assertInstanceOf(TableExporter::class, $exporter);
     }
@@ -46,7 +50,7 @@ class TableExporterTest extends TestCase
      */
     public function test_set_headers_returns_self(): void
     {
-        $exporter = new TableExporter();
+        $exporter = new TableExporter;
         $result   = $exporter->setHeaders(['Name', 'Email']);
 
         $this->assertSame($exporter, $result);
@@ -57,7 +61,7 @@ class TableExporterTest extends TestCase
      */
     public function test_set_rows_returns_self(): void
     {
-        $exporter = new TableExporter();
+        $exporter = new TableExporter;
         $result   = $exporter->setRows([['John', 'john@example.com']]);
 
         $this->assertSame($exporter, $result);
@@ -68,7 +72,7 @@ class TableExporterTest extends TestCase
      */
     public function test_set_filename_returns_self(): void
     {
-        $exporter = new TableExporter();
+        $exporter = new TableExporter;
         $result   = $exporter->setFilename('custom-export');
 
         $this->assertSame($exporter, $result);
@@ -82,10 +86,7 @@ class TableExporterTest extends TestCase
         $headers  = ['ID', 'Name', 'Email'];
         $exporter = new TableExporter($headers);
 
-        // Use reflection to access protected method
-        $reflection = new \ReflectionClass($exporter);
-        $method     = $reflection->getMethod('normalizeHeaders');
-        $method->setAccessible(true);
+        $method = $this->getPrivateMethod($exporter, 'normalizeHeaders');
 
         $result = $method->invoke($exporter);
 
@@ -104,9 +105,7 @@ class TableExporterTest extends TestCase
         ];
         $exporter = new TableExporter($headers);
 
-        $reflection = new \ReflectionClass($exporter);
-        $method     = $reflection->getMethod('normalizeHeaders');
-        $method->setAccessible(true);
+        $method = $this->getPrivateMethod($exporter, 'normalizeHeaders');
 
         $result = $method->invoke($exporter);
 
@@ -120,9 +119,7 @@ class TableExporterTest extends TestCase
     {
         $exporter = new TableExporter([]);
 
-        $reflection = new \ReflectionClass($exporter);
-        $method     = $reflection->getMethod('normalizeHeaders');
-        $method->setAccessible(true);
+        $method = $this->getPrivateMethod($exporter, 'normalizeHeaders');
 
         $result = $method->invoke($exporter);
 
@@ -140,9 +137,7 @@ class TableExporterTest extends TestCase
         ];
         $exporter = new TableExporter($headers);
 
-        $reflection = new \ReflectionClass($exporter);
-        $method     = $reflection->getMethod('getHeaderKeys');
-        $method->setAccessible(true);
+        $method = $this->getPrivateMethod($exporter, 'getHeaderKeys');
 
         $result = $method->invoke($exporter);
 
@@ -164,9 +159,7 @@ class TableExporterTest extends TestCase
         ];
         $exporter = new TableExporter($headers, $rows);
 
-        $reflection = new \ReflectionClass($exporter);
-        $method     = $reflection->getMethod('normalizeRows');
-        $method->setAccessible(true);
+        $method = $this->getPrivateMethod($exporter, 'normalizeRows');
 
         $result = $method->invoke($exporter);
 
@@ -188,9 +181,7 @@ class TableExporterTest extends TestCase
         ];
         $exporter = new TableExporter($headers, $rows);
 
-        $reflection = new \ReflectionClass($exporter);
-        $method     = $reflection->getMethod('normalizeRows');
-        $method->setAccessible(true);
+        $method = $this->getPrivateMethod($exporter, 'normalizeRows');
 
         $result = $method->invoke($exporter);
 
@@ -205,11 +196,9 @@ class TableExporterTest extends TestCase
      */
     public function test_is_associative_array_returns_true_for_associative(): void
     {
-        $exporter = new TableExporter();
+        $exporter = new TableExporter;
 
-        $reflection = new \ReflectionClass($exporter);
-        $method     = $reflection->getMethod('isAssociativeArray');
-        $method->setAccessible(true);
+        $method = $this->getPrivateMethod($exporter, 'isAssociativeArray');
 
         $this->assertTrue($method->invoke($exporter, ['key' => 'value', 'foo' => 'bar']));
     }
@@ -219,11 +208,9 @@ class TableExporterTest extends TestCase
      */
     public function test_is_associative_array_returns_false_for_indexed(): void
     {
-        $exporter = new TableExporter();
+        $exporter = new TableExporter;
 
-        $reflection = new \ReflectionClass($exporter);
-        $method     = $reflection->getMethod('isAssociativeArray');
-        $method->setAccessible(true);
+        $method = $this->getPrivateMethod($exporter, 'isAssociativeArray');
 
         $this->assertFalse($method->invoke($exporter, ['value1', 'value2', 'value3']));
     }
@@ -233,11 +220,9 @@ class TableExporterTest extends TestCase
      */
     public function test_is_associative_array_returns_false_for_empty(): void
     {
-        $exporter = new TableExporter();
+        $exporter = new TableExporter;
 
-        $reflection = new \ReflectionClass($exporter);
-        $method     = $reflection->getMethod('isAssociativeArray');
-        $method->setAccessible(true);
+        $method = $this->getPrivateMethod($exporter, 'isAssociativeArray');
 
         $this->assertFalse($method->invoke($exporter, []));
     }
@@ -247,11 +232,9 @@ class TableExporterTest extends TestCase
      */
     public function test_sanitize_filename_removes_dangerous_characters(): void
     {
-        $exporter = new TableExporter();
+        $exporter = new TableExporter;
 
-        $reflection = new \ReflectionClass($exporter);
-        $method     = $reflection->getMethod('sanitizeFilename');
-        $method->setAccessible(true);
+        $method = $this->getPrivateMethod($exporter, 'sanitizeFilename');
 
         // Test CRLF injection
         $result = $method->invoke($exporter, "test\r\ninjection");
@@ -273,11 +256,9 @@ class TableExporterTest extends TestCase
      */
     public function test_sanitize_filename_provides_fallback_for_empty_result(): void
     {
-        $exporter = new TableExporter();
+        $exporter = new TableExporter;
 
-        $reflection = new \ReflectionClass($exporter);
-        $method     = $reflection->getMethod('sanitizeFilename');
-        $method->setAccessible(true);
+        $method = $this->getPrivateMethod($exporter, 'sanitizeFilename');
 
         $result = $method->invoke($exporter, "\r\n\0");
         $this->assertStringStartsWith('export-', $result);
@@ -288,11 +269,9 @@ class TableExporterTest extends TestCase
      */
     public function test_build_content_disposition_creates_valid_header(): void
     {
-        $exporter = new TableExporter();
+        $exporter = new TableExporter;
 
-        $reflection = new \ReflectionClass($exporter);
-        $method     = $reflection->getMethod('buildContentDisposition');
-        $method->setAccessible(true);
+        $method = $this->getPrivateMethod($exporter, 'buildContentDisposition');
 
         $result = $method->invoke($exporter, 'test-file.csv');
 
@@ -306,11 +285,9 @@ class TableExporterTest extends TestCase
      */
     public function test_sanitize_html_removes_script_tags(): void
     {
-        $exporter = new TableExporter();
+        $exporter = new TableExporter;
 
-        $reflection = new \ReflectionClass($exporter);
-        $method     = $reflection->getMethod('sanitizeHtml');
-        $method->setAccessible(true);
+        $method = $this->getPrivateMethod($exporter, 'sanitizeHtml');
 
         $html   = '<p>Safe content</p><script>alert("xss")</script>';
         $result = $method->invoke($exporter, $html);
@@ -325,11 +302,9 @@ class TableExporterTest extends TestCase
      */
     public function test_sanitize_html_removes_event_handlers(): void
     {
-        $exporter = new TableExporter();
+        $exporter = new TableExporter;
 
-        $reflection = new \ReflectionClass($exporter);
-        $method     = $reflection->getMethod('sanitizeHtml');
-        $method->setAccessible(true);
+        $method = $this->getPrivateMethod($exporter, 'sanitizeHtml');
 
         $html   = '<div onclick="alert(1)">Content</div>';
         $result = $method->invoke($exporter, $html);
@@ -342,11 +317,9 @@ class TableExporterTest extends TestCase
      */
     public function test_sanitize_html_removes_javascript_urls(): void
     {
-        $exporter = new TableExporter();
+        $exporter = new TableExporter;
 
-        $reflection = new \ReflectionClass($exporter);
-        $method     = $reflection->getMethod('sanitizeHtml');
-        $method->setAccessible(true);
+        $method = $this->getPrivateMethod($exporter, 'sanitizeHtml');
 
         $html   = '<a href="javascript:alert(1)">Link</a>';
         $result = $method->invoke($exporter, $html);
@@ -359,7 +332,7 @@ class TableExporterTest extends TestCase
      */
     public function test_pdf_settings_are_chainable(): void
     {
-        $exporter = new TableExporter();
+        $exporter = new TableExporter;
 
         $result = $exporter
             ->setPdfTitle('Test Report')
@@ -388,7 +361,7 @@ class TableExporterTest extends TestCase
     {
         $this->assertEquals(
             TableExporter::hasPhpSpreadsheet(),
-            TableExporter::supportsXlsx()
+            TableExporter::supportsXlsx(),
         );
     }
 
@@ -409,7 +382,7 @@ class TableExporterTest extends TestCase
     {
         $this->assertEquals(
             TableExporter::hasDomPdf(),
-            TableExporter::supportsPdf()
+            TableExporter::supportsPdf(),
         );
     }
 
@@ -420,7 +393,7 @@ class TableExporterTest extends TestCase
     {
         $exporter = new TableExporter(['Name'], [['John']]);
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Unsupported export format: invalid');
 
         $exporter->export('invalid');
@@ -480,7 +453,7 @@ class TableExporterTest extends TestCase
 
         $exporter = new TableExporter(['Name'], [['John']]);
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('PhpSpreadsheet is required');
 
         $exporter->toXlsx();
@@ -497,7 +470,7 @@ class TableExporterTest extends TestCase
 
         $exporter = new TableExporter(['Name'], [['John']]);
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('DomPDF is required');
 
         $exporter->toPdf();
@@ -512,9 +485,7 @@ class TableExporterTest extends TestCase
         $rows     = [['John', 'john@example.com']];
         $exporter = new TableExporter($headers, $rows, 'test-report');
 
-        $reflection = new \ReflectionClass($exporter);
-        $method     = $reflection->getMethod('generatePdfHtml');
-        $method->setAccessible(true);
+        $method = $this->getPrivateMethod($exporter, 'generatePdfHtml');
 
         $html = $method->invoke($exporter);
 
@@ -545,9 +516,7 @@ class TableExporterTest extends TestCase
             ->setPdfHeader('<div>Custom Header</div>')
             ->setPdfFooter('<div>Custom Footer</div>');
 
-        $reflection = new \ReflectionClass($exporter);
-        $method     = $reflection->getMethod('generatePdfHtml');
-        $method->setAccessible(true);
+        $method = $this->getPrivateMethod($exporter, 'generatePdfHtml');
 
         $html = $method->invoke($exporter);
 
@@ -581,9 +550,7 @@ class TableExporterTest extends TestCase
         ];
         $exporter = new TableExporter($headers, $rows);
 
-        $reflection = new \ReflectionClass($exporter);
-        $method     = $reflection->getMethod('normalizeRows');
-        $method->setAccessible(true);
+        $method = $this->getPrivateMethod($exporter, 'normalizeRows');
 
         $result = $method->invoke($exporter);
 
@@ -606,13 +573,23 @@ class TableExporterTest extends TestCase
         ];
         $exporter = new TableExporter($headers, $rows);
 
-        $reflection = new \ReflectionClass($exporter);
-        $method     = $reflection->getMethod('normalizeRows');
-        $method->setAccessible(true);
+        $method = $this->getPrivateMethod($exporter, 'normalizeRows');
 
         $result = $method->invoke($exporter);
 
         // Missing key should be empty string
         $this->assertEquals([[1, 'John', '']], $result);
+    }
+
+    /**
+     * Get a protected/private method via reflection.
+     */
+    private function getPrivateMethod(object $instance, string $methodName): ReflectionMethod
+    {
+        $reflection = new ReflectionClass($instance);
+        $method     = $reflection->getMethod($methodName);
+        $method->setAccessible(true);
+
+        return $method;
     }
 }

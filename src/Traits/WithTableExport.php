@@ -42,7 +42,8 @@ trait WithTableExport
      *
      * @param  string  $format  The export format (csv, xlsx, or pdf).
      * @param  string  $tableId  The table identifier.
-     * @return StreamedResponse|Response|null The download response or null on failure.
+     *
+     * @return Response|StreamedResponse|null The download response or null on failure.
      */
     #[On('table-export-request')]
     public function handleTableExport(string $format, string $tableId = 'default'): StreamedResponse|Response|null
@@ -54,8 +55,8 @@ trait WithTableExport
                 return null;
             }
 
-            $headers = $exportData['headers'] ?? [];
-            $rows = $exportData['rows'] ?? [];
+            $headers  = $exportData['headers'] ?? [];
+            $rows     = $exportData['rows'] ?? [];
             $filename = $exportData['filename'] ?? 'table-export-'.date('Y-m-d');
 
             return TableExporter::make($headers, $rows, $filename)->export($format);
@@ -74,7 +75,8 @@ trait WithTableExport
      * @since 2.0.0
      *
      * @param  string  $tableId  The table identifier.
-     * @return StreamedResponse|Response|null The CSV download response, error response, or null.
+     *
+     * @return Response|StreamedResponse|null The CSV download response, error response, or null.
      */
     public function exportTableToCsv(string $tableId = 'default'): StreamedResponse|Response|null
     {
@@ -87,7 +89,8 @@ trait WithTableExport
      * @since 2.0.0
      *
      * @param  string  $tableId  The table identifier.
-     * @return StreamedResponse|Response|null The XLSX download response, error response, or null.
+     *
+     * @return Response|StreamedResponse|null The XLSX download response, error response, or null.
      */
     public function exportTableToXlsx(string $tableId = 'default'): StreamedResponse|Response|null
     {
@@ -102,6 +105,7 @@ trait WithTableExport
      * @since 2.0.0
      *
      * @param  string  $tableId  The table identifier.
+     *
      * @return array{headers: array, rows: array, filename?: string} The export data.
      */
     abstract public function getTableExportData(string $tableId = 'default'): array;

@@ -9,7 +9,7 @@ use ArtisanPack\LivewireUiComponents\Tests\TestCase;
 use ArtisanPack\LivewireUiComponents\Traits\WithTableExport;
 use Illuminate\Http\Response;
 use Livewire\Component;
-use Livewire\Livewire;
+use ReflectionClass;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
@@ -27,8 +27,7 @@ class WithTableExportTest extends TestCase
      */
     public function test_trait_can_be_used_in_component(): void
     {
-        $component = new class extends Component
-        {
+        $component = new class extends Component {
             use WithTableExport;
 
             public function getTableExportData(string $tableId = 'default'): array
@@ -57,8 +56,7 @@ class WithTableExportTest extends TestCase
      */
     public function test_handle_table_export_returns_null_for_empty_data(): void
     {
-        $component = new class extends Component
-        {
+        $component = new class extends Component {
             use WithTableExport;
 
             public function getTableExportData(string $tableId = 'default'): array
@@ -82,8 +80,7 @@ class WithTableExportTest extends TestCase
      */
     public function test_handle_table_export_returns_response_for_csv(): void
     {
-        $component = new class extends Component
-        {
+        $component = new class extends Component {
             use WithTableExport;
 
             public function getTableExportData(string $tableId = 'default'): array
@@ -111,8 +108,7 @@ class WithTableExportTest extends TestCase
      */
     public function test_export_table_to_csv_delegates_to_handle_table_export(): void
     {
-        $component = new class extends Component
-        {
+        $component = new class extends Component {
             use WithTableExport;
 
             public function getTableExportData(string $tableId = 'default'): array
@@ -143,8 +139,7 @@ class WithTableExportTest extends TestCase
             $this->markTestSkipped('PhpSpreadsheet is not installed');
         }
 
-        $component = new class extends Component
-        {
+        $component = new class extends Component {
             use WithTableExport;
 
             public function getTableExportData(string $tableId = 'default'): array
@@ -171,8 +166,7 @@ class WithTableExportTest extends TestCase
      */
     public function test_can_export_xlsx_returns_boolean(): void
     {
-        $component = new class extends Component
-        {
+        $component = new class extends Component {
             use WithTableExport;
 
             public function getTableExportData(string $tableId = 'default'): array
@@ -197,8 +191,7 @@ class WithTableExportTest extends TestCase
      */
     public function test_handle_table_export_uses_default_filename(): void
     {
-        $component = new class extends Component
-        {
+        $component = new class extends Component {
             use WithTableExport;
 
             public function getTableExportData(string $tableId = 'default'): array
@@ -230,8 +223,7 @@ class WithTableExportTest extends TestCase
             $this->markTestSkipped('Cannot test exception catching when PhpSpreadsheet is installed');
         }
 
-        $component = new class extends Component
-        {
+        $component = new class extends Component {
             use WithTableExport;
 
             public function getTableExportData(string $tableId = 'default'): array
@@ -260,8 +252,7 @@ class WithTableExportTest extends TestCase
      */
     public function test_handle_table_export_catches_invalid_argument_exception(): void
     {
-        $component = new class extends Component
-        {
+        $component = new class extends Component {
             use WithTableExport;
 
             public function getTableExportData(string $tableId = 'default'): array
@@ -292,8 +283,7 @@ class WithTableExportTest extends TestCase
     {
         $receivedTableId = null;
 
-        $component = new class($receivedTableId) extends Component
-        {
+        $component = new class($receivedTableId) extends Component {
             use WithTableExport;
 
             private $receivedTableIdRef;
@@ -333,7 +323,7 @@ class WithTableExportTest extends TestCase
      */
     public function test_get_table_export_data_is_declared_abstract(): void
     {
-        $reflection = new \ReflectionClass(WithTableExport::class);
+        $reflection = new ReflectionClass(WithTableExport::class);
         $method     = $reflection->getMethod('getTableExportData');
 
         $this->assertTrue($method->isAbstract(), 'getTableExportData should be declared as abstract');
