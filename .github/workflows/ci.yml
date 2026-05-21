@@ -3,8 +3,6 @@ name: CI
 on:
   push:
     branches: [main]
-    tags:
-      - 'v*'
   pull_request:
     branches: [main, 'release/**']
 
@@ -120,42 +118,3 @@ jobs:
           fail_ci_if_error: false
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
-  release:
-    needs: test
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v')
-    name: Create Release
-
-    permissions:
-      contents: write
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Extract release notes from CHANGELOG
-        id: changelog
-        run: |
-          VERSION=${GITHUB_REF#refs/tags/v}
-          echo "Extracting notes for version $VERSION"
-
-          if [ -f "CHANGELOG.md" ]; then
-            # Extract section for this version
-            NOTES=$(sed -n "/## \[$VERSION\]/,/## \[/p" CHANGELOG.md | sed '1d;$d' | sed '/^$/d')
-            if [ -z "$NOTES" ]; then
-              NOTES="Release $VERSION. See CHANGELOG.md for details."
-            fi
-          else
-            NOTES="Release $VERSION"
-          fi
-
-          # Save to file for multi-line support
-          echo "$NOTES" > release_notes.txt
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
-        with:
-          body_path: release_notes.txt
-          generate_release_notes: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
