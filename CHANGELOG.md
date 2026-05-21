@@ -1,5 +1,12 @@
 # ArtisanPack UI Livewire UI Components
 
+## [2.0.3] - 2026-05-21
+
+### Changed
+- Updated `artisanpack-ui/security` constraint from `^1.0` to `^1.0|^2.0` to support ArtisanPack UI Security 2.0
+
+---
+
 ## [2.0.2] - 2026-03-02
 
 ### Fixed
