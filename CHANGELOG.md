@@ -1,5 +1,13 @@
 # ArtisanPack UI Livewire UI Components
 
+## [2.0.4] - Unreleased
+
+### Changed
+- Added Laravel 13 support by widening `illuminate/support` constraint to `^10.0|^11.0|^12.0|^13.0`
+- Widened `orchestra/testbench` dev constraint to `^8|^9|^10|^11` to enable testing against Laravel 13
+
+---
+
 ## [2.0.3] - 2026-05-21
 
 ### Changed
