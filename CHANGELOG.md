@@ -1,6 +1,10 @@
 # ArtisanPack UI Livewire UI Components
 
-## [2.0.4] - Unreleased
+## [Unreleased]
+
+---
+
+## [2.0.4] - 2026-06-09
 
 ### Changed
 - Added Laravel 13 support by widening `illuminate/support` constraint to `^10.0|^11.0|^12.0|^13.0`
