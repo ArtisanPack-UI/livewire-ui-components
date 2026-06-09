@@ -1,5 +1,18 @@
 # ArtisanPack UI Livewire UI Components
 
+## [Unreleased]
+
+---
+
+## [2.0.4] - 2026-06-09
+
+### Changed
+- Added Laravel 13 support by widening `illuminate/support` constraint to `^10.0|^11.0|^12.0|^13.0`
+- Widened `orchestra/testbench` dev constraint to `^8|^9|^10|^11` to enable testing against Laravel 13
+- Added explicit `php` constraint of `^8.1` so Composer fails fast on unsupported PHP versions (the floor matches Laravel 10's PHP requirement; Laravel 11/12/13 transitively enforce higher floors)
+
+---
+
 ## [2.0.3] - 2026-05-21
 
 ### Changed
