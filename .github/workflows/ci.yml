@@ -45,16 +45,53 @@ jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    name: Test
+    name: PHP ${{ matrix.php }} / Laravel ${{ matrix.laravel }} / FA ${{ matrix.fontawesome }}
     continue-on-error: true
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: '8.2'
+            laravel: '10.*'
+            testbench: '8.*'
+            fontawesome: '^2.9'
+          - php: '8.2'
+            laravel: '11.*'
+            testbench: '9.*'
+            fontawesome: '^2.9'
+          - php: '8.2'
+            laravel: '12.*'
+            testbench: '10.*'
+            fontawesome: '^2.9'
+          - php: '8.3'
+            laravel: '12.*'
+            testbench: '10.*'
+            fontawesome: '^2.9'
+          - php: '8.3'
+            laravel: '12.*'
+            testbench: '10.*'
+            fontawesome: '^3.0'
+          - php: '8.3'
+            laravel: '13.*'
+            testbench: '11.*'
+            fontawesome: '^3.0'
+          - php: '8.4'
+            laravel: '12.*'
+            testbench: '10.*'
+            fontawesome: '^3.0'
+          - php: '8.4'
+            laravel: '13.*'
+            testbench: '11.*'
+            fontawesome: '^3.0'
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup PHP
+      - name: Setup PHP ${{ matrix.php }}
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: ${{ matrix.php }}
           extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite, pdo_sqlite
           coverage: none
 
@@ -66,11 +103,18 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install dependencies
-        run: composer install --no-interaction --prefer-dist
+        run: |
+          composer require \
+            "orchestra/testbench:${{ matrix.testbench }}" \
+            --dev --no-interaction --no-update
+          composer require \
+            "owenvoke/blade-fontawesome:${{ matrix.fontawesome }}" \
+            --no-interaction --no-update
+          composer update --no-interaction --prefer-dist --with-all-dependencies
 
       - name: Run Unit tests
         env:
