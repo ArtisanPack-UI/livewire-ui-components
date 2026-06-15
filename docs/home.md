@@ -27,7 +27,7 @@ ArtisanPack UI Livewire Components is a powerful UI component library for Larave
 
 ### Technology Stack
 
-- **Laravel 10, 11, & 12**: Compatible with Laravel 10.x and later
+- **Laravel 10, 11, 12, & 13**: Compatible with Laravel 10.x through 13.x
 - **Livewire 3 & 4**: Utilizes Livewire for dynamic, reactive components with version-specific features
 - **Tailwind CSS 4**: Uses Tailwind CSS for styling
 - **DaisyUI**: Integrates with DaisyUI for additional styling and components

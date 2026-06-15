@@ -4,6 +4,16 @@
 
 ---
 
+## [2.0.5] - 2026-06-14
+
+### Changed
+- Widened `owenvoke/blade-fontawesome` constraint from `^2.9` to `^2.9|^3.0` to unblock Laravel 13 adoption in downstream consumers (the v2.9 line transitively caps `illuminate/support` at `^12.0`; v3.2.2 declares `^12.0|^13.0`). Backwards compatible — existing v2.9 installs continue to resolve. (#103)
+
+### CI
+- Expanded the CI `test` job into a PHP × Laravel × blade-fontawesome matrix covering L10–L13 on PHP 8.2–8.4 with both blade-fontawesome v2 and v3, so future framework bumps are exercised before tag. Matrix is informational-only for this release (see #105 for the gating cleanup).
+
+---
+
 ## [2.0.4] - 2026-06-09
 
 ### Changed
