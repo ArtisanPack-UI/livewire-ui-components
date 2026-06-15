@@ -54,27 +54,35 @@ jobs:
         include:
           - php: '8.2'
             laravel: '10.*'
+            testbench: '8.*'
             fontawesome: '^2.9'
           - php: '8.2'
             laravel: '11.*'
+            testbench: '9.*'
             fontawesome: '^2.9'
           - php: '8.2'
             laravel: '12.*'
+            testbench: '10.*'
             fontawesome: '^2.9'
           - php: '8.3'
             laravel: '12.*'
+            testbench: '10.*'
             fontawesome: '^2.9'
           - php: '8.3'
             laravel: '12.*'
+            testbench: '10.*'
             fontawesome: '^3.0'
           - php: '8.3'
             laravel: '13.*'
+            testbench: '11.*'
             fontawesome: '^3.0'
           - php: '8.4'
             laravel: '12.*'
+            testbench: '10.*'
             fontawesome: '^3.0'
           - php: '8.4'
             laravel: '13.*'
+            testbench: '11.*'
             fontawesome: '^3.0'
 
     steps:
@@ -95,13 +103,15 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ matrix.php }}-${{ matrix.laravel }}-${{ matrix.fontawesome }}-${{ hashFiles('**/composer.json') }}
-          restore-keys: ${{ runner.os }}-composer-${{ matrix.php }}-${{ matrix.laravel }}-${{ matrix.fontawesome }}-
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-
 
       - name: Install dependencies
         run: |
           composer require \
-            "illuminate/support:${{ matrix.laravel }}" \
+            "orchestra/testbench:${{ matrix.testbench }}" \
+            --dev --no-interaction --no-update
+          composer require \
             "owenvoke/blade-fontawesome:${{ matrix.fontawesome }}" \
             --no-interaction --no-update
           composer update --no-interaction --prefer-dist --with-all-dependencies
