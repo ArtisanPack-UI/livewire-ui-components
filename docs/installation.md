@@ -10,7 +10,7 @@ This guide will walk you through the process of installing and configuring Artis
 
 Before installing ArtisanPack UI Livewire Components, ensure your environment meets the following requirements:
 
-- **Laravel 10–13**: Compatible with Laravel 10.x through 13.x
+- **Laravel 12 or 13**: The installer requires Laravel 12 or newer (verified at install time); the package itself is compatible with Laravel 12.x and 13.x
 - **PHP 8.1+**: PHP 8.1 or newer is required
 - **Node.js and NPM/Yarn/Bun/PNPM**: Required for compiling assets
 - **Composer**: Required for installing the package
