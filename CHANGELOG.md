@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+---
+
+## [2.1.0] - 2026-07-21
+
 ### Added
 - Cross-cutting UI extension hooks powered by `artisanpack-ui/hooks`. Nine seams for applications and third-party packages to extend rendered classes, attributes, icons, toasts, table columns, theme configuration, modal lifecycle, and spotlight commands without editing individual components. See the "Extension Hooks" section of the README for the full table. (#108)
   - `ap.livewireUiComponents.componentClasses` filter — opt-in per component via `$this->getClasses($classes)`
