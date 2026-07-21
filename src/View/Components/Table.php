@@ -25,7 +25,6 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
-use Illuminate\View\Component;
 
 /**
  * Table Class
@@ -34,7 +33,7 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-class Table extends Component
+class Table extends BaseComponent
 {
     /**
      * Loop variable for the table.
@@ -154,6 +153,12 @@ class Table extends Component
         if ($this->selectable && $this->expandable) {
             throw new Exception('You can not combine `expandable` with `selectable`.');
         }
+
+        $this->headers = applyFilters(
+            'ap.livewireUiComponents.tableColumns',
+            $this->headers,
+            $id ?? 'default',
+        );
 
         // Temp
         $rowDecoration  = $this->rowDecoration;

@@ -19,7 +19,6 @@ namespace ArtisanPack\LivewireUiComponents\View\Components;
 
 use Closure;
 use Illuminate\Contracts\View\View;
-use Illuminate\View\Component;
 
 /**
  * MenuSeparator Class
@@ -28,7 +27,7 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-class MenuSeparator extends Component
+class MenuSeparator extends BaseComponent
 {
     public string $uuid;
 

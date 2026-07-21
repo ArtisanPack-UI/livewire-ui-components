@@ -20,7 +20,6 @@ namespace ArtisanPack\LivewireUiComponents\View\Components;
 use ArtisanPack\LivewireUiComponents\Styling\ColorGenerator;
 use ArtisanPack\LivewireUiComponents\Support\GlassHelper;
 use Illuminate\Contracts\View\View;
-use Illuminate\View\Component;
 
 /**
  * Alert Class
@@ -29,7 +28,7 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-class Alert extends Component
+class Alert extends BaseComponent
 {
     /**
      * @param  ?string  $title  The title of the alert, displayed in bold.

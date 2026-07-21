@@ -20,7 +20,6 @@ namespace ArtisanPack\LivewireUiComponents\View\Components;
 use ArtisanPack\LivewireUiComponents\Styling\ColorGenerator;
 use ArtisanPack\LivewireUiComponents\Support\GlassHelper;
 use Illuminate\Contracts\View\View;
-use Illuminate\View\Component;
 
 /**
  * Badge Class
@@ -29,7 +28,7 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-class Badge extends Component
+class Badge extends BaseComponent
 {
     public string $uuid;
 

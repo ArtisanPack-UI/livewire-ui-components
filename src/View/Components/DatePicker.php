@@ -21,7 +21,6 @@ use ArtisanPack\LivewireUiComponents\Styling\ColorGenerator;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Arr;
-use Illuminate\View\Component;
 
 /**
  * DatePicker Class
@@ -30,7 +29,7 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-class DatePicker extends Component
+class DatePicker extends BaseComponent
 {
     public string $uuid;
 

@@ -19,7 +19,6 @@ namespace ArtisanPack\LivewireUiComponents\View\Components;
 
 use Closure;
 use Illuminate\Contracts\View\View;
-use Illuminate\View\Component;
 
 /**
  * ThemeToggle Class
@@ -28,7 +27,7 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-class ThemeToggle extends Component
+class ThemeToggle extends BaseComponent
 {
     public string $uuid;
 
@@ -44,7 +43,43 @@ class ThemeToggle extends Component
         public ?bool $withLabel = false,
 
     ) {
+        $themes = applyFilters('ap.livewireUiComponents.themeColors', $this->themes());
+
+        $this->light      = $themes['light']['label'] ?? $this->light;
+        $this->lightTheme = $themes['light']['theme'] ?? $this->lightTheme;
+        $this->lightClass = $themes['light']['class'] ?? $this->lightClass;
+        $this->dark       = $themes['dark']['label'] ?? $this->dark;
+        $this->darkTheme  = $themes['dark']['theme'] ?? $this->darkTheme;
+        $this->darkClass  = $themes['dark']['class'] ?? $this->darkClass;
+
         $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
+    }
+
+    /**
+     * Get the resolved theme configuration as an array.
+     *
+     * This is the payload passed to the `ap.livewireUiComponents.themeColors`
+     * filter so subscribers can rename themes, swap class strings, or
+     * change labels without editing the component.
+     *
+     * @since 2.1.0
+     *
+     * @return array{light: array{label: ?string, theme: ?string, class: ?string}, dark: array{label: ?string, theme: ?string, class: ?string}}
+     */
+    public function themes(): array
+    {
+        return [
+            'light' => [
+                'label' => $this->light,
+                'theme' => $this->lightTheme,
+                'class' => $this->lightClass,
+            ],
+            'dark' => [
+                'label' => $this->dark,
+                'theme' => $this->darkTheme,
+                'class' => $this->darkClass,
+            ],
+        ];
     }
 
     public function render(): View|Closure|string

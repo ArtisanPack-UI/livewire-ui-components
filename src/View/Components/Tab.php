@@ -20,7 +20,6 @@ namespace ArtisanPack\LivewireUiComponents\View\Components;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Blade;
-use Illuminate\View\Component;
 
 /**
  * Tab Class
@@ -29,7 +28,7 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-class Tab extends Component
+class Tab extends BaseComponent
 {
     public string $uuid;
 

@@ -20,7 +20,6 @@ namespace ArtisanPack\LivewireUiComponents\View\Components;
 use ArtisanPack\LivewireUiComponents\Support\GlassHelper;
 use Closure;
 use Illuminate\Contracts\View\View;
-use Illuminate\View\Component;
 
 /**
  * Menu Class
@@ -29,7 +28,7 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-class Menu extends Component
+class Menu extends BaseComponent
 {
     public string $uuid;
 

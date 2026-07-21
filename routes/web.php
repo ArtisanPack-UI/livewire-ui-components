@@ -24,7 +24,13 @@ Route::middleware('web')->prefix(config('artisanpack.livewire-ui-components.rout
 })->name('artisanpack.toogle-sidebar');
 
 Route::middleware('web')->prefix(config('artisanpack.livewire-ui-components.route_prefix'))->get('/artisanpack/spotlight', function (Request $request) {
-    return app()->make(config('artisanpack.livewire-ui-components.components.spotlight.class'))->search($request);
+    $results = app()->make(config('artisanpack.livewire-ui-components.components.spotlight.class'))->search($request);
+
+    return applyFilters(
+        'ap.livewireUiComponents.spotlightCommands',
+        (array) $results,
+        $request->user(),
+    );
 })->name('artisanpack.spotlight');
 
 Route::middleware(['web', 'auth'])->prefix(config('artisanpack.livewire-ui-components.route_prefix'))->post('/artisanpack/upload', function (Request $request) {

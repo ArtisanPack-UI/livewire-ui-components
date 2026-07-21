@@ -21,7 +21,6 @@ use ArrayAccess;
 use Closure;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\View\View;
-use Illuminate\View\Component;
 
 /**
  * Pagination Class
@@ -30,7 +29,7 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-class Pagination extends Component
+class Pagination extends BaseComponent
 {
     public string $uuid;
 
