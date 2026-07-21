@@ -42,6 +42,7 @@
         "artisanpack-ui/security": "^1.0|^2.0",
         "owenvoke/blade-fontawesome": "^2.9|^3.0",
         "artisanpack-ui/core": "^1.0",
+        "artisanpack-ui/hooks": "^1.2",
         "artisanpack-ui/icons": "^2.0"
     },
     "suggest": {

@@ -19,7 +19,6 @@ namespace ArtisanPack\LivewireUiComponents\View\Components;
 
 use ArtisanPack\LivewireUiComponents\Support\GlassHelper;
 use Illuminate\Contracts\View\View;
-use Illuminate\View\Component;
 
 /**
  * Accordion Class
@@ -28,7 +27,7 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-class Accordion extends Component
+class Accordion extends BaseComponent
 {
     public bool $usePlusMinus;
 

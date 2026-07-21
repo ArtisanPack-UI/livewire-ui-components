@@ -21,7 +21,6 @@ use Closure;
 use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
-use Illuminate\View\Component;
 
 /**
  * ChoicesOffline Class
@@ -30,7 +29,7 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-class ChoicesOffline extends Component
+class ChoicesOffline extends BaseComponent
 {
     public string $uuid;
 

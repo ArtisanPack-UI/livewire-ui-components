@@ -21,7 +21,6 @@ use ArtisanPack\LivewireUiComponents\Support\GlassHelper;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Str;
-use Illuminate\View\Component;
 
 /**
  * Tabs Class
@@ -30,7 +29,7 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-class Tabs extends Component
+class Tabs extends BaseComponent
 {
     public string $uuid;
 

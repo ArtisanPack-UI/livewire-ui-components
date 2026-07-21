@@ -21,7 +21,6 @@ use ArtisanPack\LivewireUiComponents\Styling\ColorGenerator;
 use ArtisanPack\LivewireUiComponents\Support\GlassHelper;
 use Closure;
 use Illuminate\Contracts\View\View;
-use Illuminate\View\Component;
 
 /**
  * Toast Class
@@ -30,7 +29,7 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-class Toast extends Component
+class Toast extends BaseComponent
 {
     /**
      * Create a new component instance.

@@ -20,7 +20,6 @@ namespace ArtisanPack\LivewireUiComponents\View\Components;
 use ArtisanPack\LivewireUiComponents\Support\GlassHelper;
 use Closure;
 use Illuminate\Contracts\View\View;
-use Illuminate\View\Component;
 use Livewire\WireDirective;
 
 /**
@@ -30,7 +29,7 @@ use Livewire\WireDirective;
  *
  * @since 1.0.0
  */
-class Drawer extends Component
+class Drawer extends BaseComponent
 {
     public string $uuid;
 

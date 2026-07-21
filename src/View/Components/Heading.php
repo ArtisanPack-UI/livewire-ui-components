@@ -17,7 +17,6 @@ declare(strict_types=1);
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
 use Illuminate\Contracts\View\View;
-use Illuminate\View\Component;
 
 /**
  * Heading Component Class
@@ -26,7 +25,7 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-class Heading extends Component
+class Heading extends BaseComponent
 {
     /**
      * Constructor for the Heading component.

@@ -19,7 +19,6 @@ namespace ArtisanPack\LivewireUiComponents\View\Components;
 use ArtisanPack\LivewireUiComponents\Support\GlassHelper;
 use Closure;
 use Illuminate\Contracts\View\View;
-use Illuminate\View\Component;
 
 /**
  * KpiCard Class
@@ -29,7 +28,7 @@ use Illuminate\View\Component;
  *
  * @since 2.0.0
  */
-class KpiCard extends Component
+class KpiCard extends BaseComponent
 {
     public string $uuid;
 

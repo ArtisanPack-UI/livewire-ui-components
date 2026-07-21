@@ -21,7 +21,6 @@ use ArtisanPack\LivewireUiComponents\Support\ChartThemes;
 use ArtisanPack\LivewireUiComponents\Support\GlassHelper;
 use Closure;
 use Illuminate\Contracts\View\View;
-use Illuminate\View\Component;
 
 /**
  * Chart Class
@@ -32,7 +31,7 @@ use Illuminate\View\Component;
  * @since 1.0.0
  * @since 2.0.0 Switched to ApexCharts, added glass effect support
  */
-class Chart extends Component
+class Chart extends BaseComponent
 {
     public string $uuid;
 

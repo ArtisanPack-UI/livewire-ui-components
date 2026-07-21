@@ -20,7 +20,6 @@ namespace ArtisanPack\LivewireUiComponents\View\Components;
 use ArtisanPack\LivewireUiComponents\Styling\ColorGenerator;
 use Closure;
 use Illuminate\Contracts\View\View;
-use Illuminate\View\Component;
 
 /**
  * Sparkline Class
@@ -30,7 +29,7 @@ use Illuminate\View\Component;
  *
  * @since 2.0.0
  */
-class Sparkline extends Component
+class Sparkline extends BaseComponent
 {
     public string $uuid;
 

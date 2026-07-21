@@ -57,6 +57,15 @@ trait Toast
     ) {
         $validatedIcon = $this->validateIconName($icon);
 
+        doAction('ap.livewireUiComponents.toastDispatched', $type, $title, [
+            'description' => $description,
+            'position'    => $position,
+            'icon'        => $validatedIcon,
+            'css'         => $css,
+            'duration'    => $duration,
+            'redirectTo'  => $redirectTo,
+        ]);
+
         $toast = [
             'type'        => $type,
             'title'       => $title,
