@@ -18,6 +18,10 @@
 ### Changed
 - Require `artisanpack-ui/hooks: ^1.2`.
 
+### CI
+- Drop Laravel 10 from the CI test matrix. The ecosystem dependencies (`artisanpack-ui/hooks`, `icons`, `accessibility`, `core`) all now require `illuminate/support: ^11+`, so composer cannot resolve a Laravel 10 test run regardless of this package's own constraint.
+- Run Feature tests unconditionally (`if: always()`) so new Feature-suite coverage exercises even when pre-existing Unit-suite failures make the earlier step exit non-zero.
+
 ---
 
 ## [2.0.5] - 2026-06-14
