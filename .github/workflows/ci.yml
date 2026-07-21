@@ -52,10 +52,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - php: '8.2'
-            laravel: '10.*'
-            testbench: '8.*'
-            fontawesome: '^2.9'
+          # Laravel 10 removed — the ecosystem deps (artisanpack-ui/hooks,
+          # icons, accessibility, core) all now require illuminate/support
+          # ^11+, so composer cannot resolve a Laravel 10 test run.
           - php: '8.2'
             laravel: '11.*'
             testbench: '9.*'
@@ -121,7 +120,11 @@ jobs:
           XDEBUG_MODE: off
         run: php vendor/bin/pest tests/Unit --no-coverage
 
+      # `if: always()` so Feature tests still exercise even when the Unit
+      # suite has pre-existing failures — otherwise new Feature coverage
+      # (e.g. tests/Feature/HooksTest.php) is silently skipped in CI.
       - name: Run Feature tests
+        if: always()
         env:
           XDEBUG_MODE: off
         run: php vendor/bin/pest tests/Feature --no-coverage

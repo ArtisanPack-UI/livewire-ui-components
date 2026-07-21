@@ -18,7 +18,6 @@ declare(strict_types=1);
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
 use Illuminate\Contracts\View\View;
-use Illuminate\View\Component;
 
 /**
  * Checkbox Class
@@ -27,7 +26,7 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-class Checkbox extends Component
+class Checkbox extends BaseComponent
 {
     /**
      * The component's UUID.

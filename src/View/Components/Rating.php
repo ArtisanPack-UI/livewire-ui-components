@@ -19,7 +19,6 @@ namespace ArtisanPack\LivewireUiComponents\View\Components;
 
 use Closure;
 use Illuminate\Contracts\View\View;
-use Illuminate\View\Component;
 
 /**
  * Rating Class
@@ -28,7 +27,7 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-class Rating extends Component
+class Rating extends BaseComponent
 {
     public string $uuid;
 

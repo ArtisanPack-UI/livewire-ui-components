@@ -20,7 +20,6 @@ namespace ArtisanPack\LivewireUiComponents\View\Components;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Js;
-use Illuminate\View\Component;
 
 /**
  * Editor Class
@@ -29,7 +28,7 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-class Editor extends Component
+class Editor extends BaseComponent
 {
     public string $uuid;
 

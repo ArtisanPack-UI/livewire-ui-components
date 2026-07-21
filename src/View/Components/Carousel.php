@@ -18,7 +18,6 @@ declare(strict_types=1);
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
 use Illuminate\Support\Facades\Blade;
-use Illuminate\View\Component;
 use Illuminate\View\View;
 
 /**
@@ -32,7 +31,7 @@ use Illuminate\View\View;
  *
  * @since 1.0.0
  */
-class Carousel extends Component
+class Carousel extends BaseComponent
 {
     public string $uuid;
 

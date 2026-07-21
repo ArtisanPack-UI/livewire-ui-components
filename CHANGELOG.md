@@ -4,6 +4,30 @@
 
 ---
 
+## [2.1.0] - 2026-07-21
+
+### Added
+- Cross-cutting UI extension hooks powered by `artisanpack-ui/hooks`. Nine seams for applications and third-party packages to extend rendered classes, attributes, icons, toasts, table columns, theme configuration, modal lifecycle, and spotlight commands without editing individual components. See the "Extension Hooks" section of the README for the full table. (#108)
+  - `ap.livewireUiComponents.componentClasses` filter — opt-in per component via `$this->getClasses($classes)`
+  - `ap.livewireUiComponents.componentAttributes` filter — fires on every component render
+  - `ap.livewireUiComponents.iconAlias` filter
+  - `ap.livewireUiComponents.toastDispatched` action
+  - `ap.livewireUiComponents.tableColumns` filter
+  - `ap.livewireUiComponents.themeColors` filter
+  - `ap.livewireUiComponents.modalWillOpen` / `modalWillClose` actions (via `Support\ModalBridge`)
+  - `ap.livewireUiComponents.spotlightCommands` filter
+- New `ArtisanPack\LivewireUiComponents\View\Components\BaseComponent` abstract class that all Blade components now extend. Provides the shared render-pipeline seams for classes and attributes.
+- New `ArtisanPack\LivewireUiComponents\Support\ModalBridge` helper for firing modal lifecycle hooks server-side.
+
+### Changed
+- Require `artisanpack-ui/hooks: ^1.2`.
+
+### CI
+- Drop Laravel 10 from the CI test matrix. The ecosystem dependencies (`artisanpack-ui/hooks`, `icons`, `accessibility`, `core`) all now require `illuminate/support: ^11+`, so composer cannot resolve a Laravel 10 test run regardless of this package's own constraint.
+- Run Feature tests unconditionally (`if: always()`) so new Feature-suite coverage exercises even when pre-existing Unit-suite failures make the earlier step exit non-zero.
+
+---
+
 ## [2.0.5] - 2026-06-14
 
 ### Changed

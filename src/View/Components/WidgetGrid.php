@@ -18,7 +18,6 @@ namespace ArtisanPack\LivewireUiComponents\View\Components;
 
 use Closure;
 use Illuminate\Contracts\View\View;
-use Illuminate\View\Component;
 
 /**
  * WidgetGrid Class
@@ -28,7 +27,7 @@ use Illuminate\View\Component;
  *
  * @since 2.0.0
  */
-class WidgetGrid extends Component
+class WidgetGrid extends BaseComponent
 {
     public string $uuid;
 

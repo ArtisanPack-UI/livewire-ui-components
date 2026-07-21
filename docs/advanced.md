@@ -33,6 +33,17 @@ Topics covered:
 - Component composition patterns
 - Best practices for component development
 
+### [Extension Hooks](Extension-Hooks)
+
+_Added in version 2.1.0._ Extend rendered UI across the whole package without editing individual components. Nine `ap.livewireUiComponents.*` filters and actions cover component classes and attributes, icon aliases, toast dispatch, table columns, theme colors, modal lifecycle, and spotlight commands.
+
+Topics covered:
+- The full hook catalog and payloads
+- Registering filters and actions
+- Extending tables, theme toggle, and spotlight
+- Firing modal lifecycle hooks from the server
+- Performance characteristics
+
 ## Advanced Usage Patterns
 
 ### Component Composition

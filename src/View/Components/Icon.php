@@ -21,7 +21,6 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Str;
 use Illuminate\Support\Stringable;
-use Illuminate\View\Component;
 
 /**
  * Icon Class
@@ -30,7 +29,7 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-class Icon extends Component
+class Icon extends BaseComponent
 {
     public function __construct(
         public string $name,
@@ -46,9 +45,9 @@ class Icon extends Component
 
     public function icon(): string|Stringable
     {
-        $name = Str::of($this->name);
+        $name = Str::of(applyFilters('ap.livewireUiComponents.iconAlias', $this->name));
 
-        return $name->contains('.') ? $name->replace('.', '-') : "heroicon-{$this->name}";
+        return $name->contains('.') ? $name->replace('.', '-') : "heroicon-{$name}";
     }
 
     public function labelClasses(): ?string

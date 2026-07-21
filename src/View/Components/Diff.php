@@ -18,7 +18,6 @@ declare(strict_types=1);
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
 use Illuminate\Contracts\View\View;
-use Illuminate\View\Component;
 use Jfcherng\Diff\DiffHelper;
 
 /**
@@ -28,7 +27,7 @@ use Jfcherng\Diff\DiffHelper;
  *
  * @since 1.0.0
  */
-class Diff extends Component
+class Diff extends BaseComponent
 {
     public string $uuid;
 

@@ -19,7 +19,6 @@ namespace ArtisanPack\LivewireUiComponents\View\Components;
 
 use ArtisanPack\LivewireUiComponents\Styling\ColorGenerator;
 use Illuminate\Contracts\View\View;
-use Illuminate\View\Component;
 
 /**
  * Button Component Class
@@ -28,7 +27,7 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-class Button extends Component
+class Button extends BaseComponent
 {
     /**
      * The resolved color for the button (either from color prop or variant).

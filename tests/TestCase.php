@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ArtisanPack\LivewireUiComponents\Tests;
 
 use ArtisanPack\LivewireUiComponents\LivewireUiComponentsServiceProvider;
+use ArtisanPackUI\Hooks\Providers\HooksServiceProvider;
 use Livewire\LivewireServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 
@@ -14,6 +15,7 @@ class TestCase extends Orchestra
     {
         return [
             LivewireServiceProvider::class,
+            HooksServiceProvider::class,
             LivewireUiComponentsServiceProvider::class,
         ];
     }

@@ -18,7 +18,6 @@ declare(strict_types=1);
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
 use Illuminate\Contracts\View\View;
-use Illuminate\View\Component;
 
 /**
  * Code Class
@@ -27,7 +26,7 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-class Code extends Component
+class Code extends BaseComponent
 {
     public string $uuid;
 

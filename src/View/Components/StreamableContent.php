@@ -21,7 +21,6 @@ namespace ArtisanPack\LivewireUiComponents\View\Components;
 use ArtisanPack\LivewireUiComponents\Support\LivewireHelper;
 use Closure;
 use Illuminate\Contracts\View\View;
-use Illuminate\View\Component;
 
 /**
  * StreamableContent Class
@@ -32,7 +31,7 @@ use Illuminate\View\Component;
  *
  * @since 2.0.0
  */
-class StreamableContent extends Component
+class StreamableContent extends BaseComponent
 {
     public string $uuid;
 

@@ -20,7 +20,6 @@ namespace ArtisanPack\LivewireUiComponents\View\Components;
 use Closure;
 use Exception;
 use Illuminate\Contracts\View\View;
-use Illuminate\View\Component;
 
 /**
  * Password Class
@@ -29,7 +28,7 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-class Password extends Component
+class Password extends BaseComponent
 {
     public function __construct(
         public ?string $id = null,

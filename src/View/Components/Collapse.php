@@ -19,7 +19,6 @@ namespace ArtisanPack\LivewireUiComponents\View\Components;
 
 use ArtisanPack\LivewireUiComponents\Support\GlassHelper;
 use Illuminate\Contracts\View\View;
-use Illuminate\View\Component;
 
 /**
  * Collapse Class
@@ -28,7 +27,7 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-class Collapse extends Component
+class Collapse extends BaseComponent
 {
     public string $uuid;
 

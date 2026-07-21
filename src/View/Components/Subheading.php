@@ -17,7 +17,6 @@ declare(strict_types=1);
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
 use Illuminate\Contracts\View\View;
-use Illuminate\View\Component;
 
 /**
  * Subheading Component Class
@@ -26,7 +25,7 @@ use Illuminate\View\Component;
  *
  * @since 1.0.0
  */
-class Subheading extends Component
+class Subheading extends BaseComponent
 {
     /**
      * Unique identifier for the subheading instance.
