@@ -206,4 +206,15 @@ class RatingComponentTest extends ComponentTestCase
             throw $e;
         }
     }
+
+    public function test_rating_size_reads_the_rating_class_or_returns_null(): void
+    {
+        $plain = $this->createComponent();
+        $plain->withAttributes([]);
+        $this->assertNull($plain->size(), 'Without a rating-* class, size() is null so the size prop applies');
+
+        $sized = $this->createComponent();
+        $sized->withAttributes(['class' => 'mask rating-lg']);
+        $this->assertSame('rating-lg', $sized->size());
+    }
 }

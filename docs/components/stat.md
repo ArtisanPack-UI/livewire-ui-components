@@ -335,6 +335,8 @@ The animation system automatically handles various numeric formats:
 <x-artisanpack-stat title="Price" value="€2.500,00" />
 ```
 
+When a value has only a comma and no dot, the digits after it decide what it means. One or two digits make it a decimal separator: `12,5` is 12.5 and `2,50` is 2.5. Three digits make it a thousands separator: `12,345` is 12345. So `1,23` reads as 1.23. Write ambiguous amounts with both separators, such as `1.234,00` or `1,234.00`, to make them unambiguous.
+
 ### Non-Numeric Values
 
 Values that cannot be parsed as numbers will display without animation:

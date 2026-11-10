@@ -148,8 +148,9 @@ class TestHelpers
                 // Skip iterations that fail due to missing slots or context
                 if (str_contains($e->getMessage(), 'Undefined variable') ||
                     str_contains($e->getMessage(), 'Undefined array key') ||
-                    str_contains($e->getMessage(), 'Call to a member function') ||
-                    str_contains($e->getMessage(), 'on null')) {
+                    (str_contains($e->getMessage(), 'Call to a member function') && str_contains($e->getMessage(), 'on null')) ||
+                    // A required named slot that wasn't passed, such as Collapse's heading.
+                    str_contains($e->getMessage(), 'Attempt to read property "attributes" on null')) {
                     throw new RuntimeException('Component requires slots or additional context for rendering', 0, $e);
                 }
                 throw $e;

@@ -73,7 +73,10 @@ class Rating extends BaseComponent
 
     public function size(): ?string
     {
-        return str($this->attributes->get('class'))->match('/(rating-(..))/')->toString();
+        $size = str($this->attributes->get('class'))->match('/(rating-(..))/')->toString();
+
+        // Null, not '', so the view's `$size() ?? …` fallback to the size prop applies.
+        return '' === $size ? null : $size;
     }
 
     public function render(): View|Closure|string

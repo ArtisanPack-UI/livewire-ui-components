@@ -9,6 +9,7 @@ use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
 use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
 use ArtisanPack\LivewireUiComponents\View\Components\Pagination;
 use Error;
+use Illuminate\Pagination\LengthAwarePaginator;
 use RuntimeException;
 
 /**
@@ -263,7 +264,9 @@ class PaginationComponentTest extends ComponentTestCase
     public function test_pagination_performance(): void
     {
         try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
+            // Pagination renders a paginator's links, so give it a real paginator.
+            $rows        = new LengthAwarePaginator(range(1, 10), 50, 10, 1);
+            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(['rows' => $rows]), 10);
             $this->assertLessThan(100, $performance['average_time'],
                 'Pagination rendering should be under 100ms on average',
             );

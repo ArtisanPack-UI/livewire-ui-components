@@ -14,7 +14,7 @@ use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionProperty;
 use stdClass;
-use Throwable;
+use TypeError;
 
 /**
  * Base test case for component testing providing common patterns and utilities.
@@ -259,15 +259,18 @@ abstract class ComponentTestCase extends TestCase
         foreach ($this->requiredProperties as $property) {
             try {
                 $component = $this->createComponent([$property => null]);
-                // If no exception is thrown, check that the property has a meaningful default
-                $this->assertNotNull(
-                    $component->$property,
-                    "Required property '{$property}' should not be null",
-                );
-            } catch (Throwable $e) {
+            } catch (TypeError|Exception $e) {
                 // Expected for truly required properties: an exception, or a TypeError from a typed parameter.
                 $this->assertTrue(true, "Property '{$property}' correctly throws when null");
+
+                continue;
             }
+
+            // If nothing was thrown, the property must have a meaningful default.
+            $this->assertNotNull(
+                $component->$property,
+                "Required property '{$property}' should not be null",
+            );
         }
     }
 
