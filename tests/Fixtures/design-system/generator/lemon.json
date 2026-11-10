@@ -1,0 +1,347 @@
+{
+  "options": {
+    "name": "lemon",
+    "primary": "#ffee00",
+    "secondary": "#ff0066",
+    "neutral": "keep"
+  },
+  "anchors": {
+    "primary": {
+      "ramp": "steel",
+      "step": "100",
+      "exact": true
+    },
+    "secondary": {
+      "ramp": "slate",
+      "step": "500",
+      "exact": true
+    }
+  },
+  "failures": 0,
+  "data": {
+    "name": "lemon",
+    "description": "Brand preset generated from #ffee00 by apui-generate-preset.",
+    "attribute": "data-preset",
+    "tokens": {
+      "steel.50": {
+        "changed": true,
+        "value": "#fbf9ae",
+        "resolved": "#fbf9ae"
+      },
+      "steel.100": {
+        "changed": true,
+        "value": "#ffee00",
+        "resolved": "#ffee00"
+      },
+      "steel.200": {
+        "changed": true,
+        "value": "#e7dc00",
+        "resolved": "#e7dc00"
+      },
+      "steel.300": {
+        "changed": true,
+        "value": "#d0c500",
+        "resolved": "#d0c500"
+      },
+      "steel.400": {
+        "changed": true,
+        "value": "#b1a900",
+        "resolved": "#b1a900"
+      },
+      "steel.500": {
+        "changed": true,
+        "value": "#948c00",
+        "resolved": "#948c00"
+      },
+      "steel.600": {
+        "changed": true,
+        "value": "#7b7400",
+        "resolved": "#7b7400"
+      },
+      "steel.700": {
+        "changed": true,
+        "value": "#625d00",
+        "resolved": "#625d00"
+      },
+      "steel.800": {
+        "changed": true,
+        "value": "#4b4700",
+        "resolved": "#4b4700"
+      },
+      "steel.900": {
+        "changed": true,
+        "value": "#343100",
+        "resolved": "#343100"
+      },
+      "steel.950": {
+        "changed": true,
+        "value": "#222000",
+        "resolved": "#222000"
+      },
+      "slate.50": {
+        "changed": true,
+        "value": "#fef2f2",
+        "resolved": "#fef2f2"
+      },
+      "slate.100": {
+        "changed": true,
+        "value": "#fee3e4",
+        "resolved": "#fee3e4"
+      },
+      "slate.200": {
+        "changed": true,
+        "value": "#ffcad0",
+        "resolved": "#ffcad0"
+      },
+      "slate.300": {
+        "changed": true,
+        "value": "#ffaab7",
+        "resolved": "#ffaab7"
+      },
+      "slate.400": {
+        "changed": true,
+        "value": "#fe7b91",
+        "resolved": "#fe7b91"
+      },
+      "slate.500": {
+        "changed": true,
+        "value": "#ff0066",
+        "resolved": "#ff0066"
+      },
+      "slate.600": {
+        "changed": true,
+        "value": "#e10057",
+        "resolved": "#e10057"
+      },
+      "slate.700": {
+        "changed": true,
+        "value": "#b70041",
+        "resolved": "#b70041"
+      },
+      "slate.800": {
+        "changed": true,
+        "value": "#8d0034",
+        "resolved": "#8d0034"
+      },
+      "slate.900": {
+        "changed": true,
+        "value": "#660023",
+        "resolved": "#660023"
+      },
+      "slate.950": {
+        "changed": true,
+        "value": "#470016",
+        "resolved": "#470016"
+      },
+      "focus-ring.color": {
+        "changed": false,
+        "value": {
+          "light": "var(--apui-steel-600)",
+          "dark": "var(--apui-steel-300)",
+          "high-contrast": "var(--apui-steel-800)"
+        },
+        "resolved": {
+          "light": "#7b7400",
+          "dark": "#d0c500",
+          "high-contrast": "#4b4700"
+        }
+      },
+      "selected.bg": {
+        "changed": false,
+        "value": {
+          "light": "var(--apui-color-primary-soft)",
+          "dark": "var(--apui-color-primary-soft)",
+          "high-contrast": "var(--apui-color-primary-soft)"
+        },
+        "resolved": {
+          "light": "#ffee00",
+          "dark": "#343100",
+          "high-contrast": "#fbf9ae"
+        }
+      },
+      "selected.border": {
+        "changed": false,
+        "value": {
+          "light": "var(--apui-color-primary-border)",
+          "dark": "var(--apui-color-primary-border)",
+          "high-contrast": "var(--apui-color-primary-border)"
+        },
+        "resolved": {
+          "light": "#7b7400",
+          "dark": "#948c00",
+          "high-contrast": "#4b4700"
+        }
+      },
+      "syntax.keyword": {
+        "changed": false,
+        "value": {
+          "light": "var(--apui-steel-700)",
+          "dark": "var(--apui-steel-300)",
+          "high-contrast": "var(--apui-steel-800)"
+        },
+        "resolved": {
+          "light": "#625d00",
+          "dark": "#d0c500",
+          "high-contrast": "#4b4700"
+        }
+      },
+      "color.primary": {
+        "changed": false,
+        "value": {
+          "light": "var(--apui-steel-600)",
+          "dark": "var(--apui-steel-400)",
+          "high-contrast": "var(--apui-steel-800)"
+        },
+        "resolved": {
+          "light": "#7b7400",
+          "dark": "#b1a900",
+          "high-contrast": "#4b4700"
+        }
+      },
+      "color.primary-hover": {
+        "changed": false,
+        "value": {
+          "light": "var(--apui-steel-700)",
+          "dark": "var(--apui-steel-300)",
+          "high-contrast": "var(--apui-steel-900)"
+        },
+        "resolved": {
+          "light": "#625d00",
+          "dark": "#d0c500",
+          "high-contrast": "#343100"
+        }
+      },
+      "color.primary-soft": {
+        "changed": false,
+        "value": {
+          "light": "var(--apui-steel-100)",
+          "dark": "var(--apui-steel-900)",
+          "high-contrast": "var(--apui-steel-50)"
+        },
+        "resolved": {
+          "light": "#ffee00",
+          "dark": "#343100",
+          "high-contrast": "#fbf9ae"
+        }
+      },
+      "color.primary-soft-foreground": {
+        "changed": false,
+        "value": {
+          "light": "var(--apui-steel-700)",
+          "dark": "var(--apui-steel-300)",
+          "high-contrast": "var(--apui-steel-900)"
+        },
+        "resolved": {
+          "light": "#625d00",
+          "dark": "#d0c500",
+          "high-contrast": "#343100"
+        }
+      },
+      "color.primary-border": {
+        "changed": false,
+        "value": {
+          "light": "var(--apui-steel-600)",
+          "dark": "var(--apui-steel-500)",
+          "high-contrast": "var(--apui-steel-800)"
+        },
+        "resolved": {
+          "light": "#7b7400",
+          "dark": "#948c00",
+          "high-contrast": "#4b4700"
+        }
+      },
+      "color.primary-text": {
+        "changed": false,
+        "value": {
+          "light": "var(--apui-steel-700)",
+          "dark": "var(--apui-steel-400)",
+          "high-contrast": "var(--apui-steel-800)"
+        },
+        "resolved": {
+          "light": "#625d00",
+          "dark": "#b1a900",
+          "high-contrast": "#4b4700"
+        }
+      },
+      "color.secondary": {
+        "changed": false,
+        "value": {
+          "light": "var(--apui-slate-600)",
+          "dark": "var(--apui-slate-400)",
+          "high-contrast": "var(--apui-slate-800)"
+        },
+        "resolved": {
+          "light": "#e10057",
+          "dark": "#fe7b91",
+          "high-contrast": "#8d0034"
+        }
+      },
+      "color.secondary-hover": {
+        "changed": false,
+        "value": {
+          "light": "var(--apui-slate-700)",
+          "dark": "var(--apui-slate-300)",
+          "high-contrast": "var(--apui-slate-900)"
+        },
+        "resolved": {
+          "light": "#b70041",
+          "dark": "#ffaab7",
+          "high-contrast": "#660023"
+        }
+      },
+      "color.secondary-soft": {
+        "changed": false,
+        "value": {
+          "light": "var(--apui-slate-100)",
+          "dark": "var(--apui-slate-900)",
+          "high-contrast": "var(--apui-slate-50)"
+        },
+        "resolved": {
+          "light": "#fee3e4",
+          "dark": "#660023",
+          "high-contrast": "#fef2f2"
+        }
+      },
+      "color.secondary-soft-foreground": {
+        "changed": false,
+        "value": {
+          "light": "var(--apui-slate-700)",
+          "dark": "var(--apui-slate-300)",
+          "high-contrast": "var(--apui-slate-900)"
+        },
+        "resolved": {
+          "light": "#b70041",
+          "dark": "#ffaab7",
+          "high-contrast": "#660023"
+        }
+      },
+      "color.secondary-border": {
+        "changed": false,
+        "value": {
+          "light": "var(--apui-slate-600)",
+          "dark": "var(--apui-slate-500)",
+          "high-contrast": "var(--apui-slate-800)"
+        },
+        "resolved": {
+          "light": "#e10057",
+          "dark": "#ff0066",
+          "high-contrast": "#8d0034"
+        }
+      },
+      "color.secondary-text": {
+        "changed": false,
+        "value": {
+          "light": "var(--apui-slate-700)",
+          "dark": "var(--apui-slate-400)",
+          "high-contrast": "var(--apui-slate-800)"
+        },
+        "resolved": {
+          "light": "#b70041",
+          "dark": "#fe7b91",
+          "high-contrast": "#8d0034"
+        }
+      }
+    }
+  },
+  "css": "/*\n * @artisanpack-ui/tokens preset \"lemon\".\n * Brand preset generated from #ffee00 by apui-generate-preset.\n * Generated by apui-generate-preset. Regenerate rather than edit by hand.\n */\n@layer apui.tokens {\n  [data-preset=\"lemon\"] {\n    --apui-steel-50: #fbf9ae;\n    --apui-steel-100: #ffee00;\n    --apui-steel-200: #e7dc00;\n    --apui-steel-300: #d0c500;\n    --apui-steel-400: #b1a900;\n    --apui-steel-500: #948c00;\n    --apui-steel-600: #7b7400;\n    --apui-steel-700: #625d00;\n    --apui-steel-800: #4b4700;\n    --apui-steel-900: #343100;\n    --apui-steel-950: #222000;\n    --apui-slate-50: #fef2f2;\n    --apui-slate-100: #fee3e4;\n    --apui-slate-200: #ffcad0;\n    --apui-slate-300: #ffaab7;\n    --apui-slate-400: #fe7b91;\n    --apui-slate-500: #ff0066;\n    --apui-slate-600: #e10057;\n    --apui-slate-700: #b70041;\n    --apui-slate-800: #8d0034;\n    --apui-slate-900: #660023;\n    --apui-slate-950: #470016;\n  }\n\n  [data-preset=\"lemon\"],\n  [data-preset=\"lemon\"][data-theme=\"light\"],\n  [data-theme=\"light\"] [data-preset=\"lemon\"],\n  [data-preset=\"lemon\"] [data-theme=\"light\"] {\n    --apui-focus-ring-color: var(--apui-steel-600);\n    --apui-selected-bg: var(--apui-color-primary-soft);\n    --apui-selected-border: var(--apui-color-primary-border);\n    --apui-syntax-keyword: var(--apui-steel-700);\n    --apui-color-primary: var(--apui-steel-600);\n    --apui-color-primary-hover: var(--apui-steel-700);\n    --apui-color-primary-soft: var(--apui-steel-100);\n    --apui-color-primary-soft-foreground: var(--apui-steel-700);\n    --apui-color-primary-border: var(--apui-steel-600);\n    --apui-color-primary-text: var(--apui-steel-700);\n    --apui-color-secondary: var(--apui-slate-600);\n    --apui-color-secondary-hover: var(--apui-slate-700);\n    --apui-color-secondary-soft: var(--apui-slate-100);\n    --apui-color-secondary-soft-foreground: var(--apui-slate-700);\n    --apui-color-secondary-border: var(--apui-slate-600);\n    --apui-color-secondary-text: var(--apui-slate-700);\n  }\n\n  [data-preset=\"lemon\"][data-theme=\"dark\"],\n  [data-theme=\"dark\"] [data-preset=\"lemon\"],\n  [data-preset=\"lemon\"] [data-theme=\"dark\"] {\n    --apui-focus-ring-color: var(--apui-steel-300);\n    --apui-selected-bg: var(--apui-color-primary-soft);\n    --apui-selected-border: var(--apui-color-primary-border);\n    --apui-syntax-keyword: var(--apui-steel-300);\n    --apui-color-primary: var(--apui-steel-400);\n    --apui-color-primary-hover: var(--apui-steel-300);\n    --apui-color-primary-soft: var(--apui-steel-900);\n    --apui-color-primary-soft-foreground: var(--apui-steel-300);\n    --apui-color-primary-border: var(--apui-steel-500);\n    --apui-color-primary-text: var(--apui-steel-400);\n    --apui-color-secondary: var(--apui-slate-400);\n    --apui-color-secondary-hover: var(--apui-slate-300);\n    --apui-color-secondary-soft: var(--apui-slate-900);\n    --apui-color-secondary-soft-foreground: var(--apui-slate-300);\n    --apui-color-secondary-border: var(--apui-slate-500);\n    --apui-color-secondary-text: var(--apui-slate-400);\n  }\n\n  [data-preset=\"lemon\"][data-theme=\"high-contrast\"],\n  [data-theme=\"high-contrast\"] [data-preset=\"lemon\"],\n  [data-preset=\"lemon\"] [data-theme=\"high-contrast\"] {\n    --apui-focus-ring-color: var(--apui-steel-800);\n    --apui-selected-bg: var(--apui-color-primary-soft);\n    --apui-selected-border: var(--apui-color-primary-border);\n    --apui-syntax-keyword: var(--apui-steel-800);\n    --apui-color-primary: var(--apui-steel-800);\n    --apui-color-primary-hover: var(--apui-steel-900);\n    --apui-color-primary-soft: var(--apui-steel-50);\n    --apui-color-primary-soft-foreground: var(--apui-steel-900);\n    --apui-color-primary-border: var(--apui-steel-800);\n    --apui-color-primary-text: var(--apui-steel-800);\n    --apui-color-secondary: var(--apui-slate-800);\n    --apui-color-secondary-hover: var(--apui-slate-900);\n    --apui-color-secondary-soft: var(--apui-slate-50);\n    --apui-color-secondary-soft-foreground: var(--apui-slate-900);\n    --apui-color-secondary-border: var(--apui-slate-800);\n    --apui-color-secondary-text: var(--apui-slate-800);\n  }\n}\n"
+}

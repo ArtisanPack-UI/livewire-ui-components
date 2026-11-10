@@ -24,7 +24,7 @@ class AccordionComponentTest extends ComponentTestCase
     protected array $defaultProperties = [
         'noJoin'            => false,
         'uuid'              => '',
-        'collapsePlusMinus' => false,
+        'usePlusMinus'      => false,
     ];
 
     protected array $requiredProperties = [];

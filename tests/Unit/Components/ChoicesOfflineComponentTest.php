@@ -178,19 +178,10 @@ class ChoicesOfflineComponentTest extends ComponentTestCase
     {
         $component = $this->createComponent();
 
-        if (method_exists($component, 'getOptionValue')) {
-            try {
-                $result = $component->getOptionValue();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
+        $this->assertSame(42, $component->getOptionValue(['id' => 42, 'name' => 'Answer']));
+        $this->assertSame("'abc'", $component->getOptionValue(['id' => 'abc', 'name' => 'Letters']));
+        $this->assertSame("'007'", $component->getOptionValue(['id' => '007', 'name' => 'Leading zero']));
+        $this->assertSame("'42'", $this->createComponent(['valuesAsString' => true])->getOptionValue(['id' => 42, 'name' => 'Answer']));
     }
 
     public function test_choicesoffline_renders_successfully(): void

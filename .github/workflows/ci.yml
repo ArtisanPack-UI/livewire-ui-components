@@ -23,7 +23,7 @@ jobs:
 
       - name: Get Composer cache directory
         id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
 
       - name: Cache Composer dependencies
         uses: actions/cache@v4
@@ -46,19 +46,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     name: PHP ${{ matrix.php }} / Laravel ${{ matrix.laravel }} / FA ${{ matrix.fontawesome }}
-    continue-on-error: true
 
     strategy:
       fail-fast: false
       matrix:
         include:
-          # Laravel 10 removed — the ecosystem deps (artisanpack-ui/hooks,
-          # icons, accessibility, core) all now require illuminate/support
-          # ^11+, so composer cannot resolve a Laravel 10 test run.
-          - php: '8.2'
-            laravel: '11.*'
-            testbench: '9.*'
-            fontawesome: '^2.9'
+          # 3.0 supports Laravel 12 and 13. Laravel 11 is end of life, and
+          # Composer blocks every 11.x release over unpatched advisories.
           - php: '8.2'
             laravel: '12.*'
             testbench: '10.*'
@@ -96,7 +90,7 @@ jobs:
 
       - name: Get Composer cache directory
         id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
 
       - name: Cache Composer dependencies
         uses: actions/cache@v4
@@ -130,11 +124,9 @@ jobs:
         run: php vendor/bin/pest tests/Feature --no-coverage
 
   coverage:
-    needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 15
     name: Code Coverage
-    continue-on-error: true
 
     steps:
       - uses: actions/checkout@v4
@@ -144,16 +136,25 @@ jobs:
         with:
           php-version: '8.4'
           extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite, pdo_sqlite
-          coverage: xdebug
+          # PCOV: line coverage only, and much faster than Xdebug.
+          coverage: pcov
 
-      - name: Download vendor directory
-        uses: actions/download-artifact@v4
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
         with:
-          name: vendor
-          path: vendor/
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
 
-      - name: Fix vendor permissions
-        run: chmod -R +x vendor/bin/
+      # Install here rather than reuse the build job's vendor artifact. With the
+      # artifact, PHP overflowed the stack bootstrapping testbench before the
+      # first test, while the fresh installs in the test jobs run fine.
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
 
       - name: Run tests with coverage
         run: php vendor/bin/pest --coverage --coverage-clover=coverage.xml

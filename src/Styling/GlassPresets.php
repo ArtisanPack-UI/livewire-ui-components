@@ -27,6 +27,8 @@ use InvalidArgumentException;
  * - glass-bold: Strong glass effects for prominent UI elements
  *
  * @since 2.0.0
+ * @deprecated 3.0.0 Glass is a surface, not a preset (D-006): data-surface="glass"
+ *             on a container. Use \ArtisanPack\LivewireUiComponents\Theming\GlassSurface.
  */
 class GlassPresets
 {

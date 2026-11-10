@@ -67,21 +67,8 @@ class ListItemComponentTest extends ComponentTestCase
 
     public function test_listitem_get_icon_method(): void
     {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'getIcon')) {
-            try {
-                $result = $component->getIcon();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
+        $this->assertNull($this->createComponent()->getIcon());
+        $this->assertSame('o-star', $this->createComponent(['icon' => 'o-star'])->getIcon());
     }
 
     public function test_listitem_should_show_icon_method(): void

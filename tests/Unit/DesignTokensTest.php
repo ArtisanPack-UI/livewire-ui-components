@@ -96,7 +96,7 @@ describe('Design Token System', function (): void {
                 ->and($tokens)->toHaveKeys([
                     'spacing-0',
                     'spacing-px',
-                    'spacing-0.5',
+                    'spacing-0-5',
                     'spacing-1',
                     'spacing-2',
                     'spacing-4',

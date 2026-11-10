@@ -60,21 +60,11 @@ class TabComponentTest extends ComponentTestCase
 
     public function test_tab_tab_label_method(): void
     {
-        $component = $this->createComponent();
+        $html = $this->createComponent()->tabLabel('Overview');
 
-        if (method_exists($component, 'tabLabel')) {
-            try {
-                $result = $component->tabLabel();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
+        $this->assertStringContainsString('Overview', $html);
+        $this->assertStringContainsString('whitespace-nowrap', $html);
+        $this->assertStringContainsString('Settings', $this->createComponent(['label' => 'Settings'])->tabLabel('Overview'));
     }
 
     public function test_tab_renders_successfully(): void

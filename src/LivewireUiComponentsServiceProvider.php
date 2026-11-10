@@ -20,9 +20,14 @@ namespace ArtisanPack\LivewireUiComponents;
 
 use Arr;
 use ArtisanPack\LivewireUiComponents\Console\Commands\GenerateIdeHelperCommand;
+use ArtisanPack\LivewireUiComponents\Console\Commands\GeneratePresetCommand;
 use ArtisanPack\LivewireUiComponents\Console\Commands\GenerateThemeCss;
 use ArtisanPack\LivewireUiComponents\Console\Commands\LivewireUiComponentsBootcampCommand;
 use ArtisanPack\LivewireUiComponents\Console\Commands\LivewireUiComponentsInstallCommand;
+use ArtisanPack\LivewireUiComponents\Theming\DesignTokens;
+use ArtisanPack\LivewireUiComponents\Theming\GlassSurface;
+use ArtisanPack\LivewireUiComponents\Theming\PresetGenerator;
+use ArtisanPack\LivewireUiComponents\Theming\TokenThemes;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
@@ -399,6 +404,12 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
                 return new LivewireUiComponents;
             },
         );
+
+        // The design tokens and the token-based theming built on them (3.0).
+        $this->app->singleton(DesignTokens::class, fn (): DesignTokens => DesignTokens::load());
+        $this->app->singleton(PresetGenerator::class);
+        $this->app->singleton(TokenThemes::class);
+        $this->app->singleton(GlassSurface::class);
     }
 
     /**
@@ -434,6 +445,7 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         $this->commands([LivewireUiComponentsInstallCommand::class,
             LivewireUiComponentsBootcampCommand::class,
             GenerateThemeCss::class,
+            GeneratePresetCommand::class,
             GenerateIdeHelperCommand::class,
         ]);
     }

@@ -25,6 +25,11 @@ use InvalidArgumentException;
  * Generates dynamic CSS theme files based on specified base colors.
  *
  * @since 1.0.0
+ * @deprecated 3.0.0 Brand colors are design-token presets now. Use
+ *             \ArtisanPack\LivewireUiComponents\Theming\PresetGenerator. Arbitrary
+ *             component colors are dropped (the eight semantic colors remain),
+ *             so this class is removed once the components it serves are
+ *             rebuilt on the design system.
  */
 class ColorGenerator
 {

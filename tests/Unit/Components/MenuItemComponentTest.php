@@ -65,21 +65,8 @@ class MenuItemComponentTest extends ComponentTestCase
 
     public function test_menuitem_spinner_target_method(): void
     {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'spinnerTarget')) {
-            try {
-                $result = $component->spinnerTarget();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
+        $this->assertNull($this->createComponent()->spinnerTarget());
+        $this->assertSame('save', $this->createComponent(['spinner' => 'save'])->spinnerTarget());
     }
 
     public function test_menuitem_route_matches_method(): void

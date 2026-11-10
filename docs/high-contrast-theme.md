@@ -4,6 +4,8 @@ title: High Contrast Theme
 
 # High Contrast Theme
 
+> **Deprecated in 3.0.** High contrast is a design-token theme (`data-theme="high-contrast"`). See [Design Token Presets](design-token-presets.md#high-contrast-and-system-preferences).
+
 ArtisanPack UI Livewire Components includes a comprehensive high-contrast theme system designed for accessibility. This system provides WCAG AAA compliant themes, automatic system preference detection, reduced motion support, enhanced focus indicators, and larger text options.
 
 ## Introduction

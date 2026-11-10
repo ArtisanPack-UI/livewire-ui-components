@@ -51,7 +51,7 @@
                             <option value="{{ $placeholderValue }}">{{ $placeholder }}</option>
                         @endif
 
-                        @foreach (array_keys($options) as $option)
+                        @foreach (collect($options)->keys() as $option)
                           <optgroup label="{{ $option }}">
                             @foreach($options[$option] as $opts)
                               <option value="{{ $opts[$optionValue] }}">{{ $opts[$optionLabel] }}</option>

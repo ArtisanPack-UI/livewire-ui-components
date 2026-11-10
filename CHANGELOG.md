@@ -2,6 +2,27 @@
 
 ## [Unreleased]
 
+### Added
+- `php artisan artisanpack:generate-preset`: generates a brand preset from the design-system tokens (`data-preset`), with luminance-matched color ramps and a WCAG 2.2 AA check in every theme before it writes anything. Outputs CSS, PHP or JSON. (#27 in design-system)
+- `Theming\PresetGenerator`, `GeneratedPreset`, `DesignTokens`, `ContrastChecker` and `ColorMath`: a PHP port of the design system's `apui-generate-preset`, tested against its golden fixtures for identical output.
+- `Theming\TokenThemes` (theme, density and preset attributes, contrast checks, `prefers-contrast` and `prefers-color-scheme` CSS) and `Theming\GlassSurface` (`data-surface="glass"`).
+- `resources/design-system/tokens.php`: the design-system token map.
+
+### Changed
+- Require Laravel 12 or 13 (`illuminate/support: ^12.0|^13.0`) and PHP 8.2. Laravel 11 is end of life, and Composer now refuses its releases over unpatched security advisories.
+- Allow `laravel/boost` 2.x, Pest 4 and PHPUnit 12 in development, which Laravel 13 needs, and drop `pestphp/pest-plugin-watch`, which has no Pest 4 release.
+
+### Fixed
+- `Stat::numericValue()` read "$12,345" as 12.345: a single comma followed by three digits is now a thousands separator; one or two digits is still a decimal.
+- `Table` currency formats such as `['currency', '2.,', '$']` threw a TypeError under strict types.
+- `ImageLibrary::modelName()`, `ImageLibrary::libraryName()`, `ImageLibrary::validationMessage()` and `Rating::size()` returned objects where they declare strings, which threw a TypeError.
+- `SelectGroup` crashed rendering grouped options, which are a collection.
+- `Tab` without a `label` threw a TypeError while rendering.
+- `Header` rendered an empty `id=""` when it has no anchor.
+
+### Deprecated
+- `artisanpack:generate-theme`, `Styling\ColorGenerator`, `Styling\GlassPresets` and `Styling\HighContrastTheme`. Use `artisanpack:generate-preset`, `Theming\PresetGenerator`, `Theming\GlassSurface` and `Theming\TokenThemes`. They're removed once the components that use them move to the design system.
+
 ---
 
 ## [2.1.0] - 2026-07-21

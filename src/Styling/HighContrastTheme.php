@@ -21,6 +21,8 @@ namespace ArtisanPack\LivewireUiComponents\Styling;
  * Generates CSS for high-contrast accessibility themes with WCAG AAA compliance.
  *
  * @since 2.0.0
+ * @deprecated 3.0.0 High contrast is a design-token theme: data-theme="high-contrast".
+ *             Use \ArtisanPack\LivewireUiComponents\Theming\TokenThemes.
  */
 class HighContrastTheme
 {

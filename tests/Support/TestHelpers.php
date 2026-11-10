@@ -7,6 +7,7 @@ namespace ArtisanPack\LivewireUiComponents\Tests\Support;
 use DOMDocument;
 use DOMXPath;
 use Error;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\View\Component;
 use RuntimeException;
 
@@ -131,19 +132,25 @@ class TestHelpers
      */
     public static function measureRenderingPerformance(Component $component, int $iterations = 100): array
     {
-        $times = [];
+        $times      = [];
+        $baseMemory = memory_get_usage();
+        $peakMemory = 0;
 
         for ($i = 0; $i < $iterations; $i++) {
             try {
                 $start = microtime(true);
-                $component->render()->render();
-                $end     = microtime(true);
-                $times[] = ($end - $start) * 1000; // Convert to milliseconds
+                // renderComponent() passes the component's data to its view, as a page does.
+                Blade::renderComponent($component);
+                $end        = microtime(true);
+                $times[]    = ($end - $start) * 1000; // Convert to milliseconds
+                $peakMemory = max($peakMemory, memory_get_usage() - $baseMemory);
             } catch (\Illuminate\View\ViewException|Error $e) {
                 // Skip iterations that fail due to missing slots or context
                 if (str_contains($e->getMessage(), 'Undefined variable') ||
                     str_contains($e->getMessage(), 'Undefined array key') ||
-                    str_contains($e->getMessage(), 'Call to a member function')) {
+                    (str_contains($e->getMessage(), 'Call to a member function') && str_contains($e->getMessage(), 'on null')) ||
+                    // A required named slot that wasn't passed, such as Collapse's heading.
+                    str_contains($e->getMessage(), 'Attempt to read property "attributes" on null')) {
                     throw new RuntimeException('Component requires slots or additional context for rendering', 0, $e);
                 }
                 throw $e;
@@ -157,6 +164,7 @@ class TestHelpers
             'min_time'     => min($times),
             'max_time'     => max($times),
             'median_time'  => self::calculateMedian($times),
+            'peak_memory'  => $peakMemory,
         ];
     }
 
@@ -350,7 +358,10 @@ class TestHelpers
         libxml_clear_errors();
 
         $result = $dom->loadHTML('<?xml encoding="utf-8" ?>'.$html);
-        $errors = libxml_get_errors();
+        // libxml only knows HTML4, so it reports HTML5 elements such as
+        // <header> or <svg> as invalid tags (code 801). Those aren't errors.
+        $errors = array_filter(libxml_get_errors(), fn ($error): bool => 801 !== $error->code);
+        libxml_clear_errors();
 
         libxml_use_internal_errors($previousSetting);
 

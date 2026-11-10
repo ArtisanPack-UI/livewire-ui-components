@@ -941,6 +941,13 @@ class StatComponentTest extends ComponentTestCase
         $this->assertEquals(1234.0, $component->numericValue());
     }
 
+    public function test_stat_numeric_value_reads_a_single_comma_by_its_digits(): void
+    {
+        $this->assertSame(12345.0, $this->createComponent(['value' => '$12,345'])->numericValue());
+        $this->assertSame(12.5, $this->createComponent(['value' => '12,5'])->numericValue());
+        $this->assertSame(2.5, $this->createComponent(['value' => '2,50'])->numericValue());
+    }
+
     public function test_stat_value_format_euro_currency(): void
     {
         $component = $this->createComponent([

@@ -60,21 +60,8 @@ class SeparatorComponentTest extends ComponentTestCase
 
     public function test_separator_progress_target_method(): void
     {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'progressTarget')) {
-            try {
-                $result = $component->progressTarget();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
+        $this->assertNull($this->createComponent()->progressTarget());
+        $this->assertSame('save', $this->createComponent(['target' => 'save'])->progressTarget());
     }
 
     public function test_separator_get_color_classes_method(): void

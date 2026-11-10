@@ -4,6 +4,8 @@ title: Glass Theme Presets
 
 # Glass Theme Presets
 
+> **Deprecated in 3.0.** Glass is a surface (`data-surface="glass"`), not a preset. See [Design Token Presets](design-token-presets.md#glass).
+
 ArtisanPack UI provides six pre-built glass theme presets that offer ready-to-use glassmorphism styles for your application. These presets can be applied globally or per-component, and they integrate seamlessly with the theme toggle for light/dark mode switching.
 
 ## Introduction to Glass Presets

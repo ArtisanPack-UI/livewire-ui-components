@@ -62,17 +62,17 @@ class ImageLibrary extends BaseComponent
 
     public function modelName(): ?string
     {
-        return $this->attributes->wire('model');
+        return $this->attributes->wire('model')->value() ?: null;
     }
 
     public function libraryName(): ?string
     {
-        return $this->attributes->wire('library');
+        return $this->attributes->wire('library')->value() ?: null;
     }
 
     public function validationMessage(string $message): string
     {
-        return str($message)->after('field');
+        return str($message)->after('field')->toString();
     }
 
     public function cropSetup(): string

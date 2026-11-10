@@ -64,11 +64,11 @@ class Tab extends BaseComponent
      *
      * @since 1.0.0
      *
-     * @param  string  $label  The label text.
+     * @param  string|null  $label  The label text, used when the tab has no label of its own.
      */
-    public function tabLabel(string $label): string
+    public function tabLabel(?string $label = null): string
     {
-        $fromLabel = $this->label ? $this->label : $label;
+        $fromLabel = $this->label ?: ($label ?? '');
 
         if ($this->icon) {
             return Blade::render("

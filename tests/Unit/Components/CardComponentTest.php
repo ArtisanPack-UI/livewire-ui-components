@@ -31,7 +31,7 @@ class CardComponentTest extends ComponentTestCase
 
     public function test_card_string_properties(): void
     {
-        $stringProperties = ['id', 'title', 'subtitle', 'progressIndicator', 'figurePosition'];
+        $stringProperties = ['id', 'title', 'subtitle', 'progressIndicator'];
         $testValues       = ComponentDataFactory::sampleTexts();
 
         foreach ($stringProperties as $property) {
@@ -44,6 +44,12 @@ class CardComponentTest extends ComponentTestCase
                 $this->assertEquals($value, $component->$property);
             }
         }
+
+        // figurePosition only accepts top, bottom, left and right, and falls back to top.
+        foreach (['top', 'bottom', 'left', 'right'] as $position) {
+            $this->assertSame($position, $this->createComponent(['figurePosition' => $position])->figurePosition);
+        }
+        $this->assertSame('top', $this->createComponent(['figurePosition' => 'Simple text'])->figurePosition);
     }
 
     public function test_card_boolean_properties(): void
@@ -61,21 +67,8 @@ class CardComponentTest extends ComponentTestCase
 
     public function test_card_progress_target_method(): void
     {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'progressTarget')) {
-            try {
-                $result = $component->progressTarget();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
+        $this->assertNull($this->createComponent()->progressTarget());
+        $this->assertSame('save', $this->createComponent(['progressIndicator' => 'save'])->progressTarget());
     }
 
     public function test_card_renders_successfully(): void

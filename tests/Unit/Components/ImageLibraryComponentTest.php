@@ -125,19 +125,7 @@ class ImageLibraryComponentTest extends ComponentTestCase
     {
         $component = $this->createComponent();
 
-        if (method_exists($component, 'validationMessage')) {
-            try {
-                $result = $component->validationMessage();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
+        $this->assertSame(' must be an image.', $component->validationMessage('The files.0 field must be an image.'));
     }
 
     public function test_imagelibrary_crop_setup_method(): void
