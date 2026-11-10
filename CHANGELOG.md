@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+### Added
+- `php artisan artisanpack:generate-preset`: generates a brand preset from the design-system tokens (`data-preset`), with luminance-matched color ramps and a WCAG 2.2 AA check in every theme before it writes anything. Outputs CSS, PHP or JSON. (#27 in design-system)
+- `Theming\PresetGenerator`, `GeneratedPreset`, `DesignTokens`, `ContrastChecker` and `ColorMath`: a PHP port of the design system's `apui-generate-preset`, tested against its golden fixtures for identical output.
+- `Theming\TokenThemes` (theme, density and preset attributes, contrast checks, `prefers-contrast` and `prefers-color-scheme` CSS) and `Theming\GlassSurface` (`data-surface="glass"`).
+- `resources/design-system/tokens.php`: the design-system token map.
+
+### Deprecated
+- `artisanpack:generate-theme`, `Styling\ColorGenerator`, `Styling\GlassPresets` and `Styling\HighContrastTheme`. Use `artisanpack:generate-preset`, `Theming\PresetGenerator`, `Theming\GlassSurface` and `Theming\TokenThemes`. They're removed once the components that use them move to the design system.
+
 ---
 
 ## [2.1.0] - 2026-07-21

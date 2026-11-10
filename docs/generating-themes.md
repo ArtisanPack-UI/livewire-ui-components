@@ -4,6 +4,8 @@ title: Generating Color Themes
 
 # Generating Color Themes
 
+> **Deprecated in 3.0.** `artisanpack:generate-theme` is replaced by `artisanpack:generate-preset`, which builds a brand preset on the design tokens. See [Design Token Presets](design-token-presets.md).
+
 ArtisanPack UI Livewire Components includes a powerful theme generation system that allows you to create custom color themes for your application. This guide will walk you through the process of generating and customizing themes.
 
 ## Introduction to Theme Generation

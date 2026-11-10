@@ -34,6 +34,8 @@ use function Laravel\Prompts\text;
  * Generates the CSS theme file based on selected colors.
  *
  * @since 1.0.0
+ * @deprecated 3.0.0 Use artisanpack:generate-preset
+ *             (\ArtisanPack\LivewireUiComponents\Console\Commands\GeneratePresetCommand).
  */
 class GenerateThemeCss extends Command
 {
@@ -78,6 +80,8 @@ class GenerateThemeCss extends Command
      */
     public function handle(ColorGenerator $colorGenerator): int
     {
+        $this->warn(__('artisanpack:generate-theme is deprecated and will be removed. Use artisanpack:generate-preset, which builds a brand preset on the design tokens.'));
+
         // Check for interactive mode first
         if ($this->option('interactive')) {
             return $this->runInteractiveMode($colorGenerator);
