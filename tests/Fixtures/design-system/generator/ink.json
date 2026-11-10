@@ -20,88 +20,88 @@
     "tokens": {
       "gray.25": {
         "changed": true,
-        "value": "#fefbfc",
-        "resolved": "#fefbfc"
+        "value": "#fcfcfc",
+        "resolved": "#fcfcfc"
       },
       "gray.50": {
         "changed": true,
-        "value": "#faf6f6",
-        "resolved": "#faf6f6"
+        "value": "#f7f7f7",
+        "resolved": "#f7f7f7"
       },
       "gray.75": {
         "changed": true,
-        "value": "#f8f2f3",
-        "resolved": "#f8f2f3"
+        "value": "#f3f3f3",
+        "resolved": "#f3f3f3"
       },
       "gray.100": {
         "changed": true,
-        "value": "#f0ecec",
-        "resolved": "#f0ecec"
+        "value": "#ededed",
+        "resolved": "#ededed"
       },
       "gray.150": {
         "changed": true,
-        "value": "#e9e3e5",
-        "resolved": "#e9e3e5"
+        "value": "#e5e5e5",
+        "resolved": "#e5e5e5"
       },
       "gray.200": {
         "changed": true,
-        "value": "#dcd8d8",
-        "resolved": "#dcd8d8"
+        "value": "#d9d9d9",
+        "resolved": "#d9d9d9"
       },
       "gray.300": {
         "changed": true,
-        "value": "#c2bcbe",
-        "resolved": "#c2bcbe"
+        "value": "#bebebe",
+        "resolved": "#bebebe"
       },
       "gray.400": {
         "changed": true,
-        "value": "#a39d9f",
-        "resolved": "#a39d9f"
+        "value": "#9f9f9f",
+        "resolved": "#9f9f9f"
       },
       "gray.500": {
         "changed": true,
-        "value": "#837f7f",
-        "resolved": "#837f7f"
+        "value": "#808080",
+        "resolved": "#808080"
       },
       "gray.600": {
         "changed": true,
-        "value": "#6a6466",
-        "resolved": "#6a6466"
+        "value": "#666666",
+        "resolved": "#666666"
       },
       "gray.700": {
         "changed": true,
-        "value": "#554e4f",
-        "resolved": "#554e4f"
+        "value": "#505050",
+        "resolved": "#505050"
       },
       "gray.800": {
         "changed": true,
-        "value": "#453e3f",
-        "resolved": "#453e3f"
+        "value": "#404040",
+        "resolved": "#404040"
       },
       "gray.850": {
         "changed": true,
-        "value": "#352f31",
-        "resolved": "#352f31"
+        "value": "#303030",
+        "resolved": "#303030"
       },
       "gray.900": {
         "changed": true,
-        "value": "#2b2527",
-        "resolved": "#2b2527"
+        "value": "#262626",
+        "resolved": "#262626"
       },
       "gray.925": {
         "changed": true,
-        "value": "#211b1d",
-        "resolved": "#211b1d"
+        "value": "#1d1d1d",
+        "resolved": "#1d1d1d"
       },
       "gray.950": {
         "changed": true,
-        "value": "#181214",
-        "resolved": "#181214"
+        "value": "#141414",
+        "resolved": "#141414"
       },
       "gray.975": {
         "changed": true,
-        "value": "#120c0d",
-        "resolved": "#120c0d"
+        "value": "#0d0d0d",
+        "resolved": "#0d0d0d"
       },
       "steel.50": {
         "changed": true,
@@ -266,9 +266,9 @@
           "high-contrast": "var(--apui-gray-50)"
         },
         "resolved": {
-          "light": "#f0ecec",
-          "dark": "#120c0d",
-          "high-contrast": "#faf6f6"
+          "light": "#ededed",
+          "dark": "#0d0d0d",
+          "high-contrast": "#f7f7f7"
         }
       },
       "surface.page": {
@@ -279,8 +279,8 @@
           "high-contrast": "var(--apui-gray-0)"
         },
         "resolved": {
-          "light": "#f8f2f3",
-          "dark": "#181214",
+          "light": "#f3f3f3",
+          "dark": "#141414",
           "high-contrast": "#ffffff"
         }
       },
@@ -292,8 +292,8 @@
           "high-contrast": "var(--apui-gray-0)"
         },
         "resolved": {
-          "light": "#fefbfc",
-          "dark": "#211b1d",
+          "light": "#fcfcfc",
+          "dark": "#1d1d1d",
           "high-contrast": "#ffffff"
         }
       },
@@ -306,7 +306,7 @@
         },
         "resolved": {
           "light": "#ffffff",
-          "dark": "#2b2527",
+          "dark": "#262626",
           "high-contrast": "#ffffff"
         }
       },
@@ -319,20 +319,20 @@
         },
         "resolved": {
           "light": "#ffffff",
-          "dark": "#352f31",
+          "dark": "#303030",
           "high-contrast": "#ffffff"
         }
       },
       "surface.glass": {
         "changed": true,
         "value": {
-          "light": "oklch(99% 0.006 0 / 0.8)",
-          "dark": "oklch(23% 0.01 0 / 0.8)",
+          "light": "oklch(99% 0 0 / 0.8)",
+          "dark": "oklch(23% 0 0 / 0.8)",
           "high-contrast": "#ffffff"
         },
         "resolved": {
-          "light": "oklch(99% 0.006 0 / 0.8)",
-          "dark": "oklch(23% 0.01 0 / 0.8)",
+          "light": "oklch(99% 0 0 / 0.8)",
+          "dark": "oklch(23% 0 0 / 0.8)",
           "high-contrast": "#ffffff"
         }
       },
@@ -344,8 +344,8 @@
           "high-contrast": "var(--apui-gray-1000)"
         },
         "resolved": {
-          "light": "#2b2527",
-          "dark": "#faf6f6",
+          "light": "#262626",
+          "dark": "#f7f7f7",
           "high-contrast": "#000000"
         }
       },
@@ -357,8 +357,8 @@
           "high-contrast": "var(--apui-gray-1000)"
         },
         "resolved": {
-          "light": "#2b2527",
-          "dark": "#faf6f6",
+          "light": "#262626",
+          "dark": "#f7f7f7",
           "high-contrast": "#000000"
         }
       },
@@ -370,9 +370,9 @@
           "high-contrast": "var(--apui-gray-800)"
         },
         "resolved": {
-          "light": "#6a6466",
-          "dark": "#c2bcbe",
-          "high-contrast": "#453e3f"
+          "light": "#666666",
+          "dark": "#bebebe",
+          "high-contrast": "#404040"
         }
       },
       "text.subtle": {
@@ -383,9 +383,9 @@
           "high-contrast": "var(--apui-gray-700)"
         },
         "resolved": {
-          "light": "#837f7f",
-          "dark": "#837f7f",
-          "high-contrast": "#554e4f"
+          "light": "#808080",
+          "dark": "#808080",
+          "high-contrast": "#505050"
         }
       },
       "text.disabled": {
@@ -396,9 +396,9 @@
           "high-contrast": "var(--apui-gray-500)"
         },
         "resolved": {
-          "light": "#a39d9f",
-          "dark": "#6a6466",
-          "high-contrast": "#837f7f"
+          "light": "#9f9f9f",
+          "dark": "#666666",
+          "high-contrast": "#808080"
         }
       },
       "text.inverse": {
@@ -409,8 +409,8 @@
           "high-contrast": "var(--apui-gray-0)"
         },
         "resolved": {
-          "light": "#fefbfc",
-          "dark": "#211b1d",
+          "light": "#fcfcfc",
+          "dark": "#1d1d1d",
           "high-contrast": "#ffffff"
         }
       },
@@ -422,9 +422,9 @@
           "high-contrast": "var(--apui-gray-800)"
         },
         "resolved": {
-          "light": "#554e4f",
-          "dark": "#c2bcbe",
-          "high-contrast": "#453e3f"
+          "light": "#505050",
+          "dark": "#bebebe",
+          "high-contrast": "#404040"
         }
       },
       "border.muted": {
@@ -435,9 +435,9 @@
           "high-contrast": "var(--apui-gray-700)"
         },
         "resolved": {
-          "light": "#e9e3e5",
-          "dark": "#352f31",
-          "high-contrast": "#554e4f"
+          "light": "#e5e5e5",
+          "dark": "#303030",
+          "high-contrast": "#505050"
         }
       },
       "border.default": {
@@ -448,8 +448,8 @@
           "high-contrast": "var(--apui-gray-1000)"
         },
         "resolved": {
-          "light": "#837f7f",
-          "dark": "#837f7f",
+          "light": "#808080",
+          "dark": "#808080",
           "high-contrast": "#000000"
         }
       },
@@ -461,8 +461,8 @@
           "high-contrast": "var(--apui-gray-1000)"
         },
         "resolved": {
-          "light": "#554e4f",
-          "dark": "#c2bcbe",
+          "light": "#505050",
+          "dark": "#bebebe",
           "high-contrast": "#000000"
         }
       },
@@ -487,20 +487,20 @@
           "high-contrast": "var(--apui-surface-default)"
         },
         "resolved": {
-          "light": "#fefbfc",
-          "dark": "#211b1d",
+          "light": "#fcfcfc",
+          "dark": "#1d1d1d",
           "high-contrast": "#ffffff"
         }
       },
       "state.hover": {
         "changed": true,
         "value": {
-          "light": "oklch(20% 0.01 0 / 0.05)",
+          "light": "oklch(20% 0 0 / 0.05)",
           "dark": "oklch(100% 0 0 / 0.06)",
           "high-contrast": "oklch(0% 0 0 / 0.08)"
         },
         "resolved": {
-          "light": "oklch(20% 0.01 0 / 0.05)",
+          "light": "oklch(20% 0 0 / 0.05)",
           "dark": "oklch(100% 0 0 / 0.06)",
           "high-contrast": "oklch(0% 0 0 / 0.08)"
         }
@@ -508,12 +508,12 @@
       "state.pressed": {
         "changed": true,
         "value": {
-          "light": "oklch(20% 0.01 0 / 0.1)",
+          "light": "oklch(20% 0 0 / 0.1)",
           "dark": "oklch(100% 0 0 / 0.12)",
           "high-contrast": "oklch(0% 0 0 / 0.16)"
         },
         "resolved": {
-          "light": "oklch(20% 0.01 0 / 0.1)",
+          "light": "oklch(20% 0 0 / 0.1)",
           "dark": "oklch(100% 0 0 / 0.12)",
           "high-contrast": "oklch(0% 0 0 / 0.16)"
         }
@@ -521,12 +521,12 @@
       "backdrop": {
         "changed": true,
         "value": {
-          "light": "oklch(15% 0.01 0 / 0.4)",
+          "light": "oklch(15% 0 0 / 0.4)",
           "dark": "oklch(0% 0 0 / 0.6)",
           "high-contrast": "oklch(0% 0 0 / 0.7)"
         },
         "resolved": {
-          "light": "oklch(15% 0.01 0 / 0.4)",
+          "light": "oklch(15% 0 0 / 0.4)",
           "dark": "oklch(0% 0 0 / 0.6)",
           "high-contrast": "oklch(0% 0 0 / 0.7)"
         }
@@ -565,9 +565,9 @@
           "high-contrast": "var(--apui-border-muted)"
         },
         "resolved": {
-          "light": "#e9e3e5",
-          "dark": "#352f31",
-          "high-contrast": "#554e4f"
+          "light": "#e5e5e5",
+          "dark": "#303030",
+          "high-contrast": "#505050"
         }
       },
       "chart.axis": {
@@ -578,9 +578,9 @@
           "high-contrast": "var(--apui-text-muted)"
         },
         "resolved": {
-          "light": "#6a6466",
-          "dark": "#c2bcbe",
-          "high-contrast": "#453e3f"
+          "light": "#666666",
+          "dark": "#bebebe",
+          "high-contrast": "#404040"
         }
       },
       "syntax.keyword": {
@@ -604,9 +604,9 @@
           "high-contrast": "var(--apui-gray-700)"
         },
         "resolved": {
-          "light": "#6a6466",
-          "dark": "#a39d9f",
-          "high-contrast": "#554e4f"
+          "light": "#666666",
+          "dark": "#9f9f9f",
+          "high-contrast": "#505050"
         }
       },
       "color.primary": {
@@ -644,7 +644,7 @@
         },
         "resolved": {
           "light": "#ffffff",
-          "dark": "#120c0d",
+          "dark": "#0d0d0d",
           "high-contrast": "#ffffff"
         }
       },
@@ -709,7 +709,7 @@
         },
         "resolved": {
           "light": "#ffffff",
-          "dark": "#120c0d",
+          "dark": "#0d0d0d",
           "high-contrast": "#ffffff"
         }
       },
@@ -722,7 +722,7 @@
         },
         "resolved": {
           "light": "#2a1d01",
-          "dark": "#120c0d",
+          "dark": "#0d0d0d",
           "high-contrast": "#ffffff"
         }
       },
@@ -734,8 +734,8 @@
           "high-contrast": "var(--apui-gray-1000)"
         },
         "resolved": {
-          "light": "#2b2527",
-          "dark": "#faf6f6",
+          "light": "#262626",
+          "dark": "#f7f7f7",
           "high-contrast": "#000000"
         }
       },
@@ -747,8 +747,8 @@
           "high-contrast": "var(--apui-gray-1000)"
         },
         "resolved": {
-          "light": "#211b1d",
-          "dark": "#f8f2f3",
+          "light": "#1d1d1d",
+          "dark": "#f3f3f3",
           "high-contrast": "#000000"
         }
       },
@@ -761,7 +761,7 @@
         },
         "resolved": {
           "light": "#ffffff",
-          "dark": "#181214",
+          "dark": "#141414",
           "high-contrast": "#ffffff"
         }
       },
@@ -773,9 +773,9 @@
           "high-contrast": "var(--apui-gray-50)"
         },
         "resolved": {
-          "light": "#f0ecec",
-          "dark": "#352f31",
-          "high-contrast": "#faf6f6"
+          "light": "#ededed",
+          "dark": "#303030",
+          "high-contrast": "#f7f7f7"
         }
       },
       "color.neutral-soft-foreground": {
@@ -786,8 +786,8 @@
           "high-contrast": "var(--apui-gray-1000)"
         },
         "resolved": {
-          "light": "#453e3f",
-          "dark": "#f0ecec",
+          "light": "#404040",
+          "dark": "#ededed",
           "high-contrast": "#000000"
         }
       },
@@ -799,8 +799,8 @@
           "high-contrast": "var(--apui-gray-1000)"
         },
         "resolved": {
-          "light": "#837f7f",
-          "dark": "#837f7f",
+          "light": "#808080",
+          "dark": "#808080",
           "high-contrast": "#000000"
         }
       },
@@ -812,8 +812,8 @@
           "high-contrast": "var(--apui-gray-1000)"
         },
         "resolved": {
-          "light": "#554e4f",
-          "dark": "#dcd8d8",
+          "light": "#505050",
+          "dark": "#d9d9d9",
           "high-contrast": "#000000"
         }
       },
@@ -826,7 +826,7 @@
         },
         "resolved": {
           "light": "#ffffff",
-          "dark": "#120c0d",
+          "dark": "#0d0d0d",
           "high-contrast": "#ffffff"
         }
       },
@@ -839,7 +839,7 @@
         },
         "resolved": {
           "light": "#321800",
-          "dark": "#120c0d",
+          "dark": "#0d0d0d",
           "high-contrast": "#ffffff"
         }
       },
@@ -852,7 +852,7 @@
         },
         "resolved": {
           "light": "#ffffff",
-          "dark": "#120c0d",
+          "dark": "#0d0d0d",
           "high-contrast": "#ffffff"
         }
       },
@@ -865,11 +865,11 @@
         },
         "resolved": {
           "light": "#ffffff",
-          "dark": "#120c0d",
+          "dark": "#0d0d0d",
           "high-contrast": "#ffffff"
         }
       }
     }
   },
-  "css": "/*\n * @artisanpack-ui/tokens preset \"ink\".\n * Brand preset generated from #111111 by apui-generate-preset.\n * Generated by apui-generate-preset. Regenerate rather than edit by hand.\n */\n@layer apui.tokens {\n  [data-preset=\"ink\"] {\n    --apui-gray-25: #fefbfc;\n    --apui-gray-50: #faf6f6;\n    --apui-gray-75: #f8f2f3;\n    --apui-gray-100: #f0ecec;\n    --apui-gray-150: #e9e3e5;\n    --apui-gray-200: #dcd8d8;\n    --apui-gray-300: #c2bcbe;\n    --apui-gray-400: #a39d9f;\n    --apui-gray-500: #837f7f;\n    --apui-gray-600: #6a6466;\n    --apui-gray-700: #554e4f;\n    --apui-gray-800: #453e3f;\n    --apui-gray-850: #352f31;\n    --apui-gray-900: #2b2527;\n    --apui-gray-925: #211b1d;\n    --apui-gray-950: #181214;\n    --apui-gray-975: #120c0d;\n    --apui-steel-50: #f5f5f5;\n    --apui-steel-100: #eaeaea;\n    --apui-steel-200: #d7d7d7;\n    --apui-steel-300: #c1c1c1;\n    --apui-steel-400: #a5a5a5;\n    --apui-steel-500: #898989;\n    --apui-steel-600: #727272;\n    --apui-steel-700: #5b5b5b;\n    --apui-steel-800: #454545;\n    --apui-steel-900: #303030;\n    --apui-steel-950: #111111;\n    --apui-font-family-sans: Inter, system-ui, sans-serif;\n    --apui-font-family-display: Fraunces, serif;\n    --apui-type-display-xl-font-family: var(--apui-font-family-display);\n    --apui-type-display-lg-font-family: var(--apui-font-family-display);\n    --apui-type-heading-xl-font-family: var(--apui-font-family-display);\n    --apui-type-heading-lg-font-family: var(--apui-font-family-display);\n    --apui-type-heading-md-font-family: var(--apui-font-family-sans);\n    --apui-type-heading-sm-font-family: var(--apui-font-family-sans);\n    --apui-type-body-lg-font-family: var(--apui-font-family-sans);\n    --apui-type-body-md-font-family: var(--apui-font-family-sans);\n    --apui-type-body-sm-font-family: var(--apui-font-family-sans);\n    --apui-type-caption-font-family: var(--apui-font-family-sans);\n    --apui-type-label-md-font-family: var(--apui-font-family-sans);\n    --apui-type-label-sm-font-family: var(--apui-font-family-sans);\n    --apui-type-label-xs-font-family: var(--apui-font-family-sans);\n    --apui-type-eyebrow-font-family: var(--apui-font-family-sans);\n    --apui-type-stat-lg-font-family: var(--apui-font-family-display);\n    --apui-type-stat-md-font-family: var(--apui-font-family-display);\n    --apui-type-stat-sm-font-family: var(--apui-font-family-display);\n    --apui-type-num-md-font-family: var(--apui-font-family-sans);\n  }\n\n  [data-preset=\"ink\"],\n  [data-preset=\"ink\"][data-theme=\"light\"],\n  [data-theme=\"light\"] [data-preset=\"ink\"],\n  [data-preset=\"ink\"] [data-theme=\"light\"] {\n    --apui-surface-sunken: var(--apui-gray-100);\n    --apui-surface-page: var(--apui-gray-75);\n    --apui-surface-default: var(--apui-gray-25);\n    --apui-surface-raised: var(--apui-gray-0);\n    --apui-surface-overlay: var(--apui-gray-0);\n    --apui-surface-glass: oklch(99% 0.006 0 / 0.8);\n    --apui-surface-inverse: var(--apui-gray-900);\n    --apui-text-default: var(--apui-gray-900);\n    --apui-text-muted: var(--apui-gray-600);\n    --apui-text-subtle: var(--apui-gray-500);\n    --apui-text-disabled: var(--apui-gray-400);\n    --apui-text-inverse: var(--apui-gray-25);\n    --apui-text-muted-glass: var(--apui-gray-700);\n    --apui-border-muted: var(--apui-gray-150);\n    --apui-border-default: var(--apui-gray-500);\n    --apui-border-strong: var(--apui-gray-700);\n    --apui-focus-ring-color: var(--apui-steel-600);\n    --apui-focus-ring-offset-color: var(--apui-surface-default);\n    --apui-state-hover: oklch(20% 0.01 0 / 0.05);\n    --apui-state-pressed: oklch(20% 0.01 0 / 0.1);\n    --apui-backdrop: oklch(15% 0.01 0 / 0.4);\n    --apui-selected-bg: var(--apui-color-primary-soft);\n    --apui-selected-border: var(--apui-color-primary-border);\n    --apui-chart-grid: var(--apui-border-muted);\n    --apui-chart-axis: var(--apui-text-muted);\n    --apui-syntax-keyword: var(--apui-steel-700);\n    --apui-syntax-comment: var(--apui-gray-600);\n    --apui-color-primary: var(--apui-steel-600);\n    --apui-color-primary-hover: var(--apui-steel-700);\n    --apui-color-primary-foreground: var(--apui-gray-0);\n    --apui-color-primary-soft: var(--apui-steel-100);\n    --apui-color-primary-soft-foreground: var(--apui-steel-700);\n    --apui-color-primary-border: var(--apui-steel-600);\n    --apui-color-primary-text: var(--apui-steel-700);\n    --apui-color-secondary-foreground: var(--apui-gray-0);\n    --apui-color-accent-foreground: var(--apui-marigold-950);\n    --apui-color-neutral: var(--apui-gray-900);\n    --apui-color-neutral-hover: var(--apui-gray-925);\n    --apui-color-neutral-foreground: var(--apui-gray-0);\n    --apui-color-neutral-soft: var(--apui-gray-100);\n    --apui-color-neutral-soft-foreground: var(--apui-gray-800);\n    --apui-color-neutral-border: var(--apui-gray-500);\n    --apui-color-neutral-text: var(--apui-gray-700);\n    --apui-color-success-foreground: var(--apui-gray-0);\n    --apui-color-warning-foreground: var(--apui-orange-950);\n    --apui-color-error-foreground: var(--apui-gray-0);\n    --apui-color-info-foreground: var(--apui-gray-0);\n  }\n\n  [data-preset=\"ink\"][data-theme=\"dark\"],\n  [data-theme=\"dark\"] [data-preset=\"ink\"],\n  [data-preset=\"ink\"] [data-theme=\"dark\"] {\n    --apui-surface-sunken: var(--apui-gray-975);\n    --apui-surface-page: var(--apui-gray-950);\n    --apui-surface-default: var(--apui-gray-925);\n    --apui-surface-raised: var(--apui-gray-900);\n    --apui-surface-overlay: var(--apui-gray-850);\n    --apui-surface-glass: oklch(23% 0.01 0 / 0.8);\n    --apui-surface-inverse: var(--apui-gray-50);\n    --apui-text-default: var(--apui-gray-50);\n    --apui-text-muted: var(--apui-gray-300);\n    --apui-text-subtle: var(--apui-gray-500);\n    --apui-text-disabled: var(--apui-gray-600);\n    --apui-text-inverse: var(--apui-gray-925);\n    --apui-text-muted-glass: var(--apui-gray-300);\n    --apui-border-muted: var(--apui-gray-850);\n    --apui-border-default: var(--apui-gray-500);\n    --apui-border-strong: var(--apui-gray-300);\n    --apui-focus-ring-color: var(--apui-steel-300);\n    --apui-focus-ring-offset-color: var(--apui-surface-default);\n    --apui-state-hover: oklch(100% 0 0 / 0.06);\n    --apui-state-pressed: oklch(100% 0 0 / 0.12);\n    --apui-backdrop: oklch(0% 0 0 / 0.6);\n    --apui-selected-bg: var(--apui-color-primary-soft);\n    --apui-selected-border: var(--apui-color-primary-border);\n    --apui-chart-grid: var(--apui-border-muted);\n    --apui-chart-axis: var(--apui-text-muted);\n    --apui-syntax-keyword: var(--apui-steel-300);\n    --apui-syntax-comment: var(--apui-gray-400);\n    --apui-color-primary: var(--apui-steel-400);\n    --apui-color-primary-hover: var(--apui-steel-300);\n    --apui-color-primary-foreground: var(--apui-gray-975);\n    --apui-color-primary-soft: var(--apui-steel-900);\n    --apui-color-primary-soft-foreground: var(--apui-steel-300);\n    --apui-color-primary-border: var(--apui-steel-500);\n    --apui-color-primary-text: var(--apui-steel-400);\n    --apui-color-secondary-foreground: var(--apui-gray-975);\n    --apui-color-accent-foreground: var(--apui-gray-975);\n    --apui-color-neutral: var(--apui-gray-50);\n    --apui-color-neutral-hover: var(--apui-gray-75);\n    --apui-color-neutral-foreground: var(--apui-gray-950);\n    --apui-color-neutral-soft: var(--apui-gray-850);\n    --apui-color-neutral-soft-foreground: var(--apui-gray-100);\n    --apui-color-neutral-border: var(--apui-gray-500);\n    --apui-color-neutral-text: var(--apui-gray-200);\n    --apui-color-success-foreground: var(--apui-gray-975);\n    --apui-color-warning-foreground: var(--apui-gray-975);\n    --apui-color-error-foreground: var(--apui-gray-975);\n    --apui-color-info-foreground: var(--apui-gray-975);\n  }\n\n  [data-preset=\"ink\"][data-theme=\"high-contrast\"],\n  [data-theme=\"high-contrast\"] [data-preset=\"ink\"],\n  [data-preset=\"ink\"] [data-theme=\"high-contrast\"] {\n    --apui-surface-sunken: var(--apui-gray-50);\n    --apui-surface-page: var(--apui-gray-0);\n    --apui-surface-default: var(--apui-gray-0);\n    --apui-surface-raised: var(--apui-gray-0);\n    --apui-surface-overlay: var(--apui-gray-0);\n    --apui-surface-glass: #ffffff;\n    --apui-surface-inverse: var(--apui-gray-1000);\n    --apui-text-default: var(--apui-gray-1000);\n    --apui-text-muted: var(--apui-gray-800);\n    --apui-text-subtle: var(--apui-gray-700);\n    --apui-text-disabled: var(--apui-gray-500);\n    --apui-text-inverse: var(--apui-gray-0);\n    --apui-text-muted-glass: var(--apui-gray-800);\n    --apui-border-muted: var(--apui-gray-700);\n    --apui-border-default: var(--apui-gray-1000);\n    --apui-border-strong: var(--apui-gray-1000);\n    --apui-focus-ring-color: var(--apui-steel-800);\n    --apui-focus-ring-offset-color: var(--apui-surface-default);\n    --apui-state-hover: oklch(0% 0 0 / 0.08);\n    --apui-state-pressed: oklch(0% 0 0 / 0.16);\n    --apui-backdrop: oklch(0% 0 0 / 0.7);\n    --apui-selected-bg: var(--apui-color-primary-soft);\n    --apui-selected-border: var(--apui-color-primary-border);\n    --apui-chart-grid: var(--apui-border-muted);\n    --apui-chart-axis: var(--apui-text-muted);\n    --apui-syntax-keyword: var(--apui-steel-800);\n    --apui-syntax-comment: var(--apui-gray-700);\n    --apui-color-primary: var(--apui-steel-800);\n    --apui-color-primary-hover: var(--apui-steel-900);\n    --apui-color-primary-foreground: var(--apui-gray-0);\n    --apui-color-primary-soft: var(--apui-steel-50);\n    --apui-color-primary-soft-foreground: var(--apui-steel-900);\n    --apui-color-primary-border: var(--apui-steel-800);\n    --apui-color-primary-text: var(--apui-steel-800);\n    --apui-color-secondary-foreground: var(--apui-gray-0);\n    --apui-color-accent-foreground: var(--apui-gray-0);\n    --apui-color-neutral: var(--apui-gray-1000);\n    --apui-color-neutral-hover: var(--apui-gray-1000);\n    --apui-color-neutral-foreground: var(--apui-gray-0);\n    --apui-color-neutral-soft: var(--apui-gray-50);\n    --apui-color-neutral-soft-foreground: var(--apui-gray-1000);\n    --apui-color-neutral-border: var(--apui-gray-1000);\n    --apui-color-neutral-text: var(--apui-gray-1000);\n    --apui-color-success-foreground: var(--apui-gray-0);\n    --apui-color-warning-foreground: var(--apui-gray-0);\n    --apui-color-error-foreground: var(--apui-gray-0);\n    --apui-color-info-foreground: var(--apui-gray-0);\n  }\n}\n"
+  "css": "/*\n * @artisanpack-ui/tokens preset \"ink\".\n * Brand preset generated from #111111 by apui-generate-preset.\n * Generated by apui-generate-preset. Regenerate rather than edit by hand.\n */\n@layer apui.tokens {\n  [data-preset=\"ink\"] {\n    --apui-gray-25: #fcfcfc;\n    --apui-gray-50: #f7f7f7;\n    --apui-gray-75: #f3f3f3;\n    --apui-gray-100: #ededed;\n    --apui-gray-150: #e5e5e5;\n    --apui-gray-200: #d9d9d9;\n    --apui-gray-300: #bebebe;\n    --apui-gray-400: #9f9f9f;\n    --apui-gray-500: #808080;\n    --apui-gray-600: #666666;\n    --apui-gray-700: #505050;\n    --apui-gray-800: #404040;\n    --apui-gray-850: #303030;\n    --apui-gray-900: #262626;\n    --apui-gray-925: #1d1d1d;\n    --apui-gray-950: #141414;\n    --apui-gray-975: #0d0d0d;\n    --apui-steel-50: #f5f5f5;\n    --apui-steel-100: #eaeaea;\n    --apui-steel-200: #d7d7d7;\n    --apui-steel-300: #c1c1c1;\n    --apui-steel-400: #a5a5a5;\n    --apui-steel-500: #898989;\n    --apui-steel-600: #727272;\n    --apui-steel-700: #5b5b5b;\n    --apui-steel-800: #454545;\n    --apui-steel-900: #303030;\n    --apui-steel-950: #111111;\n    --apui-font-family-sans: Inter, system-ui, sans-serif;\n    --apui-font-family-display: Fraunces, serif;\n    --apui-type-display-xl-font-family: var(--apui-font-family-display);\n    --apui-type-display-lg-font-family: var(--apui-font-family-display);\n    --apui-type-heading-xl-font-family: var(--apui-font-family-display);\n    --apui-type-heading-lg-font-family: var(--apui-font-family-display);\n    --apui-type-heading-md-font-family: var(--apui-font-family-sans);\n    --apui-type-heading-sm-font-family: var(--apui-font-family-sans);\n    --apui-type-body-lg-font-family: var(--apui-font-family-sans);\n    --apui-type-body-md-font-family: var(--apui-font-family-sans);\n    --apui-type-body-sm-font-family: var(--apui-font-family-sans);\n    --apui-type-caption-font-family: var(--apui-font-family-sans);\n    --apui-type-label-md-font-family: var(--apui-font-family-sans);\n    --apui-type-label-sm-font-family: var(--apui-font-family-sans);\n    --apui-type-label-xs-font-family: var(--apui-font-family-sans);\n    --apui-type-eyebrow-font-family: var(--apui-font-family-sans);\n    --apui-type-stat-lg-font-family: var(--apui-font-family-display);\n    --apui-type-stat-md-font-family: var(--apui-font-family-display);\n    --apui-type-stat-sm-font-family: var(--apui-font-family-display);\n    --apui-type-num-md-font-family: var(--apui-font-family-sans);\n  }\n\n  [data-preset=\"ink\"],\n  [data-preset=\"ink\"][data-theme=\"light\"],\n  [data-theme=\"light\"] [data-preset=\"ink\"],\n  [data-preset=\"ink\"] [data-theme=\"light\"] {\n    --apui-surface-sunken: var(--apui-gray-100);\n    --apui-surface-page: var(--apui-gray-75);\n    --apui-surface-default: var(--apui-gray-25);\n    --apui-surface-raised: var(--apui-gray-0);\n    --apui-surface-overlay: var(--apui-gray-0);\n    --apui-surface-glass: oklch(99% 0 0 / 0.8);\n    --apui-surface-inverse: var(--apui-gray-900);\n    --apui-text-default: var(--apui-gray-900);\n    --apui-text-muted: var(--apui-gray-600);\n    --apui-text-subtle: var(--apui-gray-500);\n    --apui-text-disabled: var(--apui-gray-400);\n    --apui-text-inverse: var(--apui-gray-25);\n    --apui-text-muted-glass: var(--apui-gray-700);\n    --apui-border-muted: var(--apui-gray-150);\n    --apui-border-default: var(--apui-gray-500);\n    --apui-border-strong: var(--apui-gray-700);\n    --apui-focus-ring-color: var(--apui-steel-600);\n    --apui-focus-ring-offset-color: var(--apui-surface-default);\n    --apui-state-hover: oklch(20% 0 0 / 0.05);\n    --apui-state-pressed: oklch(20% 0 0 / 0.1);\n    --apui-backdrop: oklch(15% 0 0 / 0.4);\n    --apui-selected-bg: var(--apui-color-primary-soft);\n    --apui-selected-border: var(--apui-color-primary-border);\n    --apui-chart-grid: var(--apui-border-muted);\n    --apui-chart-axis: var(--apui-text-muted);\n    --apui-syntax-keyword: var(--apui-steel-700);\n    --apui-syntax-comment: var(--apui-gray-600);\n    --apui-color-primary: var(--apui-steel-600);\n    --apui-color-primary-hover: var(--apui-steel-700);\n    --apui-color-primary-foreground: var(--apui-gray-0);\n    --apui-color-primary-soft: var(--apui-steel-100);\n    --apui-color-primary-soft-foreground: var(--apui-steel-700);\n    --apui-color-primary-border: var(--apui-steel-600);\n    --apui-color-primary-text: var(--apui-steel-700);\n    --apui-color-secondary-foreground: var(--apui-gray-0);\n    --apui-color-accent-foreground: var(--apui-marigold-950);\n    --apui-color-neutral: var(--apui-gray-900);\n    --apui-color-neutral-hover: var(--apui-gray-925);\n    --apui-color-neutral-foreground: var(--apui-gray-0);\n    --apui-color-neutral-soft: var(--apui-gray-100);\n    --apui-color-neutral-soft-foreground: var(--apui-gray-800);\n    --apui-color-neutral-border: var(--apui-gray-500);\n    --apui-color-neutral-text: var(--apui-gray-700);\n    --apui-color-success-foreground: var(--apui-gray-0);\n    --apui-color-warning-foreground: var(--apui-orange-950);\n    --apui-color-error-foreground: var(--apui-gray-0);\n    --apui-color-info-foreground: var(--apui-gray-0);\n  }\n\n  [data-preset=\"ink\"][data-theme=\"dark\"],\n  [data-theme=\"dark\"] [data-preset=\"ink\"],\n  [data-preset=\"ink\"] [data-theme=\"dark\"] {\n    --apui-surface-sunken: var(--apui-gray-975);\n    --apui-surface-page: var(--apui-gray-950);\n    --apui-surface-default: var(--apui-gray-925);\n    --apui-surface-raised: var(--apui-gray-900);\n    --apui-surface-overlay: var(--apui-gray-850);\n    --apui-surface-glass: oklch(23% 0 0 / 0.8);\n    --apui-surface-inverse: var(--apui-gray-50);\n    --apui-text-default: var(--apui-gray-50);\n    --apui-text-muted: var(--apui-gray-300);\n    --apui-text-subtle: var(--apui-gray-500);\n    --apui-text-disabled: var(--apui-gray-600);\n    --apui-text-inverse: var(--apui-gray-925);\n    --apui-text-muted-glass: var(--apui-gray-300);\n    --apui-border-muted: var(--apui-gray-850);\n    --apui-border-default: var(--apui-gray-500);\n    --apui-border-strong: var(--apui-gray-300);\n    --apui-focus-ring-color: var(--apui-steel-300);\n    --apui-focus-ring-offset-color: var(--apui-surface-default);\n    --apui-state-hover: oklch(100% 0 0 / 0.06);\n    --apui-state-pressed: oklch(100% 0 0 / 0.12);\n    --apui-backdrop: oklch(0% 0 0 / 0.6);\n    --apui-selected-bg: var(--apui-color-primary-soft);\n    --apui-selected-border: var(--apui-color-primary-border);\n    --apui-chart-grid: var(--apui-border-muted);\n    --apui-chart-axis: var(--apui-text-muted);\n    --apui-syntax-keyword: var(--apui-steel-300);\n    --apui-syntax-comment: var(--apui-gray-400);\n    --apui-color-primary: var(--apui-steel-400);\n    --apui-color-primary-hover: var(--apui-steel-300);\n    --apui-color-primary-foreground: var(--apui-gray-975);\n    --apui-color-primary-soft: var(--apui-steel-900);\n    --apui-color-primary-soft-foreground: var(--apui-steel-300);\n    --apui-color-primary-border: var(--apui-steel-500);\n    --apui-color-primary-text: var(--apui-steel-400);\n    --apui-color-secondary-foreground: var(--apui-gray-975);\n    --apui-color-accent-foreground: var(--apui-gray-975);\n    --apui-color-neutral: var(--apui-gray-50);\n    --apui-color-neutral-hover: var(--apui-gray-75);\n    --apui-color-neutral-foreground: var(--apui-gray-950);\n    --apui-color-neutral-soft: var(--apui-gray-850);\n    --apui-color-neutral-soft-foreground: var(--apui-gray-100);\n    --apui-color-neutral-border: var(--apui-gray-500);\n    --apui-color-neutral-text: var(--apui-gray-200);\n    --apui-color-success-foreground: var(--apui-gray-975);\n    --apui-color-warning-foreground: var(--apui-gray-975);\n    --apui-color-error-foreground: var(--apui-gray-975);\n    --apui-color-info-foreground: var(--apui-gray-975);\n  }\n\n  [data-preset=\"ink\"][data-theme=\"high-contrast\"],\n  [data-theme=\"high-contrast\"] [data-preset=\"ink\"],\n  [data-preset=\"ink\"] [data-theme=\"high-contrast\"] {\n    --apui-surface-sunken: var(--apui-gray-50);\n    --apui-surface-page: var(--apui-gray-0);\n    --apui-surface-default: var(--apui-gray-0);\n    --apui-surface-raised: var(--apui-gray-0);\n    --apui-surface-overlay: var(--apui-gray-0);\n    --apui-surface-glass: #ffffff;\n    --apui-surface-inverse: var(--apui-gray-1000);\n    --apui-text-default: var(--apui-gray-1000);\n    --apui-text-muted: var(--apui-gray-800);\n    --apui-text-subtle: var(--apui-gray-700);\n    --apui-text-disabled: var(--apui-gray-500);\n    --apui-text-inverse: var(--apui-gray-0);\n    --apui-text-muted-glass: var(--apui-gray-800);\n    --apui-border-muted: var(--apui-gray-700);\n    --apui-border-default: var(--apui-gray-1000);\n    --apui-border-strong: var(--apui-gray-1000);\n    --apui-focus-ring-color: var(--apui-steel-800);\n    --apui-focus-ring-offset-color: var(--apui-surface-default);\n    --apui-state-hover: oklch(0% 0 0 / 0.08);\n    --apui-state-pressed: oklch(0% 0 0 / 0.16);\n    --apui-backdrop: oklch(0% 0 0 / 0.7);\n    --apui-selected-bg: var(--apui-color-primary-soft);\n    --apui-selected-border: var(--apui-color-primary-border);\n    --apui-chart-grid: var(--apui-border-muted);\n    --apui-chart-axis: var(--apui-text-muted);\n    --apui-syntax-keyword: var(--apui-steel-800);\n    --apui-syntax-comment: var(--apui-gray-700);\n    --apui-color-primary: var(--apui-steel-800);\n    --apui-color-primary-hover: var(--apui-steel-900);\n    --apui-color-primary-foreground: var(--apui-gray-0);\n    --apui-color-primary-soft: var(--apui-steel-50);\n    --apui-color-primary-soft-foreground: var(--apui-steel-900);\n    --apui-color-primary-border: var(--apui-steel-800);\n    --apui-color-primary-text: var(--apui-steel-800);\n    --apui-color-secondary-foreground: var(--apui-gray-0);\n    --apui-color-accent-foreground: var(--apui-gray-0);\n    --apui-color-neutral: var(--apui-gray-1000);\n    --apui-color-neutral-hover: var(--apui-gray-1000);\n    --apui-color-neutral-foreground: var(--apui-gray-0);\n    --apui-color-neutral-soft: var(--apui-gray-50);\n    --apui-color-neutral-soft-foreground: var(--apui-gray-1000);\n    --apui-color-neutral-border: var(--apui-gray-1000);\n    --apui-color-neutral-text: var(--apui-gray-1000);\n    --apui-color-success-foreground: var(--apui-gray-0);\n    --apui-color-warning-foreground: var(--apui-gray-0);\n    --apui-color-error-foreground: var(--apui-gray-0);\n    --apui-color-info-foreground: var(--apui-gray-0);\n  }\n}\n"
 }

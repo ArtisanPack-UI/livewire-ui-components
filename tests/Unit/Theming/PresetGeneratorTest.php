@@ -75,6 +75,17 @@ test('writes pure grays with neutral pure', function (): void {
         ->and($preset->resolved('state.hover'))->toContain(' 0 0 /');
 });
 
+test('uses pure grays for a gray primary instead of tinting toward hue 0', function (string $primary): void {
+    $preset = PresetGenerator::make()->generate(['name' => 'brand', 'primary' => $primary]);
+
+    foreach (['gray.25', 'gray.600', 'gray.900'] as $path) {
+        $gray = $preset->resolved($path);
+        expect(substr($gray, 1, 2))->toBe(substr($gray, 3, 2))
+            ->and(substr($gray, 3, 2))->toBe(substr($gray, 5, 2));
+    }
+    expect($preset->resolved('surface.glass'))->toContain(' 0 0 /');
+})->with(['#111111', '#808080', '#fafafa', '#111112']);
+
 test('leaves the grays alone with neutral keep', function (): void {
     $preset = PresetGenerator::make()->build(['name' => 'brand', 'primary' => '#1f6f3d', 'neutral' => 'keep']);
 

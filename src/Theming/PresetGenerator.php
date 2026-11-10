@@ -129,7 +129,12 @@ final class PresetGenerator
         }
 
         if ('keep' !== $neutral) {
-            $hue = ColorMath::srgbToOklch(ColorMath::parseHex((string) $options['primary']))[2];
+            [, $primaryChroma, $hue] = ColorMath::srgbToOklch(ColorMath::parseHex((string) $options['primary']));
+            // A gray or near-gray primary has no hue worth tinting toward; tinting
+            // toward its nominal hue would make the grays pink. Use pure grays.
+            if ('tinted' === $neutral && $primaryChroma <= self::NEUTRAL_CHROMA) {
+                $neutral = 'pure';
+            }
             foreach ($this->rampSteps('gray') as $step => $rgb) {
                 $luminance = ColorMath::luminance($rgb);
                 if ($luminance <= 0 || $luminance >= 1) {
