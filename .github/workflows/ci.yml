@@ -46,19 +46,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     name: PHP ${{ matrix.php }} / Laravel ${{ matrix.laravel }} / FA ${{ matrix.fontawesome }}
-    continue-on-error: true
 
     strategy:
       fail-fast: false
       matrix:
         include:
-          # Laravel 10 removed — the ecosystem deps (artisanpack-ui/hooks,
-          # icons, accessibility, core) all now require illuminate/support
-          # ^11+, so composer cannot resolve a Laravel 10 test run.
-          - php: '8.2'
-            laravel: '11.*'
-            testbench: '9.*'
-            fontawesome: '^2.9'
+          # 3.0 supports Laravel 12 and 13. Laravel 11 is end of life, and
+          # Composer blocks every 11.x release over unpatched advisories.
           - php: '8.2'
             laravel: '12.*'
             testbench: '10.*'
@@ -134,7 +128,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     name: Code Coverage
-    continue-on-error: true
 
     steps:
       - uses: actions/checkout@v4
@@ -144,7 +137,8 @@ jobs:
         with:
           php-version: '8.4'
           extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite, pdo_sqlite
-          coverage: xdebug
+          # PCOV: Xdebug overflows the stack compiling testbench's bootstrap on 8.4.
+          coverage: pcov
 
       - name: Download vendor directory
         uses: actions/download-artifact@v4

@@ -8,6 +8,18 @@
 - `Theming\TokenThemes` (theme, density and preset attributes, contrast checks, `prefers-contrast` and `prefers-color-scheme` CSS) and `Theming\GlassSurface` (`data-surface="glass"`).
 - `resources/design-system/tokens.php`: the design-system token map.
 
+### Changed
+- Require Laravel 12 or 13 (`illuminate/support: ^12.0|^13.0`) and PHP 8.2. Laravel 11 is end of life, and Composer now refuses its releases over unpatched security advisories.
+- Allow `laravel/boost` 2.x in development, which Laravel 13 needs.
+
+### Fixed
+- `Stat::numericValue()` read "$12,345" as 12.345: a single comma followed by three digits is now a thousands separator; one or two digits is still a decimal.
+- `Table` currency formats such as `['currency', '2.,', '$']` threw a TypeError under strict types.
+- `ImageLibrary::modelName()`, `ImageLibrary::libraryName()`, `ImageLibrary::validationMessage()` and `Rating::size()` returned objects where they declare strings, which threw a TypeError.
+- `SelectGroup` crashed rendering grouped options, which are a collection.
+- `Tab` without a `label` threw a TypeError while rendering.
+- `Header` rendered an empty `id=""` when it has no anchor.
+
 ### Deprecated
 - `artisanpack:generate-theme`, `Styling\ColorGenerator`, `Styling\GlassPresets` and `Styling\HighContrastTheme`. Use `artisanpack:generate-preset`, `Theming\PresetGenerator`, `Theming\GlassSurface` and `Theming\TokenThemes`. They're removed once the components that use them move to the design system.
 
