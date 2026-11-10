@@ -56,14 +56,15 @@ function parseArgs(argv) {
     if ('--check' === arg) {
       options.check = true;
     } else if ('--from' === arg) {
-      options.from = argv[++index] ?? null;
-      if (!options.from) fail('--from needs a path to a design-system checkout.');
+      options.from = argv[++index] ?? '';
     } else if (arg.startsWith('--from=')) {
       options.from = arg.slice('--from='.length);
     } else {
       fail(`Unknown option: ${arg}`);
     }
   }
+
+  if ('' === options.from) fail('--from needs a path to a design-system checkout.');
 
   return options;
 }

@@ -82,3 +82,20 @@ test('the committed assets match a design-system checkout', function (): void {
 
     expect($process->getExitCode())->toBe(0, $process->getErrorOutput().$process->getOutput());
 });
+
+test('the build script rejects an empty --from instead of falling back to node_modules', function (array $args): void {
+    $node = (new ExecutableFinder)->find('node');
+
+    if (null === $node) {
+        $this->markTestSkipped('No node.');
+    }
+
+    $process = new Process([$node, dirname(__DIR__, 2).'/scripts/build-assets.mjs', '--check', ...$args]);
+    $process->run();
+
+    expect($process->getExitCode())->toBe(1)
+        ->and($process->getErrorOutput())->toContain('--from needs a path to a design-system checkout.');
+})->with([
+    'equals form'   => [['--from=']],
+    'missing value' => [['--from']],
+]);
