@@ -84,3 +84,10 @@ test('ships a token map in sync with the generator fixtures', function (): void 
         expect(DesignTokens::load()->has($path))->toBeTrue();
     }
 });
+
+test('rejects an unknown mode instead of reading a missing value', function (): void {
+    expect(fn () => DesignTokens::load()->cssValue('color.primary', 'sepia'))
+        ->toThrow(ThemeGeneratorException::class, 'Unknown mode sepia for design token color.primary');
+    expect(fn () => GlassSurface::make()->tokens('sepia'))->toThrow(ThemeGeneratorException::class);
+    expect(fn () => TokenThemes::make()->failures('sepia'))->toThrow(ThemeGeneratorException::class);
+});

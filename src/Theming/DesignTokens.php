@@ -181,12 +181,20 @@ final class DesignTokens
      * A token's CSS value in a mode, with aliases as `var()`.
      *
      * @since 3.0.0
+     *
+     * @throws ThemeGeneratorException When the token has no value for the mode.
      */
     public function cssValue(string $path, ?string $mode = null): string
     {
-        $value = $this->get($path)['value'];
+        $token = $this->get($path);
+        $value = $token['value'];
         if (is_array($value)) {
-            return $value[$mode ?? $this->axes[$this->get($path)['axis']]['default']];
+            $mode ??= $this->axes[$token['axis']]['default'];
+            if (! isset($value[$mode])) {
+                throw new ThemeGeneratorException(__('Unknown mode :mode for design token :path.', ['mode' => $mode, 'path' => $path]));
+            }
+
+            return $value[$mode];
         }
 
         return $value;
