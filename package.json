@@ -1,0 +1,14 @@
+{
+  "name": "livewire-ui-components-assets",
+  "private": true,
+  "description": "Builds the prebuilt design-system CSS and JS that artisanpack-ui/livewire-ui-components ships. Not published to npm.",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=20.12"
+  },
+  "scripts": {
+    "build:assets": "node scripts/build-assets.mjs",
+    "check:assets": "node scripts/build-assets.mjs --check"
+  }
+}

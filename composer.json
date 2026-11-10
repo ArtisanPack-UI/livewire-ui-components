@@ -28,7 +28,7 @@
         "livewire packages",
         "tailwind",
         "components",
-        "daisyUI",
+        "design system",
         "alpinejs"
     ],
     "require": {
