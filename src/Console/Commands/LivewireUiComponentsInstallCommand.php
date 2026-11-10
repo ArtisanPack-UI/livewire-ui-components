@@ -18,6 +18,7 @@ declare(strict_types=1);
 
 namespace ArtisanPack\LivewireUiComponents\Console\Commands;
 
+use ArtisanPack\LivewireUiComponents\Support\DesignSystemAssets;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
@@ -25,6 +26,7 @@ use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Str;
 use RuntimeException;
 
+use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\select;
 
 /**
@@ -37,13 +39,55 @@ use function Laravel\Prompts\select;
 class LivewireUiComponentsInstallCommand extends Command
 {
     /**
+     * The asset path for apps with a bundler: npm imports, compiled by Vite.
+     *
+     * @since 3.0.0
+     */
+    public const ASSETS_BUNDLER = 'bundler';
+
+    /**
+     * The asset path for apps without a bundler: published prebuilt files.
+     *
+     * @since 3.0.0
+     */
+    public const ASSETS_PREBUILT = 'prebuilt';
+
+    /**
+     * The asset path the installer offers first. Prebuilt until
+     * `@artisanpack-ui/css` and `@artisanpack-ui/behavior` are published to
+     * npm (design-system #81): the bundler path installs them and fails until then.
+     *
+     * @since 3.0.0
+     */
+    public const DEFAULT_ASSETS = self::ASSETS_PREBUILT;
+
+    /**
+     * Whether `NPM_PACKAGES` are on the npm registry yet (design-system #81).
+     * Until they are, the installer doesn't offer the bundler path, and
+     * `--assets=bundler` warns that the packages must come from a link or a
+     * private registry.
+     *
+     * @since 3.0.0
+     */
+    public const NPM_PACKAGES_PUBLISHED = false;
+
+    /**
+     * The npm packages the bundler path installs.
+     *
+     * @since 3.0.0
+     */
+    public const NPM_PACKAGES = ['@artisanpack-ui/css', '@artisanpack-ui/behavior'];
+
+    /**
      * The name and signature of the console command.
      *
      * @var string
      *
      * @since 1.0.0
      */
-    protected $signature = 'livewire-ui-components:install';
+    protected $signature = 'livewire-ui-components:install
+                            {--assets= : How to load the design system: bundler (npm + Vite) or prebuilt (no bundler)}
+                            {--tailwind : With --assets=bundler, also set up the optional Tailwind CSS preset}';
 
     /**
      * The console command description.
@@ -73,7 +117,7 @@ class LivewireUiComponentsInstallCommand extends Command
      */
     public function handle(): void
     {
-        $this->info('❤️  Livewire UI Components installer');
+        $this->info(__('❤️  Livewire UI Components installer'));
 
         // Laravel 12+
         $this->checkForLaravelVersion();
@@ -81,17 +125,30 @@ class LivewireUiComponentsInstallCommand extends Command
         // Install Volt ?
         $shouldInstallVolt = $this->askForVolt();
 
-        // Yarn or Npm or Bun or Pnpm ?
-        $packageManagerCommand = $this->askForPackageInstaller();
+        // Bundler (npm + Vite) or prebuilt assets (no bundler) ?
+        $assets = $this->askForAssetPath();
+
+        // Yarn or Npm or Bun or Pnpm, and Tailwind, for the bundler path only
+        $packageManagerCommand = null;
+        $withTailwind          = false;
+
+        if (self::ASSETS_BUNDLER === $assets) {
+            $packageManagerCommand = $this->askForPackageInstaller();
+            $withTailwind          = $this->askForTailwind();
+        }
 
         // Install Livewire/Volt
         $this->installLivewire($shouldInstallVolt);
 
-        // Setup Tailwind and Daisy
-        $this->setupTailwindDaisy($packageManagerCommand);
+        // Set up the design system's CSS and JS
+        if (null !== $packageManagerCommand) {
+            $this->setupBundlerAssets($packageManagerCommand, $withTailwind);
+        } else {
+            $this->setupPrebuiltAssets();
+        }
 
         // Copy stubs if is brand-new project
-        $this->copyStubs($shouldInstallVolt);
+        $this->copyStubs($shouldInstallVolt, $assets);
 
         // Rename components if Jetstream or Breeze are detected
         $this->renameComponents();
@@ -100,7 +157,7 @@ class LivewireUiComponentsInstallCommand extends Command
         Artisan::call('view:clear');
 
         $this->info("\n");
-        $this->info('✅  Done!');
+        $this->info(__('✅  Done!'));
         $this->info('❤️  Sponsor: https://github.com/sponsors/robsontenorio');
         $this->info("\n");
     }
@@ -114,7 +171,7 @@ class LivewireUiComponentsInstallCommand extends Command
      */
     public function installLivewire(string $shouldInstallVolt): void
     {
-        $this->info("\nInstalling Livewire...\n");
+        $this->info("\n".__('Installing Livewire...')."\n");
 
         $extra = 'Yes' == $shouldInstallVolt
             ? ' livewire/volt && php artisan volt:install'
@@ -126,67 +183,177 @@ class LivewireUiComponentsInstallCommand extends Command
     }
 
     /**
-     * Setup Tailwind CSS and daisyUI.
+     * Set up the design system for apps with a bundler.
      *
-     * Installs the necessary npm packages and configures the CSS file.
+     * Installs `@artisanpack-ui/css` and `@artisanpack-ui/behavior` (plus
+     * Tailwind CSS when asked) and imports them in `resources/css/app.css`
+     * and `resources/js/app.js`, which Vite compiles.
+     *
+     * @since 3.0.0
      *
      * @param  string  $packageManagerCommand  The package manager command to use (npm, yarn, etc.).
-     *
-     * @since 1.0.0
+     * @param  bool  $withTailwind  Whether to set up the optional Tailwind CSS preset too.
      */
-    public function setupTailwindDaisy(string $packageManagerCommand): void
+    public function setupBundlerAssets(string $packageManagerCommand, bool $withTailwind = false): void
     {
-        /**
-         * Install daisyUI + Tailwind
-         */
-        $this->info("\nInstalling daisyUI + Tailwind...\n");
+        $packages = self::NPM_PACKAGES;
 
-        Process::run("$packageManagerCommand daisyui tailwindcss @tailwindcss/vite", function (string $type, string $output): void {
+        if ($withTailwind) {
+            $packages = array_merge($packages, ['tailwindcss', '@tailwindcss/vite']);
+        }
+
+        $this->info("\n".__('Installing the ArtisanPack UI design system...')."\n");
+
+        Process::run($packageManagerCommand.' '.implode(' ', $packages), function (string $type, string $output): void {
             echo $output;
         })->throw();
 
-        /**
-         * Setup app.css
-         */
-        $cssPath = base_path()."{$this->ds}resources{$this->ds}css{$this->ds}app.css";
-        $css     = File::get($cssPath);
+        $cssPath = base_path("resources{$this->ds}css{$this->ds}app.css");
+        $jsPath  = base_path("resources{$this->ds}js{$this->ds}app.js");
 
-        $livewireUiComponents = <<<EOT
-            \n\n
-            /**
-                The lines above are intact.
-                The lines below were added by Livewire UI Components installer.
-            */
+        File::ensureDirectoryExists(dirname($cssPath));
+        File::ensureDirectoryExists(dirname($jsPath));
 
-            /** daisyUI */
-            @plugin "daisyui" {
-                themes: light --default, dark --prefersdark;
-            }
+        $css = File::exists($cssPath) ? File::get($cssPath) : '';
+        $this->warnAboutDaisyUi($css);
 
-            /* Livewire UI Components */
-            @source "../../vendor/artisanpack-ui/livewire-ui-components/resources/views/**/*.php";
-            @source "../../vendor/artisanpack-ui/livewire-ui-components/src/View/Components/**/*.php";
+        File::put($cssPath, $this->addDesignSystemCss($css, $withTailwind));
+        File::put($jsPath, $this->addDesignSystemJs(File::exists($jsPath) ? File::get($jsPath) : ''));
+    }
 
-            /* Theme toggle */
-            @custom-variant dark (&:where(.dark, .dark *));
+    /**
+     * Set up the design system for apps without a bundler.
+     *
+     * Publishes the prebuilt CSS and JS to `public/` and shows the Blade
+     * directives that print their tags.
+     *
+     * @since 3.0.0
+     */
+    public function setupPrebuiltAssets(): void
+    {
+        $this->info("\n".__('Publishing the prebuilt ArtisanPack UI design system assets...')."\n");
 
-            /**
-            * Paginator - Traditional style
-            * Because Laravel defaults does not match well the design of daisyUI.
-            */
+        Artisan::call('vendor:publish', ['--tag' => DesignSystemAssets::PUBLISH_TAG, '--force' => true]);
 
-            .artisanpack-table-pagination span[aria-current="page"] > span {
-                @apply bg-primary text-base-100
-            }
+        $cssPath = base_path("resources{$this->ds}css{$this->ds}app.css");
+        if (File::exists($cssPath)) {
+            $this->warnAboutDaisyUi(File::get($cssPath));
+        }
 
-            .artisanpack-table-pagination button {
-                @apply cursor-pointer
-            }
+        $this->info(__('Add these to your layout\'s <head>, before Livewire\'s script:'));
+        $this->line('    @artisanpackStyles');
+        $this->line('    @artisanpackScripts');
+        $this->info(__('Use @artisanpackStyles(\'headless\') for the headless stylesheet.'));
+        $this->info(__('After each package update, publish again with: php artisan vendor:publish --tag=:tag --force', [
+            'tag' => DesignSystemAssets::PUBLISH_TAG,
+        ]));
+    }
+
+    /**
+     * Add the design system imports to an app's CSS.
+     *
+     * When Tailwind CSS is in the file, whether set up now or already there
+     * (Laravel's default `app.css` imports it), the `apui` layer goes between
+     * Tailwind's base and components, so Preflight never restyles a component
+     * and Tailwind utilities still win. With `$withTailwind`, the Tailwind
+     * preset and the component `@source` paths are added too. Each piece is
+     * added only when it's missing, so running the installer again is safe.
+     *
+     * @since 3.0.0
+     *
+     * @param  string  $css  The current contents of `app.css`.
+     * @param  bool  $withTailwind  Whether to set up the Tailwind CSS preset too.
+     *
+     * @return string The new contents.
+     */
+    public function addDesignSystemCss(string $css, bool $withTailwind = false): string
+    {
+        $tailwindImport = '/^@import\s+[\'"]tailwindcss[\'"][^;\n]*;[^\n]*$/m';
+        $hasTailwind    = 1 === preg_match($tailwindImport, $css);
+        $hasStylesheet  = 1 === preg_match('/@import\s+[\'"]@artisanpack-ui\/css[\'"]/', $css);
+
+        if (! $withTailwind && ! $hasTailwind) {
+            return $hasStylesheet ? $css : "/* ArtisanPack UI design system */\n@import '@artisanpack-ui/css';\n\n".ltrim($css);
+        }
+
+        $imports = [];
+        if (! $hasStylesheet) {
+            $imports[] = "@import '@artisanpack-ui/css';";
+        }
+        if ($withTailwind && ! str_contains($css, '@artisanpack-ui/css/tailwind')) {
+            $imports[] = "@import '@artisanpack-ui/css/tailwind';";
+        }
+        if ([] !== $imports) {
+            $block = implode("\n", $imports);
+            $css   = $hasTailwind
+                ? (string) preg_replace($tailwindImport, "\$0\n{$block}", $css, 1)
+                : "@import 'tailwindcss';\n{$block}\n\n".ltrim($css);
+        }
+
+        if (1 !== preg_match('/@layer\s+theme\s*,\s*base\s*,\s*apui\s*,\s*components\s*,\s*utilities\s*;/', $css)) {
+            $css = "/* ArtisanPack UI design system: the apui layer sits between Tailwind's base and components. */\n"
+                ."@layer theme, base, apui, components, utilities;\n\n".ltrim($css);
+        }
+
+        if ($withTailwind && ! str_contains($css, 'livewire-ui-components/resources/views')) {
+            $css = rtrim($css)."\n".<<<'EOT'
+
+                /* Livewire UI Components */
+                @source "../../vendor/artisanpack-ui/livewire-ui-components/resources/views/**/*.php";
+                @source "../../vendor/artisanpack-ui/livewire-ui-components/src/View/Components/**/*.php";
+
+                EOT;
+        }
+
+        return $css;
+    }
+
+    /**
+     * Warn when the app's CSS still loads daisyUI, which 3.0 no longer uses.
+     *
+     * @since 3.0.0
+     *
+     * @param  string  $css  The contents of `app.css`.
+     */
+    public function warnAboutDaisyUi(string $css): void
+    {
+        if (1 !== preg_match('/@plugin\s+[\'"]daisyui/', $css)) {
+            return;
+        }
+
+        $this->warn(__('resources/css/app.css still loads daisyUI. Livewire UI Components 3.0 is styled by the design system and no longer uses it: remove the @plugin "daisyui" block, any @apply rules that use daisyUI colors, and daisyui from package.json.'));
+    }
+
+    /**
+     * Register the design system's Alpine adapter in an app's JS.
+     *
+     * Livewire starts Alpine, so the plugin registers on `alpine:init`. Vite's
+     * module script runs before Livewire starts Alpine. Leaves the JS
+     * unchanged when it already imports the adapter.
+     *
+     * @since 3.0.0
+     *
+     * @param  string  $js  The current contents of `app.js`.
+     *
+     * @return string The new contents.
+     */
+    public function addDesignSystemJs(string $js): string
+    {
+        if (str_contains($js, '@artisanpack-ui/behavior/alpine')) {
+            return $js;
+        }
+
+        $adapter = <<<'EOT'
+            /* ArtisanPack UI design system: the behavior engine's Alpine adapter. */
+            import apuiBehavior from '@artisanpack-ui/behavior/alpine';
+
+            document.addEventListener('alpine:init', () => window.Alpine.plugin(apuiBehavior));
+
             EOT;
 
-        $css = str($css)->append($livewireUiComponents);
+        $js = rtrim($js);
 
-        File::put($cssPath, $css);
+        return '' === $js ? $adapter : $js."\n\n".$adapter;
     }
 
     /**
@@ -212,11 +379,11 @@ class LivewireUiComponentsInstallCommand extends Command
                 File::put($path, $contents);
 
                 $this->warn('---------------------------------------------');
-                $this->warn("🚨`$target` was detected.🚨");
+                $this->warn(__('🚨`:target` was detected.🚨', ['target' => $target]));
                 $this->warn('---------------------------------------------');
-                $this->warn('A global prefix on Livewire UI Components components was added to avoid name collision.');
-                $this->warn("\n * Example: x-artisanpack-button, x-artisanpack-card ...");
-                $this->warn(' * See config/livewire-ui-components.php');
+                $this->warn(__('A global prefix on Livewire UI Components components was added to avoid name collision.'));
+                $this->warn("\n".__(' * Example: x-artisanpack-button, x-artisanpack-card ...'));
+                $this->warn(__(' * See config/livewire-ui-components.php'));
                 $this->warn('---------------------------------------------');
             }
         });
@@ -229,23 +396,24 @@ class LivewireUiComponentsInstallCommand extends Command
      * if no starter kit is detected.
      *
      * @param  string  $shouldInstallVolt  Whether Volt should be installed ('Yes' or 'No').
+     * @param  string  $assets  The asset path: 'bundler' keeps the layout's `@vite`, 'prebuilt' swaps in the asset directives.
      *
      * @since 1.0.0
      */
-    public function copyStubs(string $shouldInstallVolt): void
+    public function copyStubs(string $shouldInstallVolt, string $assets = self::ASSETS_BUNDLER): void
     {
         $composerJson = File::get(base_path().'/composer.json');
         $hasKit       = str($composerJson)->contains('jetstream') || str($composerJson)->contains('breeze') || str($composerJson)->contains('livewire/flux');
 
         if ($hasKit) {
             $this->warn('---------------------------------------------');
-            $this->warn('🚨 Starter kit detected. Skipping demo components. 🚨');
+            $this->warn(__('🚨 Starter kit detected. Skipping demo components. 🚨'));
             $this->warn('---------------------------------------------');
 
             return;
         }
 
-        $this->info("Copying stubs...\n");
+        $this->info(__('Copying stubs...')."\n");
 
         $routes            = base_path()."{$this->ds}routes";
         $appViewComponents = "app{$this->ds}View{$this->ds}Components";
@@ -260,6 +428,10 @@ class LivewireUiComponentsInstallCommand extends Command
         // Default app layout
         $this->createDirectoryIfNotExists($layoutsPath);
         $this->copyFile(__DIR__.'/../../../stubs/app.blade.php', "{$layoutsPath}{$this->ds}app.blade.php");
+
+        if (self::ASSETS_PREBUILT === $assets) {
+            $this->usePrebuiltAssetsInLayout("{$layoutsPath}{$this->ds}app.blade.php");
+        }
 
         // Livewire blade views
         $this->createDirectoryIfNotExists($livewireBladePath);
@@ -316,13 +488,13 @@ class LivewireUiComponentsInstallCommand extends Command
         }
 
         if (0 == count($options)) {
-            $this->error('You need yarn or npm or bun or pnpm installed.');
+            $this->error(__('You need yarn or npm or bun or pnpm installed.'));
 
             exit;
         }
 
         return select(
-            label: 'Install with ...',
+            label: __('Install with ...'),
             options: $options,
         );
     }
@@ -339,9 +511,80 @@ class LivewireUiComponentsInstallCommand extends Command
     public function askForVolt(): string
     {
         return select(
-            'Also install `livewire/volt` ?',
+            __('Also install `livewire/volt` ?'),
             ['Yes', 'No'],
-            hint: 'No matter what is your choice, it always installs `livewire/livewire`',
+            hint: __('No matter what is your choice, it always installs `livewire/livewire`'),
+        );
+    }
+
+    /**
+     * Ask how the app loads the design system's CSS and JS.
+     *
+     * Reads `--assets` when given. Otherwise asks: with a bundler, the npm
+     * packages are imported and compiled by Vite; without one, the prebuilt
+     * files this package ships are published to `public/`.
+     *
+     * @since 3.0.0
+     *
+     * @throws RuntimeException When `--assets` is not 'bundler' or 'prebuilt'.
+     *
+     * @return string 'bundler' or 'prebuilt'.
+     */
+    public function askForAssetPath(): string
+    {
+        $option = $this->option('assets');
+
+        if (null !== $option && '' !== $option) {
+            if (! in_array($option, [self::ASSETS_BUNDLER, self::ASSETS_PREBUILT], true)) {
+                throw new RuntimeException(__('The --assets option must be ":bundler" or ":prebuilt".', [
+                    'bundler'  => self::ASSETS_BUNDLER,
+                    'prebuilt' => self::ASSETS_PREBUILT,
+                ]));
+            }
+
+            if (self::ASSETS_BUNDLER === $option && ! static::NPM_PACKAGES_PUBLISHED) {
+                $this->warn(__('The design system npm packages (:packages) aren\'t on npm yet. The bundler path only works if you have them linked or from a private registry.', [
+                    'packages' => implode(', ', self::NPM_PACKAGES),
+                ]));
+            }
+
+            return $option;
+        }
+
+        if (! static::NPM_PACKAGES_PUBLISHED) {
+            $this->info(__('Using the prebuilt design system files. The bundler path (npm + Vite) arrives once the npm packages are published.'));
+
+            return self::ASSETS_PREBUILT;
+        }
+
+        return (string) select(
+            label: __('How should your app load the design system CSS and JS?'),
+            options: [
+                self::ASSETS_PREBUILT => __('Without a bundler: publish the prebuilt files'),
+                self::ASSETS_BUNDLER  => __('With a bundler: npm packages, compiled by Vite'),
+            ],
+            default: self::DEFAULT_ASSETS,
+        );
+    }
+
+    /**
+     * Ask whether to set up the optional Tailwind CSS preset.
+     *
+     * Tailwind is optional: the design system's CSS is plain CSS. The preset
+     * adds utilities that read the design tokens.
+     *
+     * @since 3.0.0
+     */
+    public function askForTailwind(): bool
+    {
+        if ($this->option('tailwind') || ! $this->input->isInteractive()) {
+            return (bool) $this->option('tailwind');
+        }
+
+        return confirm(
+            label: __('Also use Tailwind CSS with the design system?'),
+            default: false,
+            hint: __('Optional. Adds Tailwind utilities that read the design tokens.'),
         );
     }
 
@@ -355,10 +598,29 @@ class LivewireUiComponentsInstallCommand extends Command
     public function checkForLaravelVersion(): void
     {
         if (version_compare(app()->version(), '12.0', '<')) {
-            $this->error('❌  Laravel 12 or above required.');
+            $this->error(__('❌  Laravel 12 or above required.'));
 
             exit;
         }
+    }
+
+    /**
+     * Swap the layout's `@vite` line for the prebuilt asset directives.
+     *
+     * @since 3.0.0
+     *
+     * @param  string  $layoutPath  The copied layout file.
+     */
+    private function usePrebuiltAssetsInLayout(string $layoutPath): void
+    {
+        $layout = (string) preg_replace(
+            '/^([ \t]*)@vite\(.*\)[ \t]*$/m',
+            "$1@artisanpackStyles\n$1@artisanpackScripts",
+            File::get($layoutPath),
+            1,
+        );
+
+        File::put($layoutPath, $layout);
     }
 
     /**

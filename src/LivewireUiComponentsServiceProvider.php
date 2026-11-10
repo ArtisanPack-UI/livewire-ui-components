@@ -24,6 +24,7 @@ use ArtisanPack\LivewireUiComponents\Console\Commands\GeneratePresetCommand;
 use ArtisanPack\LivewireUiComponents\Console\Commands\GenerateThemeCss;
 use ArtisanPack\LivewireUiComponents\Console\Commands\LivewireUiComponentsBootcampCommand;
 use ArtisanPack\LivewireUiComponents\Console\Commands\LivewireUiComponentsInstallCommand;
+use ArtisanPack\LivewireUiComponents\Support\DesignSystemAssets;
 use ArtisanPack\LivewireUiComponents\Theming\DesignTokens;
 use ArtisanPack\LivewireUiComponents\Theming\GlassSurface;
 use ArtisanPack\LivewireUiComponents\Theming\PresetGenerator;
@@ -182,6 +183,9 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
             'artisanpack-assets',
         );
 
+        // The prebuilt design-system CSS and JS, for apps without a bundler (3.0).
+        $this->publishes($this->designSystemAssetPaths(), DesignSystemAssets::PUBLISH_TAG);
+
         // Publish glass design tokens CSS separately for easy customization
         $this->publishes(
             [
@@ -247,6 +251,59 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
     {
         $this->registerScopeDirective();
         $this->registerIslandDirectives();
+        $this->registerAssetDirectives();
+    }
+
+    /**
+     * The prebuilt design-system files and where they're published: the
+     * `assets.path` config, under the public directory. The manifest goes too,
+     * because the directives read the published files' hashes from it.
+     *
+     * @since 3.0.0
+     *
+     * @return array<string, string> Package paths keyed to public paths.
+     */
+    public function designSystemAssetPaths(): array
+    {
+        $target = public_path(DesignSystemAssets::publicPath());
+
+        return [
+            __DIR__.'/../dist/css'           => $target.'/css',
+            __DIR__.'/../dist/js'            => $target.'/js',
+            __DIR__.'/../dist/manifest.json' => $target.'/manifest.json',
+        ];
+    }
+
+    /**
+     * Register the @artisanpackStyles and @artisanpackScripts Blade directives.
+     *
+     * They print the tags for the prebuilt design-system assets published with
+     * the `artisanpack-design-system-assets` tag, with a content hash on each
+     * URL for cache-busting. Put both in `<head>`: the script must run before
+     * Livewire's script, which Livewire injects at the end of `<body>`.
+     *
+     * Usage:
+     * - @artisanpackStyles - The stylesheet set in `assets.stylesheet` (`default`)
+     * - @artisanpackStyles('headless') - The headless stylesheet, without component CSS
+     * - @artisanpackScripts - The behavior engine's Alpine adapter
+     *
+     * @since 3.0.0
+     */
+    public function registerAssetDirectives(): void
+    {
+        Blade::directive(
+            'artisanpackStyles',
+            function ($expression) {
+                return '<?php echo app(\\'.DesignSystemAssets::class."::class)->styles({$expression}); ?>";
+            },
+        );
+
+        Blade::directive(
+            'artisanpackScripts',
+            function () {
+                return '<?php echo app(\\'.DesignSystemAssets::class.'::class)->scripts(); ?>';
+            },
+        );
     }
 
     /**
@@ -410,6 +467,9 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         $this->app->singleton(PresetGenerator::class);
         $this->app->singleton(TokenThemes::class);
         $this->app->singleton(GlassSurface::class);
+
+        // The prebuilt design-system assets (#42).
+        $this->app->singleton(DesignSystemAssets::class);
     }
 
     /**

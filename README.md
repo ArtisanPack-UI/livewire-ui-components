@@ -1,6 +1,6 @@
 # ArtisanPack UI Livewire UI Components
 
-ArtisanPack UI Livewire UI Components is a comprehensive set of UI components for Livewire powered by daisyUI and Tailwind CSS. This package provides a collection of beautiful, responsive, and customizable components to accelerate your Laravel application development.
+ArtisanPack UI Livewire UI Components is a comprehensive set of UI components for Livewire, styled by the ArtisanPack UI Design System. This package provides a collection of beautiful, responsive, and customizable components to accelerate your Laravel application development.
 
 ## 🚀 Quick Start
 
@@ -12,10 +12,41 @@ composer require artisanpack-ui/livewire-ui-components
 
 # Run the interactive installer
 php artisan livewire-ui-components:install
-
-# Compile your assets
-npm run dev
 ```
+
+The installer asks how your app loads the design system's CSS and JS. There are two paths. Until the npm packages are published, it uses the prebuilt files without asking; pass `--assets=bundler` if you have the packages linked or from a private registry.
+
+**With a bundler (Vite).** The installer adds `@artisanpack-ui/css` and `@artisanpack-ui/behavior` from npm and imports them. Tailwind CSS is optional.
+
+```css
+/* resources/css/app.css */
+@import '@artisanpack-ui/css'; /* or '@artisanpack-ui/css/headless' */
+```
+
+```js
+// resources/js/app.js
+import apuiBehavior from '@artisanpack-ui/behavior/alpine';
+
+document.addEventListener('alpine:init', () => window.Alpine.plugin(apuiBehavior));
+```
+
+Then run `npm run dev`.
+
+**Without a bundler.** The package ships the prebuilt CSS and JS. Publish them, then add the directives to your layout's `<head>`. The script must load before Livewire's script, and `<head>` guarantees that.
+
+```bash
+php artisan vendor:publish --tag=artisanpack-design-system-assets --force
+```
+
+```blade
+<head>
+    {{-- ... --}}
+    @artisanpackStyles   {{-- or @artisanpackStyles('headless') --}}
+    @artisanpackScripts
+</head>
+```
+
+Publish again after each package update. Each URL carries a content hash, so browsers pick up the new files.
 
 ### Basic Usage
 
@@ -41,7 +72,7 @@ npm run dev
 
 - **🎯 70+ Pre-built Components**: From simple inputs to complex data tables and charts
 - **⚡ TALL Stack Integration**: Built specifically for Tailwind CSS, Alpine.js, Laravel, and Livewire
-- **🎨 DaisyUI Powered**: Leverages the beautiful daisyUI component library for consistent styling
+- **🎨 Design System Styling**: Plain CSS from the ArtisanPack UI Design System, with or without Tailwind CSS, and a headless option
 - **🔧 Livewire 3 & 4 Compatible**: Fully compatible with Livewire 3 and 4
 - **🎨 Customizable Theming**: Generate custom color themes with a simple Artisan command
 - **📱 Responsive Design**: All components are fully responsive out of the box

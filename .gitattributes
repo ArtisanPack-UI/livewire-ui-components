@@ -46,6 +46,15 @@
 /CONTRIBUTING.md export-ignore
 /CHANGELOG.md export-ignore
 
+# Asset build (the built files in dist/ ship; the build script does not)
+/scripts export-ignore
+/package.json export-ignore
+
+# Generated files whose exact bytes are hashed or compared: no line-ending conversion
+/dist/** -text
+/resources/design-system/tokens.php -text
+/tests/Fixtures/design-system/generator/*.json -text
+
 # Pint
 /pint.json export-ignore
 /pint-setup.php export-ignore

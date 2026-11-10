@@ -223,4 +223,29 @@ return [
 			// 'ease-in-out' => null,  // Default: cubic-bezier(0.4, 0, 0.2, 1)
 		],
 	],
+
+	/*
+    |--------------------------------------------------------------------------
+    | Prebuilt Design System Assets
+    |--------------------------------------------------------------------------
+    |
+    | For apps without a bundler. Publish the assets with
+    | `php artisan vendor:publish --tag=artisanpack-design-system-assets`
+    | and put `@artisanpackStyles` and `@artisanpackScripts` in your layout's
+    | <head>, before Livewire's script.
+    |
+    | - stylesheet: 'default' (component CSS included) or 'headless' (reset,
+    |   tokens and utilities only). `@artisanpackStyles('headless')` overrides
+    |   it per layout.
+    | - path: where the assets are published, relative to the public directory.
+    |
+    | Apps with a bundler import `@artisanpack-ui/css` and
+    | `@artisanpack-ui/behavior/alpine` from npm instead.
+    |
+    | @since 3.0.0
+    */
+	'assets' => [
+		'stylesheet' => 'default',
+		'path'       => 'vendor/artisanpack-ui/design-system',
+	],
 ];

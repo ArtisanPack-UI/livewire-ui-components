@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
-namespace ArtisanPack\LivewireUiComponents\Traits\Toast;
+use ArtisanPack\LivewireUiComponents\Traits\Toast;
+use Illuminate\Support\Collection;
+use Livewire\Component;
 
 class Welcome extends Component
 {
