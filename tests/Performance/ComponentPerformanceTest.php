@@ -30,8 +30,8 @@ class ComponentPerformanceTest extends TestCase
     public function button_component_renders_quickly(): void
     {
         $component = new \ArtisanPack\LivewireUiComponents\View\Components\Button(
-            label: 'Test Button',
             color: 'primary',
+            leadingIcon: 'plus',
         );
 
         $performance = TestHelpers::measureRenderingPerformance($component, 100);
@@ -48,9 +48,7 @@ class ComponentPerformanceTest extends TestCase
     #[Test]
     public function repeated_rendering_does_not_leak_memory(): void
     {
-        $component = new \ArtisanPack\LivewireUiComponents\View\Components\Button(
-            label: 'Test Button',
-        );
+        $component = new \ArtisanPack\LivewireUiComponents\View\Components\Button;
 
         // Warm up
         for ($i = 0; $i < 10; $i++) {

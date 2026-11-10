@@ -58,6 +58,6 @@
     </div>
 
     @if($dismissible)
-        <x-artisanpack-button icon="o-x-mark" @click="show = false" class="btn-xs btn-circle btn-ghost static self-start end-0" />
+        <x-artisanpack-button variant="ghost" color="neutral" size="xs" icon-only leading-icon="o-x-mark" :aria-label="__( 'Close' )" @click="show = false" class="static self-start end-0" />
     @endif
 </div>

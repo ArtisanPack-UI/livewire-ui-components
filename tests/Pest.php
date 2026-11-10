@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use ArtisanPackUI\DesignSystem\Testing\Pest\Expectations;
+
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -30,6 +32,9 @@ expect()->extend('toBeOne', function () {
     return $this->toBe(1);
 });
 
+// toMatchManifest: Blade parity with the design-system manifests (D-016).
+Expectations::register();
+
 /*
 |--------------------------------------------------------------------------
 | Functions
@@ -44,4 +49,22 @@ expect()->extend('toBeOne', function () {
 function something(): void
 {
     // ..
+}
+
+/**
+ * Parses rendered markup for XPath assertions on the design-system parts.
+ *
+ * @param  string  $html  The markup.
+ *
+ * @return DOMXPath The query object.
+ */
+function designSystemDom(string $html): DOMXPath
+{
+    $document = new DOMDocument;
+    $previous = libxml_use_internal_errors(true);
+    $document->loadHTML('<?xml encoding="utf-8"?><!doctype html><html><body>'.$html.'</body></html>');
+    libxml_clear_errors();
+    libxml_use_internal_errors($previous);
+
+    return new DOMXPath($document);
 }

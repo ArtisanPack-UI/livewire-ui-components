@@ -2,200 +2,166 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
-
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
+use ArtisanPack\LivewireUiComponents\Support\IconRegistry;
 use ArtisanPack\LivewireUiComponents\View\Components\Select;
-use Error;
-use RuntimeException;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\MessageBag;
+use Illuminate\Support\ViewErrorBag;
+
+/*
+ * Select (#46): the design-system markup contract, options, the placeholder,
+ * attribute routing and the error lookup. The manifest parity check is in
+ * tests/Feature/DesignSystemParityTest.php.
+ */
 
 /**
- * Comprehensive unit tests for the Select component.
+ * The options' value, label, selected and disabled state.
  *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+ * @param  string  $html  The rendered select.
+ *
+ * @return list<array{value: string, label: string, selected: bool, disabled: bool}> The options.
  */
-class SelectComponentTest extends ComponentTestCase
+function selectOptions(string $html): array
 {
-    protected string $componentClass = Select::class;
-
-    protected array $defaultProperties = [
-        'hintClass'      => 'fieldset-label',
-        'inline'         => false,
-        'optionValue'    => 'id',
-        'optionLabel'    => 'name',
-        'options'        => [],
-        'errorClass'     => 'text-error',
-        'omitError'      => false,
-        'firstErrorOnly' => false,
-    ];
-
-    protected array $requiredProperties = [];
-
-    public function test_select_string_properties(): void
-    {
-        $stringProperties = ['id', 'label', 'icon', 'iconRight', 'hint', 'hintClass', 'prefix', 'suffix', 'placeholder', 'placeholderValue', 'optionValue', 'optionLabel', 'errorField', 'errorClass'];
-        $testValues       = ComponentDataFactory::sampleTexts();
-
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
-
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
+    $options = [];
+    foreach (designSystemDom($html)->query('//select/option') as $option) {
+        $options[] = [
+            'value'    => $option->getAttribute('value'),
+            'label'    => $option->textContent,
+            'selected' => $option->hasAttribute('selected'),
+            'disabled' => $option->hasAttribute('disabled'),
+        ];
     }
 
-    public function test_select_boolean_properties(): void
-    {
-        $booleanProperties = ['inline', 'omitError', 'firstErrorOnly'];
-
-        foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
-            $this->assertTrue($component->$property);
-
-            $component = $this->createComponent([$property => false]);
-            $this->assertFalse($component->$property);
-        }
-    }
-
-    public function test_select_model_name_method(): void
-    {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'modelName')) {
-            try {
-                $result = $component->modelName();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_select_error_field_name_method(): void
-    {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'errorFieldName')) {
-            try {
-                $result = $component->errorFieldName();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_select_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
-
-    public function test_select_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'Select should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
-
-    public function test_select_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
-
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
-
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_select_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'Select rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
+    return $options;
 }
+
+test('the fixture renders the contract markup in order', function (): void {
+    $html = Blade::render(
+        '<x-artisanpack-select id="country" label="Country" :options="$options" required hint="Where the account is registered." error="Choose a country." leading-icon="user" />',
+        ['options' => [['value' => 'us', 'label' => 'United States'], ['value' => 'ca', 'label' => 'Canada']]],
+    );
+    $dom = designSystemDom($html);
+
+    $parts = [];
+    foreach ($dom->query('//*[@data-scope="select"]') as $element) {
+        $parts[] = $element->getAttribute('data-part');
+    }
+
+    $control = $dom->query('//select')->item(0);
+
+    expect($parts)->toBe(['label', 'required', 'box', 'icon', 'control', 'indicator', 'hint', 'error'])
+        ->and($html)->toContain('<span data-scope="select" data-part="indicator" aria-hidden="true">'.IconRegistry::svg('chevron-down').'</span>')
+        ->and($html)->toContain('<p data-scope="select" data-part="error" id="country-error">'.IconRegistry::svg('circle-alert').'Choose a country.</p>')
+        ->and($control->getAttribute('id'))->toBe('country')
+        ->and($control->hasAttribute('required'))->toBeTrue()
+        ->and($control->getAttribute('aria-invalid'))->toBe('true')
+        ->and($control->getAttribute('aria-describedby'))->toBe('country-hint country-error')
+        ->and($dom->query('//div[contains(@class, "apui-select")]')->item(0)->getAttribute('data-size'))->toBe('md');
+});
+
+test('the placeholder comes first, translated by default', function (): void {
+    expect(selectOptions(Blade::render('<x-artisanpack-select aria-label="Plan" :options="[\'One\']" />')))->toBe([
+        ['value' => '', 'label' => 'Select…', 'selected' => true, 'disabled' => false],
+        ['value' => 'One', 'label' => 'One', 'selected' => false, 'disabled' => false],
+    ]);
+});
+
+test('the placeholder is disabled when required, custom when given and dropped when empty', function (): void {
+    expect(selectOptions(Blade::render('<x-artisanpack-select aria-label="Plan" required />'))[0]['disabled'])->toBeTrue()
+        ->and(selectOptions(Blade::render('<x-artisanpack-select aria-label="Plan" placeholder="Pick one" />'))[0]['label'])->toBe('Pick one')
+        ->and(selectOptions(Blade::render('<x-artisanpack-select aria-label="Plan" placeholder="" :options="[\'One\']" />')))->toHaveCount(1);
+});
+
+test('options accept strings, arrays, objects and collections', function (): void {
+    $options = collect([
+        'Plain',
+        ['value' => 2, 'label' => 'Two'],
+        (object) ['value' => 'three', 'label' => 'Three', 'disabled' => true],
+    ]);
+
+    expect(selectOptions(Blade::render('<x-artisanpack-select aria-label="N" placeholder="" :options="$options" />', ['options' => $options])))->toBe([
+        ['value' => 'Plain', 'label' => 'Plain', 'selected' => false, 'disabled' => false],
+        ['value' => '2', 'label' => 'Two', 'selected' => false, 'disabled' => false],
+        ['value' => 'three', 'label' => 'Three', 'selected' => false, 'disabled' => true],
+    ]);
+});
+
+test('the value selects its option, compared as a string', function (): void {
+    $options = selectOptions(Blade::render(
+        '<x-artisanpack-select aria-label="N" :options="$options" :value="2" />',
+        ['options' => [['value' => 1, 'label' => 'One'], ['value' => 2, 'label' => 'Two']]],
+    ));
+
+    expect(array_column($options, 'selected'))->toBe([false, false, true]);
+});
+
+test('an empty value selects the placeholder, even when required', function (): void {
+    expect(selectOptions(Blade::render('<x-artisanpack-select aria-label="N" value="" :options="[\'One\']" />'))[0]['selected'])->toBeTrue()
+        ->and(selectOptions(Blade::render('<x-artisanpack-select aria-label="N" required :options="[\'One\']" />'))[0])->toBe(['value' => '', 'label' => 'Select…', 'selected' => true, 'disabled' => true])
+        ->and(selectOptions(Blade::render('<x-artisanpack-select aria-label="N" value="One" :options="[\'One\']" />'))[0]['selected'])->toBeFalse();
+});
+
+test('option children render after the options', function (): void {
+    $html = Blade::render(<<<'BLADE'
+        <x-artisanpack-select aria-label="Plan" placeholder="" :options="['starter']">
+            <option value="team">Team</option>
+            <option value="enterprise" disabled>Enterprise</option>
+        </x-artisanpack-select>
+        BLADE);
+
+    expect(array_column(selectOptions($html), 'value'))->toBe(['starter', 'team', 'enterprise']);
+});
+
+test('class lands on the root and every other attribute on the select', function (): void {
+    $dom     = designSystemDom(Blade::render('<x-artisanpack-select class="w-64" wire:model.live="country" name="country" label="Country" />'));
+    $root    = $dom->query('//div[contains(@class, "apui-select")]')->item(0);
+    $control = $dom->query('//select')->item(0);
+
+    expect($root->getAttribute('class'))->toBe('apui-select w-64')
+        ->and($root->hasAttribute('wire:model.live'))->toBeFalse()
+        ->and($control->getAttribute('wire:model.live'))->toBe('country')
+        ->and($control->getAttribute('name'))->toBe('country')
+        ->and($control->getAttribute('id'))->toBe('apui-select-country-'.substr(md5('country'), 0, 8))
+        ->and($dom->query('//label')->item(0)->getAttribute('for'))->toBe($control->getAttribute('id'));
+});
+
+test('the error comes from $errors for the wire:model name or errorField', function (): void {
+    view()->share('errors', (new ViewErrorBag)->put('default', new MessageBag([
+        'country'         => 'Choose a country.',
+        'address.country' => 'Choose a shipping country.',
+    ])));
+
+    expect(Blade::render('<x-artisanpack-select wire:model="country" label="Country" />'))->toContain('Choose a country.')
+        ->and(Blade::render('<x-artisanpack-select wire:model="country" error-field="address.country" label="Country" />'))->toContain('Choose a shipping country.');
+});
+
+test('disabled sets the select and the root', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-select disabled label="Region" />'));
+
+    expect($dom->query('//select')->item(0)->hasAttribute('disabled'))->toBeTrue()
+        ->and($dom->query('//div[contains(@class, "apui-select")]')->item(0)->hasAttribute('data-disabled'))->toBeTrue();
+});
+
+test('the icon slot overrides the leading icon', function (): void {
+    $html = Blade::render(<<<'BLADE'
+        <x-artisanpack-select label="Plan" leading-icon="user">
+            <x-slot:icon><svg data-custom="start"></svg></x-slot:icon>
+        </x-artisanpack-select>
+        BLADE);
+
+    expect($html)->toContain('<span data-scope="select" data-part="icon" aria-hidden="true"><svg data-custom="start"></svg></span>');
+});
+
+test('option labels are escaped', function (): void {
+    expect(Blade::render('<x-artisanpack-select aria-label="N" :options="[\'<b>x</b>\']" />'))->not->toContain('<b>x</b>');
+});
+
+test('the constructor declares only the manifest props', function (): void {
+    $parameters = array_map(
+        static fn (ReflectionParameter $parameter): string => $parameter->getName(),
+        (new ReflectionClass(Select::class))->getConstructor()->getParameters(),
+    );
+
+    expect($parameters)->toBe(['size', 'options', 'label', 'hint', 'error', 'invalid', 'disabled', 'required', 'placeholder', 'value', 'leadingIcon', 'errorField', 'classes']);
+});

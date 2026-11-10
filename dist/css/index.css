@@ -1130,6 +1130,1013 @@
   }
 }
 /*
+ * Button (#44). Root `.apui-button` on a native <button>, or an <a> with href.
+ * Parts: icon, label, iconEnd, spinner. See design/components/Button.
+ *
+ * One-off colors go through the override hooks, not the color prop:
+ *   style="--apui-button-bg: #7c3aed; --apui-button-fg: #fff"
+ */
+@layer apui.components {
+  .apui-button {
+    --apui-_h: var(--apui-control-height-md);
+    --apui-_px: 16px;
+    --apui-_gap: 8px;
+    --apui-_fs: var(--apui-type-body-md-font-size);
+    --apui-_lh: var(--apui-type-body-md-line-height);
+    --apui-_ic: var(--apui-icon-size-md);
+    --apui-_border: transparent;
+
+    /* The tone every variant reads; data-color reassigns it. Primary by default. */
+    --apui-_solid: var(--apui-color-primary);
+    --apui-_solid-hover: var(--apui-color-primary-hover);
+    --apui-_solid-border: transparent;
+    --apui-_on-solid: var(--apui-color-primary-foreground);
+    --apui-_soft: var(--apui-color-primary-soft);
+    --apui-_on-soft: var(--apui-color-primary-soft-foreground);
+    --apui-_tone-border: var(--apui-color-primary-border);
+    --apui-_tone-text: var(--apui-color-primary-text);
+
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--apui-_gap);
+    box-sizing: border-box;
+    block-size: var(--apui-_h);
+    min-inline-size: 0;
+    margin: 0;
+    padding-block: 0;
+    padding-inline: var(--apui-_px);
+    border: var(--apui-border-width) solid var(--apui-_border);
+    border-radius: var(--apui-button-radius);
+    background-color: var(--apui-button-bg, var(--apui-_solid));
+    color: var(--apui-button-fg, var(--apui-_on-solid));
+    font-family: var(--apui-font-family-sans);
+    font-size: var(--apui-_fs);
+    font-weight: var(--apui-button-weight);
+    line-height: var(--apui-_lh);
+    white-space: nowrap;
+    text-decoration: none;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      background-color var(--apui-motion-duration-fast) var(--apui-motion-ease-standard),
+      border-color var(--apui-motion-duration-fast) var(--apui-motion-ease-standard),
+      color var(--apui-motion-duration-fast) var(--apui-motion-ease-standard);
+  }
+
+  .apui-button:focus-visible {
+    outline: var(--apui-focus-ring-width) solid transparent;
+    box-shadow:
+      0 0 0 var(--apui-focus-ring-offset) var(--apui-focus-ring-offset-color),
+      0 0 0 calc(var(--apui-focus-ring-offset) + var(--apui-focus-ring-width))
+        var(--apui-focus-ring-color);
+  }
+
+  /* Sizes */
+  .apui-button[data-size='xs'] {
+    --apui-_h: var(--apui-control-height-xs);
+    --apui-_px: 8px;
+    --apui-_gap: 4px;
+    --apui-_fs: var(--apui-type-caption-font-size);
+    --apui-_lh: var(--apui-type-caption-line-height);
+    --apui-_ic: var(--apui-icon-size-sm);
+  }
+
+  .apui-button[data-size='sm'] {
+    --apui-_h: var(--apui-control-height-sm);
+    --apui-_px: 12px;
+    --apui-_gap: 6px;
+    --apui-_fs: var(--apui-type-body-sm-font-size);
+    --apui-_lh: var(--apui-type-body-sm-line-height);
+    --apui-_ic: var(--apui-icon-size-sm);
+  }
+
+  .apui-button[data-size='lg'] {
+    --apui-_h: var(--apui-control-height-lg);
+    --apui-_px: 20px;
+    --apui-_fs: 15px;
+    --apui-_lh: 22px;
+    --apui-_ic: var(--apui-icon-size-lg);
+  }
+
+  .apui-button[data-size='xl'] {
+    --apui-_h: var(--apui-control-height-xl);
+    --apui-_px: 24px;
+    --apui-_fs: var(--apui-type-body-lg-font-size);
+    --apui-_lh: var(--apui-type-body-lg-line-height);
+    --apui-_ic: var(--apui-icon-size-lg);
+  }
+
+  /* xs keeps a 24px hit area (WCAG 2.5.8) without growing visually. */
+  .apui-button[data-size='xs']::after {
+    content: '';
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    inline-size: max(100%, var(--apui-target-size-min));
+    block-size: max(100%, var(--apui-target-size-min));
+    translate: -50% -50%;
+  }
+
+  .apui-button[data-size='xs']:dir(rtl)::after {
+    translate: 50% -50%;
+  }
+
+  .apui-button[data-icon-only] {
+    inline-size: var(--apui-_h);
+    padding-inline: 0;
+  }
+
+  /* Colors: reassign the tone. */
+  .apui-button[data-color='secondary'] {
+    --apui-_solid: var(--apui-color-secondary);
+    --apui-_solid-hover: var(--apui-color-secondary-hover);
+    --apui-_on-solid: var(--apui-color-secondary-foreground);
+    --apui-_soft: var(--apui-color-secondary-soft);
+    --apui-_on-soft: var(--apui-color-secondary-soft-foreground);
+    --apui-_tone-border: var(--apui-color-secondary-border);
+    --apui-_tone-text: var(--apui-color-secondary-text);
+  }
+
+  .apui-button[data-color='accent'] {
+    --apui-_solid: var(--apui-color-accent);
+    --apui-_solid-hover: var(--apui-color-accent-hover);
+    --apui-_solid-border: var(--apui-color-accent-border);
+    --apui-_on-solid: var(--apui-color-accent-foreground);
+    --apui-_soft: var(--apui-color-accent-soft);
+    --apui-_on-soft: var(--apui-color-accent-soft-foreground);
+    --apui-_tone-border: var(--apui-color-accent-border);
+    --apui-_tone-text: var(--apui-color-accent-text);
+  }
+
+  .apui-button[data-color='neutral'] {
+    --apui-_solid: var(--apui-color-neutral);
+    --apui-_solid-hover: var(--apui-color-neutral-hover);
+    --apui-_on-solid: var(--apui-color-neutral-foreground);
+    --apui-_soft: var(--apui-color-neutral-soft);
+    --apui-_on-soft: var(--apui-color-neutral-soft-foreground);
+    --apui-_tone-border: var(--apui-color-neutral-border);
+    --apui-_tone-text: var(--apui-color-neutral-text);
+  }
+
+  .apui-button[data-color='success'] {
+    --apui-_solid: var(--apui-color-success);
+    --apui-_solid-hover: var(--apui-color-success-hover);
+    --apui-_on-solid: var(--apui-color-success-foreground);
+    --apui-_soft: var(--apui-color-success-soft);
+    --apui-_on-soft: var(--apui-color-success-soft-foreground);
+    --apui-_tone-border: var(--apui-color-success-border);
+    --apui-_tone-text: var(--apui-color-success-text);
+  }
+
+  .apui-button[data-color='warning'] {
+    --apui-_solid: var(--apui-color-warning);
+    --apui-_solid-hover: var(--apui-color-warning-hover);
+    --apui-_solid-border: var(--apui-color-warning-border);
+    --apui-_on-solid: var(--apui-color-warning-foreground);
+    --apui-_soft: var(--apui-color-warning-soft);
+    --apui-_on-soft: var(--apui-color-warning-soft-foreground);
+    --apui-_tone-border: var(--apui-color-warning-border);
+    --apui-_tone-text: var(--apui-color-warning-text);
+  }
+
+  .apui-button[data-color='error'] {
+    --apui-_solid: var(--apui-color-error);
+    --apui-_solid-hover: var(--apui-color-error-hover);
+    --apui-_on-solid: var(--apui-color-error-foreground);
+    --apui-_soft: var(--apui-color-error-soft);
+    --apui-_on-soft: var(--apui-color-error-soft-foreground);
+    --apui-_tone-border: var(--apui-color-error-border);
+    --apui-_tone-text: var(--apui-color-error-text);
+  }
+
+  .apui-button[data-color='info'] {
+    --apui-_solid: var(--apui-color-info);
+    --apui-_solid-hover: var(--apui-color-info-hover);
+    --apui-_on-solid: var(--apui-color-info-foreground);
+    --apui-_soft: var(--apui-color-info-soft);
+    --apui-_on-soft: var(--apui-color-info-soft-foreground);
+    --apui-_tone-border: var(--apui-color-info-border);
+    --apui-_tone-text: var(--apui-color-info-text);
+  }
+
+  /* Variants */
+  .apui-button,
+  .apui-button[data-variant='solid'] {
+    --apui-_border: var(--apui-_solid-border);
+  }
+
+  .apui-button[data-variant='solid']:not(:disabled, [aria-disabled='true']):hover {
+    background-color: var(--apui-button-bg-hover, var(--apui-_solid-hover));
+  }
+
+  .apui-button[data-variant='soft'] {
+    --apui-_border: transparent;
+
+    background-color: var(--apui-button-bg, var(--apui-_soft));
+    color: var(--apui-button-fg, var(--apui-_on-soft));
+  }
+
+  .apui-button[data-variant='outline'] {
+    --apui-_border: var(--apui-_tone-border);
+
+    background-color: transparent;
+    color: var(--apui-button-fg, var(--apui-_tone-text));
+  }
+
+  .apui-button[data-variant='ghost'] {
+    --apui-_border: transparent;
+
+    background-color: transparent;
+    color: var(--apui-button-fg, var(--apui-_tone-text));
+  }
+
+  /* Neutral outline and ghost read as default text, not as the neutral tone. */
+  .apui-button[data-color='neutral']:is([data-variant='outline'], [data-variant='ghost']):not(
+      :disabled,
+      [aria-disabled='true']
+    ) {
+    color: var(--apui-button-fg, var(--apui-text-default));
+  }
+
+  .apui-button:is([data-variant='soft'], [data-variant='outline'], [data-variant='ghost']):not(
+      :disabled,
+      [aria-disabled='true']
+    ):hover {
+    background-image: linear-gradient(var(--apui-state-hover), var(--apui-state-hover));
+  }
+
+  .apui-button:not([data-variant='link'], :disabled, [aria-disabled='true']):active {
+    background-image: linear-gradient(var(--apui-state-pressed), var(--apui-state-pressed));
+  }
+
+  .apui-button[data-variant='link'] {
+    --apui-_border: transparent;
+
+    block-size: auto;
+    padding: 0;
+    border-radius: var(--apui-radius-xs);
+    background: none;
+    color: var(--apui-button-fg, var(--apui-_tone-text));
+    text-underline-offset: 3px;
+  }
+
+  .apui-button[data-variant='link']:hover {
+    text-decoration: underline;
+  }
+
+  /* Disabled: a sunken surface and disabled text, never opacity alone. */
+  .apui-button:is(:disabled, [aria-disabled='true']) {
+    --apui-_border: transparent;
+
+    background: var(--apui-surface-sunken);
+    color: var(--apui-text-disabled);
+    cursor: not-allowed;
+  }
+
+  .apui-button:is([data-variant='ghost'], [data-variant='link']):is(
+      :disabled,
+      [aria-disabled='true']
+    ) {
+    background: transparent;
+  }
+
+  .apui-button[data-variant='outline']:is(:disabled, [aria-disabled='true']) {
+    --apui-_border: var(--apui-border-muted);
+
+    background: transparent;
+  }
+
+  .apui-button[data-variant='link']:is(:disabled, [aria-disabled='true']):hover {
+    text-decoration: none;
+  }
+
+  /* Parts */
+  [data-scope='button']:is([data-part='icon'], [data-part='iconEnd']) {
+    display: inline-flex;
+    flex: none;
+    inline-size: var(--apui-_ic);
+    block-size: var(--apui-_ic);
+  }
+
+  [data-scope='button']:is([data-part='icon'], [data-part='iconEnd']) > svg {
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  [dir='rtl']
+    [data-scope='button']:is([data-part='icon'], [data-part='iconEnd'])[data-mirror]
+    > svg {
+    scale: -1 1;
+  }
+
+  [data-scope='button'][data-part='label'] {
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /*
+   * Loading: the spinner sits over the content, which keeps its space (so the
+   * width holds) and stays in the accessibility tree (opacity, not
+   * visibility). Pointer clicks are ignored; the stacks guard keyboard
+   * activation.
+   */
+  .apui-button:is([aria-busy='true'], a[aria-disabled='true']) {
+    pointer-events: none;
+  }
+
+  .apui-button[aria-busy='true']
+    > [data-scope='button']:is([data-part='icon'], [data-part='label'], [data-part='iconEnd']) {
+    opacity: 0;
+  }
+
+  [data-scope='button'][data-part='spinner'] {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    box-sizing: border-box;
+    inline-size: var(--apui-_ic);
+    block-size: var(--apui-_ic);
+    border: 2px solid currentcolor;
+    border-inline-end-color: transparent;
+    border-radius: var(--apui-radius-full);
+    animation: apui-button-spin 0.8s linear infinite;
+  }
+
+  @keyframes apui-button-spin {
+    to {
+      rotate: 1turn;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='button'][data-part='spinner'] {
+      animation-duration: 2.4s;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .apui-button {
+      border-color: ButtonText;
+    }
+
+    .apui-button:is(:disabled, [aria-disabled='true']) {
+      border-color: GrayText;
+      color: GrayText;
+    }
+  }
+}
+/*
+ * The field anatomy Input, Select and Checkbox share (#45): label, required
+ * mark, hint and error. Each component scopes its parts by its own
+ * data-scope, so these rules list the scopes that use them.
+ */
+@layer apui.components {
+  :is([data-scope='input'], [data-scope='select'], [data-scope='checkbox'])[data-part='label'] {
+    color: var(--apui-text-default);
+  }
+
+  :is([data-scope='input'], [data-scope='select'])[data-part='label'] {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    font-size: var(--apui-type-body-sm-font-size);
+    font-weight: var(--apui-font-weight-medium);
+    line-height: var(--apui-type-body-sm-line-height);
+  }
+
+  :is([data-scope='input'], [data-scope='select'], [data-scope='checkbox'])[data-part='required'] {
+    color: var(--apui-color-error-text);
+  }
+
+  :is([data-scope='input'], [data-scope='select'])[data-part='hint'],
+  :is([data-scope='input'], [data-scope='select'], [data-scope='checkbox'])[data-part='error'] {
+    margin: 0;
+    font-size: var(--apui-type-caption-font-size);
+    line-height: var(--apui-type-caption-line-height);
+  }
+
+  :is([data-scope='input'], [data-scope='select'])[data-part='hint'] {
+    color: var(--apui-text-muted);
+  }
+
+  :is([data-scope='input'], [data-scope='select'], [data-scope='checkbox'])[data-part='error'] {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--apui-color-error-text);
+  }
+
+  :is([data-scope='input'], [data-scope='select'], [data-scope='checkbox'])[data-part='error']
+    > svg {
+    flex: none;
+    inline-size: var(--apui-icon-size-sm);
+    block-size: var(--apui-icon-size-sm);
+  }
+
+  /*
+   * The bordered box Input and Select draw around their control. The control
+   * itself is unstyled; the box takes the border, the hover edge and the
+   * focus ring.
+   */
+  :is(.apui-input, .apui-select) {
+    --apui-_h: var(--apui-control-height-md);
+    --apui-_pad: 12px;
+    --apui-_fs: var(--apui-type-body-md-font-size);
+
+    display: grid;
+    align-content: start;
+    gap: 6px;
+    min-inline-size: 0;
+    font-family: var(--apui-font-family-sans);
+  }
+
+  :is(.apui-input, .apui-select)[data-size='sm'] {
+    --apui-_h: var(--apui-control-height-sm);
+    --apui-_pad: 10px;
+    --apui-_fs: var(--apui-type-body-sm-font-size);
+  }
+
+  :is(.apui-input, .apui-select)[data-size='lg'] {
+    --apui-_h: var(--apui-control-height-lg);
+    --apui-_pad: 14px;
+    --apui-_fs: 15px;
+  }
+
+  :is([data-scope='input'], [data-scope='select'])[data-part='box'] {
+    box-sizing: border-box;
+    min-inline-size: 0;
+    block-size: var(--apui-_h);
+    border: var(--apui-border-width) solid var(--apui-border-default);
+    border-radius: var(--apui-input-radius);
+    background: var(--apui-surface-default);
+    color: var(--apui-text-default);
+    font-size: var(--apui-_fs);
+    line-height: var(--apui-type-body-md-line-height);
+    transition: border-color var(--apui-motion-duration-fast) var(--apui-motion-ease-standard);
+  }
+
+  :is([data-scope='input'], [data-scope='select'])[data-part='box']:is(
+      :hover,
+      :has([data-part='control']:hover)
+    ) {
+    border-color: var(--apui-border-strong);
+  }
+
+  :is([data-scope='input'], [data-scope='select'])[data-part='box']:has(
+      [data-part='control']:focus-visible
+    ) {
+    outline: var(--apui-focus-ring-width) solid transparent;
+    box-shadow:
+      0 0 0 var(--apui-focus-ring-offset) var(--apui-focus-ring-offset-color),
+      0 0 0 calc(var(--apui-focus-ring-offset) + var(--apui-focus-ring-width))
+        var(--apui-focus-ring-color);
+  }
+
+  :is([data-scope='input'], [data-scope='select'])[data-part='control'] {
+    box-sizing: border-box;
+    min-inline-size: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    outline: none;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+  }
+
+  :is([data-scope='input'], [data-scope='select'])[data-part='icon'] {
+    display: inline-flex;
+    flex: none;
+    inline-size: var(--apui-icon-size-md);
+    block-size: var(--apui-icon-size-md);
+    color: var(--apui-text-muted);
+    pointer-events: none;
+  }
+
+  :is([data-scope='input'], [data-scope='select'])[data-part='icon'] > svg {
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  /* Invalid: an error edge, plus the error text. Never color alone. */
+  :is(.apui-input, .apui-select)[data-invalid]
+    > :is([data-scope='input'], [data-scope='select'])[data-part='box'] {
+    border-color: var(--apui-color-error-border);
+  }
+
+  /* Disabled and read-only: the sunken surface. Never opacity alone. */
+  :is(.apui-input, .apui-select):is([data-disabled], [data-readonly])
+    > :is([data-scope='input'], [data-scope='select'])[data-part='box'] {
+    border-color: var(--apui-border-muted);
+    background: var(--apui-surface-sunken);
+  }
+
+  :is(.apui-input, .apui-select)[data-disabled]
+    > :is([data-scope='input'], [data-scope='select'])[data-part='box'] {
+    color: var(--apui-text-disabled);
+    cursor: not-allowed;
+  }
+
+  :is(.apui-input, .apui-select)[data-disabled]
+    > :is([data-scope='input'], [data-scope='select'])[data-part='label'] {
+    color: var(--apui-text-disabled);
+  }
+
+  :is(.apui-input, .apui-select)[data-disabled]
+    :is([data-scope='input'], [data-scope='select'])[data-part='control'] {
+    cursor: not-allowed;
+  }
+
+  @media (forced-colors: active) {
+    :is([data-scope='input'], [data-scope='select'])[data-part='box'] {
+      border-color: CanvasText;
+    }
+  }
+}
+/*
+ * Input (#45). Root `.apui-input` is the field: label, box, hint and error.
+ * The box holds the icon, prefix, the native input (control), suffix and
+ * trailing icon. Shared field rules live in field.css.
+ */
+@layer apui.components {
+  [data-scope='input'][data-part='box'] {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-inline: var(--apui-_pad);
+    cursor: text;
+  }
+
+  [data-scope='input'][data-part='control'] {
+    flex: 1;
+    align-self: stretch;
+    inline-size: 100%;
+  }
+
+  [data-scope='input'][data-part='control']::placeholder {
+    color: var(--apui-text-muted);
+    opacity: 1;
+  }
+
+  [data-scope='input'][data-part='iconEnd'] {
+    display: inline-flex;
+    flex: none;
+    inline-size: var(--apui-icon-size-md);
+    block-size: var(--apui-icon-size-md);
+    color: var(--apui-text-muted);
+  }
+
+  [data-scope='input'][data-part='iconEnd'] > svg {
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  [data-scope='input']:is([data-part='prefix'], [data-part='suffix']) {
+    flex: none;
+    color: var(--apui-text-muted);
+    white-space: nowrap;
+  }
+
+  [data-scope='input'][data-part='prefix'] {
+    padding-inline-end: 8px;
+    border-inline-end: var(--apui-border-width) solid var(--apui-border-muted);
+  }
+
+  [data-scope='input'][data-part='suffix'] {
+    padding-inline-start: 8px;
+    border-inline-start: var(--apui-border-width) solid var(--apui-border-muted);
+  }
+
+  .apui-input[data-disabled] [data-scope='input'][data-part='control']::placeholder {
+    color: var(--apui-text-disabled);
+  }
+}
+/*
+ * Select (#46). Root `.apui-select` is the field, sharing Input's anatomy
+ * (field.css). The native select fills the box; the icon and the chevron
+ * (indicator) sit over it without taking clicks, so the whole box opens it.
+ */
+@layer apui.components {
+  [data-scope='select'][data-part='box'] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: center;
+  }
+
+  [data-scope='select'][data-part='box'] > * {
+    grid-area: 1 / 1;
+  }
+
+  [data-scope='select'][data-part='control'] {
+    block-size: 100%;
+    inline-size: 100%;
+    padding-inline: var(--apui-_pad) calc(var(--apui-_pad) + var(--apui-icon-size-md) + 8px);
+    appearance: none;
+    cursor: pointer;
+    text-overflow: ellipsis;
+  }
+
+  [data-scope='select'][data-part='box']:has([data-part='icon']) > [data-part='control'] {
+    padding-inline-start: calc(var(--apui-_pad) + var(--apui-icon-size-md) + 8px);
+  }
+
+  /* The placeholder option reads as a prompt, not a value. */
+  .apui-select:not([data-disabled])
+    [data-scope='select'][data-part='control']:has(> option[value='']:checked) {
+    color: var(--apui-text-muted);
+  }
+
+  [data-scope='select'][data-part='control'] option {
+    color: var(--apui-text-default);
+  }
+
+  [data-scope='select'][data-part='icon'] {
+    justify-self: start;
+    margin-inline-start: var(--apui-_pad);
+  }
+
+  [data-scope='select'][data-part='indicator'] {
+    display: inline-flex;
+    justify-self: end;
+    inline-size: var(--apui-icon-size-md);
+    block-size: var(--apui-icon-size-md);
+    margin-inline-end: var(--apui-_pad);
+    color: var(--apui-text-muted);
+    pointer-events: none;
+  }
+
+  [data-scope='select'][data-part='indicator'] > svg {
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  .apui-select[data-disabled]
+    [data-scope='select']:is([data-part='control'], [data-part='indicator']) {
+    color: var(--apui-text-disabled);
+  }
+}
+/*
+ * Checkbox (#47). Root `.apui-checkbox`: the box, then the label,
+ * description and error in the second column. The native input (control)
+ * stays in the DOM, transparent over the box with a 4px larger hit area.
+ *
+ * Checked styles read the native :checked state, so the box follows a click
+ * before a deferred wire:model round trip re-renders. Indeterminate reads
+ * :indeterminate or data-state (only script can set the native property; the
+ * stacks keep data-state in step on change). The indicator holds both
+ * glyphs, `svg[data-icon='check']` and `svg[data-icon='minus']`, and CSS
+ * shows the one that matches, so a click never leaves a stale glyph.
+ */
+@layer apui.components {
+  .apui-checkbox {
+    display: inline-grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 10px;
+    row-gap: 2px;
+    align-items: start;
+    font-family: var(--apui-font-family-sans);
+    font-size: var(--apui-type-body-md-font-size);
+    line-height: var(--apui-type-body-md-line-height);
+  }
+
+  [data-scope='checkbox'][data-part='box'] {
+    position: relative;
+    display: grid;
+    place-items: center;
+    box-sizing: border-box;
+    inline-size: 18px;
+    block-size: 18px;
+    margin-block-start: 1px;
+    border: var(--apui-border-width) solid var(--apui-border-default);
+    border-radius: var(--apui-checkbox-radius);
+    background: var(--apui-surface-default);
+    color: var(--apui-color-primary-foreground);
+    transition:
+      background-color var(--apui-motion-duration-fast) var(--apui-motion-ease-standard),
+      border-color var(--apui-motion-duration-fast) var(--apui-motion-ease-standard);
+  }
+
+  [data-scope='checkbox'][data-part='control'] {
+    position: absolute;
+    z-index: 1;
+    inset: -4px;
+    inline-size: calc(100% + 8px);
+    block-size: calc(100% + 8px);
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  [data-scope='checkbox'][data-part='indicator'] {
+    display: grid;
+    place-items: center;
+    inline-size: 14px;
+    block-size: 14px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  [data-scope='checkbox'][data-part='indicator'] > svg {
+    grid-area: 1 / 1;
+    inline-size: 100%;
+    block-size: 100%;
+    stroke-width: 2.5;
+  }
+
+  /* Decorative (aria-hidden) glyphs: the dash only while indeterminate. */
+  [data-scope='checkbox'][data-part='indicator'] > svg[data-icon='minus'],
+  .apui-checkbox[data-state='indeterminate']
+    [data-scope='checkbox'][data-part='indicator']
+    > svg[data-icon='check'],
+  [data-scope='checkbox'][data-part='box']:has([data-part='control']:indeterminate)
+    > [data-part='indicator']
+    > svg[data-icon='check'] {
+    display: none;
+  }
+
+  .apui-checkbox[data-state='indeterminate']
+    [data-scope='checkbox'][data-part='indicator']
+    > svg[data-icon='minus'],
+  [data-scope='checkbox'][data-part='box']:has([data-part='control']:indeterminate)
+    > [data-part='indicator']
+    > svg[data-icon='minus'] {
+    display: block;
+  }
+
+  [data-scope='checkbox'][data-part='label'] {
+    grid-column: 2;
+    cursor: pointer;
+  }
+
+  [data-scope='checkbox'][data-part='description'] {
+    grid-column: 2;
+    margin: 0;
+    color: var(--apui-text-muted);
+    font-size: var(--apui-type-body-sm-font-size);
+    line-height: var(--apui-type-body-sm-line-height);
+  }
+
+  .apui-checkbox > [data-scope='checkbox'][data-part='error'] {
+    grid-column: 2;
+  }
+
+  /* Hover */
+  .apui-checkbox:hover [data-scope='checkbox'][data-part='box'],
+  [data-scope='checkbox'][data-part='box']:has([data-part='control']:hover) {
+    border-color: var(--apui-border-strong);
+  }
+
+  /* Checked and indeterminate */
+  [data-scope='checkbox'][data-part='box']:has([data-part='control']:is(:checked, :indeterminate)),
+  .apui-checkbox[data-state='indeterminate'] [data-scope='checkbox'][data-part='box'] {
+    border-color: var(--apui-color-primary);
+    background: var(--apui-color-primary);
+  }
+
+  [data-scope='checkbox'][data-part='box']:has([data-part='control']:is(:checked, :indeterminate))
+    > [data-part='indicator'],
+  .apui-checkbox[data-state='indeterminate'] [data-scope='checkbox'][data-part='indicator'] {
+    opacity: 1;
+  }
+
+  .apui-checkbox:hover
+    [data-scope='checkbox'][data-part='box']:has(
+      [data-part='control']:is(:checked, :indeterminate)
+    ),
+  [data-scope='checkbox'][data-part='box']:has(
+      [data-part='control']:is(:checked, :indeterminate):hover
+    ) {
+    border-color: var(--apui-color-primary-hover);
+    background: var(--apui-color-primary-hover);
+  }
+
+  /* Focus */
+  [data-scope='checkbox'][data-part='box']:has([data-part='control']:focus-visible) {
+    outline: var(--apui-focus-ring-width) solid transparent;
+    box-shadow:
+      0 0 0 var(--apui-focus-ring-offset) var(--apui-focus-ring-offset-color),
+      0 0 0 calc(var(--apui-focus-ring-offset) + var(--apui-focus-ring-width))
+        var(--apui-focus-ring-color);
+  }
+
+  /* Invalid */
+  .apui-checkbox[data-invalid] [data-scope='checkbox'][data-part='box'] {
+    border-color: var(--apui-color-error-border);
+  }
+
+  /* Disabled: the sunken surface, never opacity alone. */
+  .apui-checkbox[data-disabled] [data-scope='checkbox'][data-part='box'],
+  .apui-checkbox[data-disabled]
+    [data-scope='checkbox'][data-part='box']:has(
+      [data-part='control']:is(:checked, :indeterminate)
+    ),
+  .apui-checkbox[data-disabled][data-state='indeterminate']
+    [data-scope='checkbox'][data-part='box'] {
+    border-color: var(--apui-border-muted);
+    background: var(--apui-surface-sunken);
+    color: var(--apui-text-disabled);
+  }
+
+  .apui-checkbox[data-disabled]
+    [data-scope='checkbox']:is([data-part='control'], [data-part='label']) {
+    cursor: not-allowed;
+  }
+
+  .apui-checkbox[data-disabled] [data-scope='checkbox'][data-part='label'] {
+    color: var(--apui-text-disabled);
+  }
+
+  @media (forced-colors: active) {
+    [data-scope='checkbox'][data-part='box'] {
+      border-color: CanvasText;
+    }
+
+    [data-scope='checkbox'][data-part='indicator'] {
+      color: CanvasText;
+    }
+  }
+}
+/*
+ * Card (#48). Root `.apui-card` with data-surface. Parts: media, header
+ * (title, description, actions), body and footer. With href the title holds
+ * the link, whose hit area stretches over the card; controls inside sit
+ * above it. Glass is a surface (D-006).
+ */
+@layer apui.components {
+  .apui-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    min-inline-size: 0;
+    border: var(--apui-border-width) solid var(--apui-border-muted);
+    border-radius: var(--apui-card-radius);
+    background: var(--apui-surface-default);
+    box-shadow: var(--apui-elevation-raised);
+    color: var(--apui-text-default);
+    font-family: var(--apui-font-family-sans);
+    font-size: var(--apui-type-body-md-font-size);
+    line-height: var(--apui-type-body-md-line-height);
+    transition: border-color var(--apui-motion-duration-fast) var(--apui-motion-ease-standard);
+  }
+
+  .apui-card[data-surface='raised'] {
+    background: var(--apui-surface-raised);
+  }
+
+  .apui-card[data-surface='sunken'] {
+    background: var(--apui-surface-sunken);
+    box-shadow: none;
+  }
+
+  .apui-card[data-surface='glass'] {
+    --apui-text-muted: var(--apui-text-muted-glass);
+    --apui-focus-ring-offset-color: transparent;
+
+    border-color: var(--apui-surface-glass-border);
+    background: var(--apui-surface-glass);
+    box-shadow: var(--apui-elevation-glass);
+    backdrop-filter: blur(var(--apui-surface-glass-blur))
+      saturate(var(--apui-surface-glass-saturation));
+  }
+
+  @supports not (backdrop-filter: blur(1px)) {
+    .apui-card[data-surface='glass'] {
+      border-color: var(--apui-border-muted);
+      background: var(--apui-surface-raised);
+    }
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    .apui-card[data-surface='glass'] {
+      border-color: var(--apui-border-muted);
+      background: var(--apui-surface-raised);
+      backdrop-filter: none;
+    }
+  }
+
+  .apui-card[data-interactive]:hover {
+    border-color: var(--apui-border-strong);
+  }
+
+  /* Parts */
+  [data-scope='card'][data-part='media'] {
+    display: block;
+    inline-size: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-start-start-radius: calc(var(--apui-card-radius) - var(--apui-border-width));
+    border-start-end-radius: calc(var(--apui-card-radius) - var(--apui-border-width));
+  }
+
+  [data-scope='card'][data-part='header'] {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: var(--apui-card-padding) var(--apui-card-padding) 0;
+  }
+
+  [data-scope='card'][data-part='header']:last-child {
+    padding-block-end: var(--apui-card-padding);
+  }
+
+  [data-scope='card'][data-part='title'] {
+    margin: 0;
+    font-size: var(--apui-type-body-lg-font-size);
+    font-weight: var(--apui-font-weight-semibold);
+    line-height: var(--apui-type-body-lg-line-height);
+  }
+
+  [data-scope='card'][data-part='title'] a {
+    color: inherit;
+    text-decoration: none;
+    outline: none;
+  }
+
+  /* The title link's hit area covers the card. */
+  [data-scope='card'][data-part='title'] a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+
+  /*
+   * Controls inside stay clickable above the stretched link. Zero
+   * specificity, so a component's own positioning (Checkbox's absolutely
+   * placed control) still wins.
+   */
+  :where([data-scope='card']:is([data-part='actions'], [data-part='body'], [data-part='footer']))
+    :where(a, button, input, select, textarea, label, summary, [tabindex]) {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* The focus ring moves from the title link to the card it covers. */
+  .apui-card:has([data-scope='card'][data-part='title'] a:focus-visible) {
+    outline: var(--apui-focus-ring-width) solid transparent;
+    box-shadow:
+      0 0 0 var(--apui-focus-ring-offset) var(--apui-focus-ring-offset-color),
+      0 0 0 calc(var(--apui-focus-ring-offset) + var(--apui-focus-ring-width))
+        var(--apui-focus-ring-color);
+  }
+
+  [data-scope='card'][data-part='description'] {
+    margin: 2px 0 0;
+    color: var(--apui-text-muted);
+    font-size: var(--apui-type-body-sm-font-size);
+    line-height: var(--apui-type-body-sm-line-height);
+  }
+
+  [data-scope='card'][data-part='actions'] {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 6px;
+  }
+
+  [data-scope='card'][data-part='body'] {
+    flex: 1;
+    padding: var(--apui-card-padding);
+  }
+
+  [data-scope='card'][data-part='header'] + [data-scope='card'][data-part='body'] {
+    padding-block-start: 16px;
+  }
+
+  [data-scope='card'][data-part='footer'] {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px var(--apui-card-padding);
+    border-block-start: var(--apui-border-width) solid var(--apui-border-muted);
+  }
+
+  [data-scope='card'][data-part='header'] + [data-scope='card'][data-part='footer'] {
+    margin-block-start: var(--apui-card-padding);
+  }
+
+  @media (forced-colors: active) {
+    .apui-card {
+      border-color: CanvasText;
+    }
+
+    /* Forced colors keeps alpha: drop the blur so glass is a plain surface. */
+    .apui-card[data-surface='glass'] {
+      background: Canvas;
+      backdrop-filter: none;
+    }
+  }
+}
+/*
  * Utilities. This layer sits above the components, so a utility wins over a
  * component rule of any specificity.
  */

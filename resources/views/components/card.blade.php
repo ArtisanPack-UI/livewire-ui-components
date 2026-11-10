@@ -1,124 +1,53 @@
+{{--
+    Card (#48). Markup contract: design-system pilot, Card.
+    Named slots (media, title, description, actions, footer) override the props.
+    href links the title, so it needs a title; unsafe href and media schemes are ignored.
+--}}
 @php
-    $baseClasses = [
-        'card rounded-lg',
-        'bg-base-100' => !$glass,
-        'shadow-xs' => $shadow,
-        'p-5' => !$figure || in_array($figurePosition, ['top', 'bottom']),
-        'flex' => $figure && in_array($figurePosition, ['left', 'right']),
-        'flex-row' => $figure && $figurePosition === 'left',
-        'flex-row-reverse' => $figure && $figurePosition === 'right',
-    ];
-    $inlineStyles = [];
-
-    // Handle glass effect (call $glassStyle() only once)
-    if ($glass) {
-        $baseClasses[] = $glassClasses();
-        $computedGlassStyle = $glassStyle();
-        if ($computedGlassStyle) {
-            $inlineStyles[] = $computedGlassStyle;
-        }
-    }
-
-    // Merge inline styles (preserves user-provided styles)
-    if (!empty($inlineStyles)) {
-        $attributes = $attributes->merge(['style' => implode(' ', $inlineStyles)]);
-    }
-
-    // Merge wire:key and classes into attributes
-    $attributes = $attributes->merge(['wire:key' => $uuid])->class($baseClasses);
+    $mediaSlot      = $media instanceof \Illuminate\Contracts\Support\Htmlable ? $media : null;
+    $mediaSrc       = null === $mediaSlot ? $mediaSrc() : null;
+    $hasMedia       = null !== $mediaSlot ? $filled( $mediaSlot ) : null !== $mediaSrc;
+    $hasTitle       = $filled( $title );
+    $hasDescription = $filled( $description );
+    $hasActions     = $filled( $actions );
+    $hasFooter      = $filled( $footer );
+    $hasBody        = isset( $slot ) && $slot->hasActualContent();
+    $linkHref       = $linkHref();
+    $hasLink        = null !== $linkHref && $hasTitle;
 @endphp
-<div {{ $attributes }}>
-    {{-- Figure at top --}}
-    @if($figure && $figurePosition === 'top')
-        <figure {{ $figure->attributes->class(["-m-5 mb-0 rounded-t-lg overflow-hidden"]) }}>
-            {{ $figure }}
-        </figure>
+<div
+    {{ $attributes->class( $rootClasses( 'apui-card' ) ) }}
+    data-surface="{{ $surface }}"
+    @if ( $interactive || $hasLink ) data-interactive @endif
+>
+    @if ( $hasMedia )
+        @if ( null !== $mediaSlot )
+            <div data-scope="card" data-part="media"{{ $partClass( 'media' ) }}>{{ $content( $mediaSlot ) }}</div>
+        @else
+            <img data-scope="card" data-part="media" src="{{ $mediaSrc }}" alt="{{ $mediaAlt }}"{{ $partClass( 'media' ) }} />
+        @endif
     @endif
-
-    {{-- Figure at left --}}
-    @if($figure && $figurePosition === 'left')
-        <figure {{ $figure->attributes->class(["flex-shrink-0 rounded-l-lg overflow-hidden"]) }}>
-            {{ $figure }}
-        </figure>
-    @endif
-
-    {{-- Main content wrapper --}}
-    <div @class([
-        'flex flex-col',
-        'p-5' => $figure && in_array($figurePosition, ['left', 'right']),
-        'pt-5 px-5' => $figure && $figurePosition === 'top',
-        'pb-5 px-5' => $figure && $figurePosition === 'bottom'
-    ])>
-        {{-- Header section --}}
-        @if($title || $subtitle)
-            <div class="pb-5">
-                <div class="flex gap-3 justify-between items-center w-full">
-                    <div class="grow-1">
-                        @if($title)
-                            <div @class(["text-xl font-bold", is_string($title) ? '' : $title?->attributes->get('class') ]) >
-                                {{ $title }}
-                            </div>
-                        @endif
-                        @if($subtitle)
-                        <div @class(["text-base-content/50 text-sm mt-1", is_string($subtitle) ? '' : $subtitle?->attributes->get('class') ]) >
-                                {{ $subtitle }}
-                            </div>
-                        @endif
-                    </div>
-
-                    @if($menu)
-                        <div {{ $menu->attributes->class(["flex items-center gap-2"]) }}> {{ $menu }} </div>
+    @if ( $hasTitle || $hasDescription || $hasActions )
+        <div data-scope="card" data-part="header"{{ $partClass( 'header' ) }}>
+            @if ( $hasTitle || $hasDescription )
+                <div>
+                    @if ( $hasTitle )
+                        <h3 data-scope="card" data-part="title"{{ $partClass( 'title' ) }}>@if ( $hasLink )<a href="{{ $linkHref }}">{{ $content( $title ) }}</a>@else{{ $content( $title ) }}@endif</h3>
+                    @endif
+                    @if ( $hasDescription )
+                        <p data-scope="card" data-part="description"{{ $partClass( 'description' ) }}>{{ $content( $description ) }}</p>
                     @endif
                 </div>
-
-                @if($separator)
-                    <hr class="mt-3 border-t-[length:var(--border)] border-base-content/10" />
-
-                    @if($progressIndicator)
-                        <div class="h-0.5 -mt-4 mb-4">
-                            <progress
-                                class="progress progress-primary w-full h-0.5 hidden data-loading:block"
-                                wire:loading.class.remove="hidden"
-
-                                @if($progressTarget())
-                                    wire:target="{{ $progressTarget() }}"
-                                 @endif></progress>
-                        </div>
-                    @endif
-                @endif
-            </div>
-        @endif
-
-        {{-- Main content --}}
-        <div class="grow-1">
-            {{ $slot }}
-        </div>
-
-        {{-- Actions section --}}
-        @if($actions)
-            @if($separator)
-                <hr class="mt-5 border-t-[length:var(--border)] border-base-content/10" />
-            @else
-                <div></div>
             @endif
-
-            <div @class(["flex w-full items-end justify-end gap-3 pt-5", is_string($actions) ? '' : $actions?->attributes->get('class') ])>
-                {{ $actions }}
-            </div>
-        @endif
-    </div>
-
-    {{-- Figure at right --}}
-    @if($figure && $figurePosition === 'right')
-        <figure {{ $figure->attributes->class(["flex-shrink-0 rounded-r-lg overflow-hidden"]) }}>
-            {{ $figure }}
-        </figure>
+            @if ( $hasActions )
+                <div data-scope="card" data-part="actions"{{ $partClass( 'actions' ) }}>{{ $content( $actions ) }}</div>
+            @endif
+        </div>
     @endif
-
-    {{-- Figure at bottom --}}
-    @if($figure && $figurePosition === 'bottom')
-        <figure {{ $figure->attributes->class(["-m-5 mt-0 rounded-b-lg overflow-hidden"]) }}>
-            {{ $figure }}
-        </figure>
+    @if ( $hasBody )
+        <div data-scope="card" data-part="body"{{ $partClass( 'body' ) }}>{{ $content( $slot ) }}</div>
+    @endif
+    @if ( $hasFooter )
+        <div data-scope="card" data-part="footer"{{ $partClass( 'footer' ) }}>{{ $content( $footer ) }}</div>
     @endif
 </div>

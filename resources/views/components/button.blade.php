@@ -1,127 +1,41 @@
 {{--
-    Tailwind JIT Safelist - DO NOT REMOVE
-    These classes are generated dynamically but need to be visible for Tailwind to generate them:
-    hover:bg-[var(--artisanpack-variant-hover-color)] hover:text-[var(--artisanpack-variant-hover-text)]
-    focus:bg-[var(--artisanpack-variant-focus-color)] focus:text-[var(--artisanpack-variant-focus-text)]
-    hover:bg-[var(--artisanpack-tailwind-hover-color)] hover:text-[var(--artisanpack-tailwind-hover-text)]
-    focus:bg-[var(--artisanpack-tailwind-focus-color)] focus:text-[var(--artisanpack-tailwind-focus-text)]
-    hover:bg-[var(--artisanpack-custom-hover-color)] hover:text-[var(--artisanpack-custom-hover-text)]
-    focus:bg-[var(--artisanpack-custom-focus-color)] focus:text-[var(--artisanpack-custom-focus-text)]
-    bg-[var(--artisanpack-tailwind-color)] border-[var(--artisanpack-tailwind-color)]
-    bg-[var(--artisanpack-custom-color)] border-[var(--artisanpack-custom-color)]
+    Button (#44). Markup contract: design-system pilot, Button.
+    Every attribute lands on the root. With a safe href, an anchor; disabled or
+    loading drops the href and the click handlers.
 --}}
-@if($link)
-    <a href="{!! $link !!}"
-@else
-    <button
-@endif
-
-    wire:key="{{ $uuid }}"
-    {{ $attributes->whereDoesntStartWith('class')->merge(['type' => 'button']) }}
-    @php
-        $colorClasses = $getColorClasses();
-        $baseClasses = ['btn', '!inline-flex', 'transition-colors', 'duration-200', 'ease-in-out'];
-        $tooltipClass = $tooltip ? 'lg:tooltip ' . $tooltipPosition : '';
-
-        // Add size classes
-        $baseClasses[] = $getSizeClasses();
-
-        // Handle new color system
-        if (!empty($colorClasses)) {
-            // Add color classes from new system
-            foreach ($colorClasses as $type => $class) {
-                if ($type === 'style' && $class) {
-                    // Handle inline styles for hex colors
-                    $attributes = $attributes->merge(['style' => $class]);
-                } elseif ($type !== 'style' && $class) {
-                    $baseClasses[] = $class;
-                }
-            }
-        } else {
-            // Fall back to legacy variant classes
-            $baseClasses[] = $getVariantClasses();
-        }
-
-        if ($tooltipClass) {
-            $baseClasses[] = $tooltipClass;
-        }
-
-        // DEBUG: Uncomment to see what classes are being added
-        // dd($baseClasses, $colorClasses, $attributes->get('class'));
-    @endphp
-    {{ $attributes->class($baseClasses) }}
-
-    @if($link && $external)
-        target="_blank"
-    @endif
-
-    @if($link && !$external && !$noWireNavigate)
-        wire:navigate
-    @endif
-
-    @if($tooltip)
-        data-tip="{{ $tooltip }}"
-    @endif
-
-    @if($spinner)
-        wire:target="{{ $spinnerTarget() }}"
-        wire:loading.attr="disabled"
-    @endif
->
-
-    <!-- SPINNER LEFT -->
-    @if($spinner && !$iconRight && !$loading)
-        <span class="loading loading-spinner w-5 h-5 hidden data-loading:block" wire:loading.class.remove="hidden" wire:target="{{ $spinnerTarget() }}"></span>
-    @endif
-
-    <!-- LOADING CONTENT (icon or text, shows during loading) -->
-    @if($loading)
-        @if($isLoadingIcon())
-            <span class="hidden data-loading:block" wire:loading.class.remove="hidden" wire:target="{{ $spinnerTarget() }}">
-                <x-artisanpack-icon :name="$loading" />
-            </span>
-        @else
-            <span class="hidden data-loading:block" wire:loading.class.remove="hidden" wire:target="{{ $spinnerTarget() }}">
-                {{ $loading }}
-            </span>
-        @endif
-    @endif
-
-    <!-- ICON -->
-    @if($icon)
-        <span @class(["block", "data-loading:hidden" => $spinner]) @if($spinner) wire:loading.class="hidden" wire:target="{{ $spinnerTarget() }}" @endif>
-            <x-artisanpack-icon :name="$icon" />
-        </span>
-    @endif
-
-    <!-- LABEL / SLOT -->
-    @if($label)
-        <span @class(["hidden lg:block" => $responsive, "data-loading:hidden" => $spinner && $loading]) @if($spinner && $loading) wire:loading.class="hidden" wire:target="{{ $spinnerTarget() }}" @endif>
-            {{ $label }}
-        </span>
-        @if(strlen($badge ?? '') > 0)
-            <span class="badge badge-sm {{ $badgeClasses }}">{{ $badge }}</span>
-        @endif
+@php
+    $iconSlot      = isset( $icon ) && $filled( $icon ) ? $icon : null;
+    $iconEndSlot   = isset( $iconEnd ) && $filled( $iconEnd ) ? $iconEnd : null;
+    $hasIcon       = null !== $iconSlot || $filled( $leadingIcon );
+    $hasIconEnd    = null !== $iconEndSlot || $filled( $trailingIcon );
+    $showLabel     = ! $iconOnly && isset( $slot ) && $slot->hasActualContent();
+    $tag           = $isLink() ? 'a' : 'button';
+@endphp
+<{{ $tag }}
+    @if ( 'a' === $tag )
+        @if ( $isInertLink() ) aria-disabled="true" @else href="{{ $linkHref() }}" @endif
     @else
-        <span @class(["data-loading:hidden" => $spinner && $loading]) @if($spinner && $loading) wire:loading.class="hidden" wire:target="{{ $spinnerTarget() }}" @endif>
-            {{ $slot }}
-        </span>
+        type="{{ $type }}"
+        @if ( $disabled ) disabled @endif
     @endif
-
-    <!-- ICON RIGHT -->
-    @if($iconRight)
-        <span @class(["block", "data-loading:hidden" => $spinner]) @if($spinner) wire:loading.class="hidden" wire:target="{{ $spinnerTarget() }}" @endif>
-            <x-artisanpack-icon :name="$iconRight" />
-        </span>
+    {{ $rootAttributes()->class( $rootClasses( 'apui-button' ) ) }}
+    data-variant="{{ $variant }}"
+    data-color="{{ $color }}"
+    data-size="{{ $size }}"
+    @if ( $iconOnly ) data-icon-only @endif
+    @if ( $disabled ) data-disabled @endif
+    @if ( $loading ) aria-busy="true" @endif
+>
+    @if ( $hasIcon )
+        <span data-scope="button" data-part="icon" aria-hidden="true"{{ $partClass( 'icon' ) }}@if ( null === $iconSlot && $mirrors( $leadingIcon ) ) data-mirror @endif>@if ( null !== $iconSlot ){{ $content( $iconSlot ) }}@else{{ $iconSvg( $leadingIcon ) }}@endif</span>
     @endif
-
-    <!-- SPINNER RIGHT -->
-    @if($spinner && $iconRight && !$loading)
-        <span class="loading loading-spinner w-5 h-5 hidden data-loading:block" wire:loading.class.remove="hidden" wire:target="{{ $spinnerTarget() }}"></span>
+    @if ( $showLabel )
+        <span data-scope="button" data-part="label"{{ $partClass( 'label' ) }}>{{ $content( $slot ) }}</span>
     @endif
-
-@if(!$link)
-    </button>
-@else
-    </a>
-@endif
+    @if ( $hasIconEnd )
+        <span data-scope="button" data-part="iconEnd" aria-hidden="true"{{ $partClass( 'iconEnd' ) }}@if ( null === $iconEndSlot && $mirrors( $trailingIcon ) ) data-mirror @endif>@if ( null !== $iconEndSlot ){{ $content( $iconEndSlot ) }}@else{{ $iconSvg( $trailingIcon ) }}@endif</span>
+    @endif
+    @if ( $loading )
+        <span data-scope="button" data-part="spinner" aria-hidden="true"{{ $partClass( 'spinner' ) }}></span>
+    @endif
+</{{ $tag }}>

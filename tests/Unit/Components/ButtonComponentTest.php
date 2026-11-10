@@ -2,445 +2,222 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
-
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
+use ArtisanPack\LivewireUiComponents\Support\IconRegistry;
 use ArtisanPack\LivewireUiComponents\View\Components\Button;
-use Error;
-use RuntimeException;
+use Illuminate\Support\Facades\Blade;
 
-/**
- * Comprehensive unit tests for the Button component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * Button (#44): the design-system markup contract. The API surface (data
+ * attributes, state evidence, parts, constructor) is also checked against the
+ * manifest in tests/Feature/DesignSystemParityTest.php.
  */
-class ButtonComponentTest extends ComponentTestCase
-{
-    protected string $componentClass = Button::class;
 
-    protected array $defaultProperties = [
-        'external'        => false,
-        'noWireNavigate'  => false,
-        'responsive'      => false,
-        'variant'         => 'primary',
-        'size'            => 'md',
-        'tooltipPosition' => 'lg:tooltip-top',
-    ];
+afterEach(function (): void {
+    IconRegistry::reset();
+});
 
-    protected array $requiredProperties = [];
+test('the default button renders the contract markup', function (): void {
+    $html = Blade::render('<x-artisanpack-button>Save</x-artisanpack-button>');
+    $dom  = designSystemDom($html);
+    $root = $dom->query('//button')->item(0);
 
-    public function test_button_string_properties(): void
-    {
-        // Note: 'variant' is excluded because it has validation logic that changes the value
-        $stringProperties = ['id', 'label', 'icon', 'iconRight', 'spinner', 'link', 'badge', 'badgeClasses', 'tooltip', 'tooltipLeft', 'tooltipRight', 'tooltipBottom', 'color', 'colorAdjustment', 'size', 'tooltipPosition'];
-        $testValues       = ComponentDataFactory::sampleTexts();
+    expect($root->getAttribute('type'))->toBe('button')
+        ->and($root->getAttribute('class'))->toBe('apui-button')
+        ->and($root->getAttribute('data-variant'))->toBe('solid')
+        ->and($root->getAttribute('data-color'))->toBe('primary')
+        ->and($root->getAttribute('data-size'))->toBe('md')
+        ->and($root->hasAttribute('disabled'))->toBeFalse()
+        ->and($root->hasAttribute('data-disabled'))->toBeFalse()
+        ->and($root->hasAttribute('aria-busy'))->toBeFalse()
+        ->and($root->hasAttribute('data-icon-only'))->toBeFalse();
 
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
+    $parts = $dom->query('//*[@data-scope="button"]');
+    expect($parts)->toHaveCount(1)
+        ->and($parts->item(0)->getAttribute('data-part'))->toBe('label')
+        ->and($parts->item(0)->textContent)->toBe('Save');
+});
 
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
+test('the fixture parts render in order: icon, label, iconEnd, spinner', function (): void {
+    $html = Blade::render('<x-artisanpack-button loading leading-icon="plus" trailing-icon="arrow-right">Button</x-artisanpack-button>');
+    $dom  = designSystemDom($html);
+
+    $parts = [];
+    foreach ($dom->query('//button/*[@data-scope="button"]') as $element) {
+        $parts[] = $element->getAttribute('data-part');
     }
 
-    public function test_button_boolean_properties(): void
-    {
-        $booleanProperties = ['external', 'noWireNavigate', 'responsive'];
+    expect($parts)->toBe(['icon', 'label', 'iconEnd', 'spinner'])
+        ->and($dom->query('//button')->item(0)->getAttribute('aria-busy'))->toBe('true')
+        ->and($html)->toContain('<span data-scope="button" data-part="icon" aria-hidden="true">'.IconRegistry::svg('plus').'</span>')
+        ->and($html)->toContain('<span data-scope="button" data-part="label">Button</span>')
+        ->and($html)->toContain('<span data-scope="button" data-part="spinner" aria-hidden="true"></span>');
+});
 
-        foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
-            $this->assertTrue($component->$property);
+test('directional icons get data-mirror on their part', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-button leading-icon="plus" trailing-icon="arrow-right">Next</x-artisanpack-button>'));
 
-            $component = $this->createComponent([$property => false]);
-            $this->assertFalse($component->$property);
-        }
+    expect($dom->query('//*[@data-part="iconEnd"]')->item(0)->hasAttribute('data-mirror'))->toBeTrue()
+        ->and($dom->query('//*[@data-part="icon"]')->item(0)->hasAttribute('data-mirror'))->toBeFalse();
+});
+
+test('variant, color, size and type render as given', function (): void {
+    $root = designSystemDom(Blade::render('<x-artisanpack-button variant="outline" color="error" size="xs" type="submit">Delete</x-artisanpack-button>'))
+        ->query('//button')->item(0);
+
+    expect($root->getAttribute('data-variant'))->toBe('outline')
+        ->and($root->getAttribute('data-color'))->toBe('error')
+        ->and($root->getAttribute('data-size'))->toBe('xs')
+        ->and($root->getAttribute('type'))->toBe('submit');
+});
+
+test('a disabled button is natively disabled and marked', function (): void {
+    $root = designSystemDom(Blade::render('<x-artisanpack-button disabled>Save</x-artisanpack-button>'))->query('//button')->item(0);
+
+    expect($root->hasAttribute('disabled'))->toBeTrue()
+        ->and($root->hasAttribute('data-disabled'))->toBeTrue()
+        ->and($root->getAttribute('data-disabled'))->toBe('');
+});
+
+test('href renders an anchor without a type', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-button href="/reports" type="submit">Reports</x-artisanpack-button>'));
+    $a   = $dom->query('//a')->item(0);
+
+    expect($dom->query('//button'))->toHaveCount(0)
+        ->and($a->getAttribute('class'))->toBe('apui-button')
+        ->and($a->getAttribute('href'))->toBe('/reports')
+        ->and($a->hasAttribute('type'))->toBeFalse()
+        ->and($a->getAttribute('data-variant'))->toBe('solid');
+});
+
+test('a disabled link drops its href and is not focusable', function (): void {
+    $a = designSystemDom(Blade::render('<x-artisanpack-button href="/reports" disabled>Reports</x-artisanpack-button>'))->query('//a')->item(0);
+
+    expect($a->hasAttribute('href'))->toBeFalse()
+        ->and($a->getAttribute('aria-disabled'))->toBe('true')
+        ->and($a->hasAttribute('data-disabled'))->toBeTrue()
+        ->and($a->hasAttribute('tabindex'))->toBeFalse()
+        ->and($a->hasAttribute('disabled'))->toBeFalse();
+});
+
+test('a loading link drops its href, is busy and is not marked disabled', function (): void {
+    $a = designSystemDom(Blade::render('<x-artisanpack-button href="/reports" loading>Reports</x-artisanpack-button>'))->query('//a')->item(0);
+
+    expect($a->hasAttribute('href'))->toBeFalse()
+        ->and($a->getAttribute('aria-disabled'))->toBe('true')
+        ->and($a->getAttribute('aria-busy'))->toBe('true')
+        ->and($a->hasAttribute('data-disabled'))->toBeFalse();
+});
+
+test('a disabled or loading link drops its click handlers', function (string $state): void {
+    $a = designSystemDom(Blade::render(
+        '<x-artisanpack-button href="/r" '.$state.' wire:click="go" wire:click.prevent="go" @click="open = true" x-on:click.stop="x()" wire:key="k">Go</x-artisanpack-button>',
+    ))->query('//a')->item(0);
+
+    $names = [];
+    foreach ($a->attributes as $attribute) {
+        $names[] = $attribute->name;
     }
 
-    public function test_button_get_color_classes_method(): void
-    {
-        $component = $this->createComponent();
+    expect(array_filter($names, static fn (string $name): bool => 1 === preg_match('/^(wire:click|@click|x-on:click)/', $name)))->toBe([])
+        ->and($a->getAttribute('wire:key'))->toBe('k');
+})->with(['disabled', 'loading']);
 
-        if (method_exists($component, 'getColorClasses')) {
-            try {
-                $result = $component->getColorClasses();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
+test('an active link keeps its click handlers', function (): void {
+    $a = designSystemDom(Blade::render('<x-artisanpack-button href="/r" wire:click="go">Go</x-artisanpack-button>'))->query('//a')->item(0);
 
-    public function test_button_get_variant_classes_method(): void
-    {
-        $component = $this->createComponent();
+    expect($a->getAttribute('wire:click'))->toBe('go')
+        ->and($a->getAttribute('href'))->toBe('/r');
+});
 
-        if (method_exists($component, 'getVariantClasses')) {
-            try {
-                $result = $component->getVariantClasses();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
+test('unsafe href schemes are ignored and render a button', function (string $href): void {
+    $html = Blade::render('<x-artisanpack-button :href="$href">Go</x-artisanpack-button>', ['href' => $href]);
+    $dom  = designSystemDom($html);
 
-    public function test_button_get_size_classes_method(): void
-    {
-        $component = $this->createComponent();
+    expect($dom->query('//a'))->toHaveCount(0)
+        ->and($dom->query('//button'))->toHaveCount(1)
+        ->and($html)->not->toContain('alert(1)');
+})->with([
+    'javascript'        => 'javascript:alert(1)',
+    'mixed case'        => 'JaVaScRiPt:alert(1)',
+    'leading space'     => '  javascript:alert(1)',
+    'control character' => "java\tscript:alert(1)",
+    'vbscript'          => 'vbscript:alert(1)',
+    'data'              => 'data:text/html,<script>alert(1)</script>',
+]);
 
-        if (method_exists($component, 'getSizeClasses')) {
-            try {
-                $result = $component->getSizeClasses();
-                // Should return a string
-                $this->assertIsString($result);
-                // Should start with 'btn-'
-                $this->assertStringStartsWith('btn-', $result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
+test('icon-only renders no label part and passes the aria-label through', function (): void {
+    $dom  = designSystemDom(Blade::render('<x-artisanpack-button icon-only leading-icon="plus" aria-label="Add" />'));
+    $root = $dom->query('//button')->item(0);
 
-    public function test_button_spinner_target_method(): void
-    {
-        $component = $this->createComponent();
+    expect($root->hasAttribute('data-icon-only'))->toBeTrue()
+        ->and($root->getAttribute('aria-label'))->toBe('Add')
+        ->and($dom->query('//*[@data-part="label"]'))->toHaveCount(0)
+        ->and($dom->query('//*[@data-part="icon"]'))->toHaveCount(1);
+});
 
-        if (method_exists($component, 'spinnerTarget')) {
-            try {
-                $result = $component->spinnerTarget();
-                // spinnerTarget can return null when no spinner is set, which is valid
-                $this->assertTrue(null === $result || is_string($result));
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
+test('the label part is omitted without content', function (): void {
+    expect(Blade::render('<x-artisanpack-button leading-icon="plus" aria-label="Add" />'))->not->toContain('data-part="label"');
+});
 
-    public function test_button_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
+test('attributes land on the root and class merges after classes.root', function (): void {
+    $root = designSystemDom(Blade::render(
+        '<x-artisanpack-button wire:click="save" data-test="x" class="w-full" :classes="[\'root\' => \'extra\', \'label\' => \'truncate\']">Save</x-artisanpack-button>',
+    ))->query('//button')->item(0);
 
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
+    expect($root->getAttribute('wire:click'))->toBe('save')
+        ->and($root->getAttribute('data-test'))->toBe('x')
+        ->and($root->getAttribute('class'))->toBe('apui-button extra w-full')
+        ->and($root->getElementsByTagName('span')->item(0)->getAttribute('class'))->toBe('truncate');
+});
 
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
+test('icon slots override the icon names', function (): void {
+    $html = Blade::render(<<<'BLADE'
+        <x-artisanpack-button leading-icon="plus" trailing-icon="arrow-right">
+            <x-slot:icon><svg data-custom="start"></svg></x-slot:icon>
+            Save
+            <x-slot:iconEnd><svg data-custom="end"></svg></x-slot:iconEnd>
+        </x-artisanpack-button>
+        BLADE);
+    $dom = designSystemDom($html);
 
-    public function test_button_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
+    expect($dom->query('//*[@data-part="icon"]/svg')->item(0)->getAttribute('data-custom'))->toBe('start')
+        ->and($dom->query('//*[@data-part="iconEnd"]/svg')->item(0)->getAttribute('data-custom'))->toBe('end')
+        ->and($dom->query('//*[@data-part="iconEnd"]')->item(0)->hasAttribute('data-mirror'))->toBeFalse()
+        ->and($dom->query('//*[@data-part="label"]')->item(0)->textContent)->toBe('Save');
+});
 
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
+test('names outside the registry fall back to blade-icons', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-button leading-icon="o-trash">Delete</x-artisanpack-button>'));
+    $svg = $dom->query('//*[@data-part="icon"]/svg')->item(0);
 
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'Button should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
+    expect($svg)->not->toBeNull()
+        ->and($svg->getAttribute('aria-hidden'))->toBe('true');
+});
 
-    public function test_button_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
+test('unknown icon names keep the part but render no svg', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-button leading-icon="no-such-icon">Go</x-artisanpack-button>'));
 
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
+    expect($dom->query('//*[@data-part="icon"]'))->toHaveCount(1)
+        ->and($dom->query('//*[@data-part="icon"]/*'))->toHaveCount(0);
+});
 
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
+test('registered icons render through the registry', function (): void {
+    IconRegistry::register(['rocket' => '<path d="M1 1" />']);
 
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
+    expect(Blade::render('<x-artisanpack-button leading-icon="rocket">Launch</x-artisanpack-button>'))->toContain(IconRegistry::svg('rocket'));
+});
 
-    public function test_button_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'Button rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
+test('the label is escaped', function (): void {
+    expect(Blade::render('<x-artisanpack-button>{{ $label }}</x-artisanpack-button>', ['label' => '<script>alert(1)</script>']))
+        ->not->toContain('<script>')
+        ->toContain('&lt;script&gt;');
+});
 
-    public function test_button_size_property_accepts_valid_sizes(): void
-    {
-        $validSizes = ['xs', 'sm', 'md', 'lg', 'xl'];
+test('the constructor declares only the manifest props', function (): void {
+    $parameters = array_map(
+        static fn (ReflectionParameter $parameter): string => $parameter->getName(),
+        (new ReflectionClass(Button::class))->getConstructor()->getParameters(),
+    );
 
-        foreach ($validSizes as $size) {
-            $component = $this->createComponent(['size' => $size]);
-            $this->assertEquals($size, $component->size);
-        }
-    }
-
-    public function test_button_size_defaults_to_md(): void
-    {
-        $component = $this->createComponent();
-        $this->assertEquals('md', $component->size);
-    }
-
-    public function test_button_get_size_classes_returns_correct_classes(): void
-    {
-        $sizeClassMap = [
-            'xs' => 'btn-xs',
-            'sm' => 'btn-sm',
-            'md' => 'btn-md',
-            'lg' => 'btn-lg',
-            'xl' => 'btn-lg', // Maps to lg since DaisyUI doesn't have xl
-        ];
-
-        foreach ($sizeClassMap as $size => $expectedClass) {
-            $component = $this->createComponent(['size' => $size]);
-            $this->assertEquals($expectedClass, $component->getSizeClasses());
-        }
-    }
-
-    public function test_button_size_validation_falls_back_to_md(): void
-    {
-        $component = $this->createComponent(['size' => 'invalid-size']);
-        // Even though we pass invalid-size, it should be stored as-is in the property
-        $this->assertEquals('invalid-size', $component->size);
-        // But getSizeClasses should return the fallback
-        $this->assertEquals('btn-md', $component->getSizeClasses());
-    }
-
-    public function test_button_renders_with_size_classes(): void
-    {
-        $component = $this->createComponent(['size' => 'lg', 'label' => 'Test Button']);
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-            $this->assertStringContainsString('btn-lg', $html);
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        }
-    }
-
-    public function test_button_size_combines_with_color(): void
-    {
-        $component = $this->createComponent([
-            'size'  => 'sm',
-            'color' => 'primary',
-            'label' => 'Small Primary',
-        ]);
-
-        $this->assertEquals('sm', $component->size);
-        $this->assertEquals('primary', $component->resolvedColor);
-
-        $view = $component->render();
-
-        try {
-            $html = $view->render();
-            $this->assertStringContainsString('btn-sm', $html);
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        }
-    }
-
-    public function test_button_hover_state_includes_text_color_for_variants(): void
-    {
-        $variants = ['primary', 'secondary', 'accent', 'success', 'warning', 'error'];
-
-        foreach ($variants as $variant) {
-            $component    = $this->createComponent(['color' => $variant]);
-            $colorClasses = $component->getColorClasses();
-
-            // Verify hover state exists
-            $this->assertArrayHasKey('hover', $colorClasses, "Variant {$variant} should have hover state");
-
-            // Verify style attribute with hover text color exists
-            $this->assertArrayHasKey('style', $colorClasses, "Variant {$variant} should have style attribute");
-            $this->assertStringContainsString('--artisanpack-variant-hover-text', $colorClasses['style'],
-                "Variant {$variant} should define hover text color");
-
-            // Verify hover class includes text color change
-            $this->assertStringContainsString('hover:text-[var(--artisanpack-variant-hover-text)]', $colorClasses['hover'],
-                "Variant {$variant} hover should change text color");
-        }
-    }
-
-    public function test_button_hover_state_includes_text_color_for_tailwind_colors(): void
-    {
-        $tailwindColors = ['blue-500', 'red-600', 'green-400', 'purple-700'];
-
-        foreach ($tailwindColors as $color) {
-            $component    = $this->createComponent(['color' => $color]);
-            $colorClasses = $component->getColorClasses();
-
-            // Verify hover state exists
-            $this->assertArrayHasKey('hover', $colorClasses, "Color {$color} should have hover state");
-
-            // Verify style attribute with hover text color exists
-            $this->assertArrayHasKey('style', $colorClasses, "Color {$color} should have style attribute");
-            $this->assertStringContainsString('--artisanpack-tailwind-hover-text', $colorClasses['style'],
-                "Color {$color} should define hover text color");
-
-            // Verify hover class includes text color change
-            $this->assertStringContainsString('hover:text-[var(--artisanpack-tailwind-hover-text)]', $colorClasses['hover'],
-                "Color {$color} hover should change text color");
-        }
-    }
-
-    public function test_button_hover_state_includes_text_color_for_hex_colors(): void
-    {
-        $hexColors = ['#ff6b6b', '#4ecdc4', '#ffe66d'];
-
-        foreach ($hexColors as $color) {
-            $component    = $this->createComponent(['color' => $color]);
-            $colorClasses = $component->getColorClasses();
-
-            // Verify hover state exists
-            $this->assertArrayHasKey('hover', $colorClasses, "Hex color {$color} should have hover state");
-
-            // Verify style attribute with hover text color exists
-            $this->assertArrayHasKey('style', $colorClasses, "Hex color {$color} should have style attribute");
-            $this->assertStringContainsString('--artisanpack-custom-hover-text', $colorClasses['style'],
-                "Hex color {$color} should define hover text color");
-
-            // Verify hover class includes text color change
-            $this->assertStringContainsString('hover:text-[var(--artisanpack-custom-hover-text)]', $colorClasses['hover'],
-                "Hex color {$color} hover should change text color");
-        }
-    }
-
-    public function test_button_focus_state_includes_text_color(): void
-    {
-        $component    = $this->createComponent(['color' => 'primary']);
-        $colorClasses = $component->getColorClasses();
-
-        // Verify focus state exists
-        $this->assertArrayHasKey('focus', $colorClasses);
-
-        // Verify style attribute with focus text color exists
-        $this->assertArrayHasKey('style', $colorClasses);
-        $this->assertStringContainsString('--artisanpack-variant-focus-text', $colorClasses['style']);
-
-        // Verify focus class includes text color change
-        $this->assertStringContainsString('focus:text-[var(--artisanpack-variant-focus-text)]', $colorClasses['focus']);
-    }
-
-    public function test_button_transitions_are_optimized(): void
-    {
-        $component = $this->createComponent(['label' => 'Test Button']);
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-            // Check for transition-colors instead of transition-all for better performance
-            $this->assertStringContainsString('transition-colors', $html);
-            $this->assertStringContainsString('duration-200', $html);
-            $this->assertStringContainsString('ease-in-out', $html);
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        }
-    }
-
-    public function test_button_color_adjustment_works_with_size(): void
-    {
-        $component = $this->createComponent([
-            'size'            => 'lg',
-            'color'           => 'blue-500',
-            'colorAdjustment' => 'lighter',
-            'label'           => 'Large Light Blue',
-        ]);
-
-        $this->assertEquals('lg', $component->size);
-        $this->assertEquals('blue-500', $component->resolvedColor);
-        $this->assertEquals('lighter', $component->colorAdjustment);
-
-        // Verify size class is generated
-        $this->assertEquals('btn-lg', $component->getSizeClasses());
-
-        // Verify color classes are generated with adjustment
-        $colorClasses = $component->getColorClasses();
-        $this->assertNotEmpty($colorClasses);
-    }
-}
+    expect($parameters)->toBe(['variant', 'color', 'size', 'iconOnly', 'loading', 'disabled', 'href', 'leadingIcon', 'trailingIcon', 'type', 'classes']);
+});

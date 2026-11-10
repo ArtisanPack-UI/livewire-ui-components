@@ -38,11 +38,13 @@
             <div class="relative z-20 inline-flex rounded-[5px] bg-white dark:bg-base-100 text-dark dark:text-white">
                 <x-artisanpack-select
                     :options="[
-						['name' => __( 'Day' ), 'id' => 'day'],
-						['name' => __( 'Week' ), 'id' => 'week'],
-						['name' => __( 'Month' ), 'id' => 'month'],
-						['name' => __( 'Year' ), 'id' => 'year']
+						['label' => __( 'Day' ), 'value' => 'day'],
+						['label' => __( 'Week' ), 'value' => 'week'],
+						['label' => __( 'Month' ), 'value' => 'month'],
+						['label' => __( 'Year' ), 'value' => 'year']
 					]"
+                    placeholder=""
+                    :aria-label="__( 'Calendar view' )"
                     wire:model.live="view"
                     class="w-40"
                 />

@@ -1,90 +1,52 @@
-<div>
-    <fieldset class="fieldset">
-        <div class="w-full">
-            @if($card)
-                <label class="relative block">
-                    <input
-                        id="{{ $uuid }}"
-                        type="checkbox"
-                        class="sr-only peer"
-                        {{
-                            $attributes->whereDoesntStartWith(["id"])
-                         }}
-                    />
-                    <div class="{{ $cardClass }} peer-checked:border-primary peer-checked:bg-primary/10 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed">
-                        <div class="card-body">
-                            <div class="flex items-start justify-between">
-                                <div class="flex-1">
-                                    {{-- LABEL --}}
-                                    <h3 class="text-sm font-medium text-base-content">
-                                        {{ $label }}
-
-                                        @if($attributes->get('required'))
-                                            <span class="text-error">*</span>
-                                        @endif
-                                    </h3>
-
-                                    {{-- HINT --}}
-                                    @if($hint)
-                                        <p class="{{ $hintClass }} mt-1 text-secondary" x-classes="fieldset-label">{{ $hint }}</p>
-                                    @endif
-                                </div>
-                                <div class="ml-3 flex h-5 items-center">
-                                    {{-- Placeholder for visual alignment --}}
-                                    <div class="h-4 w-4"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {{-- Checkbox indicator positioned as peer sibling --}}
-                    <div class="absolute top-4 right-4 h-4 w-4 rounded border-2 border-base-300 bg-base-100 peer-checked:border-primary peer-checked:bg-primary transition-colors flex items-center justify-center pointer-events-none">
-                        <svg class="w-3 h-3 text-primary-content opacity-0 peer-checked:opacity-100 transition-opacity" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                        </svg>
-                    </div>
-                </label>
-            @else
-                <label @class(["flex gap-3 items-center cursor-pointer", "justify-between" => $right, "!items-start" => $hint])>
-
-                    {{-- CHECKBOX --}}
-                    <input
-                        id="{{ $uuid }}"
-                        type="checkbox"
-                        {{
-                            $attributes->whereDoesntStartWith(["id"])
-                                ->class(["order-2" => $right])
-                                ->merge(["class" => "checkbox"])
-                         }}
-                    />
-
-                    {{-- LABEL --}}
-                    <div @class(["order-1" => $right])>
-                        <div class="text-sm font-medium">
-                            {{ $label }}
-
-                            @if($attributes->get('required'))
-                                <span class="text-error">*</span>
-                            @endif
-                        </div>
-
-                        {{-- HINT --}}
-                        @if($hint)
-                            <div class="{{ $hintClass }}" x-classes="fieldset-label">{{ $hint }}</div>
-                        @endif
-                    </div>
-                </label>
-            @endif
-        </div>
-
-        {{-- ERROR --}}
-        @if(!$omitError && $errors->has($errorFieldName()))
-            @foreach($errors->get($errorFieldName()) as $message)
-                @foreach(Arr::wrap($message) as $line)
-                    <div class="{{ $errorClass }}" x-class="text-error">{{ $line }}</div>
-                    @break($firstErrorOnly)
-                @endforeach
-                @break($firstErrorOnly)
-            @endforeach
-        @endif
-    </fieldset>
+{{--
+    Checkbox (#47). Markup contract: design-system pilot, Checkbox.
+    `class` lands on the root; every other attribute lands on the native checkbox.
+    Only script can set the native indeterminate property, so Alpine does it, and
+    keeps the root's data-state in step on change. The indicator holds both
+    glyphs; CSS shows one.
+--}}
+@php
+    $controlId      = $controlId();
+    $message        = $errorMessage( $errors ?? null );
+    $isInvalid      = $invalid || null !== $message;
+    $hasLabel       = $filled( $label );
+    $hasDescription = $filled( $description );
+    $state          = $state();
+    $describedBy    = $describedBy( array_values( array_filter( [
+        $hasDescription ? $controlId . '-description' : null,
+        null !== $message ? $controlId . '-error' : null,
+    ] ) ) );
+@endphp
+<div
+    {{ $attributes->only( 'class' )->class( $rootClasses( 'apui-checkbox' ) ) }}
+    data-state="{{ $state }}"
+    @if ( $isInvalid ) data-invalid @endif
+    @if ( $disabled ) data-disabled @endif
+>
+    <span data-scope="checkbox" data-part="box"{{ $partClass( 'box' ) }}>
+        <input {{ $attributes->except( [ 'class', 'id', 'aria-describedby' ] ) }}
+            type="checkbox"
+            data-scope="checkbox"
+            data-part="control"
+            id="{{ $controlId }}"{{ $partClass( 'control' ) }}
+            x-data
+            x-effect="$el.indeterminate = {{ $indeterminate ? 'true' : 'false' }}"
+            x-on:change="$el.closest('.apui-checkbox').dataset.state = $el.indeterminate ? 'indeterminate' : ($el.checked ? 'checked' : 'unchecked')"
+            @if ( $checked ) checked @endif
+            @if ( $disabled ) disabled @endif
+            @if ( $required ) required @endif
+            @if ( $isInvalid ) aria-invalid="true" @endif
+            @if ( null !== $describedBy ) aria-describedby="{{ $describedBy }}" @endif
+        />
+        <span data-scope="checkbox" data-part="indicator" aria-hidden="true"{{ $partClass( 'indicator' ) }}>{{ $indicatorIcons() }}</span>
+    </span>
+    @if ( $hasLabel )
+        <label data-scope="checkbox" data-part="label" for="{{ $controlId }}"{{ $partClass( 'label' ) }}>{{ $content( $label ) }}</label>
+    @endif
+    @if ( $hasDescription )
+        <p data-scope="checkbox" data-part="description" id="{{ $controlId }}-description"{{ $partClass( 'description' ) }}>{{ $content( $description ) }}</p>
+    @endif
+    @if ( null !== $message )
+        <p data-scope="checkbox" data-part="error" id="{{ $controlId }}-error"{{ $partClass( 'error' ) }}>{{ $iconSvg( 'circle-alert' ) }}{{ $message }}</p>
+    @endif
 </div>

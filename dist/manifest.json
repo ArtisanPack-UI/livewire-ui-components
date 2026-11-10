@@ -12,8 +12,8 @@
     "alpine": "js/alpine.global.js"
   },
   "files": {
-    "css/headless.css": "6907c271a85d695c",
-    "css/index.css": "6907c271a85d695c",
+    "css/headless.css": "b7e593e99fdfa33d",
+    "css/index.css": "086507266ec2ad94",
     "js/alpine.global.js": "a1c9ae2f9d539a61",
     "js/alpine.global.js.map": "ea0a490beec9d065"
   }

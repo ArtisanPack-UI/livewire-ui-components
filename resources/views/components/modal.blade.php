@@ -30,9 +30,9 @@
     >
         @if(!$persistent)
             @if ($id)
-                <x-artisanpack-button class="btn-circle btn-sm btn-ghost absolute end-2 top-2 z-[999]" icon="o-x-mark" type="button" onclick="document.getElementById('{{ $id }}').close()" tabindex="-1" />
+                <x-artisanpack-button variant="ghost" color="neutral" size="sm" icon-only leading-icon="o-x-mark" :aria-label="__( 'Close' )" class="absolute end-2 top-2 z-[999]" onclick="document.getElementById('{{ $id }}').close()" tabindex="-1" />
             @else
-                <x-artisanpack-button class="btn-circle btn-sm btn-ghost absolute end-2 top-2 z-[999]" icon="o-x-mark" type="button" @click="$wire.{{ $attributes->wire('model')->value() }} = false" tabindex="-1" />
+                <x-artisanpack-button variant="ghost" color="neutral" size="sm" icon-only leading-icon="o-x-mark" :aria-label="__( 'Close' )" class="absolute end-2 top-2 z-[999]" @click="$wire.{{ $attributes->wire('model')->value() }} = false" tabindex="-1" />
             @endif
         @endif
 
