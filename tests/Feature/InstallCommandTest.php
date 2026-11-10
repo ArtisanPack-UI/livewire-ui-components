@@ -197,6 +197,31 @@ test('--assets picks the path without asking', function (string $assets): void {
     expect($command->askForAssetPath())->toBe($assets);
 })->with(['bundler', 'prebuilt']);
 
+test('uses the prebuilt path without asking while the npm packages are unpublished', function (): void {
+    [$command, $buffer] = installCommand();
+
+    expect(LivewireUiComponentsInstallCommand::NPM_PACKAGES_PUBLISHED)->toBeFalse()
+        ->and($command->askForAssetPath())->toBe('prebuilt')
+        ->and($buffer->fetch())->toContain('arrives once the npm packages are published');
+});
+
+test('--assets=bundler warns while the npm packages are unpublished', function (): void {
+    [$command, $buffer] = installCommand(['--assets' => 'bundler']);
+
+    expect($command->askForAssetPath())->toBe('bundler')
+        ->and($buffer->fetch())->toContain("aren't on npm yet");
+});
+
+test('the Welcome stub declares the class the root route uses', function (): void {
+    $stub = (string) file_get_contents(dirname(__DIR__, 2).'/stubs/Welcome.php');
+
+    expect(substr_count($stub, "\nnamespace "))->toBe(1)
+        ->and($stub)->toContain('namespace App\\Livewire;')
+        ->and($stub)->toContain('use ArtisanPack\\LivewireUiComponents\\Traits\\Toast;')
+        ->and($stub)->toContain('use Illuminate\\Support\\Collection;')
+        ->and($stub)->toContain('use Livewire\\Component;');
+});
+
 test('--assets rejects anything else', function (): void {
     [$command] = installCommand(['--assets' => 'cdn']);
 

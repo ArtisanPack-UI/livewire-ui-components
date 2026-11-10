@@ -14,7 +14,7 @@ composer require artisanpack-ui/livewire-ui-components
 php artisan livewire-ui-components:install
 ```
 
-The installer asks how your app loads the design system's CSS and JS. There are two paths.
+The installer asks how your app loads the design system's CSS and JS. There are two paths. Until the npm packages are published, it uses the prebuilt files without asking; pass `--assets=bundler` if you have the packages linked or from a private registry.
 
 **With a bundler (Vite).** The installer adds `@artisanpack-ui/css` and `@artisanpack-ui/behavior` from npm and imports them. Tailwind CSS is optional.
 

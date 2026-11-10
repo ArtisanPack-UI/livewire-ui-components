@@ -62,6 +62,16 @@ class LivewireUiComponentsInstallCommand extends Command
     public const DEFAULT_ASSETS = self::ASSETS_PREBUILT;
 
     /**
+     * Whether `NPM_PACKAGES` are on the npm registry yet (design-system #81).
+     * Until they are, the installer doesn't offer the bundler path, and
+     * `--assets=bundler` warns that the packages must come from a link or a
+     * private registry.
+     *
+     * @since 3.0.0
+     */
+    public const NPM_PACKAGES_PUBLISHED = false;
+
+    /**
      * The npm packages the bundler path installs.
      *
      * @since 3.0.0
@@ -532,7 +542,19 @@ class LivewireUiComponentsInstallCommand extends Command
                 ]));
             }
 
+            if (self::ASSETS_BUNDLER === $option && ! static::NPM_PACKAGES_PUBLISHED) {
+                $this->warn(__('The design system npm packages (:packages) aren\'t on npm yet. The bundler path only works if you have them linked or from a private registry.', [
+                    'packages' => implode(', ', self::NPM_PACKAGES),
+                ]));
+            }
+
             return $option;
+        }
+
+        if (! static::NPM_PACKAGES_PUBLISHED) {
+            $this->info(__('Using the prebuilt design system files. The bundler path (npm + Vite) arrives once the npm packages are published.'));
+
+            return self::ASSETS_PREBUILT;
         }
 
         return (string) select(
