@@ -47,21 +47,9 @@ class StepComponentTest extends ComponentTestCase
 
     public function test_step_icon_htm_l_method(): void
     {
-        $component = $this->createComponent();
+        $html = $this->createComponent(['icon' => 'o-check'])->iconHTML();
 
-        if (method_exists($component, 'iconHTML')) {
-            try {
-                $result = $component->iconHTML();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
+        $this->assertStringContainsString('<svg', $html);
     }
 
     public function test_step_renders_successfully(): void

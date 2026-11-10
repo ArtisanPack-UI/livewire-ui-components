@@ -62,12 +62,26 @@ class TagsComponentTest extends ComponentTestCase
         }
     }
 
+    /**
+     * Searchable tags need options to search, so the generic boolean test
+     * passes some.
+     */
+    public function test_component_handles_boolean_properties(): void
+    {
+        foreach ($this->getBooleanProperties() as $property) {
+            $this->assertTrue($this->createComponent([$property => true, 'options' => [['id' => 1, 'name' => 'One']]])->$property);
+            $this->assertFalse($this->createComponent([$property => false])->$property);
+        }
+    }
+
     public function test_tags_boolean_properties(): void
     {
         $booleanProperties = ['inline', 'clearable', 'searchable', 'allowCustomTags', 'omitError', 'firstErrorOnly'];
+        // Searchable tags need options to search.
+        $options = [['id' => 1, 'name' => 'One']];
 
         foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
+            $component = $this->createComponent([$property => true, 'options' => $options]);
             $this->assertTrue($component->$property);
 
             $component = $this->createComponent([$property => false]);
@@ -174,19 +188,9 @@ class TagsComponentTest extends ComponentTestCase
     {
         $component = $this->createComponent();
 
-        if (method_exists($component, 'getOptionValue')) {
-            try {
-                $result = $component->getOptionValue();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
+        $this->assertSame(42, $component->getOptionValue(['id' => 42, 'name' => 'Answer']));
+        $this->assertSame("'abc'", $component->getOptionValue(['id' => 'abc', 'name' => 'Letters']));
+        $this->assertSame("'007'", $component->getOptionValue(['id' => '007', 'name' => 'Leading zero']));
     }
 
     public function test_tags_has_searchable_options_method(): void

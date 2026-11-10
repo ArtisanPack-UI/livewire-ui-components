@@ -376,9 +376,10 @@ class Stat extends BaseComponent
                 $cleaned = str_replace(',', '', $cleaned); // Remove thousand separators
             }
         } elseif ($hasComma) {
-            // Only comma present - could be thousands or decimal
-            // If comma appears once and is followed by exactly 2-3 digits, treat as decimal
-            if (1 === substr_count($cleaned, ',') && preg_match('/,\d{2,3}$/', $cleaned)) {
+            // Only comma present - could be thousands or decimal.
+            // One comma followed by one or two digits is a decimal ("12,5", "2,50");
+            // three digits is a thousands group ("12,345").
+            if (1 === substr_count($cleaned, ',') && preg_match('/,\d{1,2}$/', $cleaned)) {
                 $cleaned = str_replace(',', '.', $cleaned);
             } else {
                 // Otherwise, treat as thousands separator

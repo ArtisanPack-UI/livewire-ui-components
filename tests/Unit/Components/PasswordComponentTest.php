@@ -48,7 +48,9 @@ class PasswordComponentTest extends ComponentTestCase
                     continue;
                 } // Skip empty values for some properties
 
-                $component = $this->createComponent([$property => $value]);
+                // A left icon needs the password toggle on the right.
+                $extra     = 'icon' === $property ? ['right' => true] : [];
+                $component = $this->createComponent([$property => $value, ...$extra]);
                 $this->assertEquals($value, $component->$property);
             }
         }

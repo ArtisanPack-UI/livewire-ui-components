@@ -218,7 +218,10 @@ class Table extends BaseComponent
         }
 
         if ('currency' == $format[0]) {
-            return ($format[2] ?? '').number_format($field, ...str_split($format[1]));
+            // The spec is decimals, decimal separator and thousands separator, such as '2.,'.
+            [$decimals, $decimalSeparator, $thousandsSeparator] = str_split($format[1]) + [0, '.', ','];
+
+            return ($format[2] ?? '').number_format((float) $field, (int) $decimals, $decimalSeparator, $thousandsSeparator);
         }
 
         if ('date' == $format[0] && $field) {

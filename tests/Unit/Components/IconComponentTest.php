@@ -9,6 +9,7 @@ use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
 use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
 use ArtisanPack\LivewireUiComponents\View\Components\Icon;
 use Error;
+use Illuminate\View\Component;
 use RuntimeException;
 
 /**
@@ -179,5 +180,13 @@ class IconComponentTest extends ComponentTestCase
             }
             throw $e;
         }
+    }
+
+    /**
+     * Uses a real icon name, so rendering can find the SVG.
+     */
+    protected function createComponent(array $properties = []): Component
+    {
+        return parent::createComponent(['name' => 'o-check', ...$properties]);
     }
 }

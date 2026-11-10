@@ -73,7 +73,7 @@ class Rating extends BaseComponent
 
     public function size(): ?string
     {
-        return str($this->attributes->get('class'))->match('/(rating-(..))/');
+        return str($this->attributes->get('class'))->match('/(rating-(..))/')->toString();
     }
 
     public function render(): View|Closure|string

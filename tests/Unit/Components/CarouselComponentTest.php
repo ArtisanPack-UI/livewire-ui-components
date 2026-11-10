@@ -79,20 +79,10 @@ class CarouselComponentTest extends ComponentTestCase
     public function test_carousel_render_icon_method(): void
     {
         $component = $this->createComponent();
+        $svg       = '<svg viewBox="0 0 24 24"><path d="M0 0h24v24H0z"/></svg>';
 
-        if (method_exists($component, 'renderIcon')) {
-            try {
-                $result = $component->renderIcon();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
+        $this->assertSame('', $component->renderIcon(null, ''));
+        $this->assertSame('<svg class="w-4 h-4" viewBox="0 0 24 24"><path d="M0 0h24v24H0z"/></svg>', $component->renderIcon($svg, 'o-chevron-left', ['w-4', 'h-4']));
     }
 
     public function test_carousel_renders_successfully(): void

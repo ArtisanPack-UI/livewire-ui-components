@@ -14,7 +14,7 @@
     'anchor' => ''
 ])
 
-<div id="{{ $anchor }}" {{ $attributes->class(["mb-10", "mary-header-anchor" => $withAnchor]) }}>
+<div @if($anchor) id="{{ $anchor }}" @endif {{ $attributes->class(["mb-10", "mary-header-anchor" => $withAnchor]) }}>
     <div class="flex flex-wrap gap-5 justify-between items-center">
         <div>
             {{-- This is the changed part: from <div> to <h{{ $level }}> --}}

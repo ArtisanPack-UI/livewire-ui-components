@@ -6,6 +6,8 @@ namespace ArtisanPack\LivewireUiComponents\Tests;
 
 use ArtisanPack\LivewireUiComponents\LivewireUiComponentsServiceProvider;
 use ArtisanPackUI\Hooks\Providers\HooksServiceProvider;
+use BladeUI\Heroicons\BladeHeroiconsServiceProvider;
+use BladeUI\Icons\BladeIconsServiceProvider;
 use Livewire\LivewireServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 
@@ -16,6 +18,8 @@ class TestCase extends Orchestra
         return [
             LivewireServiceProvider::class,
             HooksServiceProvider::class,
+            BladeIconsServiceProvider::class,
+            BladeHeroiconsServiceProvider::class,
             LivewireUiComponentsServiceProvider::class,
         ];
     }

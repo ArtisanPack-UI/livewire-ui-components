@@ -80,38 +80,19 @@ class BreadcrumbsComponentTest extends ComponentTestCase
     {
         $component = $this->createComponent();
 
-        if (method_exists($component, 'tooltip')) {
-            try {
-                $result = $component->tooltip();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
+        $this->assertSame('Home page', $component->tooltip(['tooltip' => 'Home page']));
+        $this->assertSame('Left', $component->tooltip(['tooltip-left' => 'Left']));
+        $this->assertNull($component->tooltip(['label' => 'No tooltip']));
     }
 
     public function test_breadcrumbs_tooltip_position_method(): void
     {
         $component = $this->createComponent();
 
-        if (method_exists($component, 'tooltipPosition')) {
-            try {
-                $result = $component->tooltipPosition();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
+        $this->assertSame('lg:tooltip-left', $component->tooltipPosition(['tooltip-left' => 'x']));
+        $this->assertSame('lg:tooltip-right', $component->tooltipPosition(['tooltip-right' => 'x']));
+        $this->assertSame('lg:tooltip-bottom', $component->tooltipPosition(['tooltip-bottom' => 'x']));
+        $this->assertSame('lg:tooltip-top', $component->tooltipPosition(['tooltip' => 'x']));
     }
 
     public function test_breadcrumbs_renders_successfully(): void

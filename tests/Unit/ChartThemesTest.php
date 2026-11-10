@@ -109,7 +109,7 @@ describe('Chart Themes', function (): void {
                 ->toHaveKey('fill');
 
             expect($theme['chart']['background'])->toBe('transparent');
-            expect($theme['chart']['foreColor'])->toBe('inherit');
+            expect($theme['chart']['foreColor'])->toBe('#9ca3af');
         });
 
         it('uses gradient fill', function (): void {

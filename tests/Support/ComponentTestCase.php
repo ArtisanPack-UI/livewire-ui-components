@@ -8,11 +8,13 @@ use ArtisanPack\LivewireUiComponents\Tests\TestCase;
 use Error;
 use Exception;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Collection;
 use Illuminate\View\Component;
 use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionProperty;
 use stdClass;
+use Throwable;
 
 /**
  * Base test case for component testing providing common patterns and utilities.
@@ -95,16 +97,33 @@ abstract class ComponentTestCase extends TestCase
         $component = $this->createComponent();
 
         foreach ($this->defaultProperties as $property => $expectedValue) {
+            // An empty uuid is filled in by the constructor, so check the generated value instead.
+            if ('uuid' === $property && '' === $expectedValue) {
+                $this->assertStringStartsWith('artisanpack', $component->uuid, 'An empty uuid should be auto-generated');
+
+                continue;
+            }
+
+            $actual = $component->$property;
+            // Option lists are normalized to collections; compare their items.
+            if (is_array($expectedValue) && $actual instanceof Collection) {
+                $actual = $actual->all();
+            }
+
             $this->assertEquals(
                 $expectedValue,
-                $component->$property,
-                "Property '{$property}' should have default value '{$expectedValue}'",
+                $actual,
+                "Property '{$property}' should have default value ".json_encode($expectedValue),
             );
         }
     }
 
     /**
-     * Test that the component generates a unique UUID.
+     * Test that the component generates a UUID.
+     *
+     * Most components derive the UUID from their properties, so a component
+     * keeps the same ID across Livewire re-renders; a few use uniqid().
+     * Either way it is generated when none is given and carries the prefix.
      */
     public function test_component_generates_unique_uuid(): void
     {
@@ -118,7 +137,6 @@ abstract class ComponentTestCase extends TestCase
 
         $this->assertNotEmpty($component1->uuid);
         $this->assertNotEmpty($component2->uuid);
-        $this->assertNotEquals($component1->uuid, $component2->uuid, 'UUIDs should be unique for different components');
         $this->assertStringStartsWith('artisanpack', $component1->uuid, 'Auto-generated UUIDs should start with artisanpack prefix');
     }
 
@@ -174,6 +192,12 @@ abstract class ComponentTestCase extends TestCase
     {
         if (! $this->componentHasProperty('size')) {
             $this->markTestSkipped('Component does not have size property');
+        }
+
+        // Some components use `size` for something else, such as Pin's digit count.
+        $type = (new ReflectionProperty($this->componentClass, 'size'))->getType();
+        if ($type instanceof ReflectionNamedType && 'string' !== $type->getName()) {
+            $this->markTestSkipped('The size property is not a size name');
         }
 
         $sizes = ['xs', 'sm', 'md', 'lg', 'xl'];
@@ -240,9 +264,9 @@ abstract class ComponentTestCase extends TestCase
                     $component->$property,
                     "Required property '{$property}' should not be null",
                 );
-            } catch (Exception $e) {
-                // Expected behavior for truly required properties
-                $this->assertTrue(true, "Property '{$property}' correctly throws exception when null");
+            } catch (Throwable $e) {
+                // Expected for truly required properties: an exception, or a TypeError from a typed parameter.
+                $this->assertTrue(true, "Property '{$property}' correctly throws when null");
             }
         }
     }
@@ -265,6 +289,8 @@ abstract class ComponentTestCase extends TestCase
                 }
                 throw $e;
             }
+
+            $this->assertNotEmpty($html, 'Component should render markup');
 
             // Check for basic accessibility attributes
             $accessibilityChecks = [

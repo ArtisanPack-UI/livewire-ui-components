@@ -110,173 +110,79 @@ class TableComponentTest extends ComponentTestCase
 
     public function test_table_is_sortable_method(): void
     {
-        $component = $this->createComponent();
+        $this->assertFalse($this->createComponent()->isSortable(['key' => 'name', 'label' => 'Name']));
 
-        if (method_exists($component, 'isSortable')) {
-            try {
-                $result = $component->isSortable();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
+        $sorted = $this->createComponent(['sortBy' => ['column' => 'name', 'direction' => 'asc']]);
+        $this->assertTrue($sorted->isSortable(['key' => 'name', 'label' => 'Name']));
+        $this->assertFalse($sorted->isSortable(['key' => 'name', 'sortable' => false]));
     }
 
     public function test_table_is_hidden_method(): void
     {
         $component = $this->createComponent();
 
-        if (method_exists($component, 'isHidden')) {
-            try {
-                $result = $component->isHidden();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
+        $this->assertFalse($component->isHidden(['key' => 'name', 'label' => 'Name']));
+        $this->assertTrue($component->isHidden(['key' => 'name', 'hidden' => true]));
     }
 
     public function test_table_format_method(): void
     {
         $component = $this->createComponent();
+        $row       = ['id' => 1, 'price' => 1234.5];
 
-        if (method_exists($component, 'format')) {
-            try {
-                $result = $component->format();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
+        $this->assertSame(1234.5, $component->format($row, 1234.5, ['key' => 'price']));
+        $this->assertSame('$1,234.50', $component->format($row, 1234.5, ['key' => 'price', 'format' => ['currency', '2.,', '$']]));
+        $this->assertSame('#1', $component->format($row, 1, ['key' => 'id', 'format' => fn (array $row, int $field): string => '#'.$field]));
     }
 
     public function test_table_has_link_method(): void
     {
-        $component = $this->createComponent();
+        $this->assertFalse($this->createComponent()->hasLink(['key' => 'name', 'label' => 'Name']));
 
-        if (method_exists($component, 'hasLink')) {
-            try {
-                $result = $component->hasLink();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
+        $linked = $this->createComponent(['link' => '/users/{id}']);
+        $this->assertTrue($linked->hasLink(['key' => 'name', 'label' => 'Name']));
+        $this->assertFalse($linked->hasLink(['key' => 'name', 'disableLink' => true]));
     }
 
     public function test_table_is_sorted_by_method(): void
     {
-        $component = $this->createComponent();
+        $this->assertFalse($this->createComponent()->isSortedBy(['key' => 'name', 'label' => 'Name']));
 
-        if (method_exists($component, 'isSortedBy')) {
-            try {
-                $result = $component->isSortedBy();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
+        $sorted = $this->createComponent(['sortBy' => ['column' => 'name', 'direction' => 'asc']]);
+        $this->assertTrue($sorted->isSortedBy(['key' => 'name', 'label' => 'Name']));
+        $this->assertFalse($sorted->isSortedBy(['key' => 'email']));
     }
 
     public function test_table_get_sort_method(): void
     {
-        $component = $this->createComponent();
+        $this->assertFalse($this->createComponent()->getSort(['key' => 'name', 'label' => 'Name']));
 
-        if (method_exists($component, 'getSort')) {
-            try {
-                $result = $component->getSort();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
+        $sorted = $this->createComponent(['sortBy' => ['column' => 'name', 'direction' => 'asc']]);
+        $this->assertSame(['column' => 'name', 'direction' => 'desc'], $sorted->getSort(['key' => 'name', 'label' => 'Name']));
+        $this->assertSame(['column' => 'email', 'direction' => 'asc'], $sorted->getSort(['key' => 'email']));
     }
 
     public function test_table_redirect_link_method(): void
     {
-        $component = $this->createComponent();
+        $component = $this->createComponent(['link' => '/users/{id}/cities/{city.name}']);
 
-        if (method_exists($component, 'redirectLink')) {
-            try {
-                $result = $component->redirectLink();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
+        $this->assertSame('/users/7/cities/Paris', $component->redirectLink(['id' => 7, 'city' => ['name' => 'Paris']]));
     }
 
     public function test_table_row_classes_method(): void
     {
-        $component = $this->createComponent();
+        $component = $this->createComponent(['rowDecoration' => ['bg-error/10' => fn (array $row): bool => $row['overdue']]]);
 
-        if (method_exists($component, 'rowClasses')) {
-            try {
-                $result = $component->rowClasses();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
+        $this->assertSame('bg-error/10', $component->rowClasses(['overdue' => true]));
+        $this->assertSame('', $component->rowClasses(['overdue' => false]));
     }
 
     public function test_table_cell_classes_method(): void
     {
-        $component = $this->createComponent();
+        $component = $this->createComponent(['cellDecoration' => ['name' => ['font-bold' => fn (array $row): bool => $row['vip']]]]);
 
-        if (method_exists($component, 'cellClasses')) {
-            try {
-                $result = $component->cellClasses();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
+        $this->assertSame('text-end font-bold', $component->cellClasses(['vip' => true], ['key' => 'name', 'class' => 'text-end']));
+        $this->assertSame('text-end', $component->cellClasses(['vip' => false], ['key' => 'name', 'class' => 'text-end']));
     }
 
     public function test_table_selectable_modifier_method(): void
@@ -302,19 +208,8 @@ class TableComponentTest extends ComponentTestCase
     {
         $component = $this->createComponent();
 
-        if (method_exists($component, 'getKeyValue')) {
-            try {
-                $result = $component->getKeyValue();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
+        $this->assertSame(42, $component->getKeyValue(['id' => 42], 'keyBy'));
+        $this->assertSame("'abc'", $component->getKeyValue(['id' => 'abc'], 'keyBy'));
     }
 
     public function test_table_renders_successfully(): void
