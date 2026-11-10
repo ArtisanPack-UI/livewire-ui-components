@@ -124,7 +124,6 @@ jobs:
         run: php vendor/bin/pest tests/Feature --no-coverage
 
   coverage:
-    needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 15
     name: Code Coverage
@@ -140,14 +139,22 @@ jobs:
           # PCOV: Xdebug overflows the stack compiling testbench's bootstrap on 8.4.
           coverage: pcov
 
-      - name: Download vendor directory
-        uses: actions/download-artifact@v4
-        with:
-          name: vendor
-          path: vendor/
+      # Install here rather than reuse the build job's vendor artifact. With the
+      # artifact, PHP overflowed the stack bootstrapping testbench before the
+      # first test, while the fresh installs in the test jobs run fine.
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
-      - name: Fix vendor permissions
-        run: chmod -R +x vendor/bin/
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
 
       - name: Run tests with coverage
         run: php vendor/bin/pest --coverage --coverage-clover=coverage.xml

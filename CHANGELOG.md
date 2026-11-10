@@ -10,7 +10,7 @@
 
 ### Changed
 - Require Laravel 12 or 13 (`illuminate/support: ^12.0|^13.0`) and PHP 8.2. Laravel 11 is end of life, and Composer now refuses its releases over unpatched security advisories.
-- Allow `laravel/boost` 2.x in development, which Laravel 13 needs.
+- Allow `laravel/boost` 2.x, Pest 4 and PHPUnit 12 in development, which Laravel 13 needs, and drop `pestphp/pest-plugin-watch`, which has no Pest 4 release.
 
 ### Fixed
 - `Stat::numericValue()` read "$12,345" as 12.345: a single comma followed by three digits is now a thousands separator; one or two digits is still a decimal.
