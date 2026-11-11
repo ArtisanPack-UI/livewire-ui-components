@@ -181,7 +181,7 @@ This package fires a small set of cross-cutting hooks — powered by [`artisanpa
 | `ap.livewireUiComponents.componentClasses` | filter | `BaseComponent::getClasses()` (opt-in per component) | `(array $classes, string $componentName, ComponentAttributeBag $attributes)` |
 | `ap.livewireUiComponents.componentAttributes` | filter | `BaseComponent::withAttributes()` — every render | `(ComponentAttributeBag $attributes, string $componentName)` |
 | `ap.livewireUiComponents.iconAlias` | filter | `Icon::icon()` | `(string $iconName)` |
-| `ap.livewireUiComponents.toastDispatched` | action | `Toast` trait `toast()` method | `(string $type, string $title, array $options)` |
+| `ap.livewireUiComponents.toastDispatched` | action | `Toast` trait `toast()` and `flashToast()` | `(string $color, string $title, array $options)` |
 | `ap.livewireUiComponents.tableColumns` | filter | `Table::__construct()` | `(array $columns, string $context)` — context is the table's `id` or `'default'` |
 | `ap.livewireUiComponents.themeColors` | filter | `ThemeToggle::__construct()` | `(array $themes)` — `['light' => ['label','theme','class'], 'dark' => [...]]` |
 | `ap.livewireUiComponents.modalWillOpen` | action | `Support\ModalBridge::willOpen()` | `(string $modalId)` |
@@ -213,8 +213,8 @@ Filter::add('ap.livewireUiComponents.iconAlias', function (string $name) {
 });
 
 // Log toasts to your analytics pipeline
-Action::add('ap.livewireUiComponents.toastDispatched', function (string $type, string $title) {
-    analytics()->track('toast_shown', ['type' => $type, 'title' => $title]);
+Action::add('ap.livewireUiComponents.toastDispatched', function (string $color, string $title) {
+    analytics()->track('toast_shown', ['color' => $color, 'title' => $title]);
 });
 ```
 

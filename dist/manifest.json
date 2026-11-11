@@ -12,9 +12,9 @@
     "alpine": "js/alpine.global.js"
   },
   "files": {
-    "css/headless.css": "b7e593e99fdfa33d",
-    "css/index.css": "88376bb1621b7d87",
-    "js/alpine.global.js": "a1c9ae2f9d539a61",
-    "js/alpine.global.js.map": "ea0a490beec9d065"
+    "css/headless.css": "a7614e100c171130",
+    "css/index.css": "7bd515dbe84d0b0d",
+    "js/alpine.global.js": "0bc46a4156620479",
+    "js/alpine.global.js.map": "80c0f10187154106"
   }
 }

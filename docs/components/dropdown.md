@@ -4,6 +4,8 @@ title: Dropdown Component
 
 # Dropdown Component
 
+> **Deprecated in 3.0.** Use [DropdownMenu](dropdown-menu), built on the design system. This component is removed in a later major release.
+
 The Dropdown component provides a toggleable menu that appears when a user clicks on a trigger element. It's useful for navigation menus, action menus, and other contextual options.
 
 ## Basic Usage

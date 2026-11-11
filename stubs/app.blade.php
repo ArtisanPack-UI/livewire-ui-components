@@ -61,7 +61,7 @@
         </x-slot:content>
     </x-artisanpack-main>
 
-    {{--  TOAST area --}}
-    <x-artisanpack-toast />
+    {{-- Toasts: $this->toast(), $this->dispatch( 'toast', … ) and flashed toasts show here. --}}
+    <x-artisanpack-toaster />
 </body>
 </html>

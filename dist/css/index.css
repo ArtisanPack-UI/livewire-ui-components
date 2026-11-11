@@ -2136,6 +2136,650 @@
   }
 }
 /*
+ * Dialog (#49). Root `.apui-dialog` is the panel, Zag's content part
+ * (D-019), with data-size, data-color and data-surface. Parts: trigger,
+ * backdrop, positioner, header (icon, title, description, close-trigger),
+ * body and footer. The machine sets hidden on the closed parts; the rules
+ * below keep it working where they set display. See design/components/Dialog.
+ */
+@layer apui.components {
+  [data-scope='dialog'][data-part='backdrop'] {
+    position: fixed;
+    inset: 0;
+    z-index: var(--apui-z-modal);
+    background: var(--apui-backdrop);
+  }
+
+  [data-scope='dialog'][data-part='positioner'] {
+    position: fixed;
+    inset: 0;
+    z-index: var(--apui-z-modal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    overflow-y: auto;
+  }
+
+  :is([data-scope='dialog'][data-part='positioner'], .apui-dialog)[hidden],
+  [data-scope='dialog'][data-part='backdrop'][hidden] {
+    display: none;
+  }
+
+  .apui-dialog {
+    --apui-_dialog-tone-soft: var(--apui-color-neutral-soft);
+    --apui-_dialog-tone-soft-foreground: var(--apui-color-neutral-soft-foreground);
+
+    display: grid;
+    box-sizing: border-box;
+    inline-size: min(var(--apui-dialog-width), 100%);
+    max-block-size: 100%;
+    overflow-y: auto;
+    border: var(--apui-border-width) solid var(--apui-border-muted);
+    border-radius: var(--apui-dialog-radius);
+    background: var(--apui-surface-overlay);
+    box-shadow: var(--apui-elevation-overlay);
+    color: var(--apui-text-default);
+    font-family: var(--apui-font-family-sans);
+    font-size: var(--apui-type-body-md-font-size);
+    line-height: var(--apui-type-body-md-line-height);
+    outline: none;
+
+    /* Buttons inside ring against the panel, not the page. */
+    --apui-focus-ring-offset-color: var(--apui-surface-overlay);
+  }
+
+  .apui-dialog[data-size='sm'] {
+    inline-size: min(360px, 100%);
+  }
+
+  .apui-dialog[data-size='lg'] {
+    inline-size: min(640px, 100%);
+  }
+
+  .apui-dialog[data-state='open'] {
+    animation: apui-dialog-enter var(--apui-motion-duration-moderate) var(--apui-motion-ease-enter);
+  }
+
+  [data-scope='dialog'][data-part='backdrop'][data-state='open'] {
+    animation: apui-dialog-fade var(--apui-motion-duration-moderate) var(--apui-motion-ease-enter);
+  }
+
+  @keyframes apui-dialog-enter {
+    from {
+      opacity: 0;
+      transform: translateY(8px) scale(0.98);
+    }
+  }
+
+  @keyframes apui-dialog-fade {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .apui-dialog[data-state='open'],
+    [data-scope='dialog'][data-part='backdrop'][data-state='open'] {
+      animation: none;
+    }
+  }
+
+  /* Colors tint the header icon. */
+  .apui-dialog[data-color='primary'] {
+    --apui-_dialog-tone-soft: var(--apui-color-primary-soft);
+    --apui-_dialog-tone-soft-foreground: var(--apui-color-primary-soft-foreground);
+  }
+
+  .apui-dialog[data-color='secondary'] {
+    --apui-_dialog-tone-soft: var(--apui-color-secondary-soft);
+    --apui-_dialog-tone-soft-foreground: var(--apui-color-secondary-soft-foreground);
+  }
+
+  .apui-dialog[data-color='accent'] {
+    --apui-_dialog-tone-soft: var(--apui-color-accent-soft);
+    --apui-_dialog-tone-soft-foreground: var(--apui-color-accent-soft-foreground);
+  }
+
+  .apui-dialog[data-color='success'] {
+    --apui-_dialog-tone-soft: var(--apui-color-success-soft);
+    --apui-_dialog-tone-soft-foreground: var(--apui-color-success-soft-foreground);
+  }
+
+  .apui-dialog[data-color='warning'] {
+    --apui-_dialog-tone-soft: var(--apui-color-warning-soft);
+    --apui-_dialog-tone-soft-foreground: var(--apui-color-warning-soft-foreground);
+  }
+
+  .apui-dialog[data-color='error'] {
+    --apui-_dialog-tone-soft: var(--apui-color-error-soft);
+    --apui-_dialog-tone-soft-foreground: var(--apui-color-error-soft-foreground);
+  }
+
+  .apui-dialog[data-color='info'] {
+    --apui-_dialog-tone-soft: var(--apui-color-info-soft);
+    --apui-_dialog-tone-soft-foreground: var(--apui-color-info-soft-foreground);
+  }
+
+  /* Glass is a surface (D-006). */
+  .apui-dialog[data-surface='glass'] {
+    --apui-text-muted: var(--apui-text-muted-glass);
+    --apui-focus-ring-offset-color: transparent;
+
+    border-color: var(--apui-surface-glass-border);
+    background: var(--apui-surface-glass);
+    box-shadow: var(--apui-elevation-glass);
+    backdrop-filter: blur(var(--apui-surface-glass-blur))
+      saturate(var(--apui-surface-glass-saturation));
+  }
+
+  @supports not (backdrop-filter: blur(1px)) {
+    .apui-dialog[data-surface='glass'] {
+      border-color: var(--apui-border-muted);
+      background: var(--apui-surface-overlay);
+    }
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    .apui-dialog[data-surface='glass'] {
+      border-color: var(--apui-border-muted);
+      background: var(--apui-surface-overlay);
+      backdrop-filter: none;
+    }
+  }
+
+  /* Header: the icon spans the title and description; the close button sits at the end. */
+  [data-scope='dialog'][data-part='header'] {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    column-gap: 12px;
+    align-items: start;
+    padding-block: 20px 0;
+    padding-inline: 24px 16px;
+  }
+
+  [data-scope='dialog'][data-part='header']:not(:has([data-scope='dialog'][data-part='icon'])) {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  [data-scope='dialog'][data-part='header']:last-child {
+    padding-block-end: 20px;
+  }
+
+  [data-scope='dialog'][data-part='icon'] {
+    display: grid;
+    grid-row: 1 / span 2;
+    place-items: center;
+    inline-size: 40px;
+    block-size: 40px;
+    border-radius: var(--apui-radius-full);
+    background: var(--apui-_dialog-tone-soft);
+    color: var(--apui-_dialog-tone-soft-foreground);
+  }
+
+  [data-scope='dialog'][data-part='icon'] > svg {
+    inline-size: var(--apui-icon-size-md);
+    block-size: var(--apui-icon-size-md);
+  }
+
+  [data-scope='dialog'][data-part='title'] {
+    margin: 0;
+    padding-block-start: 2px;
+    font-size: var(--apui-type-heading-md-font-size);
+    font-weight: var(--apui-font-weight-semibold);
+    line-height: var(--apui-type-heading-md-line-height);
+  }
+
+  [data-scope='dialog'][data-part='description'] {
+    margin: 4px 0 0;
+    color: var(--apui-text-muted);
+    font-size: var(--apui-type-body-md-font-size);
+    line-height: var(--apui-type-body-md-line-height);
+  }
+
+  /* After the icon, the text takes the middle column. */
+  [data-scope='dialog'][data-part='header']:has([data-scope='dialog'][data-part='icon'])
+    > :is([data-part='title'], [data-part='description']) {
+    grid-column: 2;
+  }
+
+  [data-scope='dialog'][data-part='close-trigger'] {
+    grid-row: 1;
+    grid-column: -2;
+    margin-block-start: -2px;
+  }
+
+  [data-scope='dialog'][data-part='body'] {
+    display: grid;
+    gap: var(--apui-field-gap);
+    padding: 16px 24px;
+  }
+
+  [data-scope='dialog'][data-part='footer'] {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+    padding-block: 16px 20px;
+    padding-inline: 24px;
+  }
+
+  @media (forced-colors: active) {
+    .apui-dialog {
+      border-color: CanvasText;
+    }
+
+    .apui-dialog[data-surface='glass'] {
+      background: Canvas;
+      backdrop-filter: none;
+    }
+  }
+}
+/*
+ * DropdownMenu (#50). Root `.apui-dropdown-menu` is the panel, Zag's content
+ * part (D-019), with data-surface and data-align. Parts: trigger (a Button),
+ * positioner, item-group, item-group-label, item (with icon, item-text,
+ * shortcut and item-indicator) and separator. Zag scopes them dropdown-menu,
+ * apart from the navigation Menu. See design/components/DropdownMenu.
+ */
+@layer apui.components {
+  [data-scope='dropdown-menu'][data-part='positioner'] {
+    z-index: var(--apui-z-dropdown);
+  }
+
+  .apui-dropdown-menu {
+    box-sizing: border-box;
+    min-inline-size: 220px;
+    max-block-size: min(480px, calc(100dvh - 32px));
+    overflow-y: auto;
+    padding: 4px;
+    border: var(--apui-border-width) solid var(--apui-border-muted);
+    border-radius: var(--apui-menu-radius);
+    background: var(--apui-surface-overlay);
+    box-shadow: var(--apui-elevation-overlay);
+    color: var(--apui-text-default);
+    font-family: var(--apui-font-family-sans);
+    font-size: var(--apui-type-body-md-font-size);
+    line-height: var(--apui-type-body-md-line-height);
+    outline: none;
+  }
+
+  .apui-dropdown-menu[data-state='open'] {
+    animation: apui-dropdown-menu-enter var(--apui-motion-duration-fast)
+      var(--apui-motion-ease-enter);
+  }
+
+  @keyframes apui-dropdown-menu-enter {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .apui-dropdown-menu[data-state='open'] {
+      animation: none;
+    }
+  }
+
+  /* Glass is a surface (D-006). */
+  .apui-dropdown-menu[data-surface='glass'] {
+    --apui-text-muted: var(--apui-text-muted-glass);
+
+    border-color: var(--apui-surface-glass-border);
+    background: var(--apui-surface-glass);
+    box-shadow: var(--apui-elevation-glass);
+    backdrop-filter: blur(var(--apui-surface-glass-blur))
+      saturate(var(--apui-surface-glass-saturation));
+  }
+
+  @supports not (backdrop-filter: blur(1px)) {
+    .apui-dropdown-menu[data-surface='glass'] {
+      border-color: var(--apui-border-muted);
+      background: var(--apui-surface-overlay);
+    }
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    .apui-dropdown-menu[data-surface='glass'] {
+      border-color: var(--apui-border-muted);
+      background: var(--apui-surface-overlay);
+      backdrop-filter: none;
+    }
+  }
+
+  [data-scope='dropdown-menu'][data-part='item-group-label'] {
+    padding-block: 8px 4px;
+    padding-inline: 10px;
+    color: var(--apui-text-muted);
+    font-size: var(--apui-type-caption-font-size);
+    font-weight: var(--apui-font-weight-medium);
+    line-height: var(--apui-type-caption-line-height);
+  }
+
+  [data-scope='dropdown-menu'][data-part='item'] {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-block-size: var(--apui-menu-item-height);
+    padding-inline: 10px;
+    border-radius: var(--apui-menu-item-radius);
+    color: var(--apui-text-default);
+    text-decoration: none;
+    cursor: pointer;
+    outline: none;
+    user-select: none;
+  }
+
+  [data-scope='dropdown-menu'][data-part='item'][data-highlighted] {
+    background: var(--apui-state-hover);
+  }
+
+  /* The keyboard's item shows the ring; the pointer's only the tint. */
+  .apui-dropdown-menu:focus-visible
+    [data-scope='dropdown-menu'][data-part='item'][data-highlighted] {
+    outline: var(--apui-focus-ring-width) solid transparent;
+    box-shadow: inset 0 0 0 var(--apui-focus-ring-width) var(--apui-focus-ring-color);
+  }
+
+  [data-scope='dropdown-menu'][data-part='item'][aria-checked='true'] {
+    background: var(--apui-selected-bg);
+    color: var(--apui-color-primary-soft-foreground);
+  }
+
+  [data-scope='dropdown-menu'][data-part='item'][data-color='error'] {
+    color: var(--apui-color-error-text);
+  }
+
+  [data-scope='dropdown-menu'][data-part='item']:is([aria-disabled='true'], [data-disabled]) {
+    background: none;
+    color: var(--apui-text-disabled);
+    cursor: not-allowed;
+  }
+
+  [data-scope='dropdown-menu'][data-part='icon'] {
+    display: inline-flex;
+    flex: none;
+    color: var(--apui-text-muted);
+  }
+
+  [data-scope='dropdown-menu'][data-part='icon'] > svg {
+    inline-size: var(--apui-icon-size-sm);
+    block-size: var(--apui-icon-size-sm);
+  }
+
+  [data-scope='dropdown-menu'][data-part='item']:is(
+      [aria-checked='true'],
+      [data-color='error'],
+      [aria-disabled='true'],
+      [data-disabled]
+    )
+    [data-scope='dropdown-menu'][data-part='icon'] {
+    color: inherit;
+  }
+
+  [data-scope='dropdown-menu'][data-part='item-text'] {
+    flex: 1;
+    min-inline-size: 0;
+  }
+
+  [data-scope='dropdown-menu'][data-part='shortcut'] {
+    margin-inline-start: auto;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--apui-text-muted);
+    font-family: var(--apui-font-family-mono);
+    font-size: var(--apui-type-code-sm-font-size);
+  }
+
+  /* The check keeps its column while unchecked, so labels line up. */
+  [data-scope='dropdown-menu'][data-part='item-indicator'] {
+    display: inline-flex;
+    flex: none;
+    inline-size: 16px;
+    color: var(--apui-color-primary-text);
+  }
+
+  [data-scope='dropdown-menu'][data-part='item-indicator'][hidden] {
+    visibility: hidden;
+  }
+
+  [data-scope='dropdown-menu'][data-part='item-indicator'] > svg {
+    inline-size: var(--apui-icon-size-sm);
+    block-size: var(--apui-icon-size-sm);
+  }
+
+  [data-scope='dropdown-menu'][data-part='separator'] {
+    block-size: 1px;
+    margin-block: 4px;
+    margin-inline: -4px;
+    border: 0;
+    background: var(--apui-border-muted);
+  }
+
+  @media (forced-colors: active) {
+    .apui-dropdown-menu {
+      border-color: CanvasText;
+    }
+
+    [data-scope='dropdown-menu'][data-part='item'][data-highlighted] {
+      outline: var(--apui-focus-ring-width) solid Highlight;
+    }
+
+    .apui-dropdown-menu[data-surface='glass'] {
+      background: Canvas;
+      backdrop-filter: none;
+    }
+  }
+}
+/*
+ * Toast (#51). Root `.apui-toast` with data-color (the icon's tint),
+ * data-variant and data-surface. Parts: icon, title, description, actions
+ * and close-trigger (a Button). In a toaster the toasts sit in the region,
+ * Zag's group part, which stacks them through the custom properties it
+ * writes inline (--y, --opacity, --height, --z-index). See
+ * design/components/Toast.
+ */
+@layer apui.components {
+  .apui-toast {
+    --apui-_toast-tone: var(--apui-text-muted);
+
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 2px 12px;
+    align-items: start;
+    box-sizing: border-box;
+    inline-size: 360px;
+    max-inline-size: 100%;
+    padding-block: 12px;
+    padding-inline: 16px 12px;
+    border: var(--apui-border-width) solid var(--apui-border-muted);
+    border-radius: var(--apui-toast-radius);
+    background: var(--apui-surface-overlay);
+    box-shadow: var(--apui-elevation-overlay);
+    color: var(--apui-text-default);
+    font-family: var(--apui-font-family-sans);
+    font-size: var(--apui-type-body-md-font-size);
+    line-height: var(--apui-type-body-md-line-height);
+
+    /* Buttons inside ring against the toast. */
+    --apui-focus-ring-offset-color: var(--apui-surface-overlay);
+  }
+
+  .apui-toast:focus-visible {
+    outline: var(--apui-focus-ring-width) solid transparent;
+    box-shadow:
+      0 0 0 var(--apui-focus-ring-offset) var(--apui-surface-page),
+      0 0 0 calc(var(--apui-focus-ring-offset) + var(--apui-focus-ring-width))
+        var(--apui-focus-ring-color);
+  }
+
+  .apui-toast[data-color='primary'] {
+    --apui-_toast-tone: var(--apui-color-primary-text);
+  }
+
+  .apui-toast[data-color='secondary'] {
+    --apui-_toast-tone: var(--apui-color-secondary-text);
+  }
+
+  .apui-toast[data-color='accent'] {
+    --apui-_toast-tone: var(--apui-color-accent-text);
+  }
+
+  .apui-toast[data-color='success'] {
+    --apui-_toast-tone: var(--apui-color-success-text);
+  }
+
+  .apui-toast[data-color='warning'] {
+    --apui-_toast-tone: var(--apui-color-warning-text);
+  }
+
+  .apui-toast[data-color='error'] {
+    --apui-_toast-tone: var(--apui-color-error-text);
+  }
+
+  .apui-toast[data-color='info'] {
+    --apui-_toast-tone: var(--apui-color-info-text);
+  }
+
+  /* Inverse: light text on the inverse surface; the icon follows the text. */
+  .apui-toast[data-variant='inverse'] {
+    --apui-text-default: var(--apui-text-inverse);
+    --apui-text-muted: var(--apui-text-inverse);
+    --apui-_toast-tone: var(--apui-text-inverse);
+    --apui-state-hover: color-mix(in oklab, var(--apui-text-inverse) 16%, transparent);
+    --apui-focus-ring-offset-color: var(--apui-surface-inverse);
+
+    border-color: transparent;
+    background: var(--apui-surface-inverse);
+    color: var(--apui-text-inverse);
+  }
+
+  /* Glass is a surface (D-006). */
+  .apui-toast[data-surface='glass'] {
+    --apui-text-muted: var(--apui-text-muted-glass);
+    --apui-focus-ring-offset-color: transparent;
+
+    border-color: var(--apui-surface-glass-border);
+    background: var(--apui-surface-glass);
+    box-shadow: var(--apui-elevation-glass);
+    backdrop-filter: blur(var(--apui-surface-glass-blur))
+      saturate(var(--apui-surface-glass-saturation));
+  }
+
+  @supports not (backdrop-filter: blur(1px)) {
+    .apui-toast[data-surface='glass'] {
+      border-color: var(--apui-border-muted);
+      background: var(--apui-surface-overlay);
+    }
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    .apui-toast[data-surface='glass'] {
+      border-color: var(--apui-border-muted);
+      background: var(--apui-surface-overlay);
+      backdrop-filter: none;
+    }
+  }
+
+  [data-scope='toast'][data-part='icon'] {
+    display: inline-flex;
+    grid-column: 1;
+    grid-row: 1;
+    margin-block-start: 2px;
+    color: var(--apui-_toast-tone);
+  }
+
+  [data-scope='toast'][data-part='icon'] > svg {
+    inline-size: var(--apui-icon-size-sm);
+    block-size: var(--apui-icon-size-sm);
+  }
+
+  [data-scope='toast'][data-part='title'] {
+    grid-column: 2;
+    margin: 0;
+    font-weight: var(--apui-font-weight-medium);
+  }
+
+  [data-scope='toast'][data-part='description'] {
+    grid-column: 2;
+    margin: 0;
+    color: var(--apui-text-muted);
+    font-size: var(--apui-type-body-sm-font-size);
+    line-height: 18px;
+  }
+
+  [data-scope='toast'][data-part='actions'] {
+    display: flex;
+    flex-wrap: wrap;
+    grid-column: 2;
+    gap: 8px;
+    margin-block-start: 8px;
+  }
+
+  [data-scope='toast'][data-part='close-trigger'] {
+    grid-column: 3;
+    grid-row: 1;
+    margin-block-start: -4px;
+  }
+
+  /* hideClose: the machine sets hidden, which the Button's display would override. */
+  [data-scope='toast'][data-part='close-trigger'][hidden] {
+    display: none;
+  }
+
+  /*
+   * The region. Zag fixes it to the viewport and places it from the
+   * placement; the toasts inside are stacked by the custom properties it
+   * writes on each one.
+   */
+  [data-scope='toast'][data-part='group'] {
+    inline-size: min(360px, calc(100vw - 32px));
+    outline: none;
+  }
+
+  /* stylelint-disable custom-property-pattern -- Zag's toast machine writes these inline (D-019) */
+  [data-scope='toast'][data-part='group'] > .apui-toast {
+    inset-inline: 0;
+    inline-size: auto;
+    block-size: var(--height);
+    translate: var(--x) var(--y);
+    scale: var(--scale);
+    opacity: var(--opacity);
+    z-index: var(--z-index);
+    transition:
+      translate var(--apui-motion-duration-slow) var(--apui-motion-ease-enter),
+      scale var(--apui-motion-duration-slow) var(--apui-motion-ease-enter),
+      opacity var(--apui-motion-duration-slow) var(--apui-motion-ease-enter),
+      block-size var(--apui-motion-duration-slow) var(--apui-motion-ease-enter);
+    will-change: translate, opacity;
+  }
+  /* stylelint-enable custom-property-pattern */
+
+  [data-scope='toast'][data-part='group'] > .apui-toast[data-state='closed'] {
+    transition-timing-function: var(--apui-motion-ease-exit);
+  }
+
+  /* Toasts stay where the stack puts them (translate); only the movement goes. */
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='toast'][data-part='group'] > .apui-toast {
+      transition: opacity var(--apui-motion-duration-fast) linear;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .apui-toast {
+      border-color: CanvasText;
+    }
+
+    .apui-toast[data-surface='glass'] {
+      background: Canvas;
+      backdrop-filter: none;
+    }
+  }
+}
+/*
  * Utilities. This layer sits above the components, so a utility wins over a
  * component rule of any specificity.
  */

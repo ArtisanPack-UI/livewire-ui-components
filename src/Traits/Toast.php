@@ -1,219 +1,225 @@
 <?php
 
-declare(strict_types=1);
 /**
  * Toast Trait
  *
- * This trait provides functionality for displaying toast notifications.
+ * Shows design-system toasts from a Livewire component.
  *
  * @author     Jacob Martella
- * @copyright  2023 Jacob Martella
+ * @copyright  2026 Jacob Martella
  * @license    MIT
  *
- * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
- * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
+ * @link       https://github.com/ArtisanPack-UI/livewire-ui-components
  * @since      1.0.0
  */
 
+declare(strict_types=1);
+
 namespace ArtisanPack\LivewireUiComponents\Traits;
 
-use Illuminate\Support\Facades\Blade;
-use InvalidArgumentException;
+use ArtisanPack\LivewireUiComponents\Support\Toasts;
 
 /**
  * Toast Trait
  *
- * Provides methods for displaying various types of toast notifications.
+ * `toast()` dispatches the `toast` browser event the page's
+ * `<x-artisanpack-toaster>` listens for, the same as
+ * `$this->dispatch('toast', title: …)`. With `redirectTo`, or through
+ * `flashToast()`, the toast is flashed to the session instead and shows on
+ * the next page. Every toast fires the `ap.livewireUiComponents.toastDispatched`
+ * action with its color, title and options.
  *
  * @since 1.0.0
  */
 trait Toast
 {
     /**
-     * Display a toast notification.
+     * Shows a toast.
      *
-     * @since 1.0.0
+     * @since 3.0.0
      *
-     * @param  string  $type  The type of toast notification.
-     * @param  string  $title  The title of the toast notification.
-     * @param  string|null  $description  Optional description for the toast notification.
-     * @param  string|null  $position  Optional position for the toast notification.
-     * @param  string  $icon  The icon to display in the toast notification. Default: 'o-information-circle'.
-     * @param  string  $css  CSS classes for the toast notification. Default: 'alert-info'.
-     * @param  int|null  $duration  Duration in milliseconds. Default: null (uses component default).
-     * @param  string|null  $redirectTo  Optional URL to redirect to after displaying the toast.
+     * @param  string|null  $title  The message.
+     * @param  string|null  $description  Supporting text.
+     * @param  string  $color  A semantic color. error makes the toast an alert.
+     * @param  string  $variant  default or inverse.
+     * @param  string  $surface  overlay or glass.
+     * @param  string|null  $icon  An icon name from the registry. Defaults to the color's status icon.
+     * @param  int|null  $duration  Milliseconds before it dismisses itself. 0 keeps it. Defaults to the toaster's.
+     * @param  bool  $hideClose  Hides the close button.
+     * @param  string|null  $redirectTo  Flashes the toast and redirects here (with wire:navigate).
      *
-     * @return mixed
+     * @return mixed The redirect, when there is one.
      */
     public function toast(
-        string $type,
-        string $title,
+        ?string $title = null,
         ?string $description = null,
-        ?string $position = null,
-        string $icon = 'o-information-circle',
-        string $css = 'alert-info',
+        string $color = 'neutral',
+        string $variant = 'default',
+        string $surface = 'overlay',
+        ?string $icon = null,
         ?int $duration = null,
+        bool $hideClose = false,
         ?string $redirectTo = null,
-    ) {
-        $validatedIcon = $this->validateIconName($icon);
+    ): mixed {
+        $this->warnAboutLegacyToastCall($title, $description);
 
-        doAction('ap.livewireUiComponents.toastDispatched', $type, $title, [
-            'description' => $description,
-            'position'    => $position,
-            'icon'        => $validatedIcon,
-            'css'         => $css,
-            'duration'    => $duration,
-            'redirectTo'  => $redirectTo,
-        ]);
+        $toast = Toasts::make(
+            title: $title,
+            description: $description,
+            color: $color,
+            variant: $variant,
+            surface: $surface,
+            icon: $icon,
+            duration: $duration,
+            hideClose: $hideClose,
+        );
 
-        $toast = [
-            'type'        => $type,
-            'title'       => $title,
-            'description' => $description,
-            'position'    => $position,
-            'icon'        => Blade::render("<x-artisanpack-icon class='w-7 h-7' :name=\"\$iconName\" />", ['iconName' => $validatedIcon]),
-            'css'         => $css,
-            'duration'    => $duration,
-        ];
+        doAction('ap.livewireUiComponents.toastDispatched', $color, (string) $title, $toast);
 
-        $this->js('if(typeof toast==="function"){toast('.json_encode(['toast' => $toast]).')}');
+        if (null !== $redirectTo) {
+            Toasts::push($toast);
 
-        session()->flash('artisanpack.toast.title', $title);
-        session()->flash('artisanpack.toast.description', $description);
-
-        if ($redirectTo) {
             return $this->redirect($redirectTo, navigate: true);
         }
+
+        $this->dispatch('toast', ...$toast);
+
+        return null;
     }
 
     /**
-     * Display a success toast notification.
+     * Keeps a toast for the next page, such as one you redirect to yourself.
+     * Livewire drops flashed data from an action that doesn't redirect.
      *
-     * @since 1.0.0
+     * @since 3.0.0
      *
-     * @param  string  $title  The title of the toast notification.
-     * @param  string|null  $description  Optional description for the toast notification.
-     * @param  string|null  $position  Optional position for the toast notification.
-     * @param  string  $icon  The icon to display in the toast notification. Default: 'o-check-circle'.
-     * @param  string  $css  CSS classes for the toast notification. Default: 'alert-success'.
-     * @param  int|null  $duration  Duration in milliseconds. Default: null (uses component default).
-     * @param  string|null  $redirectTo  Optional URL to redirect to after displaying the toast.
-     *
-     * @return mixed
+     * @param  string|null  $title  The message.
+     * @param  string|null  $description  Supporting text.
+     * @param  string  $color  A semantic color.
+     * @param  string  $variant  default or inverse.
+     * @param  string  $surface  overlay or glass.
+     * @param  string|null  $icon  An icon name from the registry.
+     * @param  int|null  $duration  Milliseconds before it dismisses itself. 0 keeps it.
+     * @param  bool  $hideClose  Hides the close button.
      */
-    public function success(
-        string $title,
+    public function flashToast(
+        ?string $title = null,
         ?string $description = null,
-        ?string $position = null,
-        string $icon = 'o-check-circle',
-        string $css = 'alert-success',
+        string $color = 'neutral',
+        string $variant = 'default',
+        string $surface = 'overlay',
+        ?string $icon = null,
         ?int $duration = null,
-        ?string $redirectTo = null,
-    ) {
-        return $this->toast('success', $title, $description, $position, $icon, $css, $duration, $redirectTo);
+        bool $hideClose = false,
+    ): void {
+        $toast = Toasts::flash(
+            title: $title,
+            description: $description,
+            color: $color,
+            variant: $variant,
+            surface: $surface,
+            icon: $icon,
+            duration: $duration,
+            hideClose: $hideClose,
+        );
+
+        doAction('ap.livewireUiComponents.toastDispatched', $color, (string) $title, $toast);
     }
 
     /**
-     * Display a warning toast notification.
+     * Shows a success toast.
      *
      * @since 1.0.0
      *
-     * @param  string  $title  The title of the toast notification.
-     * @param  string|null  $description  Optional description for the toast notification.
-     * @param  string|null  $position  Optional position for the toast notification.
-     * @param  string  $icon  The icon to display in the toast notification. Default: 'o-exclamation-triangle'.
-     * @param  string  $css  CSS classes for the toast notification. Default: 'alert-warning'.
-     * @param  int|null  $duration  Duration in milliseconds. Default: null (uses component default).
-     * @param  string|null  $redirectTo  Optional URL to redirect to after displaying the toast.
+     * @param  string  $title  The message.
+     * @param  string|null  $description  Supporting text.
+     * @param  int|null  $duration  Milliseconds before it dismisses itself. 0 keeps it.
+     * @param  string|null  $redirectTo  Flashes the toast and redirects here.
      *
-     * @return mixed
+     * @return mixed The redirect, when there is one.
      */
-    public function warning(
-        string $title,
-        ?string $description = null,
-        ?string $position = null,
-        string $icon = 'o-exclamation-triangle',
-        string $css = 'alert-warning',
-        ?int $duration = null,
-        ?string $redirectTo = null,
-    ) {
-        return $this->toast('warning', $title, $description, $position, $icon, $css, $duration, $redirectTo);
-    }
-
-    /**
-     * Display an error toast notification.
-     *
-     * @since 1.0.0
-     *
-     * @param  string  $title  The title of the toast notification.
-     * @param  string|null  $description  Optional description for the toast notification.
-     * @param  string|null  $position  Optional position for the toast notification.
-     * @param  string  $icon  The icon to display in the toast notification. Default: 'o-x-circle'.
-     * @param  string  $css  CSS classes for the toast notification. Default: 'alert-error'.
-     * @param  int|null  $duration  Duration in milliseconds. Default: null (uses component default).
-     * @param  string|null  $redirectTo  Optional URL to redirect to after displaying the toast.
-     *
-     * @return mixed
-     */
-    public function error(
-        string $title,
-        ?string $description = null,
-        ?string $position = null,
-        string $icon = 'o-x-circle',
-        string $css = 'alert-error',
-        ?int $duration = null,
-        ?string $redirectTo = null,
-    ) {
-        return $this->toast('error', $title, $description, $position, $icon, $css, $duration, $redirectTo);
-    }
-
-    /**
-     * Display an info toast notification.
-     *
-     * @since 1.0.0
-     *
-     * @param  string  $title  The title of the toast notification.
-     * @param  string|null  $description  Optional description for the toast notification.
-     * @param  string|null  $position  Optional position for the toast notification.
-     * @param  string  $icon  The icon to display in the toast notification. Default: 'o-information-circle'.
-     * @param  string  $css  CSS classes for the toast notification. Default: 'alert-info'.
-     * @param  int|null  $duration  Duration in milliseconds. Default: null (uses component default).
-     * @param  string|null  $redirectTo  Optional URL to redirect to after displaying the toast.
-     *
-     * @return mixed
-     */
-    public function info(
-        string $title,
-        ?string $description = null,
-        ?string $position = null,
-        string $icon = 'o-information-circle',
-        string $css = 'alert-info',
-        ?int $duration = null,
-        ?string $redirectTo = null,
-    ) {
-        return $this->toast('info', $title, $description, $position, $icon, $css, $duration, $redirectTo);
-    }
-
-    /**
-     * Validate and sanitize icon name to prevent XSS.
-     *
-     * @since 1.0.0
-     *
-     * @param  string  $icon  The icon name to validate.
-     *
-     * @throws InvalidArgumentException If the icon name is invalid.
-     *
-     * @return string The validated icon name.
-     */
-    private function validateIconName(string $icon): string
+    public function success(string $title, ?string $description = null, ?int $duration = null, ?string $redirectTo = null): mixed
     {
-        // Allow only alphanumeric characters, hyphens, and underscores
-        if (! preg_match('/^[a-zA-Z0-9_-]+$/', $icon)) {
-            throw new InvalidArgumentException(
-                "Invalid icon name: '{$icon}'. Icon names must contain only alphanumeric characters, hyphens, and underscores.",
-            );
+        return $this->toast($title, $description, color: 'success', duration: $duration, redirectTo: $redirectTo);
+    }
+
+    /**
+     * Shows a warning toast.
+     *
+     * @since 1.0.0
+     *
+     * @param  string  $title  The message.
+     * @param  string|null  $description  Supporting text.
+     * @param  int|null  $duration  Milliseconds before it dismisses itself. 0 keeps it.
+     * @param  string|null  $redirectTo  Flashes the toast and redirects here.
+     *
+     * @return mixed The redirect, when there is one.
+     */
+    public function warning(string $title, ?string $description = null, ?int $duration = null, ?string $redirectTo = null): mixed
+    {
+        return $this->toast($title, $description, color: 'warning', duration: $duration, redirectTo: $redirectTo);
+    }
+
+    /**
+     * Shows an error toast, announced at once (role=alert). Never the only
+     * place an error is reported: blocking errors use Alert.
+     *
+     * @since 1.0.0
+     *
+     * @param  string  $title  The message.
+     * @param  string|null  $description  Supporting text.
+     * @param  int|null  $duration  Milliseconds before it dismisses itself. 0 keeps it.
+     * @param  string|null  $redirectTo  Flashes the toast and redirects here.
+     *
+     * @return mixed The redirect, when there is one.
+     */
+    public function error(string $title, ?string $description = null, ?int $duration = null, ?string $redirectTo = null): mixed
+    {
+        return $this->toast($title, $description, color: 'error', duration: $duration, redirectTo: $redirectTo);
+    }
+
+    /**
+     * Shows an info toast.
+     *
+     * @since 1.0.0
+     *
+     * @param  string  $title  The message.
+     * @param  string|null  $description  Supporting text.
+     * @param  int|null  $duration  Milliseconds before it dismisses itself. 0 keeps it.
+     * @param  string|null  $redirectTo  Flashes the toast and redirects here.
+     *
+     * @return mixed The redirect, when there is one.
+     */
+    public function info(string $title, ?string $description = null, ?int $duration = null, ?string $redirectTo = null): mixed
+    {
+        return $this->toast($title, $description, color: 'info', duration: $duration, redirectTo: $redirectTo);
+    }
+
+    /**
+     * Raises a deprecation for a 2.x call, `toast( 'success', 'Saved' )`:
+     * the first two arguments were the type and the title, and are now the
+     * title and the description. The call still runs with the new meaning.
+     *
+     * @since 3.0.0
+     *
+     * @param  string|null  $title  The first argument.
+     * @param  string|null  $description  The second argument.
+     */
+    private function warnAboutLegacyToastCall(?string $title, ?string $description): void
+    {
+        if (null === $description || ! in_array($title, Toasts::COLORS, true)) {
+            return;
         }
 
-        return $icon;
+        trigger_error(
+            sprintf(
+                'toast( \'%s\', … ) looks like the 2.x toast( $type, $title ) call. In 3.0 the arguments are toast( $title, $description, color: … ), so "%s" is shown as the title. Use toast( $title, color: \'%s\' ) or $this->%s( $title ).',
+                $title,
+                $title,
+                $title,
+                in_array($title, ['success', 'warning', 'error', 'info'], true) ? $title : 'toast',
+            ),
+            E_USER_DEPRECATED,
+        );
     }
 }

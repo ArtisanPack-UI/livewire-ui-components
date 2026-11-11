@@ -24,6 +24,6 @@ it('matches its manifest', function (string $component): void {
     expect($component)->toMatchManifest();
 })->with(ManifestParity::targets());
 
-it('checks the five pilot components', function (): void {
-    expect(array_keys(ManifestParity::targets()))->toContain('Button', 'Input', 'Select', 'Checkbox', 'Card');
+it('checks the pilot components', function (): void {
+    expect(array_keys(ManifestParity::targets()))->toContain('Button', 'Input', 'Select', 'Checkbox', 'Card', 'Dialog', 'DropdownMenu', 'Toast');
 });

@@ -79,7 +79,8 @@ ArtisanPack UI Livewire Components includes a wide range of components for vario
 
 ### Layout Components
 - [Card](Components-Card) - Content containers
-- [Modal](Components-Modal) - Modal dialogs
+- [Dialog](Components-Dialog) - Modal dialogs and confirmations
+- [DropdownMenu](Components-Dropdown-Menu) - Action and option menus
 - [Tabs](Components-Tabs) - Tabbed interfaces
 
 ### Data Display Components
