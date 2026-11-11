@@ -139,7 +139,12 @@ The close button dispatches `open-change` (`{ open: false }`); hiding a static t
 
 ## Upgrading from 2.x
 
-> **Warning: positional calls change meaning.** In 2.x, `$this->toast( 'success', 'Saved', 'Details' )` was `( $type, $title, $description )`. In 3.0 the same call shows a toast titled "success" with "Saved" as its text, without an error. Calls whose first argument is a color name and second is set raise an `E_USER_DEPRECATED` notice (in your deprecations log) so you can find them. Rewrite them with the color named: `$this->toast( 'Saved', 'Details', color: 'success' )`, or `$this->success( 'Saved', 'Details' )`.
+> **Warning: positional calls change meaning.** In 2.x the first arguments were `( $type, $title, $description )`; in 3.0 they are `( $title, $description, $color )`. Calls whose first argument is a color name and second is set raise an `E_USER_DEPRECATED` notice (in your deprecations log) so you can find them, and then:
+>
+> - `$this->toast( 'success', 'Saved' )` (two arguments) shows a toast titled "success" with "Saved" as its text, without an error.
+> - `$this->toast( 'success', 'Saved', 'Details' )` (three arguments) throws an `InvalidArgumentException`, because "Details" is now the color and isn't one.
+>
+> Rewrite them with the color named: `$this->toast( 'Saved', 'Details', color: 'success' )`, or `$this->success( 'Saved', 'Details' )`.
 
 - `<x-artisanpack-toast />` in the layout becomes `<x-artisanpack-toaster />`. `<x-artisanpack-toast>` is now the static toast; a bare one renders nothing and raises a deprecation notice.
 - The trait's `toast( $type, $title, … )` becomes `toast( $title, $description, color: … )`. `position`, `css` and Heroicons names are gone: placement is the toaster's, and icons are registry names.

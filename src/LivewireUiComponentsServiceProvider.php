@@ -508,7 +508,7 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
 
         \Livewire\on('render', function (object $component): void {
             if (method_exists($component, 'getId')) {
-                $this->app->make(Support\RenderedIds::class)->reset((string) $component->getId());
+                app(Support\RenderedIds::class)->reset((string) $component->getId());
             }
         });
     }

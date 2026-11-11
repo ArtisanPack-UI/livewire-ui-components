@@ -150,6 +150,33 @@ test('a 2.x positional call raises a deprecation and keeps the new meaning', fun
         ->and($single)->toBe([]);
 });
 
+test('a 2.x three-argument call raises the deprecation, then throws because the third argument is now the color', function (): void {
+    $harness = new class {
+        use Toast;
+
+        public function dispatch(string $event, mixed ...$params): void {}
+
+        public function redirect(string $url, bool $navigate = false): string
+        {
+            return $url;
+        }
+    };
+
+    $thrown       = null;
+    $deprecations = toastDeprecations(static function () use ($harness, &$thrown): void {
+        try {
+            $harness->toast('success', 'Saved', 'Details');
+        } catch (InvalidArgumentException $exception) {
+            $thrown = $exception;
+        }
+    });
+
+    expect($deprecations)->toHaveCount(1)
+        ->and($deprecations[0])->toContain('2.x toast( $type, $title )')
+        ->and($thrown)->toBeInstanceOf(InvalidArgumentException::class)
+        ->and($thrown->getMessage())->toContain('"Details" is not a toast color.');
+});
+
 test('ToastException falls back to no icon instead of a 500', function (): void {
     // A 2.x call passed the position third, where the icon is now.
     expect(ToastException::info(__('Saved'), null, 'toast-top toast-end')->toast())->toBe(['title' => 'Saved', 'color' => 'info'])

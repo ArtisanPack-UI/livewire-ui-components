@@ -2724,6 +2724,11 @@
     margin-block-start: -4px;
   }
 
+  /* hideClose: the machine sets hidden, which the Button's display would override. */
+  [data-scope='toast'][data-part='close-trigger'][hidden] {
+    display: none;
+  }
+
   /*
    * The region. Zag fixes it to the viewport and places it from the
    * placement; the toasts inside are stacked by the custom properties it
