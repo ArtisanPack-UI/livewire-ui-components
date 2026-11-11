@@ -50,88 +50,94 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
      * @since 1.0.0
      */
     protected array $bladeComponents = [
-        'accordion'          => View\Components\Accordion::class,
-        'alert'              => View\Components\Alert::class,
-        'avatar'             => View\Components\Avatar::class,
-        'badge'              => View\Components\Badge::class,
-        'breadcrumbs'        => View\Components\Breadcrumbs::class,
-        'button'             => View\Components\Button::class,
-        'card'               => View\Components\Card::class,
-        'carousel'           => View\Components\Carousel::class,
-        'chart'              => View\Components\Chart::class,
-        'checkbox'           => View\Components\Checkbox::class,
-        'checkbox-group'     => View\Components\CheckboxGroup::class,
-        'choices'            => View\Components\Choices::class,
-        'choices-offline'    => View\Components\ChoicesOffline::class,
-        'code'               => View\Components\Code::class,
-        'collapse'           => View\Components\Collapse::class,
-        'colorpicker'        => View\Components\Colorpicker::class,
-        'datepicker'         => View\Components\DatePicker::class,
-        'datetime'           => View\Components\DateTime::class,
-        'diff'               => View\Components\Diff::class,
-        'drawer'             => View\Components\Drawer::class,
-        'dropdown'           => View\Components\Dropdown::class,
-        'editor'             => View\Components\Editor::class,
-        'errors'             => View\Components\Errors::class,
-        'fieldset'           => View\Components\Fieldset::class,
-        'file'               => View\Components\File::class,
-        'form'               => View\Components\Form::class,
-        'group'              => View\Components\Group::class,
-        'header'             => View\Components\Header::class,
-        'heading'            => View\Components\Heading::class,
-        'icon'               => View\Components\Icon::class,
-        'image-gallery'      => View\Components\ImageGallery::class,
-        'image-library'      => View\Components\ImageLibrary::class,
-        'image-slider'       => View\Components\ImageSlider::class,
-        'input'              => View\Components\Input::class,
-        'kbd'                => View\Components\Kbd::class,
-        'kpi-card'           => View\Components\KpiCard::class,
-        'link'               => View\Components\Link::class,
-        'list-item'          => View\Components\ListItem::class,
-        'loading'            => View\Components\Loading::class,
-        'main'               => View\Components\Main::class,
-        'markdown'           => View\Components\Markdown::class,
-        'menu'               => View\Components\Menu::class,
-        'menu-item'          => View\Components\MenuItem::class,
-        'menu-separator'     => View\Components\MenuSeparator::class,
-        'menu-sub'           => View\Components\MenuSub::class,
-        'menu-title'         => View\Components\MenuTitle::class,
-        'modal'              => View\Components\Modal::class,
-        'nav'                => View\Components\Nav::class,
-        'pagination'         => View\Components\Pagination::class,
-        'password'           => View\Components\Password::class,
-        'pin'                => View\Components\Pin::class,
-        'popover'            => View\Components\Popover::class,
-        'profile'            => View\Components\Profile::class,
-        'progress'           => View\Components\Progress::class,
-        'progress-radial'    => View\Components\ProgressRadial::class,
-        'radio'              => View\Components\Radio::class,
-        'radio-group'        => View\Components\RadioGroup::class,
-        'range'              => View\Components\Range::class,
-        'rating'             => View\Components\Rating::class,
-        'select'             => View\Components\Select::class,
-        'select-group'       => View\Components\SelectGroup::class,
-        'separator'          => View\Components\Separator::class,
-        'signature'          => View\Components\Signature::class,
-        'sparkline'          => View\Components\Sparkline::class,
-        'spotlight'          => View\Components\Spotlight::class,
-        'stat'               => View\Components\Stat::class,
-        'streamable-content' => View\Components\StreamableContent::class,
-        'step'               => View\Components\Step::class,
-        'steps'              => View\Components\Steps::class,
-        'subheading'         => View\Components\Subheading::class,
-        'swap'               => View\Components\Swap::class,
-        'tab'                => View\Components\Tab::class,
-        'table'              => View\Components\Table::class,
-        'tabs'               => View\Components\Tabs::class,
-        'tags'               => View\Components\Tags::class,
-        'text'               => View\Components\Text::class,
-        'textarea'           => View\Components\Textarea::class,
-        'theme-toggle'       => View\Components\ThemeToggle::class,
-        'timeline-item'      => View\Components\TimelineItem::class,
-        'toast'              => View\Components\Toast::class,
-        'toggle'             => View\Components\Toggle::class,
-        'widget-grid'        => View\Components\WidgetGrid::class,
+        'accordion'               => View\Components\Accordion::class,
+        'alert'                   => View\Components\Alert::class,
+        'avatar'                  => View\Components\Avatar::class,
+        'badge'                   => View\Components\Badge::class,
+        'breadcrumbs'             => View\Components\Breadcrumbs::class,
+        'button'                  => View\Components\Button::class,
+        'card'                    => View\Components\Card::class,
+        'carousel'                => View\Components\Carousel::class,
+        'chart'                   => View\Components\Chart::class,
+        'checkbox'                => View\Components\Checkbox::class,
+        'checkbox-group'          => View\Components\CheckboxGroup::class,
+        'choices'                 => View\Components\Choices::class,
+        'choices-offline'         => View\Components\ChoicesOffline::class,
+        'code'                    => View\Components\Code::class,
+        'collapse'                => View\Components\Collapse::class,
+        'colorpicker'             => View\Components\Colorpicker::class,
+        'datepicker'              => View\Components\DatePicker::class,
+        'datetime'                => View\Components\DateTime::class,
+        'dialog'                  => View\Components\Dialog::class,
+        'diff'                    => View\Components\Diff::class,
+        'drawer'                  => View\Components\Drawer::class,
+        'dropdown'                => View\Components\Dropdown::class,
+        'dropdown-menu'           => View\Components\DropdownMenu::class,
+        'dropdown-menu-group'     => View\Components\DropdownMenuGroup::class,
+        'dropdown-menu-item'      => View\Components\DropdownMenuItem::class,
+        'dropdown-menu-separator' => View\Components\DropdownMenuSeparator::class,
+        'editor'                  => View\Components\Editor::class,
+        'errors'                  => View\Components\Errors::class,
+        'fieldset'                => View\Components\Fieldset::class,
+        'file'                    => View\Components\File::class,
+        'form'                    => View\Components\Form::class,
+        'group'                   => View\Components\Group::class,
+        'header'                  => View\Components\Header::class,
+        'heading'                 => View\Components\Heading::class,
+        'icon'                    => View\Components\Icon::class,
+        'image-gallery'           => View\Components\ImageGallery::class,
+        'image-library'           => View\Components\ImageLibrary::class,
+        'image-slider'            => View\Components\ImageSlider::class,
+        'input'                   => View\Components\Input::class,
+        'kbd'                     => View\Components\Kbd::class,
+        'kpi-card'                => View\Components\KpiCard::class,
+        'link'                    => View\Components\Link::class,
+        'list-item'               => View\Components\ListItem::class,
+        'loading'                 => View\Components\Loading::class,
+        'main'                    => View\Components\Main::class,
+        'markdown'                => View\Components\Markdown::class,
+        'menu'                    => View\Components\Menu::class,
+        'menu-item'               => View\Components\MenuItem::class,
+        'menu-separator'          => View\Components\MenuSeparator::class,
+        'menu-sub'                => View\Components\MenuSub::class,
+        'menu-title'              => View\Components\MenuTitle::class,
+        'modal'                   => View\Components\Modal::class,
+        'nav'                     => View\Components\Nav::class,
+        'pagination'              => View\Components\Pagination::class,
+        'password'                => View\Components\Password::class,
+        'pin'                     => View\Components\Pin::class,
+        'popover'                 => View\Components\Popover::class,
+        'profile'                 => View\Components\Profile::class,
+        'progress'                => View\Components\Progress::class,
+        'progress-radial'         => View\Components\ProgressRadial::class,
+        'radio'                   => View\Components\Radio::class,
+        'radio-group'             => View\Components\RadioGroup::class,
+        'range'                   => View\Components\Range::class,
+        'rating'                  => View\Components\Rating::class,
+        'select'                  => View\Components\Select::class,
+        'select-group'            => View\Components\SelectGroup::class,
+        'separator'               => View\Components\Separator::class,
+        'signature'               => View\Components\Signature::class,
+        'sparkline'               => View\Components\Sparkline::class,
+        'spotlight'               => View\Components\Spotlight::class,
+        'stat'                    => View\Components\Stat::class,
+        'streamable-content'      => View\Components\StreamableContent::class,
+        'step'                    => View\Components\Step::class,
+        'steps'                   => View\Components\Steps::class,
+        'subheading'              => View\Components\Subheading::class,
+        'swap'                    => View\Components\Swap::class,
+        'tab'                     => View\Components\Tab::class,
+        'table'                   => View\Components\Table::class,
+        'tabs'                    => View\Components\Tabs::class,
+        'tags'                    => View\Components\Tags::class,
+        'text'                    => View\Components\Text::class,
+        'textarea'                => View\Components\Textarea::class,
+        'theme-toggle'            => View\Components\ThemeToggle::class,
+        'timeline-item'           => View\Components\TimelineItem::class,
+        'toast'                   => View\Components\Toast::class,
+        'toaster'                 => View\Components\Toaster::class,
+        'toggle'                  => View\Components\Toggle::class,
+        'widget-grid'             => View\Components\WidgetGrid::class,
     ];
 
     /**
@@ -171,6 +177,7 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'livewire-ui-components');
         $this->registerComponents();
+        $this->resetOverlayIdsPerLivewireRender();
         $this->registerBladeDirectives();
 
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
@@ -452,6 +459,9 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // Overlay ids rendered so far, per request (Octane resets scoped bindings).
+        $this->app->scoped(Support\RenderedIds::class);
+
         $this->mergeConfigFrom(__DIR__.'/../config/livewire-ui-components.php', 'artisanpack-livewire-ui-components-temp');
 
         // Register the service the package provides.
@@ -482,6 +492,25 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
     public function provides()
     {
         return ['livewire-ui-components'];
+    }
+
+    /**
+     * Resets a Livewire component's overlay ids when it starts rendering, so
+     * a re-render renders the same ids as the first render (D-015).
+     *
+     * @since 3.0.0
+     */
+    protected function resetOverlayIdsPerLivewireRender(): void
+    {
+        if (! function_exists('Livewire\\on')) {
+            return;
+        }
+
+        \Livewire\on('render', function (object $component): void {
+            if (method_exists($component, 'getId')) {
+                $this->app->make(Support\RenderedIds::class)->reset((string) $component->getId());
+            }
+        });
     }
 
     /**

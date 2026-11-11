@@ -113,11 +113,13 @@ Many components share common props and slots:
 | [Accordion](accordion) | Collapsible content panels | [Accordion docs](accordion) |
 | [Card](card) | Content container with header and footer | [Card docs](card) |
 | [Collapse](collapse) | Collapsible content | [Collapse docs](collapse) |
+| [Dialog](dialog) | Modal window for a focused task or a confirmation | [Dialog docs](dialog) |
 | [Drawer](drawer) | Side drawer/panel | [Drawer docs](drawer) |
-| [Dropdown](dropdown) | Dropdown menu | [Dropdown docs](dropdown) |
+| [Dropdown](dropdown) | Dropdown menu (deprecated: use DropdownMenu) | [Dropdown docs](dropdown) |
+| [DropdownMenu](dropdown-menu) | Actions and options anchored to a trigger | [DropdownMenu docs](dropdown-menu) |
 | [Separator](separator) | Horizontal rule with styling | [Separator docs](separator) |
 | [Main](main) | Main content container | [Main docs](main) |
-| [Modal](modal) | Modal dialog | [Modal docs](modal) |
+| [Modal](modal) | Modal dialog (deprecated: use Dialog) | [Modal docs](modal) |
 | [Popover](popover) | Popover tooltip | [Popover docs](popover) |
 | [Tabs](tabs) | Tabbed interface | [Tabs docs](tabs) |
 | [Tab](tab) | Individual tab for Tabs component | [Tab docs](tab) |
@@ -183,7 +185,7 @@ Many components share common props and slots:
 | [Alert](alert) | Alert/notification message | [Alert docs](alert) |
 | [Errors](errors) | Form validation errors display | [Errors docs](errors) |
 | [Loading](loading) | Loading indicator | [Loading docs](loading) |
-| [Toast](toast) | Toast notification | [Toast docs](toast) |
+| [Toast](toast) | Toast notifications and the toaster | [Toast docs](toast) |
 
 ### Utility Components
 

@@ -22,13 +22,13 @@ class Welcome extends Component
     public function clear(): void
     {
         $this->reset();
-        $this->success('Filters cleared.', position: 'toast-bottom');
+        $this->success(__('Filters cleared.'));
     }
 
     // Delete action
     public function delete($id): void
     {
-        $this->warning("Will delete #$id", 'It is fake.', position: 'toast-bottom');
+        $this->warning(__('Will delete #:id', ['id' => $id]), __('It is fake.'));
     }
 
     // Table headers

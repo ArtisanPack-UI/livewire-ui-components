@@ -1,5 +1,5 @@
 {
-  "components": ["Button", "Input", "Select", "Checkbox", "Card"],
+  "components": ["Button", "Input", "Select", "Checkbox", "Card", "Dialog", "DropdownMenu", "Toast"],
   "css": ["dist/css/index.css"],
   "stacks": {
     "livewire": {

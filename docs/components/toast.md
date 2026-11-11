@@ -4,200 +4,145 @@ title: Toast Component
 
 # Toast Component
 
-The Toast component provides a way to display brief, non-disruptive notifications to users. Toasts are useful for success messages, warnings, errors, and general information.
+A brief, non-blocking message about something that just happened, built on the ArtisanPack UI design system. A toaster (the region) shows toasts created from data, stacked, timed and paused on hover and focus. Rendered on its own, a Toast is static.
 
-## Basic Usage
+Toasts are never the only place an error is reported: blocking errors use [Alert](alert).
 
-```php
-// In a Livewire component
-public function save()
-{
-    // Save logic here...
-    
-    $this->success('Saved successfully!', 'Your changes have been saved.');
-}
+## The toaster
+
+Put one toaster on the page, outside Livewire components (it's `wire:ignore`), such as in the layout after `@artisanpackScripts`. It's `@persist`ed, so toasts survive `wire:navigate`:
+
+```blade
+<x-artisanpack-toaster />
 ```
 
-## Examples
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `placement` | `top-start` · `top` · `top-end` · `bottom-start` · `bottom` · `bottom-end` | `bottom-end` | Where the region sits; start and end follow the text direction. |
+| `max` | int | `5` | At most this many show at once; the rest queue. |
+| `gap` | int | `8` | Space between toasts, in px. |
+| `duration` | int | `5000` | Milliseconds before a toast dismisses itself, paused while the region is hovered or focused. `0` keeps them. |
+| `label` | string | `__( 'Notifications' )` | The region's accessible name. |
+| `close-label` | string | `__( 'Dismiss notification' )` | The close buttons' accessible name. |
 
-### Toast Types
+Alt+T moves focus to the region; Escape on a toast dismisses it.
+
+## Showing toasts
+
+### From a Livewire component
+
+The toaster listens for the `toast` browser event, so a dispatch shows one:
 
 ```php
-// Success toast
-$this->success('Success!', 'Operation completed successfully.');
-
-// Warning toast
-$this->warning('Warning!', 'This action cannot be undone.');
-
-// Error toast
-$this->error('Error!', 'Something went wrong.');
-
-// Info toast
-$this->info('Information', 'Your session will expire in 5 minutes.');
+$this->dispatch( 'toast', title: __( 'Listing saved' ), description: __( 'Cedarwood Estates is live now.' ), color: 'success' );
 ```
 
-### Custom Position
+Or use the `Toast` trait:
 
 ```php
-// Position options: 'top', 'top-left', 'top-right', 'bottom', 'bottom-left', 'bottom-right'
-$this->success('Saved!', 'Your changes have been saved.', 'top-right');
-```
-
-### Custom Icon
-
-```php
-$this->success('Uploaded!', 'File uploaded successfully.', null, 'o-cloud-arrow-up');
-```
-
-### Custom Timeout
-
-```php
-// Set a 5-second timeout (5000ms)
-$this->info('Processing', 'Your request is being processed...', null, 'o-cog', 'alert-info', 5000);
-```
-
-### Toast with Redirect
-
-```php
-// Redirect after showing the toast
-$this->success('Created!', 'New record created successfully.', null, 'o-check-circle', 'alert-success', 3000, '/records');
-```
-
-### Custom CSS Classes
-
-```php
-$this->toast('custom', 'Custom Toast', 'With custom styling', null, 'o-sparkles', 'bg-purple-500 text-white');
-```
-
-## Color System
-
-The toast component now supports flexible color customization using the color system:
-
-### Using Color Parameter
-
-```php
-// Predefined variants
-$this->toast('custom', 'Custom Toast', 'Using predefined variant', null, 'o-sparkles', null, 3000, null, 'primary');
-$this->toast('custom', 'Custom Toast', 'Using predefined variant', null, 'o-sparkles', null, 3000, null, 'secondary');
-
-// Tailwind colors
-$this->toast('custom', 'Custom Toast', 'Using Tailwind color', null, 'o-sparkles', null, 3000, null, 'blue-500');
-$this->toast('custom', 'Custom Toast', 'Using Tailwind color', null, 'o-sparkles', null, 3000, null, 'purple-600');
-
-// Custom hex colors
-$this->toast('custom', 'Custom Toast', 'Using hex color', null, 'o-sparkles', null, 3000, null, '#ff6b6b');
-$this->toast('custom', 'Custom Toast', 'Using hex color', null, 'o-sparkles', null, 3000, null, '#4ecdc4');
-```
-
-### Using Color Adjustments
-
-```php
-// Lighter background
-$this->toast('custom', 'Lighter Toast', 'With lighter background', null, 'o-sparkles', null, 3000, null, 'blue-500', 'lighter');
-
-// Darker background
-$this->toast('custom', 'Darker Toast', 'With darker background', null, 'o-sparkles', null, 3000, null, 'blue-500', 'darker');
-
-// Transparent background
-$this->toast('custom', 'Transparent Toast', 'With transparent background', null, 'o-sparkles', null, 3000, null, 'blue-500', 'transparent');
-
-// Subtle background
-$this->toast('custom', 'Subtle Toast', 'With subtle background', null, 'o-sparkles', null, 3000, null, 'blue-500', 'subtle');
-```
-
-### Enhanced Convenience Methods
-
-The convenience methods also support the new color system:
-
-```php
-// Success toast with custom color
-$this->success('Success!', 'Operation completed', null, 'o-check-circle', null, 3000, null, 'green-600');
-
-// Warning toast with color adjustment
-$this->warning('Warning!', 'Action cannot be undone', null, 'o-exclamation-triangle', null, 3000, null, 'orange-500', 'subtle');
-
-// Error toast with hex color
-$this->error('Error!', 'Something went wrong', null, 'o-x-circle', null, 3000, null, '#ff4757');
-
-// Info toast with brand color
-$this->info('Information', 'Session expires soon', null, 'o-information-circle', null, 5000, null, '#4ecdc4', 'lighter');
-```
-
-## Methods
-
-| Method | Parameters | Description |
-|--------|------------|-------------|
-| `toast` | `$type`, `$title`, `$description`, `$position`, `$icon`, `$css`, `$timeout`, `$redirectTo`, `$color`, `$colorAdjustment` | Base method for displaying toast notifications |
-| `success` | `$title`, `$description`, `$position`, `$icon`, `$css`, `$timeout`, `$redirectTo`, `$color`, `$colorAdjustment` | Display a success toast notification |
-| `warning` | `$title`, `$description`, `$position`, `$icon`, `$css`, `$timeout`, `$redirectTo`, `$color`, `$colorAdjustment` | Display a warning toast notification |
-| `error` | `$title`, `$description`, `$position`, `$icon`, `$css`, `$timeout`, `$redirectTo`, `$color`, `$colorAdjustment` | Display an error toast notification |
-| `info` | `$title`, `$description`, `$position`, `$icon`, `$css`, `$timeout`, `$redirectTo`, `$color`, `$colorAdjustment` | Display an info toast notification |
-
-## Parameters
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `$type` | string | - | The type of toast notification (`success`, `warning`, `error`, `info`, or custom) |
-| `$title` | string | - | The title of the toast notification |
-| `$description` | string\|null | `null` | Optional description for the toast notification |
-| `$position` | string\|null | `null` | Optional position for the toast notification (`top`, `top-left`, `top-right`, `bottom`, `bottom-left`, `bottom-right`) |
-| `$icon` | string | Varies by type | The icon to display in the toast notification |
-| `$css` | string | Varies by type | CSS classes for the toast notification |
-| `$timeout` | int | `3000` | Timeout in milliseconds before the toast automatically dismisses |
-| `$redirectTo` | string\|null | `null` | Optional URL to redirect to after displaying the toast |
-| `$color` | string\|null | `null` | Color variant, Tailwind color (e.g., 'red-500'), or hex code (e.g., '#ff0000') |
-| `$colorAdjustment` | string\|null | `null` | Background adjustment: 'lighter', 'darker', 'transparent', or 'subtle' |
-
-## Usage in Livewire Components
-
-To use Toast notifications in your Livewire components, add the `Toast` trait:
-
-```php
-<?php
-
-namespace App\Livewire;
-
-use Livewire\Component;
 use ArtisanPack\LivewireUiComponents\Traits\Toast;
 
-class MyComponent extends Component
+class EditListing extends Component
 {
-    use Toast;
-    
-    public function save()
-    {
-        // Save logic...
-        
-        $this->success('Saved!', 'Your changes have been saved.');
-    }
+	use Toast;
+
+	public function save(): void
+	{
+		// …
+		$this->toast( __( 'Listing saved' ), __( 'Cedarwood Estates is live now.' ), color: 'success' );
+
+		// Shorthands set the color: success(), warning(), error() and info().
+		$this->success( __( 'Listing saved' ) );
+	}
 }
 ```
 
-## Styling
+`toast()` takes `title`, `description`, `color`, `variant`, `surface`, `icon`, `duration` (`0` keeps it) and `hideClose`. Every toast fires the `ap.livewireUiComponents.toastDispatched` action with its color, title and options.
 
-The Toast component uses DaisyUI's alert component under the hood, which provides a wide range of styling options. You can customize the appearance of toasts by:
+### Across a redirect
 
-1. Using the provided parameters (`$css`, `$icon`, etc.)
-2. Modifying the DaisyUI variables in your theme file
+A dispatched toast is lost when the page changes, so flash it instead. The toaster on the next page shows it once:
 
-### Default CSS Classes
+```php
+// Flash and redirect (with wire:navigate):
+return $this->toast( __( 'Listing saved' ), color: 'success', redirectTo: route( 'listings.index' ) );
 
-- Success: `alert-success`
-- Warning: `alert-warning`
-- Error: `alert-error`
-- Info: `alert-info`
+// Or flash, then redirect yourself:
+$this->flashToast( __( 'Listing saved' ), color: 'success' );
+return $this->redirect( route( 'listings.index' ) );
+```
 
-## Accessibility
+From a controller, use `Toasts::flash()`:
 
-The Toast component follows accessibility best practices:
+```php
+use ArtisanPack\LivewireUiComponents\Support\Toasts;
 
-- Uses appropriate ARIA roles for alerts
-- Provides sufficient color contrast for all toast types
-- Includes both visual and textual information
-- Automatically dismisses after a configurable timeout
+Toasts::flash( title: __( 'Welcome back' ), color: 'success' );
 
-## Related Components
+return redirect()->route( 'dashboard' );
+```
 
-- [Alert](alert) - Static alert messages
-- [Modal](modal) - Dialog boxes for important interactions
-- [Icon](icon) - SVG icon display
+Livewire drops flashed data from an action that doesn't redirect, so flash only when you redirect.
+
+### From an exception
+
+`ToastException` answers a Livewire request with a toast instead of the error page:
+
+```php
+use ArtisanPack\LivewireUiComponents\Exceptions\ToastException;
+
+throw ToastException::error( __( 'Upload failed' ), __( 'The file is larger than 10 MB.' ) );
+```
+
+### From JavaScript
+
+```js
+ApuiBehavior.toast( { title: 'Listing archived', action: { label: 'Undo', onClick: () => restore() } } );
+```
+
+A toast with an action stays until it's used or closed. Actions take a JavaScript `onClick`, so they're created from JavaScript, not from the server.
+
+## A toast on its own
+
+`<x-artisanpack-toast>` renders a static toast, for docs or an inline status. `color` tints the status icon, `inverse` stands out, and `error` is announced as an alert:
+
+```blade
+<x-artisanpack-toast color="success" :title="__( 'Listing saved' )" :description="__( 'Cedarwood Estates is live now.' )" />
+<x-artisanpack-toast color="error" :title="__( 'Upload failed' )" :description="__( 'The file is larger than 10 MB.' )" />
+<x-artisanpack-toast variant="inverse" :title="__( 'Listing archived' )">
+	<x-slot:actions>
+		<x-artisanpack-button size="sm" variant="outline" color="neutral">{{ __( 'Undo' ) }}</x-artisanpack-button>
+	</x-slot:actions>
+</x-artisanpack-toast>
+```
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `title` | string or slot | none | The message, linked with `aria-labelledby`. |
+| `description` | string or slot | none | Supporting text, linked with `aria-describedby`. |
+| `color` | semantic color | `neutral` | Tints the icon. `error` sets `role=alert`. Emitted as `data-color`. |
+| `variant` | `default` · `inverse` | `default` | Emitted as `data-variant`. |
+| `surface` | `overlay` · `glass` | `overlay` | Emitted as `data-surface`. |
+| `icon` | string or slot | the color's status icon | `circle-check`, `triangle-alert`, `circle-alert` or `info`. |
+| `actions` | string or slot | none | Buttons under the text. |
+| `hide-close` | bool | `false` | Hides the close button. |
+| `close-label` | string | `__( 'Dismiss notification' )` | The close button's accessible name. |
+| `classes` | array | `[]` | Extra classes per part: `root`, `icon`, `title`, `description`, `actions`, `closeTrigger`. |
+
+The close button dispatches `open-change` (`{ open: false }`); hiding a static toast is the owner's job:
+
+```blade
+<div x-data="{ shown: true }" x-show="shown">
+	<x-artisanpack-toast :title="__( 'Saved' )" x-on:open-change="shown = false" />
+</div>
+```
+
+## Upgrading from 2.x
+
+> **Warning: positional calls change meaning.** In 2.x, `$this->toast( 'success', 'Saved', 'Details' )` was `( $type, $title, $description )`. In 3.0 the same call shows a toast titled "success" with "Saved" as its text, without an error. Calls whose first argument is a color name and second is set raise an `E_USER_DEPRECATED` notice (in your deprecations log) so you can find them. Rewrite them with the color named: `$this->toast( 'Saved', 'Details', color: 'success' )`, or `$this->success( 'Saved', 'Details' )`.
+
+- `<x-artisanpack-toast />` in the layout becomes `<x-artisanpack-toaster />`. `<x-artisanpack-toast>` is now the static toast; a bare one renders nothing and raises a deprecation notice.
+- The trait's `toast( $type, $title, … )` becomes `toast( $title, $description, color: … )`. `position`, `css` and Heroicons names are gone: placement is the toaster's, and icons are registry names.
+- `success()`, `warning()`, `error()` and `info()` take `( $title, $description, $duration, $redirectTo )`. The third argument was `$position`; passing a position string now throws a TypeError.
+- `ToastException::typedMessage()` and its shorthands take `( $title, $description, $icon, $duration )`; `position`, `css` and `timeout` are gone. A 2.x position passed third is not an icon name, so the toast shows without an icon. `new ToastException( 'message' )` shows the message as an error toast.
+- The `artisanpack-toast` browser event and `window.toast()` are gone: dispatch `toast`, or call `ApuiBehavior.toast()`.

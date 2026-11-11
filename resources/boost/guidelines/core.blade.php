@@ -32,13 +32,13 @@ All components use the `<x-artisanpack-{component-name}>` naming pattern. The ol
 
 **Form Components**: input, button, checkbox, select, datepicker, file, textarea, radio, toggle, range, color-picker, rich-text-editor
 
-**Layout Components**: card, modal, tabs, accordion, drawer, dropdown, collapse, divider, stack, grid
+**Layout Components**: card, dialog, tabs, accordion, drawer, dropdown-menu, collapse, divider, stack, grid (modal and dropdown are deprecated)
 
 **Navigation Components**: menu, breadcrumbs, pagination, steps, navbar, sidebar, spotlight-search
 
 **Data Display Components**: table, chart, calendar, avatar, badge, progress, stat, timeline, carousel, diff
 
-**Feedback Components**: alert, toast, loading, skeleton, empty-state, error
+**Feedback Components**: alert, toast and toaster, loading, skeleton, empty-state, error
 
 **Utility Components**: icon, theme-toggle, tooltip, clipboard
 
@@ -145,19 +145,48 @@ All components use the `<x-artisanpack-{component-name}>` naming pattern. The ol
 @endverbatim
 
 @verbatim
-<code-snippet name="Modal component" lang="blade">
-<x-artisanpack-modal wire:model="showModal" title="Confirm Action">
-    <p>Are you sure you want to proceed?</p>
+<code-snippet name="Dialog component" lang="blade">
+<!-- wire:model binds the open state; Escape, the close button and the backdrop close it -->
+<x-artisanpack-dialog wire:model="showInvite" :trigger="__( 'Invite member' )" :title="__( 'Invite member' )" :description="__( 'They\'ll get an email with a link to join the project.' )">
+    <x-artisanpack-input type="email" :label="__( 'Email' )" wire:model="email" />
 
-    <x-slot:actions>
-        <x-artisanpack-button wire:click="$set('showModal', false)" variant="outline" color="neutral">
-            Cancel
-        </x-artisanpack-button>
-        <x-artisanpack-button wire:click="confirm">
-            Confirm
-        </x-artisanpack-button>
-    </x-slot:actions>
-</x-artisanpack-modal>
+    <x-slot:footer>
+        <x-artisanpack-button variant="outline" color="neutral" wire:click="$set( 'showInvite', false )">{{ __( 'Cancel' ) }}</x-artisanpack-button>
+        <x-artisanpack-button wire:click="invite">{{ __( 'Send invite' ) }}</x-artisanpack-button>
+    </x-slot:footer>
+</x-artisanpack-dialog>
+
+<!-- Destructive confirmations are alertdialogs; name the action, not "OK" -->
+<x-artisanpack-dialog wire:model="confirmingDelete" role="alertdialog" size="sm" color="error" icon="trash" :title="__( 'Delete listing?' )">
+    <x-slot:footer>
+        <x-artisanpack-button variant="outline" color="neutral" wire:click="$set( 'confirmingDelete', false )">{{ __( 'Cancel' ) }}</x-artisanpack-button>
+        <x-artisanpack-button color="error" wire:click="delete">{{ __( 'Delete listing' ) }}</x-artisanpack-button>
+    </x-slot:footer>
+</x-artisanpack-dialog>
+</code-snippet>
+@endverbatim
+
+@verbatim
+<code-snippet name="DropdownMenu component" lang="blade">
+<!-- Choosing an item clicks it, so wire:click runs from the keyboard too. Pass an id when the same menu repeats (table rows). -->
+<x-artisanpack-dropdown-menu :id="'row-'.$listing->id" :label="__( 'Options' )" align="end">
+    <x-artisanpack-dropdown-menu-item value="edit" icon="pencil" shortcut="E" wire:click="edit">{{ __( 'Edit' ) }}</x-artisanpack-dropdown-menu-item>
+    <x-artisanpack-dropdown-menu-item type="checkbox" value="grid" :checked="$showGrid" wire:click="$toggle( 'showGrid' )">{{ __( 'Show grid' ) }}</x-artisanpack-dropdown-menu-item>
+    <x-artisanpack-dropdown-menu-separator />
+    <x-artisanpack-dropdown-menu-item value="delete" icon="trash" color="error" wire:click="delete">{{ __( 'Delete' ) }}</x-artisanpack-dropdown-menu-item>
+</x-artisanpack-dropdown-menu>
+</code-snippet>
+@endverbatim
+
+@verbatim
+<code-snippet name="Toasts" lang="blade">
+<!-- Once per page, in the layout -->
+<x-artisanpack-toaster />
+
+<!-- In a Livewire action (use ArtisanPack\LivewireUiComponents\Traits\Toast): -->
+<!-- $this->toast( __( 'Listing saved' ), color: 'success' ); -->
+<!-- $this->dispatch( 'toast', title: __( 'Listing saved' ), color: 'success' ); -->
+<!-- Across a redirect: $this->toast( __( 'Listing saved' ), redirectTo: route( 'listings' ) ); or Toasts::flash( title: … ) -->
 </code-snippet>
 @endverbatim
 

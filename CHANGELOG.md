@@ -3,12 +3,27 @@
 ## [Unreleased]
 
 ### Added
+- `<x-artisanpack-dialog>` (design-system Dialog, #49 in design-system): a modal window on the behavior engine's dialog machine. `wire:model` binds the open state through `$wire.entangle()`; `role="alertdialog"` for confirmations; `size`, `surface`, `color`, `icon`, `title`, `description`, `footer`, `trigger`, `modal`, `portal`, `hideClose`, `closeLabel` and `classes`. Every part keeps a stable, server-rendered id.
+- `<x-artisanpack-dropdown-menu>` with `dropdown-menu-item`, `dropdown-menu-group` and `dropdown-menu-separator` (design-system DropdownMenu, #50): action, checkbox and radio items, groups with labels, shortcuts and danger items, scoped `dropdown-menu`. `items` renders the same children from data. Items carry `wire:key` and the machine's ids.
+- `<x-artisanpack-toaster>` (design-system Toast, #51): the region that shows toasts from data. It listens for the `toast` browser event, so `$this->dispatch( 'toast', title: … )` shows one, and shows toasts flashed to the session once (not again when `wire:navigate` restores a page from history). It is `@persist`ed, so toasts survive `wire:navigate`, as the 2.x toaster did.
+- `Support\Toasts`: `make()`, `flash()`, `push()` and `pull()` for toast options, so a toast survives a redirect (`Toasts::flash( title: … )` from a controller).
+- `Traits\Toast::flashToast()`.
+- `View\Concerns\HasStablePartIds` and `Support\RenderedIds`: overlay ids that are unique on the page (they include the Livewire component's id, and repeats in a render get `-2`, `-3`) and never depend on text or open state, so a re-render keeps them; plus the `wire:model` open-state binding.
 - `php artisan artisanpack:generate-preset`: generates a brand preset from the design-system tokens (`data-preset`), with luminance-matched color ramps and a WCAG 2.2 AA check in every theme before it writes anything. Outputs CSS, PHP or JSON. (#27 in design-system)
 - `Theming\PresetGenerator`, `GeneratedPreset`, `DesignTokens`, `ContrastChecker` and `ColorMath`: a PHP port of the design system's `apui-generate-preset`, tested against its golden fixtures for identical output.
 - `Theming\TokenThemes` (theme, density and preset attributes, contrast checks, `prefers-contrast` and `prefers-color-scheme` CSS) and `Theming\GlassSurface` (`data-surface="glass"`).
 - `resources/design-system/tokens.php`: the design-system token map.
 
 ### Changed
+- **Breaking:** `<x-artisanpack-toast>` is now the design-system Toast rendered on its own: a static toast (`title`, `description`, `color`, `variant`, `surface`, `icon`, `actions`, `hideClose`, `closeLabel`, `classes`) whose close button dispatches `open-change`. The toaster that 2.x rendered with `<x-artisanpack-toast />` is `<x-artisanpack-toaster />`; its `position`, `color`, `colorAdjustment`, `duration` and glass props are gone.
+- **Breaking — positional calls change meaning:** 2.x `$this->toast( 'success', 'Saved', 'Details' )` was `( $type, $title, $description )`; in 3.0 the same call shows a toast titled "success" with "Saved" as its text. Calls whose first argument is a color name and second is set raise an `E_USER_DEPRECATED` notice to help you find them. Rewrite them as `$this->toast( 'Saved', 'Details', color: 'success' )` or `$this->success( 'Saved', 'Details' )`. In `success()`, `warning()`, `error()` and `info()` the third argument was `$position` and is now `$duration` (an int), so a 2.x call passing a position throws a TypeError. `ToastException`'s third argument was `$position` and is now `$icon`; an invalid icon there falls back to no icon instead of failing.
+- A bare `<x-artisanpack-toast />` (the 2.x toaster) renders nothing and raises an `E_USER_DEPRECATED` notice pointing to `<x-artisanpack-toaster />`.
+- **Breaking:** `Traits\Toast::toast()` takes `( $title, $description, $color, $variant, $surface, $icon, $duration, $hideClose, $redirectTo )`, and `success()`, `warning()`, `error()` and `info()` take `( $title, $description, $duration, $redirectTo )`. `position`, `css` and Heroicons icon names are gone; icons are registry names. With `redirectTo` the toast is flashed and shows on the next page.
+- **Breaking:** `ToastException` answers with the new toast options (`{ toast: { title, description, color, … }, prevent_default }`); its constructors take `( $title, $description, $icon, $duration )`.
+- **Breaking:** the `artisanpack-toast` browser event and `window.toast()` are gone. Dispatch `toast`, or call `ApuiBehavior.toast()`.
+- The `ap.livewireUiComponents.toastDispatched` action receives the toast's color (was its type), title and options.
+- The installer's layout stub uses `<x-artisanpack-toaster />`, and the Welcome stubs use the new trait signature.
+- The prebuilt assets and the Lucide icon set are rebuilt from the design system (adds `circle-check`, `triangle-alert`, `pencil`, `log-out`, `settings`).
 - Require Laravel 12 or 13 (`illuminate/support: ^12.0|^13.0`) and PHP 8.2. Laravel 11 is end of life, and Composer now refuses its releases over unpatched security advisories.
 - Allow `laravel/boost` 2.x, Pest 4 and PHPUnit 12 in development, which Laravel 13 needs, and drop `pestphp/pest-plugin-watch`, which has no Pest 4 release.
 
@@ -21,6 +36,7 @@
 - `Header` rendered an empty `id=""` when it has no anchor.
 
 ### Deprecated
+- `<x-artisanpack-modal>` and `<x-artisanpack-dropdown>`. Use `<x-artisanpack-dialog>` and `<x-artisanpack-dropdown-menu>`. They're removed in a later major release.
 - `artisanpack:generate-theme`, `Styling\ColorGenerator`, `Styling\GlassPresets` and `Styling\HighContrastTheme`. Use `artisanpack:generate-preset`, `Theming\PresetGenerator`, `Theming\GlassSurface` and `Theming\TokenThemes`. They're removed once the components that use them move to the design system.
 
 ---
