@@ -201,6 +201,21 @@ The Select component is a form element that allows users to choose one option fr
 />
 ```
 
+### Option groups
+
+An `options` entry with a `label` and its own `options` renders a native `<optgroup>`. This replaces the deprecated [SelectGroup](select-group).
+
+```blade
+<x-artisanpack-select
+	wire:model="propertyType"
+	:label="__( 'Property type' )"
+	:options="[
+		[ 'label' => __( 'Apartments' ), 'options' => [ [ 'value' => 'studio', 'label' => __( 'Studio' ) ], [ 'value' => 'loft', 'label' => __( 'Loft' ) ] ] ],
+		[ 'label' => __( 'Houses' ), 'options' => [ [ 'value' => 'townhouse', 'label' => __( 'Townhouse' ) ] ] ],
+	]"
+/>
+```
+
 ## Props
 
 | Prop | Type | Default | Description |

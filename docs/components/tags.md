@@ -4,6 +4,8 @@ title: Tags Component
 
 # Tags Component
 
+> **Deprecated in 3.0.** Use [Combobox](combobox) with `multiple` and `allow-create`, built on the design system. See [Upgrading](combobox#upgrading-from-choices-choicesoffline-and-tags). This component is removed in a later major release.
+
 The Tags component is a form element that allows users to create and manage multiple tags or labels. It provides an intuitive interface for adding, editing, and removing tags, with support for validation, suggestions, and customization.
 
 ## Basic Usage

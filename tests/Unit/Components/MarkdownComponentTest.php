@@ -23,7 +23,7 @@ class MarkdownComponentTest extends ComponentTestCase
 
     protected array $defaultProperties = [
         'hintClass'      => 'fieldset-label',
-        'disk'           => 'public',
+        'disk'           => null,
         'folder'         => 'markdown',
         'config'         => [],
         'errorClass'     => 'text-error',

@@ -1,174 +1,60 @@
 ---
-title: Checkbox Group Component
+title: CheckboxGroup Component
 ---
 
-# Checkbox Group Component
+# CheckboxGroup Component
 
-The Checkbox Group component displays a group of related checkboxes, allowing users to select multiple options from a set of choices.
+A labeled set of related checkboxes with a shared hint and error, built on the ArtisanPack UI design system. Each option is the [Checkbox](checkbox) markup; the value is the array of checked values. An optional select-all box shows the mixed state while some options are checked.
 
 ## Basic Usage
 
-```php
+```blade
 <x-artisanpack-checkbox-group
-    label="Select your interests"
-    :options="$interests"
-    wire:model="selectedInterests"
+	wire:model="notifications"
+	select-all
+	:label="__( 'Notify me about' )"
+	:options="[
+		[ 'value' => 'offers', 'label' => __( 'New offers' ), 'description' => __( 'Within an hour of submission' ) ],
+		[ 'value' => 'prices', 'label' => __( 'Price changes in saved searches' ) ],
+		[ 'value' => 'digest', 'label' => __( 'Weekly analytics digest' ) ],
+	]"
 />
 ```
 
-## Examples
+`wire:model` (an array property) lands on every option's native checkbox, with the option's `value`, so Livewire binds the array natively. Select all checks or clears every enabled option and fires a `change` event on each, which `wire:model` reads.
 
-### Simple Checkbox Group
+## Columns and cards
 
-```php
-<x-artisanpack-checkbox-group
-    label="Technologies"
-    :options="[
-        ['id' => 1, 'name' => 'Laravel'],
-        ['id' => 2, 'name' => 'Livewire'],
-        ['id' => 3, 'name' => 'Alpine.js'],
-        ['id' => 4, 'name' => 'Tailwind CSS'],
-    ]"
-    wire:model="technologies"
-/>
+```blade
+<x-artisanpack-checkbox-group wire:model="amenities" :columns="3" :label="__( 'Amenities' )" :options="$amenities" />
+
+<x-artisanpack-checkbox-group wire:model="channels" variant="cards" :columns="3" :label="__( 'Channels' )" :options="$channels" />
 ```
 
-### Horizontal Layout
-
-```php
-<x-artisanpack-checkbox-group
-    label="Preferences"
-    :options="$preferences"
-    wire:model="userPreferences"
-    horizontal
-/>
-```
-
-### Card Style Checkboxes
-
-```php
-<x-artisanpack-checkbox-group
-    label="Select Features"
-    :options="$features"
-    wire:model="selectedFeatures"
-    card
-/>
-```
-
-### With Hints
-
-```php
-<x-artisanpack-checkbox-group
-    label="Services"
-    hint="Select all that apply"
-    :options="[
-        ['id' => 1, 'name' => 'Email Support', 'hint' => '24/7 support'],
-        ['id' => 2, 'name' => 'Phone Support', 'hint' => 'Business hours'],
-        ['id' => 3, 'name' => 'Live Chat', 'hint' => 'Instant responses'],
-    ]"
-    wire:model="services"
-    option-hint="hint"
-/>
-```
-
-### Custom Option Keys
-
-```php
-<x-artisanpack-checkbox-group
-    label="Countries"
-    :options="$countries"
-    wire:model="selectedCountries"
-    option-value="code"
-    option-label="country_name"
-/>
-```
+Cards are clickable anywhere.
 
 ## Props
 
 | Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `label` | string | `null` | Label text for the checkbox group |
-| `hint` | string | `null` | Hint text displayed below the label |
-| `hintClass` | string | `'fieldset-label'` | CSS classes for the hint text |
-| `options` | Collection\|array | `[]` | Array or Collection of options |
-| `optionValue` | string | `'id'` | Key name for the option value |
-| `optionLabel` | string | `'name'` | Key name for the option label |
-| `optionHint` | string | `'hint'` | Key name for the option hint |
-| `horizontal` | boolean | `false` | Display checkboxes horizontally |
-| `card` | boolean | `false` | Display checkboxes as cards |
-| `cardClass` | string | `'card card-compact border-2 border-base-300 hover:border-primary cursor-pointer transition-colors'` | CSS classes for card style |
-| `errorField` | string | `null` | Field name for validation errors |
-| `errorClass` | string | `'text-error'` | CSS classes for error messages |
-| `omitError` | boolean | `false` | Hide error messages |
-| `firstErrorOnly` | boolean | `false` | Show only the first error |
-
-## Validation
-
-The component integrates with Laravel's validation system:
-
-```php
-// In your Livewire component
-public array $selectedOptions = [];
-
-protected $rules = [
-    'selectedOptions' => 'required|array|min:1',
-];
-
-public function save()
-{
-    $this->validate();
-    // Process selected options
-}
-```
-
-```php
-<!-- In your view -->
-<x-artisanpack-checkbox-group
-    label="Required Selection"
-    :options="$options"
-    wire:model="selectedOptions"
-    error-field="selectedOptions"
-/>
-```
-
-## Styling
-
-### Custom Card Styling
-
-```php
-<x-artisanpack-checkbox-group
-    label="Premium Options"
-    :options="$premiumOptions"
-    wire:model="selectedPremium"
-    card
-    card-class="card border-2 border-accent hover:border-accent-focus bg-base-100"
-/>
-```
-
-### Custom Hint Styling
-
-```php
-<x-artisanpack-checkbox-group
-    label="Configuration"
-    hint="Choose your setup options"
-    hint-class="text-sm text-gray-500 italic"
-    :options="$configOptions"
-    wire:model="config"
-/>
-```
+|---|---|---|---|
+| `options` | array | `[]` | Strings, or `[ 'value', 'label', 'description', 'disabled' ]` entries. |
+| `value` | array | none | The checked values. `wire:model` binds them instead. |
+| `label` | string or slot | none | The legend. |
+| `hint` | string or slot | none | Help text, linked to the fieldset. |
+| `error` | string | `$errors` | Validation message. Defaults to the first message for `error-field`. |
+| `invalid` | bool | `false` | Marks every option invalid. Emitted as `data-invalid`. |
+| `disabled` | bool | `false` | Disables the fieldset, every option and select all. |
+| `orientation` | `vertical` · `horizontal` | `vertical` | Emitted as `data-orientation`. |
+| `variant` | `default` · `cards` | `default` | Emitted as `data-variant`. |
+| `columns` | int | `1` | 1, 2 or 3 columns. Emitted as `data-columns`. |
+| `select-all` | bool | `false` | Adds the select-all checkbox. |
+| `select-all-label` | string | `__( 'Select all' )` | Its label. |
+| `error-field` | string | `wire:model` name | The `$errors` key. |
+| `classes` | array | `[]` | Extra classes per part: `root`, `label`, `selectAll`, `items`, `hint`, `error`. |
 
 ## Accessibility
 
-The Checkbox Group component follows accessibility best practices:
-
-- Uses semantic fieldset and legend elements
-- Each checkbox has a properly associated label
-- Keyboard navigation support
-- ARIA attributes for screen readers
-- Proper focus management
-
-## Related Components
-
-- [Checkbox](Checkbox) - Single checkbox input
-- [Radio Group](Radio-Group) - Group of radio buttons (single selection)
-- [Select](Select) - Dropdown selection
+- A fieldset and legend group native checkboxes; each has its own label.
+- Hint and error are linked to the fieldset; `invalid` sets `aria-invalid` on every checkbox.
+- Select all is a real checkbox with the native mixed (indeterminate) state.
+- Use [RadioGroup](radio-group) for mutually exclusive options.

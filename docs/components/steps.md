@@ -4,179 +4,84 @@ title: Steps Component
 
 # Steps Component
 
-The Steps component provides a visual representation of progress through a sequence of steps or stages. It's ideal for multi-step forms, wizards, onboarding flows, and any process that involves a series of actions.
+Shows progress through a sequence, built on the ArtisanPack UI design system (`.apui-steps`): an ordered list of steps, each complete, current, upcoming or in error. Compose it from `step` children, or pass the same structure as `steps`.
 
 ## Basic Usage
 
-```php
-<x-artisanpack-steps>
-    <x-artisanpack-step>Step 1</x-artisanpack-step>
-    <x-artisanpack-step active>Step 2</x-artisanpack-step>
-    <x-artisanpack-step>Step 3</x-artisanpack-step>
+`wire:model` binds the current step, from 1: steps before it are complete and steps after it upcoming. Without Livewire, pass `:value`.
+
+```blade
+<x-artisanpack-steps wire:model="step" :label="__( 'Listing progress' )">
+	<x-artisanpack-step :title="__( 'Basics' )" :description="__( 'Title and type' )" />
+	<x-artisanpack-step :title="__( 'Location' )" :description="__( 'Address and map' )" />
+	<x-artisanpack-step :title="__( 'Pricing' )" :description="__( 'Price and rent' )" />
+	<x-artisanpack-step :title="__( 'Photos' )" :description="__( 'At least 6' )" />
+	<x-artisanpack-step :title="__( 'Review' )" :description="__( 'Publish' )" />
 </x-artisanpack-steps>
 ```
 
-## Examples
+Use 3 to 6 steps, and don't use Steps as tabs.
 
-### Basic Steps
+## Vertical, with an error
 
-```php
-<x-artisanpack-steps>
-    <x-artisanpack-step>Register</x-artisanpack-step>
-    <x-artisanpack-step active>Profile</x-artisanpack-step>
-    <x-artisanpack-step>Complete</x-artisanpack-step>
+A step's own `state` overrides the current step:
+
+```blade
+<x-artisanpack-steps :value="3" orientation="vertical">
+	<x-artisanpack-step :title="__( 'Account created' )" :description="__( 'Nov 2 · Olivia Rhye' )" />
+	<x-artisanpack-step :title="__( 'Identity verified' )" :description="__( 'Nov 3' )" />
+	<x-artisanpack-step state="error" :title="__( 'Payout account' )" :description="__( 'IBAN rejected by the bank. Update it to continue.' )" />
+	<x-artisanpack-step :title="__( 'Go live' )" :description="__( 'Listings become public' )" />
 </x-artisanpack-steps>
 ```
 
-### Steps with Different States
+## Steps as data, clickable
 
-```php
-<x-artisanpack-steps>
-    <x-artisanpack-step completed>Account</x-artisanpack-step>
-    <x-artisanpack-step active>Payment</x-artisanpack-step>
-    <x-artisanpack-step>Shipping</x-artisanpack-step>
-    <x-artisanpack-step>Review</x-artisanpack-step>
-</x-artisanpack-steps>
-```
+`steps` renders the same children. With `clickable` and `wire:model`, completed steps' titles become buttons that set the property, so people can go back but not skip ahead. Use steps or children, not both.
 
-### Vertical Steps
-
-```php
-<x-artisanpack-steps vertical>
-    <x-artisanpack-step completed>Account</x-artisanpack-step>
-    <x-artisanpack-step active>Payment</x-artisanpack-step>
-    <x-artisanpack-step>Shipping</x-artisanpack-step>
-    <x-artisanpack-step>Review</x-artisanpack-step>
-</x-artisanpack-steps>
-```
-
-### Steps with Icons
-
-```php
-<x-artisanpack-steps>
-    <x-artisanpack-step completed>
-        <x-artisanpack-icon name="heroicon-o-user" class="w-5 h-5 mr-2" />
-        Account
-    </x-artisanpack-step>
-    
-    <x-artisanpack-step active>
-        <x-artisanpack-icon name="heroicon-o-credit-card" class="w-5 h-5 mr-2" />
-        Payment
-    </x-artisanpack-step>
-    
-    <x-artisanpack-step>
-        <x-artisanpack-icon name="heroicon-o-truck" class="w-5 h-5 mr-2" />
-        Shipping
-    </x-artisanpack-step>
-    
-    <x-artisanpack-step>
-        <x-artisanpack-icon name="heroicon-o-check-circle" class="w-5 h-5 mr-2" />
-        Complete
-    </x-artisanpack-step>
-</x-artisanpack-steps>
-```
-
-### Steps with Custom Colors
-
-```php
-<x-artisanpack-steps class="steps-primary">
-    <x-artisanpack-step completed>Account</x-artisanpack-step>
-    <x-artisanpack-step active>Payment</x-artisanpack-step>
-    <x-artisanpack-step>Shipping</x-artisanpack-step>
-</x-artisanpack-steps>
-
-<x-artisanpack-steps class="steps-secondary">
-    <x-artisanpack-step completed>Account</x-artisanpack-step>
-    <x-artisanpack-step active>Payment</x-artisanpack-step>
-    <x-artisanpack-step>Shipping</x-artisanpack-step>
-</x-artisanpack-steps>
-
-<x-artisanpack-steps class="steps-accent">
-    <x-artisanpack-step completed>Account</x-artisanpack-step>
-    <x-artisanpack-step active>Payment</x-artisanpack-step>
-    <x-artisanpack-step>Shipping</x-artisanpack-step>
-</x-artisanpack-steps>
-```
-
-### Steps with Numbers
-
-```php
-<x-artisanpack-steps numbered>
-    <x-artisanpack-step completed>Account</x-artisanpack-step>
-    <x-artisanpack-step active>Payment</x-artisanpack-step>
-    <x-artisanpack-step>Shipping</x-artisanpack-step>
-    <x-artisanpack-step>Review</x-artisanpack-step>
-</x-artisanpack-steps>
-```
-
-### Responsive Steps
-
-```php
-<x-artisanpack-steps class="lg:steps-horizontal steps-vertical">
-    <x-artisanpack-step completed>Account</x-artisanpack-step>
-    <x-artisanpack-step active>Payment</x-artisanpack-step>
-    <x-artisanpack-step>Shipping</x-artisanpack-step>
-    <x-artisanpack-step>Review</x-artisanpack-step>
-</x-artisanpack-steps>
+```blade
+<x-artisanpack-steps wire:model.live="step" clickable :label="__( 'Checkout progress' )" :steps="[
+	[ 'title' => __( 'Cart' ) ],
+	[ 'title' => __( 'Shipping' ) ],
+	[ 'title' => __( 'Payment' ) ],
+	[ 'title' => __( 'Confirm' ) ],
+]" />
 ```
 
 ## Props
 
+### steps
+
 | Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `vertical` | boolean | `false` | Whether to display steps vertically instead of horizontally |
-| `numbered` | boolean | `false` | Whether to display numbers for each step |
-| `id` | string | `null` | Optional ID for the steps container |
+|---|---|---|---|
+| `steps` | array | `[]` | The steps as data: `[ 'title' => …, 'description' => …, 'state' => …, 'icon' => … ]`. |
+| `value` | int | none | The current step, from 1. `wire:model` binds it instead. |
+| `orientation` | `horizontal` · `vertical` | `horizontal` | Emitted as `data-orientation`. |
+| `clickable` | bool | `false` | With `wire:model`, completed steps' titles are buttons that set it. |
+| `label` | string | none | The list's accessible name. |
+| `complete-label` | string | `__( 'Completed' )` | Hidden text in a complete step's marker. |
+| `error-label` | string | `__( 'Error' )` | Hidden text in an error step's marker. |
+| `classes` | array | `[]` | Extra classes per part, children included: `root`, `step`, `marker`, `title`, `connector`, `description`. |
 
-## Slots
+### step
 
-| Slot | Description |
-|------|-------------|
-| `default` | Contains the Step components that make up the steps sequence |
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `title` | string | none | The step's name. The default slot overrides it. |
+| `description` | string | none | Supporting text under the title. |
+| `state` | `complete` · `current` · `upcoming` · `error` | none | The step's own state; without it, the current step decides. |
+| `icon` | string | none | An icon name that replaces the marker's number or check. |
+| `step` | int | its position | The step's number. |
 
-## Behavior
+Attributes on a step, `wire:key` included, land on its `<li>`.
 
-The Steps component:
+## Upgrading from 2.x
 
-1. Displays a sequence of steps in a horizontal or vertical layout
-2. Automatically connects steps with lines or connectors
-3. Supports different states for steps (active, completed, disabled)
-4. Can display numbers for each step when the `numbered` prop is used
-5. Adapts to the number of steps provided
-
-## Styling
-
-The Steps component uses DaisyUI's steps component under the hood, which provides a clean and consistent appearance. You can customize the appearance by:
-
-1. Using the provided props (`vertical`, `numbered`)
-2. Adding custom classes via the `class` attribute
-3. Using DaisyUI's color classes (e.g., `steps-primary`, `steps-secondary`)
-
-### Default Classes
-
-- Horizontal steps are displayed in a row with connecting lines
-- Vertical steps are displayed in a column with connecting lines
-- Active steps are highlighted with the primary color
-- Completed steps typically show a check mark or completion indicator
-- Numbered steps display the step number instead of an icon
+- `<x-artisanpack-step step="2" text="Shipping" />` still works: `text` is the title and `step` the number. Steps no longer show a panel for the current step; render your step's content yourself (`@if ( 2 === $step )`).
+- `vertical` is `orientation="vertical"`; `steps-color`, `stepper-classes`, `step-classes`, `data-content` and the glass props are gone.
 
 ## Accessibility
 
-The Steps component follows accessibility best practices:
-
-- Uses appropriate ARIA attributes to indicate the current step
-- Maintains proper color contrast for all states
-- Supports keyboard navigation when steps are clickable
-
-For better accessibility:
-
-1. Include clear, descriptive text for each step
-2. Use icons as supplements to text, not replacements
-3. Ensure that the current step is clearly indicated both visually and programmatically
-4. Consider adding additional context for screen readers about the total number of steps and current progress
-
-## Related Components
-
-- [Step](Step) - Individual step component used within Steps
-- [Progress](Progress) - Alternative way to show completion status
-- [Breadcrumbs](Breadcrumbs) - Navigation component showing the user's location in a hierarchy
+- An ordered list; the current step has `aria-current="step"`.
+- Complete and error steps carry visually hidden text, not only an icon.
+- Only completed steps are buttons when clickable, so upcoming steps can't be reached.

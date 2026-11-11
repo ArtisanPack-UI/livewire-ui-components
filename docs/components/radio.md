@@ -4,6 +4,8 @@ title: Radio Component
 
 # Radio Component
 
+> **Deprecated in 3.0.** Use [RadioGroup](radio-group), built on the design system. This component is removed in a later major release.
+
 The Radio component is a form element that allows users to select a single option from a set of mutually exclusive choices. It provides a simple way to implement radio button inputs with labels and various styling options.
 
 ## Basic Usage

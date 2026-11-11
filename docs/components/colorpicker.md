@@ -4,6 +4,8 @@ title: Colorpicker Component
 
 # Colorpicker Component
 
+> **Deprecated in 3.0.** `<x-artisanpack-colorpicker>` is now an alias of [ColorPicker](color-picker), built on the design system, and takes its props; the DaisyUI props below no longer apply. Use `<x-artisanpack-color-picker>`. The alias is removed in a later major release.
+
 The Colorpicker component is a form element that provides an interactive interface for selecting colors. It offers various color selection modes, format options, and integrates seamlessly with Livewire for handling color inputs.
 
 ## Basic Usage

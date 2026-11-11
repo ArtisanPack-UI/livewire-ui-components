@@ -2,203 +2,90 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
-
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
 use ArtisanPack\LivewireUiComponents\View\Components\CheckboxGroup;
-use Error;
-use RuntimeException;
+use Illuminate\Support\Facades\Blade;
 
-/**
- * Comprehensive unit tests for the CheckboxGroup component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * CheckboxGroup (#53): a fieldset of pilot Checkbox markup, the array value,
+ * select all and the layout attributes. The manifest parity check is in
+ * tests/Feature/DesignSystemParityTest.php.
  */
-class CheckboxGroupComponentTest extends ComponentTestCase
-{
-    protected string $componentClass = CheckboxGroup::class;
 
-    protected array $defaultProperties = [
-        'hintClass'      => 'fieldset-label',
-        'optionValue'    => 'id',
-        'optionLabel'    => 'name',
-        'optionHint'     => 'hint',
-        'options'        => [],
-        'horizontal'     => false,
-        'card'           => false,
-        'cardClass'      => 'card card-compact border-2 border-base-300 hover:border-primary cursor-pointer transition-colors',
-        'errorClass'     => 'text-error',
-        'omitError'      => false,
-        'firstErrorOnly' => false,
-    ];
+$topics = "[ [ 'value' => 'offers', 'label' => 'Offers', 'description' => 'Hourly' ], [ 'value' => 'prices', 'label' => 'Prices' ], [ 'value' => 'news', 'label' => 'News', 'disabled' => true ] ]";
 
-    protected array $requiredProperties = [];
+test('each option renders the Checkbox contract inside the items part', function () use ($topics): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-checkbox-group id="t" label="Notify me" :options="'.$topics.'" />'));
 
-    public function test_checkboxgroup_string_properties(): void
-    {
-        $stringProperties = ['id', 'label', 'hint', 'hintClass', 'optionValue', 'optionLabel', 'optionHint', 'cardClass', 'errorField', 'errorClass'];
-        $testValues       = ComponentDataFactory::sampleTexts();
+    expect($dom->query('//fieldset')->item(0)->getAttribute('class'))->toBe('apui-checkbox-group')
+        ->and($dom->query('//legend[@data-part="label"]')->item(0)->textContent)->toBe('Notify me')
+        ->and($dom->query('//*[@data-part="items"]/div[@class="apui-checkbox"]')->length)->toBe(3)
+        ->and($dom->query('//input[@id="t-0"]')->item(0)->getAttribute('aria-describedby'))->toBe('t-0-description')
+        ->and($dom->query('//label[@for="t-1"]')->item(0)->textContent)->toBe('Prices')
+        ->and($dom->query('//input[@id="t-2"]')->item(0)->hasAttribute('disabled'))->toBeTrue();
+});
 
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
+test('wire:model and name land on every option, with the option value', function () use ($topics): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-checkbox-group wire:model="topics" class="mt-2" :options="'.$topics.'" />'));
 
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
+    $values = [];
+    foreach ($dom->query('//*[@data-part="items"]//input') as $input) {
+        expect($input->getAttribute('wire:model'))->toBe('topics');
+        $values[] = $input->getAttribute('value');
     }
 
-    public function test_checkboxgroup_boolean_properties(): void
-    {
-        $booleanProperties = ['horizontal', 'card', 'omitError', 'firstErrorOnly'];
+    expect($values)->toBe(['offers', 'prices', 'news'])
+        ->and($dom->query('//fieldset')->item(0)->getAttribute('class'))->toBe('apui-checkbox-group mt-2')
+        ->and($dom->query('//fieldset')->item(0)->hasAttribute('wire:model'))->toBeFalse();
+});
 
-        foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
-            $this->assertTrue($component->$property);
+test('value checks the matching options and sets their data-state', function () use ($topics): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-checkbox-group :value="[\'prices\']" :options="'.$topics.'" />'));
 
-            $component = $this->createComponent([$property => false]);
-            $this->assertFalse($component->$property);
-        }
-    }
+    expect($dom->query('//input[@value="prices"]')->item(0)->hasAttribute('checked'))->toBeTrue()
+        ->and($dom->query('//input[@value="offers"]')->item(0)->hasAttribute('checked'))->toBeFalse()
+        ->and($dom->query('//div[@class="apui-checkbox"][@data-state="checked"]')->length)->toBe(1);
+});
 
-    public function test_checkboxgroup_model_name_method(): void
-    {
-        $component = $this->createComponent();
+test('select all is indeterminate while some enabled options are checked', function (array $value, string $state) use ($topics): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-checkbox-group select-all :value="$value" :options="'.$topics.'" />', ['value' => $value]));
+    $all = $dom->query('//*[@data-part="select-all"]/div')->item(0);
 
-        if (method_exists($component, 'modelName')) {
-            try {
-                $result = $component->modelName();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
+    expect($all->getAttribute('data-state'))->toBe($state)
+        ->and($dom->query('//*[@data-part="select-all"]//label')->item(0)->textContent)->toBe('Select all');
+})->with([
+    'none'          => [[], 'unchecked'],
+    'some'          => [['offers'], 'indeterminate'],
+    'every enabled' => [['offers', 'prices'], 'checked'],
+]);
 
-    public function test_checkboxgroup_error_field_name_method(): void
-    {
-        $component = $this->createComponent();
+test('Alpine toggles every enabled option with a change event each', function (): void {
+    $root = designSystemDom(Blade::render('<x-artisanpack-checkbox-group select-all :options="[\'A\']" />'))->query('//fieldset')->item(0);
 
-        if (method_exists($component, 'errorFieldName')) {
-            try {
-                $result = $component->errorFieldName();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
+    expect($root->getAttribute('x-data'))->toContain("box.dispatchEvent(new Event('change', { bubbles: true }))")
+        ->and($root->getAttribute('x-on:change'))->toBe("\$event.target.closest('[data-part=select-all]') ? toggleAll(\$event.target.checked) : sync()");
+});
 
-    public function test_checkboxgroup_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
+test('layout props are data attributes', function (): void {
+    $root = designSystemDom(Blade::render('<x-artisanpack-checkbox-group variant="cards" orientation="horizontal" :columns="3" :options="[\'A\']" />'))->query('//fieldset')->item(0);
 
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
+    expect($root->getAttribute('data-variant'))->toBe('cards')
+        ->and($root->getAttribute('data-orientation'))->toBe('horizontal')
+        ->and($root->getAttribute('data-columns'))->toBe('3');
+});
 
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
+test('the group error is linked to the fieldset and marks every option invalid', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-checkbox-group id="g" error="Pick one." :options="[\'A\', \'B\']" />'));
 
-    public function test_checkboxgroup_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
+    expect($dom->query('//fieldset')->item(0)->getAttribute('aria-describedby'))->toBe('g-error')
+        ->and($dom->query('//div[@class="apui-checkbox"][@data-invalid]')->length)->toBe(2)
+        ->and($dom->query('//input[@aria-invalid="true"]')->length)->toBe(2);
+});
 
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
+test('the constructor declares only the manifest props', function (): void {
+    $parameters = array_map(
+        static fn (ReflectionParameter $parameter): string => $parameter->getName(),
+        (new ReflectionClass(CheckboxGroup::class))->getConstructor()->getParameters(),
+    );
 
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'CheckboxGroup should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
-
-    public function test_checkboxgroup_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
-
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
-
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_checkboxgroup_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'CheckboxGroup rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
-}
+    expect($parameters)->toBe(['options', 'value', 'label', 'hint', 'error', 'invalid', 'disabled', 'orientation', 'variant', 'columns', 'selectAll', 'selectAllLabel', 'errorField', 'classes']);
+});

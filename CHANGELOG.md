@@ -13,6 +13,12 @@
 - `Theming\PresetGenerator`, `GeneratedPreset`, `DesignTokens`, `ContrastChecker` and `ColorMath`: a PHP port of the design system's `apui-generate-preset`, tested against its golden fixtures for identical output.
 - `Theming\TokenThemes` (theme, density and preset attributes, contrast checks, `prefers-contrast` and `prefers-color-scheme` CSS) and `Theming\GlassSurface` (`data-surface="glass"`).
 - `resources/design-system/tokens.php`: the design-system token map.
+- Form wave on the design system (#53 in design-system): `<x-artisanpack-validation-summary>`, `<x-artisanpack-color-picker>` (the spec's popover with area, hue and opacity sliders, format select, eyedropper and swatches, on the color-picker machine), `<x-artisanpack-code-editor>` and `<x-artisanpack-rich-text-editor>` (TinyMCE under the design-system toolbar when the page loads it, the built-in editor otherwise). Every built-in string is a `*-label` prop defaulting through `__()`.
+- `<x-artisanpack-combobox>` (#54 in design-system, D-020): one component for Choices, ChoicesOffline and Tags. Filtering is local, or `remote` with a `search-model` set after `debounce`; `multiple` renders chips, `allow-create` offers "Create …", `max` caps the count, and `name` submits the value through hidden inputs. `wire:model` binds the value through `$wire.entangle()`.
+- `<x-artisanpack-date-picker>` (#55 in design-system, D-021): the date picker on the behavior engine's machine, with `mode="range"` and a `time` mode, ISO 8601 values bound through `$wire.entangle()`, typing in the field, and month and weekday names in the app locale.
+- `<x-artisanpack-navbar>` and `navbar-item`, and `<x-artisanpack-breadcrumbs-item>` (#56 in design-system).
+- Select's `options` take `{ label, options }` groups, rendered as `<optgroup>` (D-025).
+- The prebuilt assets and the Lucide icon set are rebuilt from the design system, adding the Tabs, DatePicker, ColorPicker, Spotlight, Combobox and form-editor Alpine components and the icons they draw.
 
 ### Changed
 - **Breaking:** `<x-artisanpack-toast>` is now the design-system Toast rendered on its own: a static toast (`title`, `description`, `color`, `variant`, `surface`, `icon`, `actions`, `hideClose`, `closeLabel`, `classes`) whose close button dispatches `open-change`. The toaster that 2.x rendered with `<x-artisanpack-toast />` is `<x-artisanpack-toaster />`; its `position`, `color`, `colorAdjustment`, `duration` and glass props are gone.
@@ -26,8 +32,20 @@
 - The prebuilt assets and the Lucide icon set are rebuilt from the design system (adds `circle-check`, `triangle-alert`, `pencil`, `log-out`, `settings`).
 - Require Laravel 12 or 13 (`illuminate/support: ^12.0|^13.0`) and PHP 8.2. Laravel 11 is end of life, and Composer now refuses its releases over unpatched security advisories.
 - Allow `laravel/boost` 2.x, Pest 4 and PHPUnit 12 in development, which Laravel 13 needs, and drop `pestphp/pest-plugin-watch`, which has no Pest 4 release.
+- **Breaking:** rebuilt in place on the design system, keeping their tags: `textarea`, `password`, `pin`, `range`, `toggle`, `fieldset`, `form`, `radio-group`, `checkbox-group`, `rating`, `file`, `signature`, `breadcrumbs`, `link`, `pagination`, `steps`/`step`, `tabs`/`tab`, `menu`/`menu-item`/`menu-sub`/`menu-title`/`menu-separator` and `spotlight`. Their DaisyUI props (`*-class`, `inline`, `omit-error`, `first-error-only`, `prefix`/`suffix`, color and glass props) are gone; each docs page has an "Upgrading from 2.x" section. The ones most likely to need changes:
+  - Pin: `size` (the cell count) is `length`, and `size` is now the cell size; `numeric` is `type`; `hide`/`hide-type` is `mask`; `completed`/`incomplete` are one `complete` event.
+  - Password: `strength-meter`, `requirements` and `reveal-label` replace the icon and visibility props.
+  - Fieldset: `subtitle` is `description`. Toggle: `hint` is `description`. Form: `no-separator` is gone, and `divided` adds the edge.
+  - Pagination: `rows` takes the paginator; `summary` and `summary-label` replace `page-info-template`; the size and layout variants are gone. Table keeps its "Rows per page" select.
+  - Steps: `value` counts from 1; the 2.x step panels are gone.
+  - Breadcrumbs: `items` or `breadcrumbs-item` children; links placed in the slot still render as levels.
+  - Link, Breadcrumbs, NavbarItem, Spotlight and Menu items add `wire:navigate` to internal links by default, as in 2.x; `:navigate="false"` turns it off. Off-site, `#`, `mailto:` and new-tab links load normally. `no-wire-navigate` still works on Link, Breadcrumbs and Menu items, deprecated.
+  - Spotlight: `searchText`, `noResultsText`, the `append` slot and the dotted shortcut spelling (`meta.g`) still work as deprecated aliases of `placeholder`, `emptyText`, `footer` and `mod+g`. Endpoint results take a registry `icon` name, not HTML. Recent choices are opt-in (`recent`).
+  - Tabs and Menu keep the 2.x attributes downstream code uses (`tab name`, `tabs selected`, `menu-item title`/`link`/`active`/`no-wire-navigate`, `menu activate-by-route`).
+- **Breaking:** the `colorpicker` class is renamed `ColorPicker` (PHP class names are case-insensitive, so they can't coexist), and the `colorpicker` tag renders the new component.
 
 ### Fixed
+- **Security:** the `artisanpack.upload` route, which the RichTextEditor (TinyMCE) and Markdown components post images to, stored any file on any disk and folder the request named. It now takes images only (JPG, PNG, GIF, WebP and AVIF by default, never SVG), up to `max_size` kilobytes, on a disk in the new `uploads.disks` config (default `public`), in a folder made of letters, numbers, dashes, underscores and slashes, so it can't leave the disk. Anything else gets a 422. Configure it under `uploads` in `config/artisanpack/livewire-ui-components.php`.
 - `Stat::numericValue()` read "$12,345" as 12.345: a single comma followed by three digits is now a thousands separator; one or two digits is still a decimal.
 - `Table` currency formats such as `['currency', '2.,', '$']` threw a TypeError under strict types.
 - `ImageLibrary::modelName()`, `ImageLibrary::libraryName()`, `ImageLibrary::validationMessage()` and `Rating::size()` returned objects where they declare strings, which threw a TypeError.
@@ -38,6 +56,10 @@
 ### Deprecated
 - `<x-artisanpack-modal>` and `<x-artisanpack-dropdown>`. Use `<x-artisanpack-dialog>` and `<x-artisanpack-dropdown-menu>`. They're removed in a later major release.
 - `artisanpack:generate-theme`, `Styling\ColorGenerator`, `Styling\GlassPresets` and `Styling\HighContrastTheme`. Use `artisanpack:generate-preset`, `Theming\PresetGenerator`, `Theming\GlassSurface` and `Theming\TokenThemes`. They're removed once the components that use them move to the design system.
+- `<x-artisanpack-choices>`, `<x-artisanpack-choices-offline>` and `<x-artisanpack-tags>` (use `combobox`), `<x-artisanpack-datepicker>` and `<x-artisanpack-datetime>` (use `date-picker`, with `time` for the latter), `<x-artisanpack-select-group>` (use `select` with option groups), `<x-artisanpack-radio>` and `<x-artisanpack-group>` (use `radio-group`; `group` is `variant="segmented"`), `<x-artisanpack-errors>` (use `validation-summary`), `<x-artisanpack-editor>` (use `rich-text-editor`), `<x-artisanpack-colorpicker>` (use `color-picker`) and `<x-artisanpack-nav>` (use `navbar`). They're removed in a later major release.
+
+### Removed
+- The flatpickr date picker theme CSS and JS. DatePicker runs on the behavior engine and is styled by the design-system tokens.
 
 ---
 

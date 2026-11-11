@@ -2,203 +2,133 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
-
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
 use ArtisanPack\LivewireUiComponents\View\Components\RadioGroup;
-use Error;
-use RuntimeException;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\MessageBag;
+use Illuminate\Support\ViewErrorBag;
 
-/**
- * Comprehensive unit tests for the RadioGroup component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * RadioGroup (#53): the design-system markup contract, native radios that
+ * share a name, ids, the error lookup and the variants. The manifest parity
+ * check is in tests/Feature/DesignSystemParityTest.php.
  */
-class RadioGroupComponentTest extends ComponentTestCase
-{
-    protected string $componentClass = RadioGroup::class;
 
-    protected array $defaultProperties = [
-        'hintClass'      => 'fieldset-label',
-        'optionValue'    => 'id',
-        'optionLabel'    => 'name',
-        'optionHint'     => 'hint',
-        'options'        => [],
-        'horizontal'     => false,
-        'card'           => false,
-        'cardClass'      => 'card card-compact border-2 border-base-300 hover:border-primary cursor-pointer transition-colors',
-        'errorClass'     => 'text-error',
-        'omitError'      => false,
-        'firstErrorOnly' => false,
-    ];
+$plans = "[ [ 'value' => 'starter', 'label' => 'Starter', 'description' => 'Up to 5', 'meta' => '\$0' ], [ 'value' => 'growth', 'label' => 'Growth' ], [ 'value' => 'team', 'label' => 'Team', 'disabled' => true ] ]";
 
-    protected array $requiredProperties = [];
+test('the fixture renders a fieldset with the contract parts in order', function () use ($plans): void {
+    $html = Blade::render('<x-artisanpack-radio-group id="plan" label="Plan" hint="Change any time." error="Choose a plan." required :options="'.$plans.'" />');
+    $dom  = designSystemDom($html);
 
-    public function test_radiogroup_string_properties(): void
-    {
-        $stringProperties = ['id', 'label', 'hint', 'hintClass', 'optionValue', 'optionLabel', 'optionHint', 'cardClass', 'errorField', 'errorClass'];
-        $testValues       = ComponentDataFactory::sampleTexts();
-
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
-
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
+    $root  = $dom->query('//fieldset')->item(0);
+    $parts = [];
+    foreach ($dom->query('//fieldset/*') as $element) {
+        $parts[] = $element->getAttribute('data-part');
     }
 
-    public function test_radiogroup_boolean_properties(): void
-    {
-        $booleanProperties = ['horizontal', 'card', 'omitError', 'firstErrorOnly'];
+    expect($root->getAttribute('class'))->toBe('apui-radio-group')
+        ->and($root->getAttribute('data-orientation'))->toBe('vertical')
+        ->and($root->getAttribute('data-variant'))->toBe('default')
+        ->and($root->hasAttribute('data-invalid'))->toBeTrue()
+        ->and($root->getAttribute('aria-describedby'))->toBe('plan-hint plan-error')
+        ->and($parts)->toBe(['label', 'items', 'hint', 'error'])
+        ->and($dom->query('//legend/span[@data-part="required"]')->length)->toBe(1)
+        ->and($dom->query('//label[@data-part="item"]')->length)->toBe(3);
+});
 
-        foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
-            $this->assertTrue($component->$property);
-
-            $component = $this->createComponent([$property => false]);
-            $this->assertFalse($component->$property);
-        }
+test('every radio shares one name, so arrow keys move between them', function () use ($plans): void {
+    $dom    = designSystemDom(Blade::render('<x-artisanpack-radio-group wire:model="plan" :options="'.$plans.'" />'));
+    $names  = [];
+    $values = [];
+    foreach ($dom->query('//input') as $input) {
+        $names[]  = $input->getAttribute('name');
+        $values[] = $input->getAttribute('value');
+        expect($input->getAttribute('type'))->toBe('radio')
+            ->and($input->getAttribute('wire:model'))->toBe('plan');
     }
 
-    public function test_radiogroup_model_name_method(): void
-    {
-        $component = $this->createComponent();
+    expect(array_unique($names))->toHaveCount(1)
+        ->and($names[0])->toBe('apui-radio-group-plan-'.substr(md5("\0plan"), 0, 8))
+        ->and($values)->toBe(['starter', 'growth', 'team']);
+});
 
-        if (method_exists($component, 'modelName')) {
-            try {
-                $result = $component->modelName();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
+test('identical groups in one render get their own names and ids', function () use ($plans): void {
+    $dom   = designSystemDom(Blade::render('<x-artisanpack-radio-group value="growth" :options="'.$plans.'" /><x-artisanpack-radio-group value="growth" :options="'.$plans.'" />'));
+    $names = [];
+    foreach ($dom->query('//fieldset') as $fieldset) {
+        $names[] = $dom->query('.//input', $fieldset)->item(0)->getAttribute('name');
     }
 
-    public function test_radiogroup_error_field_name_method(): void
-    {
-        $component = $this->createComponent();
+    expect($names)->toHaveCount(2)
+        ->and($names[0])->not->toBe($names[1])
+        ->and($dom->query('//input[@value="growth"][@checked]')->length)->toBe(2);
+});
 
-        if (method_exists($component, 'errorFieldName')) {
-            try {
-                $result = $component->errorFieldName();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
+test('an explicit name wins', function () use ($plans): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-radio-group name="plan" :options="'.$plans.'" />'));
 
-    public function test_radiogroup_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
+    expect($dom->query('//input')->item(0)->getAttribute('name'))->toBe('plan');
+});
 
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
+test('value checks the matching radio', function () use ($plans): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-radio-group value="growth" :options="'.$plans.'" />'));
 
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
+    expect($dom->query('//input[@value="growth"]')->item(0)->hasAttribute('checked'))->toBeTrue()
+        ->and($dom->query('//input[@value="starter"]')->item(0)->hasAttribute('checked'))->toBeFalse();
+});
 
-    public function test_radiogroup_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
+test('descriptions are linked and meta renders, an option can be disabled', function () use ($plans): void {
+    $dom   = designSystemDom(Blade::render('<x-artisanpack-radio-group id="p" :options="'.$plans.'" />'));
+    $first = $dom->query('//input')->item(0);
 
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
+    expect($first->getAttribute('aria-describedby'))->toBe('p-0-description')
+        ->and($dom->query('//*[@id="p-0-description"]')->item(0)->textContent)->toBe('Up to 5')
+        ->and($dom->query('//*[@data-part="item-meta"]')->item(0)->textContent)->toBe('$0')
+        ->and($dom->query('//input[@value="team"]')->item(0)->hasAttribute('disabled'))->toBeTrue()
+        ->and($dom->query('//label[@data-part="item"][3]')->item(0)->hasAttribute('data-disabled'))->toBeTrue();
+});
 
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'RadioGroup should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
+test('segments render no description or meta', function () use ($plans): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-radio-group variant="segmented" :options="'.$plans.'" />'));
 
-    public function test_radiogroup_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
+    expect($dom->query('//*[@data-part="item-description"]')->length)->toBe(0)
+        ->and($dom->query('//*[@data-part="item-meta"]')->length)->toBe(0)
+        ->and($dom->query('//input')->item(0)->hasAttribute('aria-describedby'))->toBeFalse();
+});
 
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
+test('strings work as options', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-radio-group :options="[\'Monthly\', \'Yearly\']" />'));
 
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
+    expect($dom->query('//input')->item(1)->getAttribute('value'))->toBe('Yearly')
+        ->and($dom->query('//*[@data-part="item-text"]')->item(1)->textContent)->toBe('Yearly');
+});
 
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
+test('variant and orientation are data attributes', function (string $variant): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-radio-group variant="'.$variant.'" orientation="horizontal" :options="[\'A\']" />'));
 
-    public function test_radiogroup_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'RadioGroup rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
-}
+    expect($dom->query('//fieldset')->item(0)->getAttribute('data-variant'))->toBe($variant)
+        ->and($dom->query('//fieldset')->item(0)->getAttribute('data-orientation'))->toBe('horizontal');
+})->with(['default', 'cards', 'segmented']);
+
+test('the error comes from $errors and marks every radio invalid', function (): void {
+    view()->share('errors', (new ViewErrorBag)->put('default', new MessageBag(['plan' => 'Pick one.'])));
+
+    $dom = designSystemDom(Blade::render('<x-artisanpack-radio-group wire:model="plan" :options="[\'A\', \'B\']" />'));
+
+    expect($dom->query('//p[@data-part="error"]')->item(0)->textContent)->toBe('Pick one.')
+        ->and($dom->query('//input[@aria-invalid="true"]')->length)->toBe(2);
+});
+
+test('disabled disables the fieldset', function (): void {
+    $root = designSystemDom(Blade::render('<x-artisanpack-radio-group disabled :options="[\'A\']" />'))->query('//fieldset')->item(0);
+
+    expect($root->hasAttribute('disabled'))->toBeTrue()->and($root->hasAttribute('data-disabled'))->toBeTrue();
+});
+
+test('the constructor declares only the manifest props', function (): void {
+    $parameters = array_map(
+        static fn (ReflectionParameter $parameter): string => $parameter->getName(),
+        (new ReflectionClass(RadioGroup::class))->getConstructor()->getParameters(),
+    );
+
+    expect($parameters)->toBe(['options', 'value', 'label', 'hint', 'error', 'invalid', 'disabled', 'required', 'orientation', 'variant', 'errorField', 'classes']);
+});

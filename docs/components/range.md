@@ -4,282 +4,70 @@ title: Range Component
 
 # Range Component
 
-The Range component is a form element that provides a slider interface for selecting a numeric value within a specified range. It offers a more intuitive way for users to input numeric values compared to standard number inputs.
+A slider for one value, or two thumbs for a from–to range, built on the ArtisanPack UI design system. Each thumb is a native `<input type="range">` laid over the drawn track, so the keyboard, touch and screen readers get the platform slider. The fill and thumbs follow text direction: under RTL the track fills from the right.
 
 ## Basic Usage
 
-```php
-<x-artisanpack-range label="Volume" />
-```
-
-## Examples
-
-### Simple Range Slider
-
-```php
-<x-artisanpack-range 
-    label="Brightness" 
-    name="brightness"
+```blade
+<x-artisanpack-range
+	wire:model.live="radius"
+	:label="__( 'Search radius' )"
+	:max="50"
+	format="{value} km"
+	:marks="[ [ 'value' => 0, 'label' => '0 km' ], [ 'value' => 25, 'label' => '25 km' ], [ 'value' => 50, 'label' => '50 km' ] ]"
 />
 ```
 
-### Range with Min and Max Values
+With one thumb, `wire:model` binds the native input. `format` is a template where `{value}` is the number; it's used in the bubble and in `aria-valuetext`.
 
-```php
-<x-artisanpack-range 
-    label="Temperature" 
-    min="15" 
-    max="30"
+## Two thumbs
+
+```blade
+{{-- wire:model binds the [from, to] array. --}}
+<x-artisanpack-range
+	wire:model.live="price"
+	:label="__( 'Price' )"
+	dual
+	:min="100"
+	:max="700"
+	:step="10"
+	format="${value}k"
+	show-value="always"
 />
 ```
 
-### Range with Default Value
+With `dual`, the root is `x-modelable`, so `wire:model` binds an array `[from, to]`, and the thumbs can't cross. Each thumb is named by the label plus "Minimum" or "Maximum" (`thumb-labels`). Other attributes land on both inputs; pass `name="price[]"` for a plain form submit.
 
-```php
-<x-artisanpack-range 
-    label="Volume" 
-    value="50"
-/>
+## Colors, sizes and states
+
+```blade
+<x-artisanpack-range :label="__( 'Volume' )" :value="80" color="success" />
+<x-artisanpack-range :label="__( 'Opacity' )" :value="30" size="sm" />
+<x-artisanpack-range :label="__( 'Locked' )" :value="50" disabled />
 ```
 
-### Range with Step
-
-```php
-<x-artisanpack-range 
-    label="Quantity" 
-    min="0" 
-    max="100" 
-    step="5"
-/>
-```
-
-### Required Range
-
-```php
-<x-artisanpack-range 
-    label="Rating" 
-    required
-/>
-```
-
-### Disabled Range
-
-```php
-<x-artisanpack-range 
-    label="Progress" 
-    value="75" 
-    disabled
-/>
-```
-
-### Range with Helper Text
-
-```php
-<x-artisanpack-range 
-    label="Opacity" 
-    helper="Adjust the transparency level"
-/>
-```
-
-### Range with Error
-
-```php
-<x-artisanpack-range 
-    label="Quantity" 
-    error="Please select a valid quantity"
-/>
-```
-
-### Range with Livewire Binding
-
-```php
-<x-artisanpack-range 
-    label="Volume" 
-    wire:model="volume"
-/>
-
-<!-- Lazy Range (updates on blur) -->
-<x-artisanpack-range 
-    label="Volume" 
-    wire:model.lazy="volume"
-/>
-```
-
-### Range with Value Display
-
-```php
-<x-artisanpack-range 
-    label="Zoom" 
-    min="50" 
-    max="200" 
-    value="100" 
-    with-value
-/>
-```
-
-### Range with Custom Value Format
-
-```php
-<x-artisanpack-range 
-    label="Price" 
-    min="0" 
-    max="1000" 
-    step="50" 
-    with-value 
-    value-format="$%s"
-/>
-```
-
-### Range with Value Tooltip
-
-```php
-<x-artisanpack-range 
-    label="Progress" 
-    with-tooltip
-/>
-```
-
-### Range with Custom Colors
-
-```php
-<x-artisanpack-range 
-    label="Temperature" 
-    color="error" 
-    min="0" 
-    max="100" 
-    value="75"
-/>
-
-<x-artisanpack-range 
-    label="Progress" 
-    color="success" 
-    min="0" 
-    max="100" 
-    value="50"
-/>
-
-<x-artisanpack-range 
-    label="Volume" 
-    color="accent" 
-    min="0" 
-    max="100" 
-    value="25"
-/>
-```
-
-### Range Sizes
-
-```php
-<x-artisanpack-range 
-    label="Small range" 
-    size="sm"
-/>
-
-<x-artisanpack-range 
-    label="Default range"
-/>
-
-<x-artisanpack-range 
-    label="Large range" 
-    size="lg"
-/>
-
-<x-artisanpack-range 
-    label="Extra large range" 
-    size="xl"
-/>
-```
-
-### Range with Custom Marks
-
-```php
-<x-artisanpack-range 
-    label="Volume" 
-    min="0" 
-    max="100" 
-    step="25" 
-    with-marks
-/>
-```
-
-### Range with Custom Width
-
-```php
-<x-artisanpack-range 
-    label="Zoom" 
-    class="w-64"
-/>
-```
+Pair a slider with a number input when exact values matter.
 
 ## Props
 
 | Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `label` | string | `null` | The label text for the range slider |
-| `name` | string | `null` | The name attribute for the range slider |
-| `id` | string | `null` | The ID attribute for the range slider (auto-generated if not provided) |
-| `value` | number | `50` | The default value for the range slider |
-| `min` | number | `0` | The minimum value of the range |
-| `max` | number | `100` | The maximum value of the range |
-| `step` | number | `1` | The step increment of the range |
-| `required` | boolean | `false` | Whether the range slider is required |
-| `disabled` | boolean | `false` | Whether the range slider is disabled |
-| `helper` | string | `null` | Helper text displayed below the range slider |
-| `error` | string | `null` | Error message to display |
-| `color` | string | `'primary'` | The color of the range slider (`primary`, `secondary`, `accent`, etc.) |
-| `size` | string | `'md'` | The size of the range slider (`sm`, `md`, `lg`, `xl`) |
-| `with-value` | boolean | `false` | Whether to display the current value |
-| `value-format` | string | `'%s'` | Format string for the displayed value (use %s as placeholder) |
-| `with-tooltip` | boolean | `false` | Whether to show a tooltip with the current value |
-| `with-marks` | boolean | `false` | Whether to show marks at step intervals |
-
-## Events
-
-The Range component supports all standard HTML input events:
-
-- `input`
-- `change`
-- `focus`
-- `blur`
-
-It also supports all Livewire model binding directives:
-
-- `wire:model`
-- `wire:model.defer`
-- `wire:model.lazy`
-- `wire:model.live`
-
-## Styling
-
-The Range component uses DaisyUI's range component under the hood, which provides a consistent styling with other form components. You can customize the appearance by:
-
-1. Using the provided props (`color`, `size`, etc.)
-2. Adding custom classes via the `class` attribute
-3. Modifying the DaisyUI variables in your theme file
-
-### Custom Styling Example
-
-```php
-<x-artisanpack-range 
-    label="Custom styled range" 
-    class="w-full max-w-xs"
-    color="accent"
-/>
-```
+|---|---|---|---|
+| `min` · `max` · `step` | number | `0` · `100` · `1` | The range and step. |
+| `value` | number, or `[from, to]` with `dual` | midpoint | The value. `wire:model` binds it instead. |
+| `dual` | bool | `false` | Two thumbs. Emitted as `data-dual`. |
+| `show-value` | `never` · `focus` · `always` | `focus` | When the value bubble shows. Emitted as `data-show-value`. |
+| `format` | string | none | The value template, such as `{value} km`. |
+| `marks` | array | `[]` | `[ [ 'value' => …, 'label' => … ] ]`, placed at their values under the track. |
+| `color` | semantic color | `primary` | The fill and thumb edge. Emitted as `data-color`. |
+| `size` | `sm` · `md` | `md` | Thumb size. Emitted as `data-size`. |
+| `label` · `hint` | string or slot | none | As Input. |
+| `error` | string | first `$errors` message | Validation message. |
+| `invalid` · `disabled` | bool | `false` | As Input. |
+| `thumb-labels` | array | `__( 'Minimum' )`, `__( 'Maximum' )` | With `dual`, the `start` and `end` thumb names. |
+| `error-field` | string | the `wire:model` name | The `$errors` key to read. |
+| `classes` | array | `[]` | Extra classes per part: `root`, `label`, `track`, `fill`, `control`, `thumb`, `bubble`, `marks`, `mark`, `hint`, `error`. |
 
 ## Accessibility
 
-The Range component follows accessibility best practices:
-
-- Associates labels with inputs using proper HTML markup
-- Includes appropriate ARIA attributes
-- Supports keyboard navigation (arrow keys for incremental changes)
-- Maintains focus styles for keyboard navigation
-- Ensures adequate color contrast
-- Provides visual feedback on the current value
-
-## Related Components
-
-- [Form](Form) - Container for form elements
-- [Input](Input) - Standard text input
-- [Slider](Slider) - Advanced slider component with additional features
+- Arrow keys step (ArrowRight follows text direction), PageUp/PageDown take larger steps, Home/End jump to the ends.
+- The thumb is 18px (14px small) with a 24px hit area, and shows the focus ring while its input has `:focus-visible`.

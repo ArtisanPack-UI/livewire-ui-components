@@ -4,6 +4,8 @@ title: Nav Component
 
 # Nav Component
 
+> **Deprecated in 3.0.** Use [Navbar](navbar), built on the design system. This component is removed in a later major release.
+
 The Nav component provides a navigation bar for your application with support for brand and action elements.
 
 ## Basic Usage

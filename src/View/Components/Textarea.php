@@ -1,99 +1,125 @@
 <?php
 
-declare(strict_types=1);
 /**
- * Textarea
+ * Textarea Component
  *
- * This file contains the Textarea class for the ArtisanPack UI Livewire UI Components package.
+ * The design-system Textarea (#53): multi-line text entry with a label,
+ * hint, error and an optional character counter.
  *
  * @author     Jacob Martella
- * @copyright  2023 Jacob Martella
+ * @copyright  2026 Jacob Martella
  * @license    MIT
  *
- * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
- * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
+ * @link       https://github.com/ArtisanPack-UI/livewire-ui-components
  * @since      1.0.0
  */
 
+declare(strict_types=1);
+
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
+use ArtisanPack\LivewireUiComponents\View\Concerns\InteractsWithFieldControl;
+use ArtisanPack\LivewireUiComponents\View\Concerns\RendersDesignSystemParts;
 use Illuminate\Contracts\View\View;
 
 /**
- * Textarea Class
+ * Textarea Component Class
  *
- * Provides functionality for the Textarea component.
+ * Renders `.apui-textarea`: the label, the box (control and counter), the
+ * hint and the error. `class` lands on the root; every other attribute,
+ * `wire:model` included, lands on the native textarea.
  *
  * @since 1.0.0
  */
 class Textarea extends BaseComponent
 {
-    /**
-     * Unique identifier for the textarea instance.
-     *
-     * @since 1.0.0
-     */
-    public string $uuid;
+    use InteractsWithFieldControl;
+    use RendersDesignSystemParts;
 
     /**
-     * Constructor for the Textarea component.
+     * The component name used in derived ids.
      *
-     * @param  string|null  $id  Optional ID for the textarea.
-     * @param  string|null  $label  Label text for the textarea.
-     * @param  string|null  $hint  Hint text displayed below the textarea.
-     * @param  string|null  $hintClass  CSS class for the hint text.
-     * @param  bool|null  $inline  Whether to display the label inline with the textarea.
-     * @param  string|null  $errorField  Field name for error messages.
-     * @param  string|null  $errorClass  CSS class for error messages.
-     * @param  bool|null  $omitError  Whether to hide error messages.
-     * @param  bool|null  $firstErrorOnly  Whether to show only the first error message.
+     * @since 3.0.0
+     */
+    protected string $fieldName = 'textarea';
+
+    /**
+     * Creates the component.
      *
-     * @since 1.0.0
+     * @since 3.0.0
+     *
+     * @param  int  $rows  Visible lines of text.
+     * @param  int|null  $maxLength  The most characters allowed. Shows the counter.
+     * @param  bool  $autoResize  Grows the box with its content.
+     * @param  string|null  $label  The visible label. A `label` slot overrides it.
+     * @param  string|null  $hint  Help text under the box. A `hint` slot overrides it.
+     * @param  string|null  $error  Validation message. Defaults to the first `$errors` message for errorField.
+     * @param  bool  $invalid  Marks the field invalid without a message.
+     * @param  bool  $disabled  Disables the control.
+     * @param  bool  $readonly  Makes the control read-only.
+     * @param  bool  $required  Marks the field required.
+     * @param  string|null  $placeholder  Placeholder text.
+     * @param  string|null  $value  The value. Livewire binds it with wire:model.
+     * @param  string|null  $remainingLabel  The counter's announcement near the limit; `{count}` is the characters left. Defaults to a translated "Characters left: {count}".
+     * @param  string|null  $errorField  The `$errors` key. Defaults to the wire:model name.
+     * @param  array<string, string>  $classes  Extra classes per part.
      */
     public function __construct(
-        public ?string $id = null,
+        public int $rows = 4,
+        public ?int $maxLength = null,
+        public bool $autoResize = false,
         public ?string $label = null,
         public ?string $hint = null,
-        public ?string $hintClass = 'fieldset-label',
-        public ?bool $inline = false,
-
-        // Validations
+        public ?string $error = null,
+        public bool $invalid = false,
+        public bool $disabled = false,
+        public bool $readonly = false,
+        public bool $required = false,
+        public ?string $placeholder = null,
+        public ?string $value = null,
+        public ?string $remainingLabel = null,
         public ?string $errorField = null,
-        public ?string $errorClass = 'text-error',
-        public ?bool $omitError = false,
-        public ?bool $firstErrorOnly = false,
+        public array $classes = [],
     ) {
-        $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
+        $this->remainingLabel ??= __('Characters left: {count}');
     }
 
     /**
-     * Get the model name from the wire:model attribute.
+     * The characters left within which the counter is announced: 10% of the
+     * limit, and at least 10.
      *
-     * @return string|null The model name.
+     * @since 3.0.0
      *
-     * @since 1.0.0
+     * @return int The threshold, or 0 without a limit.
      */
-    public function modelName(): ?string
+    public function announceWithin(): int
     {
-        return $this->attributes->whereStartsWith('wire:model')->first();
+        return null === $this->maxLength ? 0 : max(10, (int) ceil($this->maxLength * 0.1));
     }
 
     /**
-     * Get the field name for error messages.
+     * The live region's text for a value: the remaining label near the
+     * limit, else empty.
      *
-     * @return string|null The error field name.
+     * @since 3.0.0
      *
-     * @since 1.0.0
+     * @param  string  $value  The current value.
+     *
+     * @return string The announcement.
      */
-    public function errorFieldName(): ?string
+    public function announcement(string $value): string
     {
-        return $this->errorField ?? $this->modelName();
+        if (null === $this->maxLength) {
+            return '';
+        }
+
+        $remaining = max(0, $this->maxLength - mb_strlen($value));
+
+        return $remaining <= $this->announceWithin() ? str_replace('{count}', (string) $remaining, (string) $this->remainingLabel) : '';
     }
 
     /**
-     * Renders the textarea component.
-     *
-     * @return View The rendered component.
+     * Get the view that represents the component.
      *
      * @since 1.0.0
      */

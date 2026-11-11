@@ -30,11 +30,11 @@ All components use the `<x-artisanpack-{component-name}>` naming pattern. The ol
 
 ### Component Categories
 
-**Form Components**: input, button, checkbox, select, datepicker, file, textarea, radio, toggle, range, color-picker, rich-text-editor
+**Form Components**: input, button, checkbox, select, date-picker, file, textarea, password, pin, radio-group, checkbox-group, rating, toggle, range, fieldset, form, validation-summary, color-picker, rich-text-editor, code-editor, signature, combobox (errors is deprecated: use validation-summary; choices, choices-offline and tags are deprecated: use combobox, with multiple and allow-create for tags; radio and group are deprecated: use radio-group, group as variant="segmented"; colorpicker is a deprecated alias of color-picker; select-group is deprecated: use select with option groups; datepicker is a deprecated alias of date-picker; datetime is deprecated: use date-picker with time; editor is a deprecated alias of rich-text-editor)
 
 **Layout Components**: card, dialog, tabs, accordion, drawer, dropdown-menu, collapse, divider, stack, grid (modal and dropdown are deprecated)
 
-**Navigation Components**: menu, breadcrumbs, pagination, steps, navbar, sidebar, spotlight-search
+**Navigation Components**: menu, breadcrumbs, pagination, steps, navbar, sidebar, spotlight (nav is deprecated; tabs and menu take `tab` and `menu-item` children, or `tabs` and `items` as data; steps takes `step` children or `steps` as data, with `wire:model` binding the current step; pagination takes a Laravel paginator in `rows` or `page`, `total` and `per-page`; link renders a button when it has no `href`)
 
 **Data Display Components**: table, chart, calendar, avatar, badge, progress, stat, timeline, carousel, diff
 

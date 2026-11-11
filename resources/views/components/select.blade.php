@@ -42,7 +42,15 @@
                 <option value=""@if ( $placeholderSelected() ) selected @endif @if ( $required ) disabled @endif>{{ $placeholder }}</option>
             @endif
             @foreach ( $normalizedOptions() as $option )
-                <option value="{{ $option['value'] }}"@if ( $isSelected( $option['value'] ) ) selected @endif @if ( $option['disabled'] ) disabled @endif>{{ $option['label'] }}</option>
+                @if ( isset( $option['group'] ) )
+                    <optgroup label="{{ $option['group'] }}">
+                        @foreach ( $option['options'] as $groupOption )
+                            <option value="{{ $groupOption['value'] }}"@if ( $isSelected( $groupOption['value'] ) ) selected @endif @if ( $groupOption['disabled'] ) disabled @endif>{{ $groupOption['label'] }}</option>
+                        @endforeach
+                    </optgroup>
+                @else
+                    <option value="{{ $option['value'] }}"@if ( $isSelected( $option['value'] ) ) selected @endif @if ( $option['disabled'] ) disabled @endif>{{ $option['label'] }}</option>
+                @endif
             @endforeach
             {{ $slot ?? '' }}
         </select>

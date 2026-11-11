@@ -4,122 +4,166 @@ title: Spotlight Component
 
 # Spotlight Component
 
-The Spotlight component provides a searchable command palette for your application, similar to the command palette in popular applications like VS Code or Slack.
+A command palette for searching across pages, records and actions, built on the ArtisanPack UI design system. It's a modal dialog holding a search combobox whose listbox of grouped results is always open. ⌘K (Ctrl+K outside Apple platforms) opens it from anywhere on the page; the arrow keys move through the results, Enter opens one and Escape closes it.
+
+The interaction comes from the design system's behavior engine (`apuiSpotlight`, which composes the dialog and combobox machines), so load the Alpine adapter before Livewire's script: `@artisanpackScripts` in the layout, which the installer adds (see [Installation](../installation)).
+
+> **Changed in 3.0.** Spotlight was rebuilt on the design system. Results come from `groups` (rendered on the server and filtered as you type) or from `url` (the 2.x endpoint, still the default without `groups`). The 2.x names `search-text`, `no-results-text` (and the pre-release `empty-text`, `loading-text`), the `append` slot and the `meta.g` shortcut spelling still work but are deprecated; endpoint icons are now icon names from the registry, not HTML. See [Upgrading from 2.x](#upgrading-from-2x).
 
 ## Basic Usage
 
 ```blade
-<x-artisanpack-spotlight />
-```
-
-## With Custom Shortcut
-
-```blade
-<x-artisanpack-spotlight shortcut="ctrl.k" />
-```
-
-## With Custom Text
-
-```blade
-<x-artisanpack-spotlight 
-    search-text="Search commands..." 
-    no-results-text="No commands found." 
+<x-artisanpack-spotlight
+	:trigger="__( 'Search' )"
+	:groups="[
+		[
+			'label' => __( 'Pages' ),
+			'items' => [
+				[ 'label' => __( 'Dashboard' ), 'href' => route( 'dashboard' ), 'icon' => 'house' ],
+				[ 'label' => __( 'Reports' ), 'href' => route( 'reports' ), 'icon' => 'file-text', 'keywords' => [ 'analytics' ] ],
+			],
+		],
+		[
+			'label' => __( 'Actions' ),
+			'items' => [
+				[ 'value' => 'add-property', 'label' => __( 'Add property' ), 'icon' => 'plus', 'color' => 'success', 'shortcut' => '⌘ N' ],
+			],
+		],
+	]"
+	wire:select="run( $event.detail.value )"
 />
 ```
 
-## With Custom URL
+Each item takes `label`, and optionally `value` (defaults to `href`, then `label`), `description`, `href`, `icon` (a registry name, drawn in a tile), `color` (tints the tile), `shortcut` (a display hint), `keywords` (more words to match) and `disabled`. Groups take `label`, `items` and an optional stable `id`.
+
+As the user types, items are filtered by every word of the query against their label, description and keywords, ignoring case and accents; the matched words are marked in each label with `<mark>`, empty groups hide, and the `empty` state shows when nothing matches. The active result shows an Enter glyph at its end (mirrored in RTL).
+
+With `recent`, the most recent choices come first in a Recent group while the query is empty. It's off by default because it keeps them in the browser's `localStorage` (per palette id); turn it on only where storing recent choices on the device is acceptable.
+
+Choosing an item (click or Enter) dispatches `select` with `{ value, item }` and closes the palette. A link item (`href`) is followed; internal links load through `wire:navigate` unless `:navigate="false"`.
+
+## Server search
+
+### From an endpoint
+
+`url` points at an endpoint that returns results as JSON for `?search=…`. The palette fetches it as the user types (after a 250ms pause, cancelling the previous request), shows the loading row meanwhile, and lists the results after `groups`.
 
 ```blade
-<x-artisanpack-spotlight :url="route('custom.spotlight')" />
+<x-artisanpack-spotlight :url="route( 'spotlight' )" :placeholder="__( 'Search listings…' )" />
 ```
-
-## With Append Slot
-
-```blade
-<x-artisanpack-spotlight>
-    <x-slot:append>
-        <div class="flex items-center gap-2 px-3">
-            <span class="text-xs opacity-50">Press</span>
-            <x-artisanpack-kbd>↑</x-artisanpack-kbd>
-            <x-artisanpack-kbd>↓</x-artisanpack-kbd>
-            <span class="text-xs opacity-50">to navigate</span>
-        </div>
-    </x-slot:append>
-</x-artisanpack-spotlight>
-```
-
-## With Custom Content
-
-```blade
-<x-artisanpack-spotlight>
-    <div class="p-4 border-t border-base-300">
-        <h3 class="font-bold">Recent Searches</h3>
-        <ul class="mt-2">
-            <li class="py-1 hover:bg-base-200 px-2 rounded cursor-pointer">Users</li>
-            <li class="py-1 hover:bg-base-200 px-2 rounded cursor-pointer">Settings</li>
-            <li class="py-1 hover:bg-base-200 px-2 rounded cursor-pointer">Dashboard</li>
-        </ul>
-    </div>
-</x-artisanpack-spotlight>
-```
-
-## Server-Side Implementation
-
-To provide search results, you need to implement a route that returns JSON data. By default, the component uses the `mary.spotlight` route.
 
 ```php
-// In your routes file
-Route::get('/spotlight', function (Request $request) {
-    $search = $request->input('search');
-    
-    // Return empty array if search is empty
-    if (empty($search)) {
-        return [];
-    }
-    
-    // Return search results
-    return [
-        [
-            'name' => 'Dashboard',
-            'description' => 'Go to dashboard',
-            'icon' => '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>',
-            'link' => '/dashboard',
-        ],
-        [
-            'name' => 'Users',
-            'description' => 'Manage users',
-            'icon' => '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>',
-            'link' => '/users',
-        ],
-    ];
-})->name('mary.spotlight');
+Route::get( '/spotlight', function ( Request $request ) {
+	return [
+		[
+			'label' => __( 'Listings' ),
+			'items' => Listing::search( $request->string( 'search' ) )->take( 8 )->get()->map( fn ( Listing $listing ) => [
+				'label'       => $listing->title,
+				'description' => $listing->city,
+				'href'        => route( 'listings.show', $listing ),
+				'icon'        => 'house',
+			] ),
+		],
+	];
+} )->name( 'spotlight' );
+```
+
+The endpoint returns groups (`{ label, items }`) or a flat list of items. Without `groups` and `url`, the palette uses the package's `artisanpack.spotlight` route, as in 2.x: it calls `search( Request $request )` on the class in `artisanpack.livewire-ui-components.components.spotlight.class` and runs the results through the `ap.livewireUiComponents.spotlightCommands` filter (see [Extension hooks](../advanced/extension-hooks)). The 2.x item shape (`name`, `link`) still reads as `label` and `href`.
+
+### From the Livewire component
+
+Inside a Livewire component, render the results yourself and pass `remote`, so the palette doesn't filter them again. The query arrives with every keystroke as `search-change`:
+
+```blade
+<x-artisanpack-spotlight :groups="$this->results" remote :loading="$searching" wire:search-change.debounce.250ms="$set( 'query', $event.detail.search )" />
 ```
 
 ## Props
 
-| Name | Type | Default | Description |
-|------|------|---------|-------------|
-| id | string | null | Optional identifier for the spotlight component |
-| shortcut | string | "meta.g" | Keyboard shortcut to open the spotlight (format: "modifier.key") |
-| searchText | string | "Search ..." | Placeholder text for the search input |
-| noResultsText | string | "Nothing found." | Text to display when no results are found |
-| url | string | route('mary.spotlight') | URL to fetch search results from |
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `open` | bool | `false` | Whether it's open. `wire:model` binds it instead. Emitted as `data-state` on every part. |
+| `groups` | array | `[]` | The results, in groups (see above). |
+| `remote` | bool | `false` | The page searches: `groups` are the results and aren't filtered here. |
+| `url` | string | the `artisanpack.spotlight` route without `groups` | An endpoint returning results as JSON for `?search=…`. |
+| `navigate` | bool | `true` | Adds `wire:navigate` to internal link items. Off-site and `#` links load normally. |
+| `loading` | bool | `false` | Shows the loading row and sets `aria-busy` on the results. |
+| `shortcut` | string | `mod+k` | The global shortcut: modifiers and a key joined with `+`. `mod` is ⌘ on Apple platforms and Ctrl elsewhere; `ctrl`, `meta`, `alt` and `shift` work too. Empty turns it off. |
+| `recent` | bool | `false` | Lists recent choices first while the query is empty, kept in `localStorage`. |
+| `label` | string | `__( 'Search' )` | The palette's accessible name (panel, query and results). |
+| `placeholder` | string | `__( 'Search…' )` | The query's placeholder. |
+| `search-text` | string | none | Deprecated: use `placeholder`. |
+| `empty-label` | string | `__( 'No results.' )` | Shown when nothing matches. |
+| `empty-text`, `no-results-text` | string | none | Deprecated: use `empty-label`. |
+| `loading-label` | string | `__( 'Searching…' )` | Shown while loading. |
+| `loading-text` | string | none | Deprecated: use `loading-label`. |
+| `recent-label` | string | `__( 'Recent' )` | The Recent group's label. |
+| `close-label` | string | `__( 'Close' )` | The Esc button's accessible name, after its visible key: `__( 'Esc, :label' )` ("Esc, Close"). |
+| `navigate-label` | string | `__( 'Navigate' )` | The footer hint beside the arrow keys. |
+| `select-label` | string | `__( 'Open' )` | The footer hint beside the Enter key. |
+| `trigger` | string or slot | none | Content for an outline Button that opens the palette, shown with the shortcut's keys. |
+| `footer` | string or slot | none | Replaces the footer's key hints. |
+| `modal` | bool | `true` | Traps focus, locks scroll and sets `aria-modal`. |
+| `portal` | bool | `true` | Renders the palette at the end of the body (`x-teleport`). Off renders it in place. |
+| `classes` | array | `[]` | Extra classes per part: `root`, `trigger`, `backdrop`, `positioner`, `search`, `icon`, `query`, `closeTrigger`, `results`, `itemGroup`, `itemGroupLabel`, `item`, `tile`, `itemText`, `itemDescription`, `shortcut`, `itemIndicator`, `empty`, `loading`, `footer`. |
 
-## Slots
+The `trigger` and `footer` slots override the props of the same name, and the `empty` slot replaces `empty-label`. The deprecated `append` slot fills the footer when there's no `footer`. The results count ("3 results", "No results") is announced from `__( ':count result|:count results' )`.
 
-| Name | Description |
-|------|-------------|
-| default | Custom content to display in the spotlight modal |
-| append | Content to append to the search input |
+## Attributes and events
 
-## Search Result Format
+`class` lands on the panel (`.apui-spotlight`). Every other attribute lands on the element that holds the Alpine component, which is where the palette dispatches:
 
-Each search result should be an object with the following properties:
+| Event | Detail | When |
+|---|---|---|
+| `open-change` | `{ open }` | It opened or closed itself: the trigger, the shortcut, Escape, the backdrop, the Esc button or a choice. |
+| `select` | `{ value, item }` | An item was chosen. |
+| `search-change` | `{ search }` | The user typed in the query. |
 
-| Name | Type | Description |
-|------|------|-------------|
-| name | string | The name or title of the result |
-| description | string | Optional description of the result |
-| link | string | URL to navigate to when the result is clicked |
-| icon | string | Optional HTML string for an icon |
-| avatar | string | Optional URL to an avatar image (used if icon is not provided) |
+Setting `open` (or the bound property) doesn't fire `open-change`. To open it from your own button, bind `wire:model`, or give the palette an `id` and call `Alpine.$data( document.getElementById( 'spotlight' ) ).show()`.
+
+## Ids
+
+Every part has a stable, server-rendered id and every item a `wire:key`, so Livewire's morph keeps the open palette, its focus trap and the active result. The base id is the `id` attribute, else one derived from the `wire:model` name, else a hash of the props that aren't text, data or open state. Pass an `id` to keep recent choices apart between palettes.
+
+## Markup
+
+```html
+<div id="spotlight" x-data="apuiSpotlight({ … })" style="display: contents">
+	<button class="apui-button" data-scope="spotlight" data-part="trigger" aria-keyshortcuts="Meta+K Control+K">Search <span data-part="shortcut"><kbd>Ctrl</kbd><kbd>K</kbd></span></button>
+	<div data-scope="spotlight" data-part="backdrop"></div>
+	<div data-scope="spotlight" data-part="positioner">
+		<div class="apui-spotlight" data-scope="spotlight" data-part="content" role="dialog" aria-label="Search">
+			<div data-part="search">icon · <input data-part="query" role="combobox"> · <button data-part="close-trigger">Esc</button></div>
+			<div data-part="results" role="listbox">
+				<div data-part="item-group" role="group"><div data-part="item-group-label">Pages</div><a data-part="item" role="option">tile · item-text (label with &lt;mark&gt;, item-description) · shortcut · item-indicator</a></div>
+				<div data-part="empty">No results.</div>
+				<div data-part="loading" hidden>Searching…</div>
+			</div>
+			<div data-part="footer">↑↓ Navigate · ↵ Open</div>
+		</div>
+	</div>
+</div>
+```
+
+## Accessibility
+
+- A dialog named by `label`, holding a combobox (the query) that controls an always-open listbox; the active result is `aria-activedescendant` and `aria-selected`.
+- Focus moves to the query on open and returns to where it was on close. A modal palette hides the rest of the page from assistive technology and locks scroll.
+- Groups are labelled groups; the results count is announced politely inside the panel.
+- The shortcut is exposed with `aria-keyshortcuts`; a single-key shortcut (`/`) never fires while typing in a field.
+- Don't put destructive actions in the palette without a confirmation.
+
+## Upgrading from 2.x
+
+The 2.x names below still work in 3.x and are deprecated: they'll be removed in a later major release.
+
+| 2.x | 3.0 | Status |
+|---|---|---|
+| `shortcut="meta.g"` (Alpine modifiers joined with dots) | `shortcut="mod+g"` (`mod` follows the platform) | Deprecated: still read, `meta` and `cmd` as `mod` |
+| `search-text` | `placeholder` | Deprecated alias |
+| `no-results-text` | `empty-label` | Deprecated alias |
+| `append` slot | `footer` slot | Deprecated alias |
+| `url` endpoint returning `name`, `description`, `link` | `label`, `description`, `href` | Still read |
+| Endpoint `icon` (HTML) and `avatar` | `icon` is a registry name; `avatar` is dropped | Changed |
+| Default slot (custom content) | `groups`, or the `empty` and `footer` slots | Removed |
+| `mary-search-open` window event | `Alpine.$data( el ).show()` or `wire:model` | Removed |

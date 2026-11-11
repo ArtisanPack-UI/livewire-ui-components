@@ -35,6 +35,20 @@ return [
     'route_prefix' => '',
 
     /**
+     * Image uploads from the RichTextEditor and Markdown components
+     * (the `artisanpack.upload` route).
+     *
+     *      disks    - Disks a component may store on. The first is the default.
+     *      mimes    - Allowed image extensions. SVG is never allowed: it can carry script.
+     *      max_size - The largest upload, in kilobytes.
+     */
+    'uploads' => [
+        'disks' => ['public'],
+        'mimes' => ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif'],
+        'max_size' => 5120,
+    ],
+
+    /**
      * Components settings
      */
     'components' => [

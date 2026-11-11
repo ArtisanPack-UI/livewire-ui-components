@@ -4,6 +4,8 @@ title: Choices Component
 
 # Choices Component
 
+> **Deprecated in 3.0.** Use [Combobox](combobox) with `remote`, built on the design system. See [Upgrading](combobox#upgrading-from-choices-choicesoffline-and-tags). This component is removed in a later major release.
+
 The Choices component is an advanced form element that provides a searchable, multi-select dropdown interface. It offers enhanced functionality over the standard select component, including search capabilities, tagging, and remote data loading.
 
 ## Basic Usage

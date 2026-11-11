@@ -4,280 +4,63 @@ title: File Component
 
 # File Component
 
-The File component is a form element that provides an enhanced file upload interface. It supports single and multiple file uploads, preview capabilities, drag-and-drop functionality, and integrates seamlessly with Livewire for handling file uploads.
+Uploads files by dropping or browsing, built on the ArtisanPack UI design system. The native file input is transparent over the drop zone, so a click browses and a drop chooses with no script, and `wire:model` uploads through Livewire natively. The list under it shows each upload's size, progress and errors, with a remove button labelled with the file name.
 
 ## Basic Usage
 
-```php
-<x-artisanpack-file label="Upload File" />
-```
-
-## Examples
-
-### Simple File Upload
-
-```php
-<x-artisanpack-file 
-    label="Document" 
-    name="document"
+```blade
+<x-artisanpack-file
+	wire:model="photos"
+	multiple
+	accept="image/jpeg,image/png"
+	:label="__( 'Listing photos' )"
+	:title="__( 'Drop photos here or browse' )"
+	:hint="__( 'JPG or PNG, up to 20 MB each' )"
 />
 ```
 
-### Multiple File Upload
+The Livewire component uses `WithFileUploads`. Without `value`, the list reads the `wire:model` property of the Livewire component rendering it, and each temporary upload's remove button calls `$wire.$removeUpload()`. While Livewire uploads, a pending row shows its progress.
 
-```php
-<x-artisanpack-file 
-    label="Photos" 
-    multiple
-/>
+## Listing other files
+
+Pass `value` to list stored files, or to show your own progress and errors. Entries are uploads, or arrays with `name`, `size`, `progress` and `error`. Their remove buttons dispatch a `remove` event with `{ index, name }`:
+
+```blade
+<x-artisanpack-file wire:model="documents" :value="$documentEntries" x-on:remove="$wire.removeDocument( $event.detail.index )" />
 ```
 
-### Required File Upload
+## Compact
 
-```php
-<x-artisanpack-file 
-    label="Resume" 
-    required
-/>
-```
-
-### File Upload with Helper Text
-
-```php
-<x-artisanpack-file 
-    label="Profile Picture" 
-    helper="Maximum file size: 2MB. Supported formats: JPG, PNG"
-/>
-```
-
-### File Upload with Error
-
-```php
-<x-artisanpack-file 
-    label="Document" 
-    error="Please upload a valid document"
-/>
-```
-
-### File Upload with Accept Attribute
-
-```php
-<x-artisanpack-file 
-    label="Image" 
-    accept="image/*"
-/>
-
-<x-artisanpack-file 
-    label="PDF Document" 
-    accept=".pdf"
-/>
-
-<x-artisanpack-file 
-    label="Excel File" 
-    accept=".xlsx,.xls"
-/>
-```
-
-### File Upload with Livewire Binding
-
-```php
-<x-artisanpack-file 
-    label="Document" 
-    wire:model="document"
-/>
-
-<x-artisanpack-file 
-    label="Photos" 
-    wire:model="photos" 
-    multiple
-/>
-```
-
-### File Upload with Custom Button Text
-
-```php
-<x-artisanpack-file 
-    label="Document" 
-    button-text="Select Document"
-/>
-```
-
-### File Upload with Preview
-
-```php
-<x-artisanpack-file 
-    label="Image" 
-    with-preview
-    accept="image/*"
-/>
-```
-
-### File Upload with Drag and Drop
-
-```php
-<x-artisanpack-file 
-    label="Drop Files Here" 
-    :with-drag-drop="true"
-/>
-```
-
-### File Upload with Custom Drag and Drop Text
-
-```php
-<x-artisanpack-file 
-    label="Document Upload" 
-    :with-drag-drop="true"
-    drag-drop-text="Drop your document here"
-/>
-```
-
-### File Upload with Custom Drag and Drop Styling
-
-```php
-<x-artisanpack-file 
-    label="Image Upload" 
-    :with-drag-drop="true"
-    drag-drop-text="Drop image here"
-    drag-drop-class="border-success bg-success/20"
-    accept="image/*"
-/>
-```
-
-### File Upload with Progress Indicator
-
-```php
-<x-artisanpack-file 
-    label="Document" 
-    wire:model="document"
-    with-progress
-/>
-```
-
-### File Upload with Size Limit
-
-```php
-<x-artisanpack-file 
-    label="Image" 
-    :max-file-size="2048" 
-    helper="Maximum file size: 2MB"
-/>
-```
-
-### File Upload with Custom Validation
-
-```php
-<x-artisanpack-file 
-    label="Document" 
-    wire:model="document"
-    :validate="true"
-    :rules="['mimes:pdf,doc,docx', 'max:2048']"
-    error="{{ $errors->first('document') }}"
-/>
-```
-
-### File Upload with Custom Styles
-
-```php
-<x-artisanpack-file 
-    label="Document" 
-    class="border-2 border-dashed border-primary p-6 rounded-lg"
-    button-class="bg-primary hover:bg-primary-focus"
-/>
-```
-
-### File Upload with Disabled State
-
-```php
-<x-artisanpack-file 
-    label="Document" 
-    disabled
-/>
-```
-
-### File Upload with Custom Icons
-
-```php
-<x-artisanpack-file 
-    label="Document" 
-    upload-icon="heroicon-o-paper-clip"
-    success-icon="heroicon-o-check-circle"
-    error-icon="heroicon-o-exclamation-circle"
-/>
+```blade
+<x-artisanpack-file wire:model="contract" variant="compact" accept="application/pdf" :title="__( 'Upload a contract' )" :hint="__( 'PDF up to 10 MB' )" />
 ```
 
 ## Props
 
 | Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `label` | string | `null` | The label text for the file input |
-| `name` | string | `null` | The name attribute for the file input |
-| `id` | string | `null` | The ID attribute for the file input (auto-generated if not provided) |
-| `multiple` | boolean | `false` | Whether multiple files can be selected |
-| `accept` | string | `null` | File types that the server accepts (e.g., '.jpg,.png' or 'image/*') |
-| `required` | boolean | `false` | Whether the file input is required |
-| `disabled` | boolean | `false` | Whether the file input is disabled |
-| `helper` | string | `null` | Helper text displayed below the file input |
-| `error` | string | `null` | Error message to display |
-| `button-text` | string | `'Choose File'` | Text displayed on the file selection button |
-| `button-class` | string | `null` | Additional classes for the button |
-| `with-preview` | boolean | `false` | Whether to show a preview of the selected file(s) |
-| `with-drag-drop` | boolean | `false` | Whether to enable drag and drop functionality |
-| `drag-drop-text` | string | `'Drop files here'` | Text displayed in the drag and drop overlay |
-| `drag-drop-class` | string | `null` | Additional CSS classes for drag and drop styling |
-| `with-progress` | boolean | `false` | Whether to show a progress indicator during upload (requires Livewire) |
-| `max-file-size` | integer | `null` | Maximum file size in kilobytes |
-| `validate` | boolean | `false` | Whether to enable client-side validation |
-| `rules` | array | `[]` | Validation rules for the file (when using Livewire) |
-| `upload-icon` | string | `'heroicon-o-arrow-up-tray'` | Icon for the upload button |
-| `success-icon` | string | `'heroicon-o-check'` | Icon displayed on successful upload |
-| `error-icon` | string | `'heroicon-o-x-mark'` | Icon displayed on failed upload |
+|---|---|---|---|
+| `label` | string or slot | none | The visible label, for the input. Without it, the title names the input. |
+| `title` | string | `__( 'Drop files here or browse' )` | The drop zone's main line. |
+| `hint` | string or slot | none | The limits, linked with `aria-describedby`. |
+| `error` | string | `$errors` | Validation message. |
+| `invalid` | bool | `false` | Marks the field invalid. |
+| `disabled` | bool | `false` | Disables the input. |
+| `required` | bool | `false` | Sets `required` and shows the required mark. |
+| `accept` | string | none | The accepted types. |
+| `multiple` | bool | `false` | Allows several files. |
+| `max-size` | int | none | The largest file in bytes, emitted as `data-max-size`. Validate on the server (`max:`). |
+| `variant` | `dropzone` · `compact` | `dropzone` | Emitted as `data-variant`. |
+| `value` | mixed | `wire:model` property | The files to list. |
+| `remove-label` | string | `__( 'Remove :name' )` | The remove buttons' name, with `:name`. |
+| `error-field` | string | `wire:model` name | The `$errors` key. |
+| `classes` | array | `[]` | Extra classes per part: `root`, `label`, `required`, `dropzone`, `control`, `icon`, `title`, `hint`, `list`, `item`, `thumb`, `name`, `meta`, `progress`, `actions`, `error`. |
 
-## Events
+## Migrating
 
-The File component supports all standard HTML file input events:
-
-- `change`
-- `focus`
-- `blur`
-
-It also supports all Livewire model binding directives for file uploads:
-
-- `wire:model`
-- `wire:model.defer`
-- `wire:model.live`
-
-## Styling
-
-The File component provides a customizable file upload interface. You can customize the appearance by:
-
-1. Using the provided props (`button-text`, `button-class`, etc.)
-2. Adding custom classes via the `class` attribute
-3. Customizing the icons used in the component
-
-### Custom Styling Example
-
-```php
-<x-artisanpack-file 
-    label="Upload Document" 
-    class="border-2 border-dashed border-primary p-6 rounded-lg hover:bg-primary/5 transition-colors"
-    button-class="bg-primary text-white hover:bg-primary-focus"
-/>
-```
+The image preview slot and cropping (`crop-after-change`, `crop-config`, …), `with-drag-drop` (the drop zone is always on) and `hide-progress` are gone.
 
 ## Accessibility
 
-The File component follows accessibility best practices:
-
-- Associates labels with inputs using proper HTML markup
-- Provides clear feedback on file selection and upload status
-- Includes appropriate ARIA attributes
-- Maintains focus management
-- Ensures adequate color contrast
-- Provides keyboard navigation support
-
-## Related Components
-
-- [Form](Form) - Container for form elements
-- [Input](Input) - Standard text input
-- [ImageGallery](Image-Gallery) - Display a gallery of images
-- [ImageLibrary](Image-Library) - Image library/picker component
+- The native input stays in the DOM, so it is keyboard and screen-reader operable; drag and drop is an enhancement.
+- Remove buttons are labelled with the file name; errors show as text with an icon, not color alone.
+- State the limits before upload, and never reject a whole batch for one bad file.

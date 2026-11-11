@@ -4,276 +4,121 @@ title: DatePicker Component
 
 # DatePicker Component
 
-The DatePicker component provides an interactive date selection interface with calendar popup and keyboard input support.
+A text field with a calendar popover for a single date or a range, built on the ArtisanPack UI design system. With `time` it is DateTime: date and time in one field. Typing a date always works; the calendar is an aid. DatePicker replaces the flatpickr-based `datepicker` and the native `datetime`, which are now deprecated aliases (see [Deprecated names](#deprecated-names)).
+
+The interaction comes from the design system's behavior engine (`apuiDatePicker`), so load the Alpine adapter before Livewire's script: `@artisanpackScripts` in the layout, which the installer adds (see [Installation](../installation)). flatpickr and the `datepicker-theme.css` files are no longer needed: the component is styled by `@artisanpack-ui/css` through tokens.
 
 ## Basic Usage
 
-```php
-<x-artisanpack-datepicker
-    label="Select Date"
-    wire:model="selectedDate"
-/>
+```blade
+<x-artisanpack-date-picker wire:model="moveIn" :label="__( 'Move-in date' )" :hint="__( 'MM/DD/YYYY' )" required />
 ```
 
-## Examples
+`wire:model` binds the value both ways through `$wire.entangle()`. The value is an ISO 8601 string, `2026-11-12`, whatever the locale shows; use `wire:model.live` to send every change at once. The text follows a numeric pattern from the locale (`MM/dd/yyyy` for `en-US`, `dd.MM.yyyy` for `de`), so show it as the hint. Don't force the calendar for birthdates: people can type.
 
-### Date Range Selection
+## Range
 
-```php
-<x-artisanpack-datepicker
-    label="Start Date"
-    wire:model="startDate"
-/>
-
-<x-artisanpack-datepicker
-    label="End Date"
-    wire:model="endDate"
-/>
+```blade
+<x-artisanpack-date-picker wire:model="stay" mode="range" :label="__( 'Stay' )" :min="now()->toDateString()" :disabled-dates="$blackoutDates" />
 ```
 
-### With Icons
+The box holds two inputs and the value is an array of two ISO dates, `['2026-11-12', '2026-11-18']`. `min`, `max` and `disabled-dates` strike out what can't be chosen.
 
-```php
-<x-artisanpack-datepicker
-    label="Birthday"
-    icon="o-cake"
-    wire:model="birthday"
-/>
+## Date and time
 
-<x-artisanpack-datepicker
-    label="Appointment"
-    icon-right="o-calendar"
-    wire:model="appointmentDate"
-/>
+```blade
+<x-artisanpack-date-picker wire:model="viewingAt" time :step="30" time-zone="Europe/Madrid" :label="__( 'Viewing' )" />
 ```
 
-### Inline Calendar
-
-```php
-<x-artisanpack-datepicker
-    label="Pick a Date"
-    wire:model="date"
-    inline
-/>
-```
-
-### Custom Color Themes
-
-The DatePicker supports the enhanced color system:
-
-```php
-<!-- Predefined variant -->
-<x-artisanpack-datepicker
-    label="Event Date"
-    wire:model="eventDate"
-    color="primary"
-/>
-
-<!-- Tailwind color -->
-<x-artisanpack-datepicker
-    label="Deadline"
-    wire:model="deadline"
-    color="red-500"
-/>
-
-<!-- Custom hex color -->
-<x-artisanpack-datepicker
-    label="Special Date"
-    wire:model="specialDate"
-    color="#4ecdc4"
-/>
-
-<!-- With color adjustment -->
-<x-artisanpack-datepicker
-    label="Launch Date"
-    wire:model="launchDate"
-    color="blue-600"
-    color-adjustment="lighter"
-/>
-```
-
-### With Custom Configuration
-
-```php
-<x-artisanpack-datepicker
-    label="Meeting Date"
-    wire:model="meetingDate"
-    :config="[
-        'dateFormat' => 'Y-m-d',
-        'minDate' => 'today',
-        'maxDate' => date('Y-m-d', strtotime('+30 days')),
-        'disable' => [
-            function($date) {
-                // Disable weekends
-                return ($date->format('N') >= 6);
-            }
-        ]
-    ]"
-/>
-```
-
-### With Hints
-
-```php
-<x-artisanpack-datepicker
-    label="Subscription Start"
-    hint="Select your preferred start date"
-    wire:model="subscriptionStart"
-/>
-```
-
-### Dark Mode Support
-
-```php
-<x-artisanpack-datepicker
-    label="Date"
-    wire:model="date"
-    dark-mode-support
-/>
-```
-
-### Readonly DatePicker
-
-```php
-<x-artisanpack-datepicker
-    label="Created At"
-    wire:model="createdAt"
-    readonly
-/>
-```
+`time` adds a time list (a listbox of times every `step` minutes, 24-hour) beside the month, and the value carries the time: `2026-11-12T11:00`. Picking a day keeps the time and the popover open; picking a time closes it. A day without a time is midnight. `time-zone` is shown under the field: show it whenever people in different zones use the data. Time mode is for single dates.
 
 ## Props
 
 | Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `label` | string | `null` | Label text for the date picker |
-| `icon` | string | `null` | Icon to display before the input |
-| `iconRight` | string | `null` | Icon to display after the input |
-| `hint` | string | `null` | Hint text displayed below the input |
-| `hintClass` | string | `'fieldset-label'` | CSS classes for the hint text |
-| `inline` | boolean | `false` | Display calendar inline instead of popup |
-| `config` | array | `[]` | Flatpickr configuration options |
-| `color` | string | `null` | Color theme - accepts variants, Tailwind colors, or hex codes |
-| `colorAdjustment` | string | `null` | Background adjustment (`lighter`, `darker`, `subtle`, `transparent`) |
-| `theme` | string | `'artisanpack'` | Calendar theme name |
-| `fontConfig` | array | `[]` | Custom font configuration |
-| `darkModeSupport` | boolean | `true` | Enable dark mode support |
-| `prepend` | mixed | `null` | Content to prepend to the input |
-| `append` | mixed | `null` | Content to append to the input |
-| `errorField` | string | `null` | Field name for validation errors |
-| `errorClass` | string | `'text-error'` | CSS classes for error messages |
-| `omitError` | boolean | `false` | Hide error messages |
-| `firstErrorOnly` | boolean | `false` | Show only the first error |
+|---|---|---|---|
+| `value` | string or array | none | The ISO value. `wire:model` binds it instead. |
+| `mode` | `single` · `range` | `single` | One date, or a range of two. Emitted as `data-mode`. |
+| `time` | bool | `false` | Date and time: adds the time list. Emitted as `data-time`. |
+| `step` | int | `30` | Minutes between times in the time list. |
+| `time-zone` | string | none | The IANA time zone, shown under the field in time mode. |
+| `locale` | string | app locale | BCP 47 locale for month and weekday names (from `Intl`), the first day of the week and the default pattern. |
+| `min` · `max` | string | none | The earliest and latest dates, ISO. |
+| `disabled-dates` | array | `[]` | Dates that can't be chosen, ISO. |
+| `week-starts-on` | int | locale | First day of the week, 0 (Sunday) to 6. |
+| `format` | string | locale | The text pattern with `yyyy`, `MM` and `dd`, such as `dd.MM.yyyy`. |
+| `size` | `sm` · `md` · `lg` | `md` | Control height. Emitted as `data-size`. |
+| `label` | string or slot | none | The visible label, linked to the input. |
+| `hint` | string or slot | none | Help text, linked with `aria-describedby`. |
+| `error` | string | `$errors` | Validation message; defaults to the first message for `error-field` (the `wire:model` name). |
+| `invalid` · `disabled` · `readonly` · `required` | bool | `false` | Field states, emitted as `data-invalid`, `data-disabled`, `data-readonly` and `required` on the input. |
+| `placeholder` | string | the pattern | Placeholder text, `MM/DD/YYYY` by default. |
+| `name` | string | none | Submits the ISO value in a hidden input (`name[]` twice in range mode). |
+| `open` | bool | `false` | Whether the calendar starts open. |
+| `portal` | bool | `true` | Renders the popover at the end of the body (`x-teleport`). Off renders it in place. |
+| `footer` | string or slot | none | A row under the calendar, such as a summary and an Apply button. |
+| `trigger-label` | string | `__( 'Choose date' )` | The calendar button's accessible name (`__( 'Choose date and time' )` in time mode). |
+| `previous-label` · `next-label` | string | `__( 'Previous month' )` · `__( 'Next month' )` | The month buttons' names. |
+| `calendar-label` | string | `__( 'Calendar' )` | The popover's name. |
+| `time-label` | string | `__( 'Time' )` | The time list's name and heading. |
+| `end-label` | string | `__( 'End date' )` | The end input's name in range mode. |
+| `time-zone-label` | string | `__( 'Time zone: :zone' )` | The time-zone line; `{zone}` stands for the zone in your own text. |
+| `error-field` | string | `wire:model` | The `$errors` key. |
+| `classes` | array | `[]` | Extra classes per part: `root`, `label`, `box`, `trigger`, `control`, `hint`, `timeZone`, `error`, `positioner`, `content`, `view`, `viewControl`, `prevTrigger`, `rangeText`, `nextTrigger`, `table`, `tableHead`, `tableRow`, `tableHeader`, `tableBody`, `tableCell`, `tableCellTrigger`, `time`, `timeLabel`, `timeList`, `timeOption`, `footer`. |
 
-## Configuration Options
+Every built-in label goes through `__()`, so add them to your `lang/*.json` to translate them. Month and weekday names come from the browser's `Intl` in `locale`.
 
-The DatePicker uses Flatpickr under the hood. You can pass any Flatpickr configuration options via the `config` prop:
+## Attributes and events
 
-### Common Configurations
+`class` lands on the root (`.apui-date-picker`). Event listeners (`x-on:*`, `wire:*` other than `wire:model`) land on the root too, which is where the widget dispatches `value-change` (`$event.detail.value`) and `open-change` (`$event.detail.open`) when it changes them itself. Every other attribute (`autocomplete`, `aria-*`, `data-*`) lands on the text input.
 
-```php
-<!-- Date format -->
-<x-artisanpack-datepicker
-    :config="['dateFormat' => 'd/m/Y']"
-    wire:model="date"
-/>
-
-<!-- Time picker -->
-<x-artisanpack-datepicker
-    :config="['enableTime' => true, 'time_24hr' => true]"
-    wire:model="datetime"
-/>
-
-<!-- Date range -->
-<x-artisanpack-datepicker
-    :config="['mode' => 'range']"
-    wire:model="dateRange"
-/>
-
-<!-- Multiple dates -->
-<x-artisanpack-datepicker
-    :config="['mode' => 'multiple']"
-    wire:model="multipleDates"
-/>
-
-<!-- Week numbers -->
-<x-artisanpack-datepicker
-    :config="['weekNumbers' => true]"
-    wire:model="date"
-/>
+```blade
+<x-artisanpack-date-picker :label="__( 'Check-in' )" x-on:value-change="nights = recount( $event.detail.value )" />
 ```
 
-## Validation
+## Keyboard
 
-```php
-// In your Livewire component
-public $appointmentDate;
+| Keys | Action |
+|---|---|
+| Tab | Moves between the calendar button and the input; typing a date in the pattern always works. |
+| Enter, Space | On the calendar button, opens it; on a day, chooses it. |
+| ArrowLeft, ArrowRight | Previous and next day. They follow the text direction, so they swap under RTL. |
+| ArrowUp, ArrowDown | Same day of the previous and next week; in the time list, the previous and next time. |
+| PageUp, PageDown | Previous and next month (Shift for a year). |
+| Home, End | Start and end of the week; in the time list, the first and last time. |
+| Escape | Closes the calendar. |
 
-protected $rules = [
-    'appointmentDate' => 'required|date|after:today',
-];
+## Ids and morphing
+
+The field's parts have stable, server-rendered ids, so Livewire's morph keeps them wired. The base id is the `id` attribute, else one derived from the `wire:model` name. The month is rendered on the client from the machine's state, inside the `wire:ignore` positioner, so a server re-render never touches it.
+
+## Markup
+
+```html
+<div class="apui-date-picker" data-scope="date-picker" data-part="root" data-size="md" data-mode="single" x-data="apuiDatePicker({ … })">
+	<label data-part="label">Move-in date</label>
+	<div data-part="box">
+		<button data-part="trigger" aria-label="Choose date">…calendar…</button>
+		<input data-part="control" />
+	</div>
+	<p data-part="hint">MM/DD/YYYY</p>
+	<div data-part="positioner" wire:ignore>
+		<div data-part="content">
+			<div data-part="view">
+				<div data-part="view-control">prev-trigger · range-text · next-trigger</div>
+				<table data-part="table" role="grid">table-head · table-body → table-row → table-cell → table-cell-trigger</table>
+			</div>
+			<div data-part="time">time-label · time-list (role=listbox) → time-option</div>
+		</div>
+	</div>
+</div>
 ```
 
-```php
-<!-- In your view -->
-<x-artisanpack-datepicker
-    label="Appointment Date"
-    wire:model="appointmentDate"
-    error-field="appointmentDate"
-/>
-```
+Every part carries `data-scope="date-picker"`. The machine's own `control` and `input` parts are renamed `box` and `control`, the field anatomy every form component shares.
 
-## Color System
+## Deprecated names
 
-The DatePicker component fully supports the enhanced color system:
+- `<x-artisanpack-datepicker>` is an alias of `<x-artisanpack-date-picker>` and takes its props. A 2.x flatpickr `config` is mapped where an equivalent exists: `mode: 'range'` → `mode="range"`, `minDate` and `maxDate` (an ISO date or `'today'`) → `min` and `max`, `dateFormat` (its `Y`, `m` and `d`) → `format`, `enableTime` → `time`. The rest of `config` is ignored.
+- `<x-artisanpack-datetime>` follows its 2.x `type`: `date` (the 2.x default) is a date; `datetime-local` is time mode (`2026-11-12T11:00`). `type="time"` also renders time mode, since a time here always belongs to a date; for a time on its own, use `<x-artisanpack-input type="time">`.
+- The 2.x props `icon`, `icon-right`, `prefix`, `suffix`, `inline`, `clearable`, `hint-class`, `omit-error`, `first-error-only`, `error-class`, `color`, `color-adjustment`, `theme`, `font-config` and `dark-mode-support` are accepted and ignored, and never reach the input. The `prepend` and `append` slots are gone: put related controls next to the field instead.
 
-- **Predefined Variants**: `primary`, `secondary`, `accent`, `success`, `warning`, `error`, `info`
-- **Tailwind Colors**: Any Tailwind color with intensity (e.g., `blue-500`, `red-600`)
-- **Custom Hex Colors**: Any valid hex color code (e.g., `#ff6b6b`)
-- **Color Adjustments**: `lighter`, `darker`, `subtle`, `transparent`
-
-The color system applies to:
-- Selected dates
-- Today's date highlight
-- Hover states
-- Active month/year selector
-
-## Slots
-
-| Slot | Description |
-|------|-------------|
-| `prepend` | Content to display before the input field |
-| `append` | Content to display after the input field |
-
-### Slot Example
-
-```php
-<x-artisanpack-datepicker
-    label="Event Date"
-    wire:model="eventDate"
->
-    <x-slot:prepend>
-        <span class="text-gray-500">📅</span>
-    </x-slot:prepend>
-</x-artisanpack-datepicker>
-```
-
-## Accessibility
-
-The DatePicker component follows accessibility best practices:
-
-- Keyboard navigation support (arrows, Enter, Escape)
-- ARIA labels and descriptions
-- Screen reader announcements for date selection
-- Proper focus management
-- High contrast mode support
-
-## Browser Support
-
-The DatePicker component is compatible with all modern browsers that support Flatpickr.
-
-## Related Components
-
-- [DateTime](date-time) - Date and time picker combined
-- [Input](input) - Basic text input
-- [Calendar](calendar) - Full calendar view
+Both aliases are removed in a later major release.

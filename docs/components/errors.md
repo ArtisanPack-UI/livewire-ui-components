@@ -4,6 +4,8 @@ title: Errors Component
 
 # Errors Component
 
+> **Deprecated in 3.0.** Use [ValidationSummary](validation-summary), built on the design system. This component is removed in a later major release.
+
 The Errors component provides a formatted way to display validation errors in your application. It automatically displays all validation errors or can be configured to show only specific ones.
 
 ## Basic Usage

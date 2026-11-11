@@ -2,197 +2,45 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
-
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
+use ArtisanPack\LivewireUiComponents\View\Components\DatePicker;
 use ArtisanPack\LivewireUiComponents\View\Components\DateTime;
-use Error;
-use RuntimeException;
+use Illuminate\Support\Facades\Blade;
 
-/**
- * Comprehensive unit tests for the DateTime component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * DateTime is deprecated in 3.0: <x-artisanpack-datetime> renders the
+ * design-system DatePicker in its time mode (#55).
  */
-class DateTimeComponentTest extends ComponentTestCase
-{
-    protected string $componentClass = DateTime::class;
 
-    protected array $defaultProperties = [
-        'hintClass'      => 'fieldset-label',
-        'inline'         => false,
-        'errorClass'     => 'text-error',
-        'omitError'      => false,
-        'firstErrorOnly' => false,
-    ];
+test('type="datetime-local" is the date picker with the time list on', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-datetime id="appointment" type="datetime-local" label="Appointment" wire:model="appointmentAt" />'));
 
-    protected array $requiredProperties = [];
+    expect($dom->query('//*[contains(@class, "apui-date-picker")]')->length)->toBe(1)
+        ->and($dom->query('//*[@data-part="time-list"]')->length)->toBe(1)
+        ->and($dom->query('//*[@data-part="root"]')->item(0)->getAttribute('x-data'))->toContain('\u0022time\u0022:true');
+});
 
-    public function test_datetime_string_properties(): void
-    {
-        $stringProperties = ['id', 'label', 'icon', 'iconRight', 'hint', 'hintClass', 'errorField', 'errorClass'];
-        $testValues       = ComponentDataFactory::sampleTexts();
+test('range mode has no time list', function (): void {
+    expect((new DateTime(mode: 'range'))->hasTime())->toBeFalse()
+        ->and(new DateTime)->toBeInstanceOf(DatePicker::class);
+});
 
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
+test('it is date only by default, as 2.x type="date" was', function (string $markup): void {
+    $dom   = designSystemDom(Blade::render($markup));
+    $input = $dom->query('//input[@data-part="control"]')->item(0);
 
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
-    }
+    expect($dom->query('//*[@data-part="time-list"]')->length)->toBe(0)
+        ->and($input->getAttribute('type'))->toBe('text')
+        ->and(substr_count(Blade::render($markup), 'type="date'))->toBe(0);
+})->with([
+    'no type' => '<x-artisanpack-datetime label="Day" />',
+    'date'    => '<x-artisanpack-datetime label="Day" type="date" />',
+]);
 
-    public function test_datetime_boolean_properties(): void
-    {
-        $booleanProperties = ['inline', 'omitError', 'firstErrorOnly'];
+test('type="time" renders time mode with a single type attribute', function (): void {
+    $html = Blade::render('<x-artisanpack-datetime label="Start" type="time" />');
+    $dom  = designSystemDom($html);
 
-        foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
-            $this->assertTrue($component->$property);
-
-            $component = $this->createComponent([$property => false]);
-            $this->assertFalse($component->$property);
-        }
-    }
-
-    public function test_datetime_model_name_method(): void
-    {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'modelName')) {
-            try {
-                $result = $component->modelName();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_datetime_error_field_name_method(): void
-    {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'errorFieldName')) {
-            try {
-                $result = $component->errorFieldName();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_datetime_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
-
-    public function test_datetime_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'DateTime should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
-
-    public function test_datetime_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
-
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
-
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_datetime_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'DateTime rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
-}
+    expect($dom->query('//*[@data-part="time-list"]')->length)->toBe(1)
+        ->and(preg_match_all('/<input[^>]*data-part="control"[^>]*>/', $html, $inputs))->toBe(1)
+        ->and(substr_count($inputs[0][0], 'type='))->toBe(1);
+});

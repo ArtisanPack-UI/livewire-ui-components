@@ -4,159 +4,68 @@ title: Link Component
 
 # Link Component
 
-The Link component is used to display hyperlinks with customizable styling options. It provides a consistent way to style links throughout your application with support for icons, tooltips, and external link behavior.
+Navigates somewhere, built on the ArtisanPack UI design system (`.apui-link`). Links in running text stay underlined, so color isn't the only cue; standalone links drop the underline until hover and take icons. Without an `href`, Link renders a `<button type="button">` with the same styles, for an action that reads as a link.
 
 ## Basic Usage
 
-```php
-<x-artisanpack-link href="https://example.com">
-    Visit Example Website
-</x-artisanpack-link>
+```blade
+<p>
+	{{ __( 'Read the' ) }} <x-artisanpack-link href="/terms">{{ __( 'listing terms' ) }}</x-artisanpack-link>
+	{{ __( 'or' ) }} <x-artisanpack-link href="/privacy" tone="muted">{{ __( 'privacy policy' ) }}</x-artisanpack-link>.
+</p>
 ```
 
-## Examples
+## Standalone links and icons
 
-### Default Link
-
-```php
-<x-artisanpack-link href="https://example.com">
-    This is a standard link with default styling
-</x-artisanpack-link>
+```blade
+<x-artisanpack-link :href="route( 'properties.index' )" standalone trailing-icon="arrow-right">{{ __( 'View all properties' ) }}</x-artisanpack-link>
+<x-artisanpack-link href="/brochure.pdf" standalone leading-icon="download">{{ __( 'Download PDF' ) }}</x-artisanpack-link>
 ```
 
-### External Links
+Arrow and chevron icons mirror in right-to-left layouts. The `icon` and `iconEnd` slots override the icon names.
 
-```php
-<x-artisanpack-link href="https://example.com" external>
-    External Link (opens in new tab)
-</x-artisanpack-link>
+## External links
+
+`external` opens the link in a new tab (`target="_blank"` with `rel="noopener noreferrer"`), adds the external-link icon and tells screen readers in visually hidden text. The text defaults to `__( '(opens in a new tab)' )`; `external-label` changes it.
+
+```blade
+<x-artisanpack-link href="https://docs.artisanpackui.dev" standalone external>{{ __( 'Documentation' ) }}</x-artisanpack-link>
 ```
 
-### Links with Icons
+## Actions
 
-```php
-<x-artisanpack-link href="https://example.com" icon="heroicon-o-arrow-right">
-    Link with Icon Before Text
-</x-artisanpack-link>
+A link without `href` is a button, so `wire:click` works from the keyboard and screen readers announce it as a button:
 
-<x-artisanpack-link href="https://example.com" iconRight="heroicon-o-arrow-right">
-    Link with Icon After Text
-</x-artisanpack-link>
-```
-
-### Underline Options
-
-```php
-<x-artisanpack-link href="#" hoverUnderline>
-    Underline on Hover (Default)
-</x-artisanpack-link>
-
-<x-artisanpack-link href="#" underline>
-    Always Underlined
-</x-artisanpack-link>
-
-<x-artisanpack-link href="#" :hoverUnderline="false">
-    Never Underlined
-</x-artisanpack-link>
-```
-
-### Custom Colors
-
-```php
-<x-artisanpack-link href="#">Default Primary Color Link</x-artisanpack-link>
-<x-artisanpack-link href="#" color="text-secondary hover:text-secondary-focus">Secondary Color Link</x-artisanpack-link>
-<x-artisanpack-link href="#" color="text-accent hover:text-accent-focus">Accent Color Link</x-artisanpack-link>
-```
-
-### With Tooltips
-
-```php
-<x-artisanpack-link href="#" tooltip="Click to learn more">
-    Link with Tooltip
-</x-artisanpack-link>
-
-<x-artisanpack-link href="#" tooltipBottom="Click to learn more">
-    Link with Bottom Tooltip
-</x-artisanpack-link>
-```
-
-### Livewire Navigation
-
-```php
-<x-artisanpack-link href="/dashboard">
-    Navigate with wire:navigate (Default)
-</x-artisanpack-link>
-
-<x-artisanpack-link href="/dashboard" noWireNavigate>
-    Navigate without wire:navigate
-</x-artisanpack-link>
-```
-
-### With ID
-
-```php
-<x-artisanpack-link href="#section-1" id="section-1-link">
-    Jump to Section 1
-</x-artisanpack-link>
+```blade
+<x-artisanpack-link wire:click="logout">{{ __( 'Log out' ) }}</x-artisanpack-link>
 ```
 
 ## Props
 
 | Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `id` | string | `null` | Optional ID for the link |
-| `href` | string | `null` | The URL the link points to |
-| `color` | string | `null` | Text color class (defaults to text-primary hover:text-primary-focus) |
-| `underline` | boolean | `false` | Whether to show underline |
-| `hoverUnderline` | boolean | `true` | Whether to show underline only on hover |
-| `external` | boolean | `false` | Whether the link should open in a new tab |
-| `noWireNavigate` | boolean | `false` | Disable wire:navigate for links |
-| `icon` | string | `null` | Optional icon to display before the text |
-| `iconRight` | string | `null` | Optional icon to display after the text |
-| `tooltip` | string | `null` | Optional tooltip text |
-| `tooltipLeft` | string | `null` | Optional tooltip text (left position) |
-| `tooltipRight` | string | `null` | Optional tooltip text (right position) |
-| `tooltipBottom` | string | `null` | Optional tooltip text (bottom position) |
+|---|---|---|---|
+| `href` | string | none | The destination. Only relative, http, https, mailto, tel and sms URLs are used; without one, a button renders. |
+| `tone` | `primary` · `muted` | `primary` | `muted` for secondary links. Emitted as `data-tone`. |
+| `standalone` | bool | `false` | A link on its own line: medium weight, underlined on hover. Emitted as `data-standalone`. |
+| `external` | bool | `false` | Opens a new tab, adds the external-link icon and announces it. |
+| `external-label` | string | `__( '(opens in a new tab)' )` | The visually hidden text an external link announces. |
+| `leading-icon` | string | none | An icon name before the text. The `icon` slot overrides it. |
+| `trailing-icon` | string | none | An icon name after the text; it replaces the external-link icon. The `iconEnd` slot overrides it. |
+| `navigate` | bool | `true` | Adds `wire:navigate` to an internal link, so Livewire swaps the page in without a full reload. Off-site, `#`, `mailto:` and `external` links load normally. |
+| `classes` | array | `[]` | Extra classes per part: `root`, `icon`, `iconEnd`. |
 
-## Slots
+Every other attribute, `wire:click` included, lands on the root.
 
-| Slot | Description |
-|------|-------------|
-| `default` | The link text content |
+## Upgrading from 2.x
 
-## Styling
-
-The Link component uses Tailwind CSS classes for styling. By default, it renders as an anchor element with:
-
-- Text color: text-primary hover:text-primary-focus
-- Underline: no-underline hover:underline (when hoverUnderline is true)
-- Display: inline-flex items-center gap-1 (for proper icon alignment)
-
-You can customize the appearance by:
-
-1. Using the provided props (`color`, `underline`, `hoverUnderline`, etc.)
-2. Adding custom classes via the `class` attribute
-
-### Custom Styling Example
-
-```php
-<x-artisanpack-link href="#" class="font-bold italic text-emerald-600 hover:text-emerald-800">
-    Custom styled link
-</x-artisanpack-link>
-```
+- `color`, `underline` and `hover-underline` are gone: use `tone` and `standalone`, or tokens and `classes`.
+- `icon` and `icon-right` are `leading-icon` and `trailing-icon`.
+- Internal links still add `wire:navigate` by default. `no-wire-navigate` still turns it off but is deprecated: use `:navigate="false"`.
+- The tooltip props are gone; wrap the link in a Tooltip.
 
 ## Accessibility
 
-The Link component follows accessibility best practices:
-
-- Uses the semantic anchor element
-- Adds appropriate attributes for external links (target="_blank" and rel="noopener noreferrer")
-- Supports tooltips for additional context
-- Maintains focus states for keyboard navigation
-
-## Related Components
-
-- [Button](Button) - For action buttons
-- [Text](Text) - For paragraph text
-- [Heading](Heading) - For headings
-- [Subheading](Subheading) - For subheadings
+- A native anchor, or a native button without `href`.
+- Inline links stay underlined (WCAG 1.4.1); standalone links are set apart by position and weight.
+- External links say they open a new tab. Icons are `aria-hidden`; an icon-only link needs an `aria-label`.
+- Write link text that says where it goes, never "click here".

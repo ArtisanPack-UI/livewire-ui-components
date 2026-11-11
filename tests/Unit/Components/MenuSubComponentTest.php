@@ -2,158 +2,50 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
+use Illuminate\Support\Facades\Blade;
 
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
-use ArtisanPack\LivewireUiComponents\View\Components\MenuSub;
-use Error;
-use RuntimeException;
-
-/**
- * Comprehensive unit tests for the MenuSub component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * MenuSub (#56): the disclosure pattern, with Alpine owning its state.
  */
-class MenuSubComponentTest extends ComponentTestCase
-{
-    protected string $componentClass = MenuSub::class;
 
-    protected array $defaultProperties = [
-        'open'     => false,
-        'hidden'   => false,
-        'disabled' => false,
-        'active'   => false,
-    ];
+test('renders closed by default, with a toggle Alpine owns', function (): void {
+    $html = Blade::render('<x-artisanpack-menu id="m"><x-artisanpack-menu-sub title="Reports" icon="calendar"><x-artisanpack-menu-item href="/r">All</x-artisanpack-menu-item></x-artisanpack-menu-sub></x-artisanpack-menu>');
+    $dom  = designSystemDom($html);
 
-    protected array $requiredProperties = [];
+    $toggle = $dom->query('//button[@data-part="item"]')->item(0);
+    expect($toggle->getAttribute('aria-expanded'))->toBe('false')
+        ->and($toggle->getAttribute('x-on:click'))->toBe('open = ! open')
+        ->and($toggle->hasAttribute('wire:ignore.self'))->toBeTrue()
+        ->and($toggle->textContent)->toContain('Reports');
+    $sub = $dom->query('//*[@data-part="sub"]')->item(0);
+    expect($sub->hasAttribute('hidden'))->toBeTrue()
+        ->and($sub->getAttribute('x-bind:hidden'))->toBe('! open');
+    expect($dom->query('//*[@data-part="chevron" and @data-mirror]')->length)->toBe(1);
+});
 
-    public function test_menusub_string_properties(): void
-    {
-        $stringProperties = ['id', 'title', 'icon', 'iconClasses', 'bgColor'];
-        $testValues       = ComponentDataFactory::sampleTexts();
+test('renders open with open, or when a nested item is current', function (): void {
+    $open   = Blade::render('<x-artisanpack-menu id="m"><x-artisanpack-menu-sub label="A" open><x-artisanpack-menu-item href="/a">A</x-artisanpack-menu-item></x-artisanpack-menu-sub></x-artisanpack-menu>');
+    $nested = Blade::render('<x-artisanpack-menu id="n"><x-artisanpack-menu-sub label="A"><x-artisanpack-menu-sub label="B"><x-artisanpack-menu-item href="/b" current>B</x-artisanpack-menu-item></x-artisanpack-menu-sub></x-artisanpack-menu-sub></x-artisanpack-menu>');
 
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
+    expect(designSystemDom($open)->query('//button[@aria-expanded="true"]')->length)->toBe(1)
+        ->and(designSystemDom($nested)->query('//button[@aria-expanded="true"]')->length)->toBe(2);
+});
 
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
+test('numbers sub-menu ids in render order', function (): void {
+    $html = Blade::render('<x-artisanpack-menu id="m"><x-artisanpack-menu-sub label="A"><x-artisanpack-menu-item href="/a">A</x-artisanpack-menu-item></x-artisanpack-menu-sub><x-artisanpack-menu-sub label="B"><x-artisanpack-menu-item href="/b">B</x-artisanpack-menu-item></x-artisanpack-menu-sub></x-artisanpack-menu>');
+    $dom  = designSystemDom($html);
+
+    expect($dom->query('//*[@id="m-sub-1"]')->length)->toBe(1)
+        ->and($dom->query('//*[@id="m-sub-2"]')->length)->toBe(1);
+});
+
+test('renders a badge and a disabled toggle, from composition and data', function (): void {
+    $composed = Blade::render('<x-artisanpack-menu id="m"><x-artisanpack-menu-sub label="Reports" badge="2" disabled><x-artisanpack-menu-item href="/r">All</x-artisanpack-menu-item></x-artisanpack-menu-sub></x-artisanpack-menu>');
+    $data     = Blade::render('<x-artisanpack-menu id="m" :items="$items" />', ['items' => [['label' => 'Reports', 'badge' => 2, 'disabled' => true, 'items' => [['label' => 'All', 'href' => '/r']]]]]);
+
+    foreach ([$composed, $data] as $html) {
+        $toggle = designSystemDom($html)->query('//button[@data-part="item"]')->item(0);
+        expect($toggle->hasAttribute('disabled'))->toBeTrue()
+            ->and(trim(designSystemDom($html)->query('//button//*[@data-part="badge"]')->item(0)->textContent))->toBe('2');
     }
-
-    public function test_menusub_boolean_properties(): void
-    {
-        $booleanProperties = ['open', 'hidden', 'disabled', 'active'];
-
-        foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
-            $this->assertTrue($component->$property);
-
-            $component = $this->createComponent([$property => false]);
-            $this->assertFalse($component->$property);
-        }
-    }
-
-    public function test_menusub_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
-
-    public function test_menusub_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'MenuSub should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
-
-    public function test_menusub_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
-
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
-
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_menusub_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'MenuSub rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
-}
+});

@@ -20,8 +20,23 @@ beforeEach(function (): void {
     ])));
 });
 
+/*
+ * Per-component exemptions for props whose effect a generic sample can't
+ * show. Pagination's rows needs a real paginator, and Steps' clickable a
+ * wire:model property to set: PaginationComponentTest and StepsComponentTest
+ * cover them. navigate (on by default) only marks internal links, and the
+ * Link and Breadcrumbs fixtures link to `#`: LinkComponentTest,
+ * BreadcrumbsComponentTest and SafeUrlTest cover it.
+ */
+const DESIGN_SYSTEM_PARITY_OPTIONS = [
+    'Breadcrumbs' => ['ignoreEffects' => ['navigate']],
+    'Link'        => ['ignoreEffects' => ['navigate']],
+    'Pagination'  => ['ignoreEffects' => ['rows']],
+    'Steps'       => ['ignoreEffects' => ['clickable']],
+];
+
 it('matches its manifest', function (string $component): void {
-    expect($component)->toMatchManifest();
+    expect($component)->toMatchManifest(DESIGN_SYSTEM_PARITY_OPTIONS[$component] ?? []);
 })->with(ManifestParity::targets());
 
 it('checks the pilot components', function (): void {

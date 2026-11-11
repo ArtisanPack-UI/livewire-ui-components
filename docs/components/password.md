@@ -4,252 +4,71 @@ title: Password Component
 
 # Password Component
 
-The Password component is a specialized input element designed for secure password entry. It includes a visibility toggle feature that allows users to show or hide the password text, enhancing usability while maintaining security.
+Password entry with a reveal toggle, an optional strength meter and live requirements, built on the ArtisanPack UI design system. It shares Input's field anatomy. Alpine reveals the value and checks it as people type; the server renders the same state for the initial value.
 
 ## Basic Usage
 
-```php
-<x-artisanpack-password label="Password" />
+```blade
+<x-artisanpack-password wire:model="password" :label="__( 'Password' )" leading-icon="lock" required />
 ```
 
-## Examples
+The reveal button keeps one name ("Show password") and toggles `aria-pressed`, so screen readers announce the state without a changing label.
 
-### Simple Password Input
+## Strength and requirements
 
-```php
-<x-artisanpack-password 
-    label="Password" 
-    name="password" 
-    placeholder="Enter your password"
-/>
-```
+On sign-up and reset forms, show the requirements before people type, plus the strength meter, and use `autocomplete="new-password"` so password managers offer to generate one. Each requirement's `pattern` is a regular expression source the value must match.
 
-### Password with Helper Text
-
-```php
-<x-artisanpack-password 
-    label="Password" 
-    helper="Password must be at least 8 characters long"
-/>
-```
-
-### Password with Error
-
-```php
-<x-artisanpack-password 
-    label="Password" 
-    error="Password is too weak"
+```blade
+<x-artisanpack-password
+	wire:model.live="newPassword"
+	:label="__( 'New password' )"
+	autocomplete="new-password"
+	leading-icon="lock"
+	strength-meter
+	:requirements="[
+		[ 'label' => __( 'At least 12 characters' ), 'pattern' => '.{12,}' ],
+		[ 'label' => __( 'One number' ), 'pattern' => '\d' ],
+		[ 'label' => __( 'One symbol' ), 'pattern' => '[^A-Za-z0-9]' ],
+	]"
 />
 ```
 
-### Required Password
+The meter scores the value the same way in every stack: one point each for 8+ and 12+ characters, mixed case, a digit and a symbol, less one, from Weak (1) to Strong (4). It's a guide, not a policy; enforce your rules in validation.
 
-```php
-<x-artisanpack-password 
-    label="Password" 
-    required
-/>
-```
+## Validation
 
-### Disabled Password
-
-```php
-<x-artisanpack-password 
-    label="Password" 
-    value="securepassword123" 
-    disabled
-/>
-```
-
-### Password with Livewire Binding
-
-```php
-<x-artisanpack-password 
-    label="Password" 
-    wire:model="password"
-/>
-
-<!-- Lazy Password (updates on blur) -->
-<x-artisanpack-password 
-    label="Password" 
-    wire:model.lazy="password"
-/>
-```
-
-### Password with Custom Toggle Icons
-
-```php
-<x-artisanpack-password 
-    label="Password" 
-    show-icon="heroicon-o-eye" 
-    hide-icon="heroicon-o-eye-slash"
-/>
-```
-
-### Password with Strength Meter
-
-```php
-<x-artisanpack-password 
-    label="Password" 
-    with-strength-meter
-/>
-```
-
-### Password with Autofocus
-
-```php
-<x-artisanpack-password 
-    label="Password" 
-    autofocus
-/>
-```
-
-### Password with Autocomplete
-
-```php
-<x-artisanpack-password 
-    label="Password" 
-    autocomplete="current-password"
-/>
-
-<x-artisanpack-password 
-    label="New Password" 
-    autocomplete="new-password"
-/>
-```
-
-### Password Sizes
-
-```php
-<x-artisanpack-password 
-    label="Small password" 
-    size="sm"
-/>
-
-<x-artisanpack-password 
-    label="Default password"
-/>
-
-<x-artisanpack-password 
-    label="Large password" 
-    size="lg"
-/>
-```
-
-### Password with Prefix
-
-```php
-<x-artisanpack-password 
-    label="Password" 
->
-    <x-slot:prefix>
-        <x-artisanpack-icon name="heroicon-o-lock-closed" class="w-5 h-5" />
-    </x-slot:prefix>
-</x-artisanpack-password>
-```
-
-### Password with Custom Validation
-
-```php
-<x-artisanpack-password 
-    label="Password" 
-    minlength="8" 
-    pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" 
-    title="Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
-/>
+```blade
+{{-- The error comes from $errors for the wire:model name. --}}
+<x-artisanpack-password wire:model="passwordConfirmation" :label="__( 'Confirm password' )" autocomplete="new-password" />
+<x-artisanpack-password :label="__( 'Current password' )" :error="__( 'That password is incorrect.' )" />
 ```
 
 ## Props
 
 | Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `label` | string | `null` | The label text for the password input |
-| `name` | string | `null` | The name attribute for the password input |
-| `id` | string | `null` | The ID attribute for the password input (auto-generated if not provided) |
-| `value` | string | `null` | The default value for the password input |
-| `placeholder` | string | `null` | Placeholder text |
-| `helper` | string | `null` | Helper text displayed below the password input |
-| `error` | string | `null` | Error message to display |
-| `required` | boolean | `false` | Whether the password input is required |
-| `disabled` | boolean | `false` | Whether the password input is disabled |
-| `readonly` | boolean | `false` | Whether the password input is readonly |
-| `autofocus` | boolean | `false` | Whether the password input should be automatically focused |
-| `autocomplete` | string | `null` | Value for the autocomplete attribute (e.g., 'current-password', 'new-password') |
-| `size` | string | `'md'` | The size of the password input (`sm`, `md`, `lg`) |
-| `show-icon` | string | `'heroicon-o-eye'` | The icon to show when password is hidden |
-| `hide-icon` | string | `'heroicon-o-eye-slash'` | The icon to show when password is visible |
-| `with-strength-meter` | boolean | `false` | Whether to display a password strength meter |
-| `minlength` | string/number | `null` | Minimum length of password |
-| `maxlength` | string/number | `null` | Maximum length of password |
-| `pattern` | string | `null` | Regular expression pattern for validation |
-| `title` | string | `null` | Title attribute (used for validation tooltip) |
+|---|---|---|---|
+| `size` | `sm` · `md` · `lg` | `md` | Control height. Emitted as `data-size`. |
+| `autocomplete` | `current-password` · `new-password` | `current-password` | The control's autocomplete hint. |
+| `label` · `hint` | string or slot | none | As Input. |
+| `error` | string | first `$errors` message | Validation message. |
+| `invalid` · `disabled` · `readonly` · `required` | bool | `false` | As Input. Disabled also disables the reveal button. |
+| `placeholder` · `value` | string | none | As Input. |
+| `leading-icon` | string | none | Icon name before the value, such as `lock`. The `icon` slot overrides it. |
+| `strength-meter` | bool | `false` | Shows the four-segment meter and the level name. |
+| `requirements` | array | `[]` | `[ [ 'label' => …, 'pattern' => … ] ]`, checked as people type. |
+| `reveal-label` | string | `__( 'Show password' )` | The reveal button's accessible name. |
+| `labels` | array | translated | Overrides for `strength`, `weak`, `fair`, `good`, `strong`, `met` and `unmet`. |
+| `error-field` | string | the `wire:model` name | The `$errors` key to read. |
+| `classes` | array | `[]` | Extra classes per part: `root`, `label`, `required`, `box`, `icon`, `control`, `reveal`, `strength`, `segment`, `strengthLabel`, `requirements`, `requirement`, `hint`, `error`. |
 
-## Slots
-
-| Slot | Description |
-|------|-------------|
-| `prefix` | Content to display before the password input |
-
-## Events
-
-The Password component supports all standard HTML input events:
-
-- `input`
-- `change`
-- `focus`
-- `blur`
-- `keydown`
-- `keyup`
-- `keypress`
-
-It also supports all Livewire model binding directives:
-
-- `wire:model`
-- `wire:model.defer`
-- `wire:model.lazy`
-- `wire:model.debounce`
-
-## Styling
-
-The Password component uses DaisyUI's input component under the hood, which provides a consistent styling with other form components. You can customize the appearance of password inputs by:
-
-1. Using the provided props (`size`, etc.)
-2. Adding custom classes via the `class` attribute
-3. Modifying the DaisyUI variables in your theme file
-
-### Custom Styling Example
-
-```php
-<x-artisanpack-password 
-    label="Custom styled password" 
-    class="border-2 border-purple-500 focus:border-purple-700 focus:ring-purple-700"
-/>
-```
-
-### DaisyUI Variables
-
-You can customize the Password component by modifying these DaisyUI variables in your theme file:
-
-```css
-.input {
-    --input-color: oklch(var(--b2));
-    --size: 3rem;
-}
-```
+`class` lands on the root (`.apui-password`); every other attribute, `wire:model` included, lands on the native input.
 
 ## Accessibility
 
-The Password component follows accessibility best practices:
+- The meter is `aria-hidden`; the level name is text in a polite live region, never color alone.
+- Each requirement says "(Met)" or "(Not met)" to screen readers, and the list is linked to the control with `aria-describedby`.
+- Paste is never blocked.
 
-- Associates labels with inputs using proper HTML markup
-- Includes appropriate ARIA attributes
-- Provides a visible toggle for password visibility
-- Maintains focus styles for keyboard navigation
-- Ensures adequate color contrast
-- Includes appropriate autocomplete attributes for password managers
+## Upgrading from 2.x
 
-## Related Components
-
-- [Form](Form) - Container for form elements
-- [Input](Input) - Standard text input
-- [Pin](Pin) - PIN code input
+`icon`, `icon-right`, `right`, `only-password`, `password-icon`, `password-visible-icon`, `clearable`, `prefix`, `suffix`, `prepend`, `append`, `inline`, `hint-class`, `error-class`, `omit-error` and `first-error-only` are gone. Use `leading-icon` for the icon and `classes` for styling.

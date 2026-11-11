@@ -2,267 +2,134 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
-
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
 use ArtisanPack\LivewireUiComponents\View\Components\Tabs;
-use Error;
-use RuntimeException;
+use Illuminate\Support\Facades\Blade;
 
-/**
- * Comprehensive unit tests for the Tabs component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * Tabs (#56): the design-system markup contract. The manifest parity check
+ * is in tests/Feature/DesignSystemParityTest.php.
  */
-class TabsComponentTest extends ComponentTestCase
+
+function tabsComposition(string $attributes = 'id="account"'): string
 {
-    protected string $componentClass = Tabs::class;
-
-    protected array $defaultProperties = [
-        'orientation'                => 'horizontal',
-        'labelClass'                 => 'font-semibold pb-1',
-        'activeClass'                => 'border-b-[length:var(--border)] border-b-base-content/50',
-        'labelDivClass'              => 'border-b-[length:var(--border)] border-b-base-content/10 flex overflow-x-auto',
-        'tabsClass'                  => 'relative w-full',
-        'verticalTabsClass'          => 'relative w-full flex flex-col md:flex-row',
-        'verticalLabelClass'         => 'font-semibold w-full px-3 py-2 md:pr-1 md:pl-1 md:py-2',
-        'verticalActiveClass'        => 'border-r-[length:var(--border)] border-r-base-content/50',
-        'verticalLabelDivClass'      => 'border-r-[length:var(--border)] border-r-base-content/10 flex flex-col overflow-y-auto min-w-48',
-        'verticalContentClass'       => 'flex-1',
-        'verticalRightActiveClass'   => 'border-l-[length:var(--border)] border-l-base-content/50',
-        'verticalRightLabelDivClass' => 'border-l-[length:var(--border)] border-l-base-content/10 flex flex-col overflow-y-auto min-w-48',
-    ];
-
-    protected array $requiredProperties = [];
-
-    public function test_tabs_string_properties(): void
-    {
-        $stringProperties = ['id', 'selected', 'orientation', 'variant', 'gap', 'labelColorClasses', 'activeColorClasses', 'labelClass', 'activeClass', 'labelDivClass', 'tabsClass', 'verticalTabsClass', 'verticalLabelClass', 'verticalActiveClass', 'verticalLabelDivClass', 'verticalContentClass', 'verticalRightActiveClass', 'verticalRightLabelDivClass'];
-        $testValues       = ComponentDataFactory::sampleTexts();
-
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
-
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
-    }
-
-    public function test_tabs_is_vertical_method(): void
-    {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'isVertical')) {
-            try {
-                $result = $component->isVertical();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_tabs_is_vertical_right_method(): void
-    {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'isVerticalRight')) {
-            try {
-                $result = $component->isVerticalRight();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_tabs_get_tabs_container_class_method(): void
-    {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'getTabsContainerClass')) {
-            try {
-                $result = $component->getTabsContainerClass();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_tabs_get_label_div_class_method(): void
-    {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'getLabelDivClass')) {
-            try {
-                $result = $component->getLabelDivClass();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_tabs_get_final_label_class_method(): void
-    {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'getFinalLabelClass')) {
-            try {
-                $result = $component->getFinalLabelClass();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_tabs_get_active_class_method(): void
-    {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'getActiveClass')) {
-            try {
-                $result = $component->getActiveClass();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_tabs_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
-
-    public function test_tabs_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'Tabs should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
-
-    public function test_tabs_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
-
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
-
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_tabs_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'Tabs rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
+    return Blade::render(<<<BLADE
+        <x-artisanpack-tabs {$attributes}>
+            <x-artisanpack-tab value="profile" label="Profile" icon="user">Profile panel</x-artisanpack-tab>
+            <x-artisanpack-tab value="inbox" label="Inbox" count="4">Inbox panel</x-artisanpack-tab>
+            <x-artisanpack-tab value="archived" label="Archived" disabled>Archived panel</x-artisanpack-tab>
+        </x-artisanpack-tabs>
+        BLADE);
 }
+
+function tabsData(): array
+{
+    return [
+        ['value' => 'profile', 'label' => 'Profile', 'icon' => 'user', 'content' => 'Profile panel'],
+        ['value' => 'inbox', 'label' => 'Inbox', 'count' => 4, 'content' => 'Inbox panel'],
+        ['value' => 'archived', 'label' => 'Archived', 'disabled' => true, 'content' => 'Archived panel'],
+    ];
+}
+
+/** @return list<string> */
+function tabsParts(string $html): array
+{
+    $parts = [];
+    foreach (designSystemDom($html)->query('//*[@data-scope="tabs"]') as $element) {
+        $parts[] = $element->getAttribute('data-part').($element->hasAttribute('id') ? '#'.$element->getAttribute('id') : '');
+    }
+
+    return $parts;
+}
+
+test('renders the tablist before the panels, with stable ids per value', function (): void {
+    expect(tabsParts(tabsComposition()))->toBe([
+        'root#account',
+        'list#account-list',
+        'trigger#account-trigger-profile',
+        'icon',
+        'trigger#account-trigger-inbox',
+        'count',
+        'trigger#account-trigger-archived',
+        'content#account-content-profile',
+        'content#account-content-inbox',
+        'content#account-content-archived',
+    ]);
+});
+
+test('renders tab ARIA and selects the first enabled tab by default', function (): void {
+    $dom = designSystemDom(tabsComposition());
+
+    expect($dom->query('//*[@data-part="list"]')->item(0)->getAttribute('role'))->toBe('tablist');
+    $profile = $dom->query('//*[@id="account-trigger-profile"]')->item(0);
+    expect($profile->getAttribute('role'))->toBe('tab')
+        ->and($profile->getAttribute('aria-selected'))->toBe('true')
+        ->and($profile->getAttribute('tabindex'))->toBe('0')
+        ->and($profile->getAttribute('aria-controls'))->toBe('account-content-profile');
+    expect($dom->query('//*[@id="account-trigger-inbox"]')->item(0)->getAttribute('tabindex'))->toBe('-1');
+    expect($dom->query('//*[@id="account-trigger-archived"]')->item(0)->hasAttribute('disabled'))->toBeTrue();
+
+    $panel = $dom->query('//*[@id="account-content-profile"]')->item(0);
+    expect($panel->getAttribute('role'))->toBe('tabpanel')
+        ->and($panel->getAttribute('aria-labelledby'))->toBe('account-trigger-profile')
+        ->and($panel->hasAttribute('hidden'))->toBeFalse();
+    expect($dom->query('//*[@id="account-content-inbox"]')->item(0)->hasAttribute('hidden'))->toBeTrue();
+});
+
+test('renders the same markup from tabs as from composition', function (): void {
+    $data      = Blade::render('<x-artisanpack-tabs id="account" :tabs="$tabs" />', ['tabs' => tabsData()]);
+    $normalize = static fn (string $html): string => (string) preg_replace('/\s+/', ' ', trim($html));
+
+    expect(tabsParts($data))->toBe(tabsParts(tabsComposition()));
+    expect($normalize(strip_tags($data)))->toBe($normalize(strip_tags(tabsComposition())));
+});
+
+test('selects value and emits variant, size, orientation and activation mode', function (): void {
+    $html = tabsComposition('id="account" value="inbox" variant="underline" size="sm" orientation="vertical" activation-mode="manual" label="Account"');
+    $dom  = designSystemDom($html);
+    $root = $dom->query('//*[contains(@class, "apui-tabs")]')->item(0);
+
+    expect($root->getAttribute('data-variant'))->toBe('underline')
+        ->and($root->getAttribute('data-size'))->toBe('sm')
+        ->and($root->getAttribute('data-orientation'))->toBe('vertical')
+        ->and($root->getAttribute('data-activation-mode'))->toBe('manual')
+        ->and($root->getAttribute('x-data'))->toContain("value: 'inbox'")
+        ->and($root->getAttribute('x-data'))->toContain("activationMode: 'manual'");
+    expect($dom->query('//*[@data-part="list"]')->item(0)->getAttribute('aria-label'))->toBe('Account');
+    expect($dom->query('//*[@data-part="list"]')->item(0)->getAttribute('aria-orientation'))->toBe('vertical');
+    expect($dom->query('//*[@id="account-trigger-inbox"]')->item(0)->getAttribute('aria-selected'))->toBe('true');
+});
+
+test('falls back to the defaults for unknown values', function (): void {
+    $tabs = new Tabs(variant: 'bordered', size: 'xl', orientation: 'diagonal', activationMode: 'later');
+
+    expect($tabs->variant)->toBe('segmented')
+        ->and($tabs->size)->toBe('md')
+        ->and($tabs->orientation)->toBe('horizontal')
+        ->and($tabs->activationMode)->toBe('automatic');
+    $tabs->finishRendering();
+});
+
+test('entangles wire:model, live with wire:model.live', function (): void {
+    $html = tabsComposition('id="account" wire:model.live="section"');
+    $root = designSystemDom($html)->query('//*[contains(@class, "apui-tabs")]')->item(0);
+
+    expect($root->getAttribute('x-data'))->toContain('$wire.entangle(\'section\').live')
+        ->and($root->hasAttribute('wire:model.live'))->toBeFalse();
+});
+
+test('applies classes per part and class to the root', function (): void {
+    $html = tabsComposition('id="account" class="mb-4" :classes="[\'list\' => \'my-list\', \'trigger\' => \'my-trigger\', \'content\' => \'my-panel\']"');
+    $dom  = designSystemDom($html);
+
+    expect($dom->query('//*[contains(@class, "apui-tabs") and contains(@class, "mb-4")]')->length)->toBe(1)
+        ->and($dom->query('//*[@data-part="list" and @class="my-list"]')->length)->toBe(1)
+        ->and($dom->query('//*[@data-part="trigger" and @class="my-trigger"]')->length)->toBe(3)
+        ->and($dom->query('//*[@data-part="content" and contains(@class, "my-panel")]')->length)->toBe(3);
+});
+
+test('escapes labels and values', function (): void {
+    $html = Blade::render('<x-artisanpack-tabs id="t"><x-artisanpack-tab value="a&quot;b" label="<b>x</b>">Panel</x-artisanpack-tab></x-artisanpack-tabs>');
+
+    expect($html)->not->toContain('<b>x</b>')
+        ->and($html)->toContain('&lt;b&gt;x&lt;/b&gt;');
+});

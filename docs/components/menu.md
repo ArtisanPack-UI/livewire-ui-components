@@ -4,123 +4,106 @@ title: Menu Component
 
 # Menu Component
 
-The Menu component provides a vertical navigation menu with support for titles, separators, and nested submenus.
+A navigation menu built on the ArtisanPack UI design system: links with icons and badges, section titles, separators and collapsible sub-menus, in a nav landmark, with the current page marked. Menu is for navigation; for actions, use [DropdownMenu](dropdown-menu).
+
+Menu isn't an ARIA menu and needs no behavior widget: links are links, and a sub-menu is a disclosure, a button with `aria-expanded` that opens and closes its list with plain Alpine state.
 
 ## Basic Usage
 
 ```blade
-<x-artisanpack-menu>
-    <x-artisanpack-menu-item title="Dashboard" icon="o-home" link="/" />
-    <x-artisanpack-menu-item title="Users" icon="o-users" link="/users" />
+<x-artisanpack-menu :label="__( 'Main' )" activate-by-route>
+	<x-artisanpack-menu-item :href="route( 'dashboard' )" icon="list">{{ __( 'Dashboard' ) }}</x-artisanpack-menu-item>
+	<x-artisanpack-menu-sub :label="__( 'Properties' )" icon="settings">
+		<x-artisanpack-menu-item :href="route( 'properties.index' )">{{ __( 'All properties' ) }}</x-artisanpack-menu-item>
+		<x-artisanpack-menu-item :href="route( 'properties.drafts' )" badge="3">{{ __( 'Drafts' ) }}</x-artisanpack-menu-item>
+	</x-artisanpack-menu-sub>
+	<x-artisanpack-menu-item :href="route( 'inbox' )" icon="mail" :badge="$unread">{{ __( 'Inbox' ) }}</x-artisanpack-menu-item>
+	<x-artisanpack-menu-title>{{ __( 'Settings' ) }}</x-artisanpack-menu-title>
+	<x-artisanpack-menu-item :href="route( 'team' )" icon="user">{{ __( 'Team' ) }}</x-artisanpack-menu-item>
+	<x-artisanpack-menu-separator />
+	<x-artisanpack-menu-item wire:click="logout">{{ __( 'Log out' ) }}</x-artisanpack-menu-item>
 </x-artisanpack-menu>
 ```
 
-## With Title and Separator
+The current page's item sets `aria-current="page"`: pass `current`, or put `activate-by-route` on the menu (or an item) to match each item's `href` or `route` against the URL, as a prefix or, with `exact`, exactly. A sub-menu holding the current page renders open. An item without `href` is a button, for `wire:click`.
+
+## Items as data
+
+`items` renders the same children as composition, before any children:
 
 ```blade
-<x-artisanpack-menu title="Main Navigation" separator>
-    <x-artisanpack-menu-item title="Dashboard" icon="o-home" link="/" />
-    <x-artisanpack-menu-item title="Users" icon="o-users" link="/users" />
-</x-artisanpack-menu>
+<x-artisanpack-menu :label="__( 'Settings' )" :collapsible="false" :items="[
+	[ 'label' => __( 'Account' ), 'items' => [
+		[ 'label' => __( 'Profile' ), 'href' => route( 'settings.profile' ), 'current' => request()->routeIs( 'settings.profile' ) ],
+		[ 'label' => __( 'Security' ), 'href' => route( 'settings.security' ) ],
+	] ],
+	[ 'type' => 'separator' ],
+	[ 'label' => __( 'Billing' ), 'href' => route( 'settings.billing' ), 'icon' => 'lock' ],
+]" />
 ```
 
-## With Submenu
+With `:collapsible="false"`, every sub-menu shows, under its item as a plain heading.
 
-```blade
-<x-artisanpack-menu>
-    <x-artisanpack-menu-item title="Dashboard" icon="o-home" link="/" />
-    
-    <x-artisanpack-menu-sub title="Settings" icon="o-cog-6-tooth">
-        <x-artisanpack-menu-item title="General" link="/settings/general" />
-        <x-artisanpack-menu-item title="Security" link="/settings/security" />
-    </x-artisanpack-menu-sub>
-</x-artisanpack-menu>
-```
+## Props
 
-## With Separator and Title
+### menu
 
-```blade
-<x-artisanpack-menu>
-    <x-artisanpack-menu-item title="Dashboard" icon="o-home" link="/" />
-    
-    <x-artisanpack-menu-separator title="Settings" icon="o-cog-6-tooth" />
-    <x-artisanpack-menu-item title="General" link="/settings/general" />
-    <x-artisanpack-menu-item title="Security" link="/settings/security" />
-</x-artisanpack-menu>
-```
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `items` | array | `[]` | The menu as data: `{ label, href, icon, badge, current, disabled }`, `{ label, icon, open, items }` for a sub-menu, `{ type: 'title', label }` and `{ type: 'separator' }`. |
+| `collapsible` | bool | `true` | Sub-menus open and close. Emitted as `data-collapsible`. |
+| `label` | string | none | Names the nav landmark. Name every menu when a page has more than one nav. |
+| `classes` | array | `[]` | Extra classes per part, children included: `root`, `list`, `item`, `icon`, `itemText`, `badge`, `chevron`, `sub`, `title`, `separator`. |
 
-## With Menu Title
+`activate-by-route` is an attribute on the menu, read by its items.
 
-```blade
-<x-artisanpack-menu>
-    <x-artisanpack-menu-title title="Main Navigation" icon="o-bars-3" />
-    <x-artisanpack-menu-item title="Dashboard" icon="o-home" link="/" />
-    <x-artisanpack-menu-item title="Users" icon="o-users" link="/users" />
-</x-artisanpack-menu>
-```
+### menu-item
 
-## Menu Props
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `href` | string | none | The link. Without it, the item is a button. |
+| `route` | string | none | A route name, for `href` and for matching the URL. |
+| `label` | string | none | The label when there's no slot. |
+| `icon` | string | none | An icon name from the registry. |
+| `badge` | string or int | none | A count or status at the end. |
+| `current` | bool | unset | The current page. Unset, `activate-by-route` decides. |
+| `disabled` | bool | `false` | No href, `aria-disabled`, out of the Tab order. |
+| `external` | bool | `false` | Opens in a new tab. |
+| `navigate` | bool | `true` | Adds `wire:navigate` to internal links. |
+| `exact` | bool | `false` | Match the URL exactly with `activate-by-route`. |
 
-| Name | Type | Default | Description |
-|------|------|---------|-------------|
-| id | string | null | Optional identifier for the menu |
-| title | string | null | Optional title for the menu |
-| icon | string | null | Optional icon for the menu title |
-| iconClasses | string | 'w-4 h-4' | CSS classes for the icon |
-| separator | boolean | false | Whether to show a separator below the title |
-| activateByRoute | boolean | false | Whether to activate menu items based on the current route |
-| activeBgColor | string | 'bg-base-300' | Background color for active menu items |
+### menu-sub
 
-## MenuItem Props
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `label` | string | none | The toggle's label. |
+| `icon` | string | none | An icon name before the label. |
+| `open` | bool | `false` | Renders it open. |
+| `disabled` | bool | `false` | Disables the toggle. |
 
-| Name | Type | Default | Description |
-|------|------|---------|-------------|
-| id | string | null | Optional identifier for the menu item |
-| title | string | null | Text to display for the menu item |
-| icon | string | null | Icon to display for the menu item |
-| iconClasses | string | null | CSS classes for the icon |
-| spinner | string | null | Target for loading spinner (1 for wire:click) |
-| link | string | null | URL for the menu item |
-| route | string | null | Route name for the menu item |
-| external | boolean | false | Whether the link is external (opens in new tab) |
-| noWireNavigate | boolean | false | Whether to disable wire:navigate |
-| badge | string | null | Text for a badge on the menu item |
-| badgeClasses | string | null | CSS classes for the badge |
-| active | boolean | false | Whether the menu item is active |
-| separator | boolean | false | Whether to show a separator |
-| hidden | boolean | false | Whether to hide the menu item |
-| disabled | boolean | false | Whether the menu item is disabled |
-| exact | boolean | false | Whether to match the route exactly |
-| bgColor | string | null | Background color for the menu item (theme color like 'primary' or hex color like '#ff0000') |
+### menu-title and menu-separator
 
-## MenuSeparator Props
+`menu-title` takes its text from the slot or `label`. `menu-separator` takes no props and is hidden from assistive technology.
 
-| Name | Type | Default | Description |
-|------|------|---------|-------------|
-| id | string | null | Optional identifier for the separator |
-| title | string | null | Optional title for the separator |
-| icon | string | null | Optional icon for the separator |
-| iconClasses | string | null | CSS classes for the icon |
+## Livewire
 
-## MenuSub Props
+A sub-menu's toggle and list keep the state a person left them in through re-renders: Alpine owns their `aria-expanded` and `hidden` (`wire:ignore.self`), and the list's id is stable (`<menu id>-sub-<n>`).
 
-| Name | Type | Default | Description |
-|------|------|---------|-------------|
-| id | string | null | Optional identifier for the submenu |
-| title | string | null | Title for the submenu |
-| icon | string | null | Icon for the submenu |
-| iconClasses | string | null | CSS classes for the icon |
-| open | boolean | false | Whether the submenu is open by default |
-| hidden | boolean | false | Whether to hide the submenu |
-| disabled | boolean | false | Whether the submenu is disabled |
-| active | boolean | false | Whether the submenu is active |
-| bgColor | string | null | Background color for the submenu (theme color like 'primary' or hex color like '#ff0000') |
+## Accessibility
 
-## MenuTitle Props
+- A nav landmark, named with `label`; the current page sets `aria-current="page"` and is shown by surface, not color alone.
+- Sub-menus use the disclosure pattern: a button with `aria-expanded` and `aria-controls`. Tab moves through links and toggles; Enter and Space toggle.
+- The chevron mirrors in right-to-left pages and is hidden from assistive technology.
+- Keep nesting to two levels.
 
-| Name | Type | Default | Description |
-|------|------|---------|-------------|
-| id | string | null | Optional identifier for the title |
-| title | string | null | Text for the title |
-| icon | string | null | Icon for the title |
-| iconClasses | string | null | CSS classes for the icon |
+## Upgrading from 2.x
+
+- `title` (items, subs, titles), `link` and `active` still work; prefer `label` or the slot, `href` and `current`. `no-wire-navigate` still works; prefer `:navigate="false"`.
+- The menu's own `title`, `icon` and `separator` props are gone: add a `menu-title` or `menu-separator` child.
+- The DaisyUI and color props (`bg-color`, `active-bg-color`, `icon-classes`, `badge-classes`, glass) are gone: use `classes` or the design tokens.
+- `spinner` is gone; `role="menuitem"` is no longer rendered, since this isn't an ARIA menu.
+
+## Related Components
+
+- [DropdownMenu](dropdown-menu) for actions
+- [Navbar](navbar) for the top bar

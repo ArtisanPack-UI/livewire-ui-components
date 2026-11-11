@@ -2,165 +2,53 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
-
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
 use ArtisanPack\LivewireUiComponents\View\Components\Tab;
-use Error;
-use RuntimeException;
+use Illuminate\Support\Facades\Blade;
 
-/**
- * Comprehensive unit tests for the Tab component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * Tab (#56): a child of Tabs, rendering its panel and registering its trigger.
  */
-class TabComponentTest extends ComponentTestCase
-{
-    protected string $componentClass = Tab::class;
 
-    protected array $defaultProperties = [
-        'disabled' => false,
-        'hidden'   => false,
-    ];
+test('takes its value from value, then the deprecated name, then its label', function (): void {
+    expect((new Tab(value: 'a', name: 'b', label: 'C'))->tabValue())->toBe('a')
+        ->and((new Tab(name: 'b', label: 'C'))->tabValue())->toBe('b')
+        ->and((new Tab(label: 'C'))->tabValue())->toBe('C');
+});
 
-    protected array $requiredProperties = [];
+test('keeps the deprecated name working', function (): void {
+    $html = Blade::render('<x-artisanpack-tabs id="t" selected="two"><x-artisanpack-tab name="one" label="One">1</x-artisanpack-tab><x-artisanpack-tab name="two" label="Two">2</x-artisanpack-tab></x-artisanpack-tabs>');
+    $dom  = designSystemDom($html);
 
-    public function test_tab_string_properties(): void
-    {
-        $stringProperties = ['id', 'name', 'label', 'icon', 'contentClasses'];
-        $testValues       = ComponentDataFactory::sampleTexts();
+    expect($dom->query('//*[@id="t-trigger-two"]')->item(0)->getAttribute('aria-selected'))->toBe('true')
+        ->and($dom->query('//*[@id="t-content-one"]')->item(0)->hasAttribute('hidden'))->toBeTrue()
+        ->and($dom->query('//*[contains(@class, "apui-tabs")]')->item(0)->hasAttribute('selected'))->toBeFalse();
+});
 
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
+test('reads the deprecated vertical-left and vertical-right as vertical', function (): void {
+    $html = Blade::render('<x-artisanpack-tabs id="t" orientation="vertical-right"><x-artisanpack-tab value="a" label="A">A</x-artisanpack-tab></x-artisanpack-tabs>');
 
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
-    }
+    expect(designSystemDom($html)->query('//*[@data-orientation="vertical" and contains(@class, "apui-tabs")]')->length)->toBe(1);
+});
 
-    public function test_tab_boolean_properties(): void
-    {
-        $booleanProperties = ['disabled', 'hidden'];
+test('renders nothing for a hidden tab, and skips its trigger', function (): void {
+    $html = Blade::render('<x-artisanpack-tabs id="t"><x-artisanpack-tab value="a" label="A">A</x-artisanpack-tab><x-artisanpack-tab value="b" label="B" hidden>B</x-artisanpack-tab></x-artisanpack-tabs>');
 
-        foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
-            $this->assertTrue($component->$property);
+    expect(designSystemDom($html)->query('//*[@data-part="trigger"]')->length)->toBe(1)
+        ->and($html)->not->toContain('t-content-b');
+});
 
-            $component = $this->createComponent([$property => false]);
-            $this->assertFalse($component->$property);
-        }
-    }
+test('puts its attributes and the deprecated contentClasses on the panel', function (): void {
+    $html  = Blade::render('<x-artisanpack-tabs id="t"><x-artisanpack-tab value="a" label="A" class="p-4" content-classes="py-2" data-test="x">A</x-artisanpack-tab></x-artisanpack-tabs>');
+    $panel = designSystemDom($html)->query('//*[@data-part="content"]')->item(0);
 
-    public function test_tab_tab_label_method(): void
-    {
-        $html = $this->createComponent()->tabLabel('Overview');
+    expect($panel->getAttribute('class'))->toContain('p-4')
+        ->and($panel->getAttribute('class'))->toContain('py-2')
+        ->and($panel->getAttribute('data-test'))->toBe('x');
+});
 
-        $this->assertStringContainsString('Overview', $html);
-        $this->assertStringContainsString('whitespace-nowrap', $html);
-        $this->assertStringContainsString('Settings', $this->createComponent(['label' => 'Settings'])->tabLabel('Overview'));
-    }
+test('renders a plain panel outside Tabs', function (): void {
+    $html = Blade::render('<x-artisanpack-tab value="a" label="A">Alone</x-artisanpack-tab>');
 
-    public function test_tab_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
-
-    public function test_tab_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'Tab should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
-
-    public function test_tab_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
-
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
-
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_tab_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'Tab rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
-}
+    expect($html)->toContain('role="tabpanel"')
+        ->and($html)->not->toContain('x-apui:content');
+});

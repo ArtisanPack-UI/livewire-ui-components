@@ -1,288 +1,91 @@
+{{--
+    File (#53). Markup contract: design-system File.
+    `class` lands on the root; every other attribute (wire:model, name) lands on the native
+    input, which is transparent over the drop zone: a click browses and a drop chooses with
+    no script, and wire:model uploads natively. Alpine sets data-state="drag" while files
+    are over the zone and shows Livewire's upload progress in a pending row.
+--}}
+@php
+    $controlId   = $controlId();
+    $message     = $errorMessage( $errors ?? null );
+    $isInvalid   = $invalid || null !== $message;
+    $hasLabel    = $filled( $label );
+    $hasHint     = $filled( $hint );
+    $entries     = $entries();
+    $model       = $modelName() ? $attributes->wire( 'model' )->value() : null;
+    $describedBy = $describedBy( array_values( array_filter( [
+        $hasHint ? $controlId . '-hint' : null,
+        null !== $message ? $controlId . '-error' : null,
+    ] ) ) );
+@endphp
 <div
-   x-data="{
-       progress: 0,
-       cropper: null,
-       justCropped: false,
-       fileChanged: false,
-       imagePreview: null,
-       imageCrop: null,
-       originalImageUrl: null,
-       cropAfterChange: {{ json_encode($cropAfterChange) }},
-       file: @entangle($attributes->wire('model')),
-       isDragOver: false,
-       dragCounter: 0,
-       init () {
-           this.imagePreview = this.$refs.preview?.querySelector('img')
-           this.imageCrop = this.$refs.crop?.querySelector('img')
-           this.originalImageUrl = this.imagePreview?.src
-
-           this.$watch('progress', value => {
-               if (value == 100 && this.cropAfterChange && !this.justCropped) {
-                   this.crop()
-               }
-           })
-
-           @if($withDragDrop)
-           this.initDragDrop()
-           @endif
-       },
-       initDragDrop() {
-           // Prevent default drag behaviors
-           ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-               document.addEventListener(eventName, (e) => {
-                   e.preventDefault()
-                   e.stopPropagation()
-               }, false)
-           })
-       },
-       handleDragEnter(e) {
-           e.preventDefault()
-           e.stopPropagation()
-           this.dragCounter++
-           if (this.dragCounter === 1) {
-               this.isDragOver = true
-           }
-       },
-       handleDragOver(e) {
-           e.preventDefault()
-           e.stopPropagation()
-           e.dataTransfer.dropEffect = 'copy'
-       },
-       handleDragLeave(e) {
-           e.preventDefault()
-           e.stopPropagation()
-           this.dragCounter--
-           if (this.dragCounter === 0) {
-               this.isDragOver = false
-           }
-       },
-       handleDrop(e) {
-           e.preventDefault()
-           e.stopPropagation()
-           this.isDragOver = false
-           this.dragCounter = 0
-
-           const files = e.dataTransfer.files
-           if (files.length > 0) {
-               this.processDroppedFiles(files)
-           }
-       },
-       processDroppedFiles(files) {
-           if (this.processing) {
-               return
-           }
-
-           const file = files[0] // Take first file for single file component
-
-           // Validate file type if accept attribute is present
-           const acceptAttr = this.$refs.file.getAttribute('accept')
-           if (acceptAttr && !this.isValidFileType(file, acceptAttr)) {
-               alert('File type not supported')
-               return
-           }
-
-           // Set the file to the input element
-           const dt = new DataTransfer()
-           dt.items.add(file)
-           this.$refs.file.files = dt.files
-
-           // Trigger the change event to process the file
-           this.refreshImage()
-       },
-       isValidFileType(file, acceptAttr) {
-           const acceptedTypes = acceptAttr.split(',').map(type => type.trim())
-
-           return acceptedTypes.some(type => {
-               if (type.startsWith('.')) {
-                   return file.name.toLowerCase().endsWith(type.toLowerCase())
-               } else if (type.includes('/')) {
-                   if (type.endsWith('/*')) {
-                       return file.type.startsWith(type.slice(0, -1))
-                   } else {
-                       return file.type === type
-                   }
-               }
-               return false
-           })
-       },
-       get processing () {
-           return this.progress > 0 && this.progress < 100
-       },
-       close() {
-           $refs.maryCrop.close()
-           this.cropper?.destroy()
-       },
-       change() {
-           if (this.processing) {
-               return
-           }
-
-           this.$refs.file.click()
-       },
-       refreshImage() {
-           this.progress = 1
-           this.justCropped = false
-
-           if (this.imagePreview?.src) {
-               this.imagePreview.src = URL.createObjectURL(this.$refs.file.files[0])
-               this.imageCrop.src = this.imagePreview.src
-           }
-       },
-       crop() {
-           $refs.maryCrop.showModal()
-           this.cropper?.destroy()
-
-           this.cropper = new Cropper(this.imageCrop, {{ $cropSetup() }});
-       },
-       revert() {
-            $wire.$removeUpload('{{ $attributes->wire('model')->value }}', this.file.split('livewire-file:').pop(), () => {
-               this.imagePreview.src = this.originalImageUrl
-            })
-       },
-       async save() {
-           $refs.maryCrop.close();
-
-           this.progress = 1
-           this.justCropped = true
-
-           this.imagePreview.src = this.cropper.getCroppedCanvas().toDataURL()
-           this.imageCrop.src = this.imagePreview.src
-
-           this.cropper.getCroppedCanvas().toBlob((blob) => {
-               blob.name = $refs.file.files[0].name
-               @this.upload('{{ $attributes->wire('model')->value }}', blob,
-                   (uploadedFilename) => {  },
-                   (error) => {  },
-                   (event) => { this.progress = event.detail.progress }
-               )
-           }, '{{ $cropMimeType }}')
-       }
-    }"
-
-   x-on:livewire-upload-progress="progress = $event.detail.progress;"
-
-   @if($withDragDrop)
-   @dragenter="handleDragEnter($event)"
-   @dragover.prevent="handleDragOver($event)"
-   @dragleave="handleDragLeave($event)"
-   @drop.prevent="handleDrop($event)"
-   :class="isDragOver && 'border-primary bg-primary/10 {{ $dragDropClass }}'"
-   {{ $attributes->whereStartsWith('class')->class([
-       'relative border-2 border-dashed border-base-300 rounded-lg transition-all duration-200'
-   ]) }}
-   @else
-   {{ $attributes->whereStartsWith('class') }}
-   @endif
+    {{ $attributes->only( 'class' )->class( $rootClasses( 'apui-file' ) ) }}
+    data-variant="{{ $variant }}"
+    @if ( null !== $maxSize ) data-max-size="{{ $maxSize }}" @endif
+    @if ( $isInvalid ) data-invalid @endif
+    @if ( $disabled ) data-disabled @endif
+    x-data="{ depth: 0, uploading: false, progress: 0 }"
+    x-on:livewire-upload-start="uploading = true; progress = 0"
+    x-on:livewire-upload-progress="progress = $event.detail.progress"
+    x-on:livewire-upload-finish="uploading = false"
+    x-on:livewire-upload-error="uploading = false"
+    x-on:livewire-upload-cancel="uploading = false"
 >
-   @if($withDragDrop)
-   {{-- Drag and Drop Overlay --}}
-   <div
-       x-show="isDragOver"
-       x-transition
-       class="absolute inset-0 flex items-center justify-center bg-base-100/90 rounded-lg z-10"
-       role="presentation"
-       aria-hidden="true"
-   >
-       <div class="text-center">
-           <svg class="mx-auto h-12 w-12 text-primary mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-           </svg>
-           <p class="text-lg font-medium text-primary">{{ $dragDropText }}</p>
-       </div>
-   </div>
-   @endif
-
-   <fieldset class="fieldset py-0">
-       {{-- STANDARD LABEL --}}
-       @if($label)
-           <legend class="fieldset-legend mb-0.5">
-               {{ $label }}
-
-               @if($attributes->get('required'))
-                   <span class="text-error">*</span>
-               @endif
-           </legend>
-       @endif
-
-       {{-- PROGRESS BAR  --}}
-       @if(! $hideProgress && $slot->isEmpty())
-           <progress
-               x-cloak
-               max="100"
-               :value="progress"
-               :class="!processing && 'hidden'"
-               class="progress h-1 absolute -mt-2 w-56"></progress>
-       @endif
-
-       {{-- INPUT --}}
-       <input
-           id="{{ $uuid }}"
-           type="file"
-           x-ref="file"
-           @change="refreshImage()"
-
-           {{
-               $attributes->whereDoesntStartWith('class')->class([
-                   "file-input w-full",
-                   "!file-input-error" => $errorFieldName() && $errors->has($errorFieldName()) && !$omitError,
-                   "hidden" => $slot->isNotEmpty()
-               ])
-           }}
-       />
-
-       @if ($slot->isNotEmpty())
-           <!-- PREVIEW AREA -->
-           <div x-ref="preview" class="relative flex">
-               <div
-                   wire:ignore
-                   @click="change()"
-                   :class="processing && 'opacity-50 pointer-events-none'"
-                   class="cursor-pointer hover:scale-105 transition-all tooltip"
-                   data-tip="{{ $changeText }}"
-               >
-                   {{ $slot }}
-               </div>
-               <!-- PROGRESS -->
-               <div
-                   x-cloak
-                   :style="`--value:${progress}; --size:1.5rem; --thickness: 4px;`"
-                   :class="!processing && 'hidden'"
-                   class="radial-progress text-success absolute top-5 start-5 bg-neutral"
-                   role="progressbar"
-               ></div>
-           </div>
-
-           <!-- CROP MODAL -->
-           <div @click.prevent="" x-ref="crop" wire:ignore>
-               <x-artisanpack-modal id="maryCrop{{ $uuid }}" x-ref="maryCrop" :title="$cropTitleText" separator class="backdrop-blur-sm" persistent @keydown.window.esc.prevent="" without-trap-focus>
-                   <img src="" />
-                   <x-slot:actions>
-                       <x-artisanpack-button variant="outline" color="neutral" @click="close()">{{ $cropCancelText }}</x-artisanpack-button>
-                       <x-artisanpack-button @click="save()" x-bind:disabled="processing">{{ $cropSaveText }}</x-artisanpack-button>
-                   </x-slot:actions>
-               </x-artisanpack-modal>
-           </div>
-       @endif
-
-       {{-- ERROR --}}
-       @if(!$omitError && $errors->has($errorFieldName()))
-           @foreach($errors->get($errorFieldName()) as $message)
-               @foreach(Arr::wrap($message) as $line)
-                   <div class="{{ $errorClass }}" x-classes="text-error">{{ $line }}</div>
-                   @break($firstErrorOnly)
-               @endforeach
-               @break($firstErrorOnly)
-           @endforeach
-       @endif
-
-       {{-- MULTIPLE --}}
-       @error($modelName().'.*')
-           <div class="text-error" x-classes="text-error">{{ $message }}</div>
-       @enderror
-
-       {{-- HINT --}}
-       @if($hint)
-           <div class="{{ $hintClass }}" x-classes="fieldset-label">{{ $hint }}</div>
-       @endif
-   </fieldset>
+    @if ( $hasLabel )
+        <label data-scope="file" data-part="label" for="{{ $controlId }}"{{ $partClass( 'label' ) }}>{{ $content( $label ) }}@if ( $required )<span data-scope="file" data-part="required" aria-hidden="true"{{ $partClass( 'required' ) }}>*</span>@endif</label>
+    @endif
+    <div
+        data-scope="file"
+        data-part="dropzone"{{ $partClass( 'dropzone' ) }}
+        x-on:dragenter="depth++; $el.dataset.state = 'drag'"
+        x-on:dragleave="depth = Math.max(0, depth - 1); if (0 === depth) delete $el.dataset.state"
+        x-on:drop="depth = 0; delete $el.dataset.state"
+    >
+        <input {{ $attributes->except( [ 'class', 'id', 'aria-describedby' ] ) }}
+            type="file"
+            data-scope="file"
+            data-part="control"
+            id="{{ $controlId }}"{{ $partClass( 'control' ) }}
+            @if ( null !== $accept ) accept="{{ $accept }}" @endif
+            @if ( $multiple ) multiple @endif
+            @if ( $disabled ) disabled @endif
+            @if ( $required ) required @endif
+            @if ( $isInvalid ) aria-invalid="true" @endif
+            @if ( ! $hasLabel ) aria-labelledby="{{ $controlId }}-title" @endif
+            @if ( null !== $describedBy ) aria-describedby="{{ $describedBy }}" @endif
+        />
+        <span data-scope="file" data-part="icon" aria-hidden="true"{{ $partClass( 'icon' ) }}>{{ $iconSvg( 'compact' === $variant ? 'file-text' : 'cloud-upload' ) }}</span>
+        <p data-scope="file" data-part="title" id="{{ $controlId }}-title"{{ $partClass( 'title' ) }}>{{ $titleText() }}</p>
+        @if ( $hasHint )
+            <p data-scope="file" data-part="hint" id="{{ $controlId }}-hint"{{ $partClass( 'hint' ) }}>{{ $content( $hint ) }}</p>
+        @endif
+    </div>
+    <ul data-scope="file" data-part="list"{{ $partClass( 'list' ) }} @if ( [] === $entries ) x-bind:hidden="! uploading" hidden @endif>
+        @foreach ( $entries as $index => $entry )
+            <li data-scope="file" data-part="item" wire:key="{{ $controlId }}-file-{{ $index }}"{{ $partClass( 'item' ) }} @if ( null !== $entry['error'] ) data-state="error" @endif>
+                <span data-scope="file" data-part="thumb" aria-hidden="true"{{ $partClass( 'thumb' ) }}>{{ $iconSvg( null !== $entry['error'] ? 'circle-alert' : 'file-text' ) }}</span>
+                <span data-scope="file" data-part="name"{{ $partClass( 'name' ) }}>{{ $entry['name'] }}</span>
+                <span data-scope="file" data-part="actions"{{ $partClass( 'actions' ) }}>
+                    @if ( null !== $entry['upload'] && null !== $model )
+                        <x-artisanpack-button variant="ghost" color="neutral" size="sm" icon-only leading-icon="x" :aria-label="$removeText( $entry['name'] )" :disabled="$disabled" x-on:click="$wire.$removeUpload({{ \Illuminate\Support\Js::from( $model ) }}, {{ \Illuminate\Support\Js::from( $entry['upload'] ) }})" />
+                    @else
+                        <x-artisanpack-button variant="ghost" color="neutral" size="sm" icon-only leading-icon="x" :aria-label="$removeText( $entry['name'] )" :disabled="$disabled" x-on:click="$dispatch('remove', { index: {{ $index }}, name: {{ \Illuminate\Support\Js::from( $entry['name'] ) }} })" />
+                    @endif
+                </span>
+                @if ( null !== $entry['progress'] && null === $entry['error'] )
+                    <progress data-scope="file" data-part="progress" max="100" value="{{ $entry['progress'] }}" aria-label="{{ $entry['name'] }}"{{ $partClass( 'progress' ) }}>{{ $entry['progress'] }}%</progress>
+                @else
+                    <span data-scope="file" data-part="meta"{{ $partClass( 'meta' ) }}>@if ( null !== $entry['error'] ){{ $iconSvg( 'circle-alert' ) }}{{ $entry['error'] }}@elseif ( null !== $entry['size'] ){{ $formatSize( $entry['size'] ) }}@endif</span>
+                @endif
+            </li>
+        @endforeach
+        <li data-scope="file" data-part="item" wire:key="{{ $controlId }}-pending" hidden x-bind:hidden="! uploading" aria-live="polite"{{ $partClass( 'item' ) }}>
+            <span data-scope="file" data-part="thumb" aria-hidden="true"{{ $partClass( 'thumb' ) }}>{{ $iconSvg( 'cloud-upload' ) }}</span>
+            <span data-scope="file" data-part="name"{{ $partClass( 'name' ) }}>{{ __( 'Uploading…' ) }}</span>
+            <progress data-scope="file" data-part="progress" max="100" value="0" x-bind:value="progress" aria-label="{{ __( 'Uploading…' ) }}"{{ $partClass( 'progress' ) }}></progress>
+        </li>
+    </ul>
+    @if ( null !== $message )
+        <p data-scope="file" data-part="error" id="{{ $controlId }}-error"{{ $partClass( 'error' ) }}>{{ $iconSvg( 'circle-alert' ) }}{{ $message }}</p>
+    @endif
 </div>

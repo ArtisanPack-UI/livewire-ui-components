@@ -2,197 +2,112 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
-
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
+use ArtisanPack\LivewireUiComponents\Support\IconRegistry;
 use ArtisanPack\LivewireUiComponents\View\Components\Textarea;
-use Error;
-use RuntimeException;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\MessageBag;
+use Illuminate\Support\ViewErrorBag;
 
-/**
- * Comprehensive unit tests for the Textarea component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * Textarea (#53): the design-system markup contract, the counter and its
+ * live region, ids and the error lookup. The manifest parity check is in
+ * tests/Feature/DesignSystemParityTest.php.
  */
-class TextareaComponentTest extends ComponentTestCase
-{
-    protected string $componentClass = Textarea::class;
 
-    protected array $defaultProperties = [
-        'hintClass'      => 'fieldset-label',
-        'inline'         => false,
-        'errorClass'     => 'text-error',
-        'omitError'      => false,
-        'firstErrorOnly' => false,
-    ];
+test('the fixture renders the contract markup in order', function (): void {
+    $html = Blade::render('<x-artisanpack-textarea id="desc" label="Description" required :max-length="500" hint="Shown on the listing page." error="Write at least 40 characters." />');
+    $dom  = designSystemDom($html);
 
-    protected array $requiredProperties = [];
-
-    public function test_textarea_string_properties(): void
-    {
-        $stringProperties = ['id', 'label', 'hint', 'hintClass', 'errorField', 'errorClass'];
-        $testValues       = ComponentDataFactory::sampleTexts();
-
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
-
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
+    $parts = [];
+    foreach ($dom->query('//*[@data-scope="textarea"]') as $element) {
+        $parts[] = $element->getAttribute('data-part');
     }
 
-    public function test_textarea_boolean_properties(): void
-    {
-        $booleanProperties = ['inline', 'omitError', 'firstErrorOnly'];
+    $control = $dom->query('//textarea')->item(0);
 
-        foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
-            $this->assertTrue($component->$property);
+    expect($parts)->toBe(['label', 'required', 'box', 'control', 'count', 'hint', 'error'])
+        ->and($control->getAttribute('id'))->toBe('desc')
+        ->and($control->getAttribute('rows'))->toBe('4')
+        ->and($control->getAttribute('maxlength'))->toBe('500')
+        ->and($control->hasAttribute('required'))->toBeTrue()
+        ->and($control->getAttribute('aria-invalid'))->toBe('true')
+        ->and($control->getAttribute('aria-describedby'))->toBe('desc-hint desc-error')
+        ->and($html)->toContain('<span data-scope="textarea" data-part="count" aria-hidden="true" x-text="length + \' / \' + max">0 / 500</span>')
+        ->and($html)->toContain('<p data-scope="textarea" data-part="error" id="desc-error">'.IconRegistry::svg('circle-alert').'Write at least 40 characters.</p>');
+});
 
-            $component = $this->createComponent([$property => false]);
-            $this->assertFalse($component->$property);
-        }
+test('a bare textarea renders only the box and control, without Alpine', function (): void {
+    $html = Blade::render('<x-artisanpack-textarea aria-label="Notes" />');
+    $dom  = designSystemDom($html);
+
+    $parts = [];
+    foreach ($dom->query('//*[@data-scope="textarea"]') as $element) {
+        $parts[] = $element->getAttribute('data-part');
     }
 
-    public function test_textarea_model_name_method(): void
-    {
-        $component = $this->createComponent();
+    expect($parts)->toBe(['box', 'control'])
+        ->and($html)->not->toContain('x-data')
+        ->and($html)->not->toContain('aria-live');
+});
 
-        if (method_exists($component, 'modelName')) {
-            try {
-                $result = $component->modelName();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
+test('the value is the textarea content, escaped', function (): void {
+    $control = designSystemDom(Blade::render('<x-artisanpack-textarea label="A" value="<b>Hi</b>" />'))->query('//textarea')->item(0);
 
-    public function test_textarea_error_field_name_method(): void
-    {
-        $component = $this->createComponent();
+    expect($control->textContent)->toBe('<b>Hi</b>');
+});
 
-        if (method_exists($component, 'errorFieldName')) {
-            try {
-                $result = $component->errorFieldName();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
+test('the live region stays empty until the limit is near', function (): void {
+    $far  = designSystemDom(Blade::render('<x-artisanpack-textarea label="A" :max-length="100" value="short" />'));
+    $near = designSystemDom(Blade::render('<x-artisanpack-textarea label="A" :max-length="100" value="'.str_repeat('a', 95).'" />'));
 
-    public function test_textarea_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
+    expect($far->query('//*[@aria-live="polite"]')->item(0)->textContent)->toBe('')
+        ->and($near->query('//*[@aria-live="polite"]')->item(0)->textContent)->toBe('Characters left: 5')
+        ->and($near->query('//*[@data-part="count"]')->item(0)->textContent)->toBe('95 / 100');
+});
 
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
+test('the threshold is 10% of the limit and at least 10', function (): void {
+    expect((new Textarea(maxLength: 500))->announceWithin())->toBe(50)
+        ->and((new Textarea(maxLength: 40))->announceWithin())->toBe(10)
+        ->and((new Textarea)->announceWithin())->toBe(0);
+});
 
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
+test('remainingLabel replaces the announcement and Alpine gets it', function (): void {
+    $html = Blade::render('<x-artisanpack-textarea label="A" :max-length="10" value="abcdefgh" remaining-label="Quedan {count}" />');
 
-    public function test_textarea_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
+    expect(designSystemDom($html)->query('//*[@aria-live="polite"]')->item(0)->textContent)->toBe('Quedan 2')
+        ->and($html)->toContain('Quedan {count}');
+});
 
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
+test('autoResize, readonly and disabled flag the root', function (): void {
+    $root = designSystemDom(Blade::render('<x-artisanpack-textarea label="A" auto-resize readonly disabled />'))->query('//div')->item(0);
 
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'Textarea should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
+    expect($root->hasAttribute('data-auto-resize'))->toBeTrue()
+        ->and($root->hasAttribute('data-readonly'))->toBeTrue()
+        ->and($root->hasAttribute('data-disabled'))->toBeTrue();
+});
 
-    public function test_textarea_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
+test('class lands on the root and every other attribute on the control', function (): void {
+    $dom     = designSystemDom(Blade::render('<x-artisanpack-textarea class="mt-2" wire:model.blur="notes" name="notes" label="Notes" />'));
+    $root    = $dom->query('//div[contains(@class, "apui-textarea")]')->item(0);
+    $control = $dom->query('//textarea')->item(0);
 
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
+    expect($root->getAttribute('class'))->toBe('apui-textarea mt-2')
+        ->and($control->getAttribute('wire:model.blur'))->toBe('notes')
+        ->and($control->getAttribute('name'))->toBe('notes')
+        ->and($control->getAttribute('id'))->toBe('apui-textarea-notes-'.substr(md5('notes'), 0, 8));
+});
 
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
+test('the error comes from $errors for the wire:model name', function (): void {
+    view()->share('errors', (new ViewErrorBag)->put('default', new MessageBag(['bio' => 'The bio is too short.'])));
 
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
+    $dom = designSystemDom(Blade::render('<x-artisanpack-textarea wire:model="bio" label="Bio" />'));
 
-    public function test_textarea_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'Textarea rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
-}
+    expect($dom->query('//p[@data-part="error"]')->item(0)->textContent)->toBe('The bio is too short.');
+});
+
+test('Alpine rereads the control after a form reset and unhooks on destroy', function (): void {
+    $xData = designSystemDom(Blade::render('<x-artisanpack-textarea label="A" :max-length="20" />'))->query('//div')->item(0)->getAttribute('x-data');
+
+    expect($xData)->toContain("this.form = input.form; this.onReset = () => setTimeout(read); this.form?.addEventListener('reset', this.onReset);")
+        ->and($xData)->toContain("this.form?.removeEventListener('reset', this.onReset)");
+});

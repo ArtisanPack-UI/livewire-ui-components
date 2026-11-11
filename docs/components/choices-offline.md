@@ -4,6 +4,8 @@ title: ChoicesOffline Component
 
 # ChoicesOffline Component
 
+> **Deprecated in 3.0.** Use [Combobox](combobox) with local filtering, built on the design system. See [Upgrading](combobox#upgrading-from-choices-choicesoffline-and-tags). This component is removed in a later major release.
+
 The ChoicesOffline component is a variant of the Choices component that works entirely client-side without making network requests. It provides a searchable, multi-select dropdown interface with all the functionality of the standard Choices component but optimized for offline use or when all options are known in advance.
 
 ## Basic Usage

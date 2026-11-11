@@ -81,30 +81,35 @@ Many components share common props and slots:
 |-----------|-------------|---------------|
 | [Button](button) | Interactive button element | [Button docs](button) |
 | [Checkbox](checkbox) | Checkbox input | [Checkbox docs](checkbox) |
-| [CheckboxGroup](checkbox-group) | Group of checkbox inputs | [CheckboxGroup docs](checkbox-group) |
-| [Choices](choices) | Multi-select dropdown with search | [Choices docs](choices) |
-| [ChoicesOffline](choices-offline) | Offline version of Choices | [ChoicesOffline docs](choices-offline) |
-| [Colorpicker](colorpicker) | Color selection input | [Colorpicker docs](colorpicker) |
-| [DatePicker](date-picker) | Date selection input | [DatePicker docs](date-picker) |
-| [DateTime](date-time) | Date and time selection input | [DateTime docs](date-time) |
-| [Editor](editor) | Rich text editor | [Editor docs](editor) |
-| [Fieldset](fieldset) | Styled container for form fields | [Fieldset docs](fieldset) |
-| [File](file) | File upload input | [File docs](file) |
-| [Form](form) | Form container with validation | [Form docs](form) |
-| [Group](group) | Group of form elements | [Group docs](group) |
+| [CheckboxGroup](checkbox-group) | Labeled set of checkboxes with select all, columns and cards | [CheckboxGroup docs](checkbox-group) |
+| [Choices](choices) | Deprecated: use Combobox with `remote` | [Choices docs](choices) |
+| [ChoicesOffline](choices-offline) | Deprecated: use Combobox | [ChoicesOffline docs](choices-offline) |
+| [Combobox](combobox) | Searchable single or multiple select, remote search and tags | [Combobox docs](combobox) |
+| [ColorPicker](color-picker) | Color field with the platform picker, a hex field and swatches | [ColorPicker docs](color-picker) |
+| [Colorpicker](colorpicker) | Deprecated: alias of ColorPicker | [Colorpicker docs](colorpicker) |
+| [DatePicker](date-picker) | Text field with a calendar popover: a date, a range, or date and time (`time`) | [DatePicker docs](date-picker) |
+| [Datepicker](datepicker) | Deprecated: alias of DatePicker | [Datepicker docs](datepicker) |
+| [DateTime](date-time) | Deprecated: DatePicker in time mode | [DateTime docs](date-time) |
+| [CodeEditor](code-editor) | Code in a native textarea with line numbers, tabs, diagnostics and a status bar | [CodeEditor docs](code-editor) |
+| [Editor](editor) | Deprecated: alias of RichTextEditor | [Editor docs](editor) |
+| [Fieldset](fieldset) | Groups fields under a legend: panel, divided or plain | [Fieldset docs](fieldset) |
+| [File](file) | Drop zone and file list, uploads through wire:model | [File docs](file) |
+| [Form](form) | Native form with an actions row | [Form docs](form) |
+| [Group](group) | Deprecated: use RadioGroup with `variant="segmented"` | [Group docs](group) |
 | [Input](input) | Text input field | [Input docs](input) |
-| [Password](password) | Password input with toggle | [Password docs](password) |
-| [Pin](pin) | PIN code input | [Pin docs](pin) |
-| [Radio](radio) | Radio button input | [Radio docs](radio) |
-| [RadioGroup](radio-group) | Group of radio button inputs | [RadioGroup docs](radio-group) |
-| [Range](range) | Range slider input | [Range docs](range) |
-| [Rating](rating) | Star rating input | [Rating docs](rating) |
+| [Password](password) | Password input with reveal, strength meter and requirements | [Password docs](password) |
+| [Pin](pin) | One-time code cells driven by one input | [Pin docs](pin) |
+| [Radio](radio) | Deprecated: use RadioGroup | [Radio docs](radio) |
+| [RadioGroup](radio-group) | One option from a small set: default, cards or segmented | [RadioGroup docs](radio-group) |
+| [Range](range) | Slider for one value or a from–to range | [Range docs](range) |
+| [Rating](rating) | Star score, read-only or as native radios | [Rating docs](rating) |
+| [RichTextEditor](rich-text-editor) | Formatted text with a toolbar; TinyMCE when loaded | [RichTextEditor docs](rich-text-editor) |
 | [Select](select) | Dropdown select input | [Select docs](select) |
-| [SelectGroup](select-group) | Grouped select input | [SelectGroup docs](select-group) |
-| [Signature](signature) | Signature pad input | [Signature docs](signature) |
-| [Tags](tags) | Tags input | [Tags docs](tags) |
-| [Textarea](textarea) | Multi-line text input | [Textarea docs](textarea) |
-| [Toggle](toggle) | Toggle switch input | [Toggle docs](toggle) |
+| [SelectGroup](select-group) | Deprecated: use Select option groups | [SelectGroup docs](select-group) |
+| [Signature](signature) | Draw, type or upload a signature as a PNG data URL | [Signature docs](signature) |
+| [Tags](tags) | Deprecated: use Combobox with `multiple` and `allow-create` | [Tags docs](tags) |
+| [Textarea](textarea) | Multi-line text input with an optional counter | [Textarea docs](textarea) |
+| [Toggle](toggle) | Switch for settings that apply at once | [Toggle docs](toggle) |
 
 ### Layout Components
 
@@ -121,22 +126,25 @@ Many components share common props and slots:
 | [Main](main) | Main content container | [Main docs](main) |
 | [Modal](modal) | Modal dialog (deprecated: use Dialog) | [Modal docs](modal) |
 | [Popover](popover) | Popover tooltip | [Popover docs](popover) |
-| [Tabs](tabs) | Tabbed interface | [Tabs docs](tabs) |
+| [Tabs](tabs) | Views of the same content in a tablist | [Tabs docs](tabs) |
 | [Tab](tab) | Individual tab for Tabs component | [Tab docs](tab) |
 
 ### Navigation Components
 
 | Component | Description | Documentation |
 |-----------|-------------|---------------|
-| [Breadcrumbs](breadcrumbs) | Breadcrumb navigation | [Breadcrumbs docs](breadcrumbs) |
+| [Breadcrumbs](breadcrumbs) | The trail to the current page, with a collapsible middle | [Breadcrumbs docs](breadcrumbs) |
+| [BreadcrumbsItem](breadcrumbs) | One composed level of Breadcrumbs | [Breadcrumbs docs](breadcrumbs) |
 | [Menu](menu) | Navigation menu | [Menu docs](menu) |
 | [MenuItem](menu-item) | Menu item for Menu component | [MenuItem docs](menu-item) |
 | [MenuSeparator](menu-separator) | Separator for Menu component | [MenuSeparator docs](menu-separator) |
 | [MenuSub](menu-sub) | Submenu for Menu component | [MenuSub docs](menu-sub) |
 | [MenuTitle](menu-title) | Title for Menu component | [MenuTitle docs](menu-title) |
-| [Nav](nav) | Navigation bar | [Nav docs](nav) |
-| [Pagination](pagination) | Pagination controls | [Pagination docs](pagination) |
-| [Spotlight](spotlight) | Command palette/search | [Spotlight docs](spotlight) |
+| [Nav](nav) | Navigation bar (deprecated: use Navbar) | [Nav docs](nav) |
+| [Navbar](navbar) | The top bar: brand, links, search and actions | [Navbar docs](navbar) |
+| [NavbarItem](navbar) | A primary link in a Navbar | [Navbar docs](navbar) |
+| [Pagination](pagination) | Previous, the pages and next, from numbers or a Laravel paginator | [Pagination docs](pagination) |
+| [Spotlight](spotlight) | Command palette: grouped search across pages, records and actions (⌘K) | [Spotlight docs](spotlight) |
 
 ### Data Display Components
 
@@ -155,15 +163,15 @@ Many components share common props and slots:
 | [ImageLibrary](image-library) | Image library/picker | [ImageLibrary docs](image-library) |
 | [ImageSlider](image-slider) | Image slider/carousel component | [ImageSlider docs](image-slider) |
 | [Kbd](kbd) | Keyboard key display | [Kbd docs](kbd) |
-| [Link component](link) | Styled link element | [Link component docs](link) |
+| [Link](link) | An inline or standalone link, or a button styled as one | [Link docs](link) |
 | [ListItem](list-item) | List item with various layouts | [ListItem docs](list-item) |
 | [Markdown](markdown) | Markdown content display | [Markdown docs](markdown) |
 | [Profile](profile) | User profile display | [Profile docs](profile) |
 | [Progress](progress) | Progress bar | [Progress docs](progress) |
 | [ProgressRadial](progress-radial) | Radial progress indicator | [ProgressRadial docs](progress-radial) |
 | [Stat](stat) | Statistics display | [Stat docs](stat) |
-| [Steps](steps) | Step indicator | [Steps docs](steps) |
-| [Step](step) | Individual step for Steps component | [Step docs](step) |
+| [Steps](steps) | Progress through a sequence, bound with wire:model | [Steps docs](steps) |
+| [Step](steps) | One step of Steps | [Step docs](step) |
 | [Subheading](subheading) | Styled subheading text | [Subheading docs](subheading) |
 | [Sparkline](sparkline) | Inline sparkline charts | [Sparkline docs](sparkline) |
 | [Table](table) | Data table with sorting, export, and more | [Table docs](table) |
@@ -183,9 +191,10 @@ Many components share common props and slots:
 | Component | Description | Documentation |
 |-----------|-------------|---------------|
 | [Alert](alert) | Alert/notification message | [Alert docs](alert) |
-| [Errors](errors) | Form validation errors display | [Errors docs](errors) |
+| [Errors](errors) | Form validation errors display (deprecated: use ValidationSummary) | [Errors docs](errors) |
 | [Loading](loading) | Loading indicator | [Loading docs](loading) |
 | [Toast](toast) | Toast notifications and the toaster | [Toast docs](toast) |
+| [ValidationSummary](validation-summary) | Every form error, each linked to its field | [ValidationSummary docs](validation-summary) |
 
 ### Utility Components
 
@@ -224,11 +233,11 @@ ArtisanPack UI components are designed to work together seamlessly. Here are som
     </x-slot:header>
     
     <x-artisanpack-tabs>
-        <x-artisanpack-tab name="info" label="Information" active>
+        <x-artisanpack-tab value="info" label="Information">
             <div class="p-4">User information content</div>
         </x-artisanpack-tab>
         
-        <x-artisanpack-tab name="settings" label="Settings">
+        <x-artisanpack-tab value="settings" label="Settings">
             <div class="p-4">User settings content</div>
         </x-artisanpack-tab>
     </x-artisanpack-tabs>
