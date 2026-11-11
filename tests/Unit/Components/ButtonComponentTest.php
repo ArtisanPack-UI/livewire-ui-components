@@ -110,7 +110,7 @@ test('a loading link drops its href, is busy and is not marked disabled', functi
 
 test('a disabled or loading link drops its click handlers', function (string $state): void {
     $a = designSystemDom(Blade::render(
-        '<x-artisanpack-button href="/r" '.$state.' wire:click="go" wire:click.prevent="go" @click="open = true" x-on:click.stop="x()" wire:key="k">Go</x-artisanpack-button>',
+        '<x-artisanpack-button href="/r" '.$state.' wire:click="go" wire:click.prevent="go" @click="open = true" x-on:click.stop="x()" onclick="go()" onMouseOver="x()" wire:key="k" data-online="yes">Go</x-artisanpack-button>',
     ))->query('//a')->item(0);
 
     $names = [];
@@ -118,8 +118,9 @@ test('a disabled or loading link drops its click handlers', function (string $st
         $names[] = $attribute->name;
     }
 
-    expect(array_filter($names, static fn (string $name): bool => 1 === preg_match('/^(wire:click|@click|x-on:click)/', $name)))->toBe([])
-        ->and($a->getAttribute('wire:key'))->toBe('k');
+    expect(array_filter($names, static fn (string $name): bool => 1 === preg_match('/^(wire:click|@click|x-on:click|on[a-z]+$)/i', $name)))->toBe([])
+        ->and($a->getAttribute('wire:key'))->toBe('k')
+        ->and($a->getAttribute('data-online'))->toBe('yes');
 })->with(['disabled', 'loading']);
 
 test('an active link keeps its click handlers', function (): void {
@@ -143,7 +144,13 @@ test('unsafe href schemes are ignored and render a button', function (string $hr
     'control character' => "java\tscript:alert(1)",
     'vbscript'          => 'vbscript:alert(1)',
     'data'              => 'data:text/html,<script>alert(1)</script>',
+    'other scheme'      => 'ftp://example.com/alert(1)',
 ]);
+
+test('allowed href forms render a link', function (string $href): void {
+    expect(designSystemDom(Blade::render('<x-artisanpack-button :href="$href">Go</x-artisanpack-button>', ['href' => $href]))
+        ->query('//a')->item(0)->getAttribute('href'))->toBe($href);
+})->with(['/r', './r', '?p=2', '#top', '//example.com', 'https://example.com', 'mailto:a@example.com', 'tel:+15555550100', 'sms:+15555550100']);
 
 test('icon-only renders no label part and passes the aria-label through', function (): void {
     $dom  = designSystemDom(Blade::render('<x-artisanpack-button icon-only leading-icon="plus" aria-label="Add" />'));

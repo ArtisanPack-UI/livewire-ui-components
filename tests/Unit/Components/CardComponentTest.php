@@ -95,7 +95,13 @@ test('unsafe href schemes are ignored', function (string $href): void {
     expect($dom->query('//a'))->toHaveCount(0)
         ->and($dom->query('//div[contains(@class, "apui-card")]')->item(0)->hasAttribute('data-interactive'))->toBeFalse()
         ->and($html)->not->toContain('alert(1)');
-})->with(['javascript:alert(1)', ' VBScript:alert(1)', 'data:text/html,alert(1)']);
+})->with(['javascript:alert(1)', ' VBScript:alert(1)', 'data:text/html,alert(1)', 'ftp://example.com/alert(1)']);
+
+test('media only allows relative, http(s), blob and data:image sources', function (): void {
+    expect(Blade::render('<x-artisanpack-card media="data:text/html,x" title="T" />'))->not->toContain('data-part="media"')
+        ->and(Blade::render('<x-artisanpack-card media="ftp://example.com/a.png" title="T" />'))->not->toContain('data-part="media"')
+        ->and(Blade::render('<x-artisanpack-card media="blob:https://example.com/1" title="T" />'))->toContain('src="blob:https://example.com/1"');
+});
 
 test('media rejects javascript: and vbscript: but allows data: images', function (): void {
     expect(Blade::render('<x-artisanpack-card media="javascript:alert(1)" title="T" />'))->not->toContain('data-part="media"')

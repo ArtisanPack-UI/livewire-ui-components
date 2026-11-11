@@ -21,7 +21,7 @@ All components use the `<x-artisanpack-{component-name}>` naming pattern. The ol
 <code-snippet name="Component naming syntax" lang="blade">
 <!-- Correct (use this) -->
 <x-artisanpack-button>Click Me</x-artisanpack-button>
-<x-artisanpack-input wire:model="name" />
+<x-artisanpack-input wire:model="name" :label="__( 'Name' )" />
 
 <!-- Deprecated (do not use) -->
 <x-artisanpack-button>Click Me</x-artisanpack-artisanpack-button>
@@ -49,31 +49,38 @@ All components use the `<x-artisanpack-{component-name}>` naming pattern. The ol
 <!-- Basic button -->
 <x-artisanpack-button>Click Me</x-artisanpack-button>
 
-<!-- Button with color and icon -->
-<x-artisanpack-button color="primary" icon="o-plus">
+<!-- Variant, color, size and a leading icon (Lucide names; o-*/fa-* names still resolve through blade-icons) -->
+<x-artisanpack-button variant="soft" color="primary" size="sm" leading-icon="plus">
     Add Item
 </x-artisanpack-button>
 
-<!-- Livewire action button -->
-<x-artisanpack-button wire:click="save" color="success">
+<!-- Livewire action button with a loading state -->
+<x-artisanpack-button wire:click="save" color="success" :loading="$saving" type="submit">
     Save
 </x-artisanpack-button>
+
+<!-- Link styled as a button; icon-only buttons need an aria-label -->
+<x-artisanpack-button href="/reports" variant="outline" color="neutral">Reports</x-artisanpack-button>
+<x-artisanpack-button icon-only leading-icon="trash" variant="ghost" color="error" :aria-label="__( 'Delete' )" />
 </code-snippet>
 @endverbatim
 
 @verbatim
 <code-snippet name="Card component" lang="blade">
-<x-artisanpack-card>
-    <x-slot:header>
-        <h3 class="text-lg font-bold">Card Title</h3>
-    </x-slot:header>
+<x-artisanpack-card :title="__( 'Card Title' )" :description="__( 'Updated 2 hours ago' )" surface="raised">
+    <x-slot:actions>
+        <x-artisanpack-button variant="ghost" color="neutral" size="sm">{{ __( 'Share' ) }}</x-artisanpack-button>
+    </x-slot:actions>
 
     <p>Card content goes here.</p>
 
     <x-slot:footer>
-        <x-artisanpack-button color="primary">Action</x-artisanpack-button>
+        <x-artisanpack-button>{{ __( 'Action' ) }}</x-artisanpack-button>
     </x-slot:footer>
 </x-artisanpack-card>
+
+<!-- href links the title (it needs a title) and makes the whole card clickable -->
+<x-artisanpack-card href="/reports/q3" :title="__( 'Q3 report' )" media="/images/q3.png" />
 </code-snippet>
 @endverbatim
 
@@ -86,32 +93,53 @@ All components use the `<x-artisanpack-{component-name}>` naming pattern. The ol
     placeholder="Enter your name"
 />
 
-<!-- Input with validation error -->
+<!-- The error comes from $errors for the wire:model name (or error-field) -->
 <x-artisanpack-input
     label="Email"
     wire:model="email"
     type="email"
-    error="{{ $errors->first('email') }}"
+    required
 />
 
-<!-- Input with icon and hint -->
+<!-- Leading/trailing icons, prefix/suffix and a hint -->
 <x-artisanpack-input
     label="Search"
     wire:model.live="search"
-    icon="o-magnifying-glass"
+    leading-icon="search"
     hint="Type to search..."
 />
+<x-artisanpack-input label="Price" wire:model="price" type="number" prefix="USD" suffix="/mo" />
 </code-snippet>
 @endverbatim
 
 @verbatim
 <code-snippet name="Select component" lang="blade">
+<!-- Options are strings or [ 'value' => …, 'label' => …, 'disabled' => … ] entries -->
 <x-artisanpack-select
     label="Country"
     wire:model="country"
-    :options="$countries"
-    option-value="id"
-    option-label="name"
+    :options="[
+        [ 'value' => 'us', 'label' => __( 'United States' ) ],
+        [ 'value' => 'ca', 'label' => __( 'Canada' ) ],
+    ]"
+/>
+
+<!-- Option children render after the options; placeholder="" drops the empty first option -->
+<x-artisanpack-select label="Plan" wire:model="plan" placeholder="">
+    <option value="starter">{{ __( 'Starter' ) }}</option>
+    <option value="team">{{ __( 'Team' ) }}</option>
+</x-artisanpack-select>
+</code-snippet>
+@endverbatim
+
+@verbatim
+<code-snippet name="Checkbox component" lang="blade">
+<x-artisanpack-checkbox wire:model="terms" :label="__( 'I agree to the terms' )" required />
+<x-artisanpack-checkbox
+    :label="__( 'Select all' )"
+    :checked="$allSelected"
+    :indeterminate="$someSelected"
+    :description="__( 'Applies to every row on this page.' )"
 />
 </code-snippet>
 @endverbatim
@@ -122,10 +150,10 @@ All components use the `<x-artisanpack-{component-name}>` naming pattern. The ol
     <p>Are you sure you want to proceed?</p>
 
     <x-slot:actions>
-        <x-artisanpack-button wire:click="$set('showModal', false)">
+        <x-artisanpack-button wire:click="$set('showModal', false)" variant="outline" color="neutral">
             Cancel
         </x-artisanpack-button>
-        <x-artisanpack-button wire:click="confirm" color="primary">
+        <x-artisanpack-button wire:click="confirm">
             Confirm
         </x-artisanpack-button>
     </x-slot:actions>
@@ -144,7 +172,10 @@ All components use the `<x-artisanpack-{component-name}>` naming pattern. The ol
         <x-artisanpack-button
             wire:click="edit({{ $user->id }})"
             size="sm"
-            icon="o-pencil"
+            variant="ghost"
+            icon-only
+            leading-icon="o-pencil"
+            :aria-label="__( 'Edit' )"
         />
     @endscope
 </x-artisanpack-table>

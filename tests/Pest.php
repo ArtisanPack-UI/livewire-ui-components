@@ -33,7 +33,9 @@ expect()->extend('toBeOne', function () {
 });
 
 // toMatchManifest: Blade parity with the design-system manifests (D-016).
-Expectations::register();
+if (class_exists(Expectations::class)) {
+    Expectations::register();
+}
 
 /*
 |--------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 {
-  "$comment": "Lucide icons (ISC license, https://lucide.dev), as the inner markup of a 24x24 SVG drawn with stroke=currentColor. The default set every stack resolves string icon names against (D-017). Keep in sync with the design spec's previews.",
+  "$comment": "Lucide icons (https://lucide.dev; ISC, with portions from Feather under MIT: see LICENSE-lucide.txt next to this file, which must ship with it), as the inner markup of a 24x24 SVG drawn with stroke=currentColor. The default set every stack resolves string icon names against (D-017). Keep in sync with the design spec's previews.",
   "arrow-left": "<path d=\"m12 19-7-7 7-7\" /><path d=\"M19 12H5\" />",
   "arrow-right": "<path d=\"M5 12h14\" /><path d=\"m12 5 7 7-7 7\" />",
   "calendar": "<path d=\"M8 2v4\" /><path d=\"M16 2v4\" /><rect width=\"18\" height=\"18\" x=\"3\" y=\"4\" rx=\"2\" /><path d=\"M3 10h18\" />",

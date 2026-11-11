@@ -103,8 +103,9 @@ class Button extends BaseComponent
     }
 
     /**
-     * The root's attributes. An inert link loses `wire:click*`, `@click*`
-     * and `x-on:click*`, so it runs no handlers.
+     * The root's attributes. An inert link loses `wire:click*`, `@click*`,
+     * `x-on:click*` and inline `on*` handlers such as `onclick`, so it runs
+     * no handlers.
      *
      * @since 3.0.0
      *
@@ -117,7 +118,7 @@ class Button extends BaseComponent
         }
 
         return $this->attributes->filter(
-            static fn (mixed $value, string $key): bool => 1 !== preg_match('/^(wire:click|@click|x-on:click)/', $key),
+            static fn (mixed $value, string $key): bool => 1 !== preg_match('/^(wire:click|@click|x-on:click|on[a-z]+$)/i', $key),
         );
     }
 

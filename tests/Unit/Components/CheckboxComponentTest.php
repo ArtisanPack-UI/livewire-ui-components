@@ -67,13 +67,25 @@ test('Alpine keeps the root data-state in step on change', function (): void {
         ->toBe("\$el.closest('.apui-checkbox').dataset.state = \$el.indeterminate ? 'indeterminate' : (\$el.checked ? 'checked' : 'unchecked')");
 });
 
-test('Alpine sets the native indeterminate property both ways', function (): void {
-    $on  = designSystemDom(Blade::render('<x-artisanpack-checkbox indeterminate label="All" />'))->query('//input')->item(0);
-    $off = designSystemDom(Blade::render('<x-artisanpack-checkbox label="All" />'))->query('//input')->item(0);
+test('Alpine sets the native indeterminate property from data-state and follows morphs', function (): void {
+    $control = designSystemDom(Blade::render('<x-artisanpack-checkbox indeterminate label="All" />'))->query('//input')->item(0);
+    $init    = $control->getAttribute('x-init');
 
-    expect($on->hasAttribute('x-data'))->toBeTrue()
-        ->and($on->getAttribute('x-effect'))->toBe('$el.indeterminate = true')
-        ->and($off->getAttribute('x-effect'))->toBe('$el.indeterminate = false');
+    expect($control->hasAttribute('x-data'))->toBeTrue()
+        ->and($control->hasAttribute('x-effect'))->toBeFalse()
+        ->and($init)->toContain("\$el.indeterminate = 'indeterminate' === root.dataset.state")
+        ->and($init)->toContain('sync();')
+        ->and($init)->toContain("new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ['data-state'] })");
+});
+
+test('a server change to indeterminate only changes data-state, which the observer reads', function (): void {
+    $on  = designSystemDom(Blade::render('<x-artisanpack-checkbox indeterminate label="All" />'));
+    $off = designSystemDom(Blade::render('<x-artisanpack-checkbox label="All" />'));
+
+    // The input's script is identical either way, so a morph only patches data-state.
+    expect($on->query('//input')->item(0)->getAttribute('x-init'))->toBe($off->query('//input')->item(0)->getAttribute('x-init'))
+        ->and($on->query('//div[contains(@class, "apui-checkbox")]')->item(0)->getAttribute('data-state'))->toBe('indeterminate')
+        ->and($off->query('//div[contains(@class, "apui-checkbox")]')->item(0)->getAttribute('data-state'))->toBe('unchecked');
 });
 
 test('required sets the native attribute without a required mark', function (): void {

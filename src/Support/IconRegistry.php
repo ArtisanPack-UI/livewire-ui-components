@@ -24,10 +24,11 @@ use Throwable;
  * (name => inner SVG markup of a 24x24 icon drawn with `currentColor`).
  *
  * Icon bodies are rendered unescaped, so they must be trusted, static SVG
- * shapes. `register()` and the config reject bodies that could run script
- * (the same check as `registerIcons` in `@artisanpack-ui/behavior/icons`):
- * script, style, foreignObject, iframe, object, embed, image, use and a
- * elements, `on*=` handlers, and javascript:, vbscript: or data: URLs.
+ * shapes, never user or CMS input. `register()` and the config apply the
+ * same allowlist as `isSafeIconBody` in `@artisanpack-ui/behavior/icons`:
+ * only path, circle, rect, line, polyline, polygon, ellipse and g elements;
+ * no event handlers, href, xlink:href or style attributes, no character
+ * references, no `<!`/`<?`, and no javascript:, vbscript: or data: URLs.
  *
  * Names outside the registry fall back to blade-icons, so heroicon and
  * Font Awesome names such as `o-plus` keep rendering during the migration.
@@ -66,14 +67,27 @@ final class IconRegistry
     public const DIRECTIONAL = ['arrow-right', 'arrow-left', 'chevron-right', 'chevron-left'];
 
     /**
-     * Markup an icon body may not contain. Mirrors `UNSAFE_MARKUP` in
-     * `@artisanpack-ui/behavior/icons`.
+     * The only elements an icon body may contain. Mirrors `ICON_SHAPE_TAGS`
+     * in `@artisanpack-ui/behavior/icons`.
+     *
+     * @since 3.0.0
+     *
+     * @var list<string>
+     */
+    public const SHAPE_TAGS = ['path', 'circle', 'rect', 'line', 'polyline', 'polygon', 'ellipse', 'g'];
+
+    /**
+     * Attribute-level markup an icon body must not contain: event handlers
+     * after any separator a parser accepts, links, inline styles, character
+     * references and script-capable URL schemes. Mirrors `UNSAFE_ATTRIBUTES`
+     * in `@artisanpack-ui/behavior/icons`; `#` delimits it so the body reads
+     * the same as the JavaScript source.
      *
      * @since 3.0.0
      *
      * @var string
      */
-    public const UNSAFE_MARKUP = '/<\s*\/?\s*(script|style|foreignObject|iframe|object|embed|image|use|a)\b|\son[a-z]+\s*=|(javascript|vbscript|data)\s*:/i';
+    public const UNSAFE_ATTRIBUTES = '#[\s/"\'](on[a-z]+|href|xlink:href|style)\s*=|&|(javascript|vbscript|data)\s*:#i';
 
     /**
      * Icons registered at runtime, name => inner SVG markup.
@@ -113,7 +127,8 @@ final class IconRegistry
     }
 
     /**
-     * Whether a body passes the safety check.
+     * Whether a body passes the allowlist: only shape elements, and no
+     * attribute that can run script or load anything.
      *
      * @since 3.0.0
      *
@@ -123,7 +138,18 @@ final class IconRegistry
      */
     public static function isSafe(mixed $body): bool
     {
-        return is_string($body) && 1 !== preg_match(self::UNSAFE_MARKUP, $body);
+        if (! is_string($body) || 1 === preg_match(self::UNSAFE_ATTRIBUTES, $body)) {
+            return false;
+        }
+
+        preg_match_all('/<\s*\/?\s*([^\s\/>]*)/', $body, $matches);
+        foreach ($matches[1] as $tag) {
+            if (! in_array(strtolower($tag), self::SHAPE_TAGS, true)) {
+                return false;
+            }
+        }
+
+        return 1 !== preg_match('/<\s*[!?]/', $body);
     }
 
     /**

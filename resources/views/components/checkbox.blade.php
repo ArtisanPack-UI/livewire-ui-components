@@ -1,8 +1,9 @@
 {{--
     Checkbox (#47). Markup contract: design-system pilot, Checkbox.
     `class` lands on the root; every other attribute lands on the native checkbox.
-    Only script can set the native indeterminate property, so Alpine does it, and
-    keeps the root's data-state in step on change. The indicator holds both
+    Only script can set the native indeterminate property, so Alpine does it from
+    the root's data-state, and again whenever a Livewire morph changes it (a
+    MutationObserver). On change, it writes data-state back from the input. The indicator holds both
     glyphs; CSS shows one.
 --}}
 @php
@@ -30,7 +31,7 @@
             data-part="control"
             id="{{ $controlId }}"{{ $partClass( 'control' ) }}
             x-data
-            x-effect="$el.indeterminate = {{ $indeterminate ? 'true' : 'false' }}"
+            x-init="const root = $el.closest('.apui-checkbox'); const sync = () => { $el.indeterminate = 'indeterminate' === root.dataset.state }; sync(); new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ['data-state'] })"
             x-on:change="$el.closest('.apui-checkbox').dataset.state = $el.indeterminate ? 'indeterminate' : ($el.checked ? 'checked' : 'unchecked')"
             @if ( $checked ) checked @endif
             @if ( $disabled ) disabled @endif

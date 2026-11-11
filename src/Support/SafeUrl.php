@@ -11,17 +11,40 @@ declare(strict_types=1);
 namespace ArtisanPack\LivewireUiComponents\Support;
 
 /**
- * Drops URLs that would run script when followed or loaded: `javascript:`,
- * `vbscript:` and, for links, `data:` (markup contract, review amendment 2).
- * The check ignores case, whitespace and control characters, the way
- * browsers read a scheme.
+ * Allowlists the URLs the design-system components render (markup contract,
+ * review amendment 2). Anything else is treated as absent.
+ *
+ * - Links (`href`): relative and scheme-less URLs (`/`, `./`, `?`, `#`,
+ *   `//host`), http, https, mailto, tel and sms.
+ * - Media (`src`): relative URLs, http, https, blob and `data:image/…`.
+ *
+ * The scheme is read the way browsers read it: ignoring case, whitespace and
+ * control characters.
  *
  * @since 3.0.0
  */
 final class SafeUrl
 {
     /**
-     * A link target, or null when it's empty or unsafe.
+     * Schemes a link may use.
+     *
+     * @since 3.0.0
+     *
+     * @var list<string>
+     */
+    public const LINK_SCHEMES = ['http', 'https', 'mailto', 'tel', 'sms'];
+
+    /**
+     * Schemes a media source may use, besides `data:image/`.
+     *
+     * @since 3.0.0
+     *
+     * @var list<string>
+     */
+    public const MEDIA_SCHEMES = ['http', 'https', 'blob'];
+
+    /**
+     * A link target, or null when it's empty or not allowed.
      *
      * @since 3.0.0
      *
@@ -31,12 +54,17 @@ final class SafeUrl
      */
     public static function href(?string $url): ?string
     {
-        return self::allowed($url, ['javascript', 'vbscript', 'data']) ? $url : null;
+        $scheme = self::scheme($url);
+
+        if (false === $scheme) {
+            return null;
+        }
+
+        return null === $scheme || in_array($scheme, self::LINK_SCHEMES, true) ? $url : null;
     }
 
     /**
-     * A media source, or null when it's empty or unsafe. `data:` images stay
-     * allowed.
+     * A media source, or null when it's empty or not allowed.
      *
      * @since 3.0.0
      *
@@ -46,31 +74,50 @@ final class SafeUrl
      */
     public static function media(?string $url): ?string
     {
-        return self::allowed($url, ['javascript', 'vbscript']) ? $url : null;
+        $scheme = self::scheme($url);
+
+        if (false === $scheme) {
+            return null;
+        }
+
+        if (null === $scheme || in_array($scheme, self::MEDIA_SCHEMES, true)) {
+            return $url;
+        }
+
+        return 'data' === $scheme && str_starts_with(self::normalize((string) $url), 'data:image/') ? $url : null;
     }
 
     /**
-     * Whether a URL is non-empty and doesn't use a blocked scheme.
+     * The URL's scheme, lowercased; null for a relative or scheme-less URL;
+     * false for an empty one.
      *
      * @param  string|null  $url  The URL.
-     * @param  list<string>  $blocked  Blocked schemes.
      *
-     * @return bool True when it can render.
+     * @return string|false|null The scheme.
      */
-    private static function allowed(?string $url, array $blocked): bool
+    private static function scheme(?string $url): string|false|null
     {
-        if (null === $url || '' === trim($url)) {
+        if (null === $url) {
             return false;
         }
 
-        $normalized = strtolower((string) preg_replace('/[\x00-\x20\x7f]+/', '', $url));
-
-        foreach ($blocked as $scheme) {
-            if (str_starts_with($normalized, $scheme.':')) {
-                return false;
-            }
+        $normalized = self::normalize($url);
+        if ('' === $normalized) {
+            return false;
         }
 
-        return true;
+        return 1 === preg_match('/^([a-z][a-z0-9+.\-]*):/', $normalized, $match) ? $match[1] : null;
+    }
+
+    /**
+     * The URL without whitespace or control characters, lowercased.
+     *
+     * @param  string  $url  The URL.
+     *
+     * @return string The normalized URL.
+     */
+    private static function normalize(string $url): string
+    {
+        return strtolower((string) preg_replace('/[\x00-\x20\x7f]+/', '', $url));
     }
 }

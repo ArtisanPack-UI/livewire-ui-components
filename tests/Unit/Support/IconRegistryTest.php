@@ -88,24 +88,48 @@ test('arrows and chevrons pointing left or right are directional', function (): 
         ->and(IconRegistry::isDirectional(null))->toBeFalse();
 });
 
-test('register rejects bodies that could run script', function (string $body): void {
+test('register rejects bodies outside the allowlist', function (mixed $body): void {
     expect(fn () => IconRegistry::register(['ok' => '<path d="M1 1" />', 'bad' => $body]))
         ->toThrow(InvalidArgumentException::class, 'Icon "bad" was not registered');
 
     expect(IconRegistry::has('ok'))->toBeFalse()
-        ->and(IconRegistry::has('bad'))->toBeFalse();
+        ->and(IconRegistry::has('bad'))->toBeFalse()
+        ->and(IconRegistry::isSafe($body))->toBeFalse();
 })->with([
-    'script'        => '<script>alert(1)</script>',
-    'event handler' => '<path d="M1 1" onload="alert(1)" />',
-    'style element' => '<style>*{}</style>',
-    'foreignObject' => '<foreignObject><div></div></foreignObject>',
-    'use'           => '<use href="#x" />',
-    'image'         => '<image href="x.png" />',
-    'anchor'        => '<a href="/x"><path /></a>',
-    'iframe'        => '<iframe src="/x"></iframe>',
-    'javascript url'=> '<path d="M1 1" fill="url(javascript:alert(1))" />',
-    'data url'      => '<path fill="url(data:image/png;base64,AA)" />',
+    // The same cases as packages/behavior/test/icons.test.ts.
+    'script'                 => '<script>alert(1)</script>',
+    'event handler'          => '<path d="M1 1" onload="alert(1)" />',
+    'foreignObject'          => '<foreignObject><div>x</div></foreignObject>',
+    'external use'           => '<use href="https://example.com/sprite.svg#x" />',
+    'image'                  => '<image href="x" />',
+    'javascript url'         => '<path d="javascript:alert(1)" />',
+    'style'                  => '<style>*{}</style>',
+    'handler after a slash'  => '<path/onmouseover=alert(1) />',
+    'handler after a quote'  => '<path d="M0 0"onclick=alert(1) />',
+    'animate'                => '<animate attributeName="href" values="javascript:alert(1)" />',
+    'set'                    => '<set attributeName="href" to="x" />',
+    'entity-encoded scheme'  => '<path d="java&#115;cript:x" />',
+    'style attribute'        => '<path style="fill:red" d="M1 1" />',
+    'comment'                => '<!-- x --><path d="M1 1" />',
+    'text'                   => '<text>hi</text>',
+    // Livewire extras.
+    'anchor'                 => '<a href="/x"><path /></a>',
+    'iframe'                 => '<iframe src="/x"></iframe>',
+    'data url'               => '<path fill="url(data:image/png;base64,AA)" />',
+    'processing instruction' => '<?xml version="1.0"?><path d="M1 1" />',
+    'not a string'           => [['<path />']],
 ]);
+
+test('every default icon and every allowed shape passes', function (): void {
+    $json = json_decode((string) file_get_contents(dirname(__DIR__, 3).'/resources/design-system/icons/lucide.json'), true);
+    unset($json['$comment']);
+
+    foreach ($json as $name => $body) {
+        expect(IconRegistry::isSafe($body))->toBeTrue("Default icon {$name} fails the allowlist");
+    }
+
+    expect(IconRegistry::isSafe('<g><polygon points="1 1 2 2" /><ellipse cx="1" cy="1" rx="1" ry="1" /></g><rect width="1" height="1" />'))->toBeTrue();
+});
 
 test('the registered_icons config rejects unsafe bodies when read', function (): void {
     config()->set('artisanpack.livewire-ui-components.registered_icons', ['bad' => '<path onclick="alert(1)" />']);
@@ -118,22 +142,60 @@ test('svg adds extra attributes after the standard ones', function (): void {
         ->toStartWith(substr(LUCIDE_SVG_OPEN, 0, -1).' data-icon="check">');
 });
 
-test('the safety pattern matches behavior UNSAFE_MARKUP', function (): void {
-    $source = (string) file_get_contents(dirname(__DIR__, 3).'/../design-system/packages/behavior/src/icons.ts');
-    if ('' === $source || 1 !== preg_match('/const UNSAFE_MARKUP =\s*\n?\s*(\/.*\/i);/', $source, $match)) {
+test('the allowlist matches behavior isSafeIconBody', function (): void {
+    $file = dirname(__DIR__, 3).'/../design-system/packages/behavior/src/icons.ts';
+    if (! is_file($file)) {
         $this->markTestSkipped('No design-system checkout next to this package.');
     }
 
-    expect(IconRegistry::UNSAFE_MARKUP)->toBe($match[1]);
+    $source = (string) file_get_contents($file);
+    preg_match('/ICON_SHAPE_TAGS = Object\.freeze\(\[(.*?)\]/s', $source, $tags);
+    preg_match('/const UNSAFE_ATTRIBUTES =\s*(\/.*\/i);/', $source, $pattern);
+    preg_match_all("/'([a-z]+)'/", $tags[1] ?? '', $names);
+
+    // Same body and flags; JavaScript delimits with `/`, PHP with `#`.
+    expect($names[1])->toBe(IconRegistry::SHAPE_TAGS)
+        ->and(substr($pattern[1] ?? '', 1, -2))->toBe(substr(IconRegistry::UNSAFE_ATTRIBUTES, 1, -2))
+        ->and(substr($pattern[1] ?? '', -1))->toBe(substr(IconRegistry::UNSAFE_ATTRIBUTES, -1));
 });
 
-test('SafeUrl drops script schemes for links and keeps data: for media', function (): void {
-    expect(SafeUrl::href('/reports'))->toBe('/reports')
-        ->and(SafeUrl::href('https://example.com'))->toBe('https://example.com')
-        ->and(SafeUrl::href("\x01 javascript:alert(1)"))->toBeNull()
-        ->and(SafeUrl::href('DATA:text/html,x'))->toBeNull()
-        ->and(SafeUrl::href(''))->toBeNull()
-        ->and(SafeUrl::href(null))->toBeNull()
-        ->and(SafeUrl::media('data:image/png;base64,AA'))->toBe('data:image/png;base64,AA')
-        ->and(SafeUrl::media('vbscript:x'))->toBeNull();
+test('SafeUrl allows relative, http(s), mailto, tel and sms links only', function (string $url, bool $allowed): void {
+    expect(SafeUrl::href($url))->toBe($allowed ? $url : null);
+})->with([
+    'root relative'    => ['/reports', true],
+    'dot relative'     => ['./reports', true],
+    'bare relative'    => ['reports/q3', true],
+    'query'            => ['?page=2', true],
+    'fragment'         => ['#top', true],
+    'scheme relative'  => ['//example.com/x', true],
+    'http'             => ['http://example.com', true],
+    'https upper'      => ['HTTPS://example.com', true],
+    'mailto'           => ['mailto:a@example.com', true],
+    'tel'              => ['tel:+15555550100', true],
+    'sms'              => ['sms:+15555550100', true],
+    'javascript'       => ['javascript:alert(1)', false],
+    'control chars'    => ["\x01 java\tscript:alert(1)", false],
+    'vbscript'         => ['vbscript:x', false],
+    'data'             => ['DATA:text/html,x', false],
+    'ftp'              => ['ftp://example.com', false],
+    'custom'           => ['web+app:x', false],
+    'empty'            => ['', false],
+]);
+
+test('SafeUrl allows relative, http(s), blob and data:image media only', function (string $url, bool $allowed): void {
+    expect(SafeUrl::media($url))->toBe($allowed ? $url : null);
+})->with([
+    'relative'       => ['/img/a.png', true],
+    'https'          => ['https://cdn.example.com/a.png', true],
+    'blob'           => ['blob:https://example.com/1234', true],
+    'data image'     => ['data:image/png;base64,AA', true],
+    'data svg'       => ['data:image/svg+xml,%3Csvg%3E%3C/svg%3E', true],
+    'data html'      => ['data:text/html,x', false],
+    'javascript'     => ['javascript:x', false],
+    'vbscript'       => ['vbscript:x', false],
+    'mailto'         => ['mailto:a@example.com', false],
+]);
+
+test('SafeUrl treats null as absent', function (): void {
+    expect(SafeUrl::href(null))->toBeNull()->and(SafeUrl::media(null))->toBeNull();
 });
