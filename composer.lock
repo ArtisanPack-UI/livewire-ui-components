@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dd7e14c9f7ff2a4cc705015ee6fdce62",
+    "content-hash": "f91d86399c02335e2d86e7252a43a538",
     "packages": [
         {
             "name": "artisanpack-ui/accessibility",
@@ -6812,6 +6812,72 @@
             "time": "2025-11-23T21:13:56+00:00"
         },
         {
+            "name": "artisanpack-ui/design-system",
+            "version": "dev-feature/44-48-pilot-button-input-select-checkbox-card",
+            "dist": {
+                "type": "path",
+                "url": "../design-system",
+                "reference": "74563bf68c311cc942428b1351adf4a73860598a"
+            },
+            "require": {
+                "ext-dom": "*",
+                "ext-json": "*",
+                "ext-libxml": "*",
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^10.0|^11.0",
+                "pestphp/pest": "^3.8|^4.0"
+            },
+            "suggest": {
+                "illuminate/view": "Renders the Blade fixtures and runs the Livewire parity checks (^12.0|^13.0).",
+                "pestphp/pest": "For the toMatchManifest expectation."
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "ArtisanPackUI\\DesignSystem\\Manifest\\": "packages/manifest/php/",
+                    "ArtisanPackUI\\DesignSystem\\Testing\\": "packages/testing/php/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "ArtisanPackUI\\DesignSystem\\Testing\\Tests\\": "packages/testing/tests-php/"
+                }
+            },
+            "archive": {
+                "exclude": [
+                    "/design",
+                    "/docs",
+                    "/apps",
+                    "/tools",
+                    "/node_modules",
+                    "/packages/*/node_modules",
+                    "/packages/*/test",
+                    "/packages/testing/tests-php"
+                ]
+            },
+            "scripts": {
+                "test": [
+                    "pest --test-directory=packages/testing/tests-php"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jacob Martella",
+                    "email": "me@jacobmartella.com"
+                }
+            ],
+            "description": "The PHP side of the ArtisanPack UI Design System: component manifests, docs examples and the quality-gate kit (Blade fixture host and parity checks).",
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
+        {
             "name": "brianium/paratest",
             "version": "v7.8.4",
             "source": {
@@ -13416,7 +13482,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "artisanpack-ui/design-system": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

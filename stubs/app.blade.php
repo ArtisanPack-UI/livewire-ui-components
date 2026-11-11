@@ -39,7 +39,7 @@
 
                     <x-artisanpack-list-item :item="$user" value="name" sub-value="email" no-separator no-hover class="-mx-2 !-my-2 rounded">
                         <x-slot:actions>
-                            <x-artisanpack-button icon="o-power" class="btn-circle btn-ghost btn-xs" tooltip-left="logoff" no-wire-navigate link="/logout" />
+                            <x-artisanpack-button variant="ghost" color="neutral" size="xs" icon-only leading-icon="o-power" aria-label="Log off" title="Log off" href="/logout" />
                         </x-slot:actions>
                     </x-artisanpack-list-item>
 

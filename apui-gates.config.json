@@ -1,0 +1,12 @@
+{
+  "components": ["Button", "Input", "Select", "Checkbox", "Card"],
+  "css": ["dist/css/index.css"],
+  "stacks": {
+    "livewire": {
+      "html": "build/gates/html/livewire",
+      "scripts": ["dist/js/alpine.global.js"]
+    }
+  },
+  "baselines": "node_modules/@artisanpack-ui/testing/baselines",
+  "out": "build/gates"
+}

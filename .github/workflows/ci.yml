@@ -32,6 +32,9 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
 
+      - name: Check out the design system
+        run: scripts/checkout-design-system.sh
+
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
@@ -99,6 +102,9 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
           restore-keys: ${{ runner.os }}-composer-
 
+      - name: Check out the design system
+        run: scripts/checkout-design-system.sh
+
       - name: Install dependencies
         run: |
           composer require \
@@ -153,6 +159,9 @@ jobs:
       # Install here rather than reuse the build job's vendor artifact. With the
       # artifact, PHP overflowed the stack bootstrapping testbench before the
       # first test, while the fresh installs in the test jobs run fine.
+      - name: Check out the design system
+        run: scripts/checkout-design-system.sh
+
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist
 

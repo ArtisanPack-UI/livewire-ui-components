@@ -3,8 +3,10 @@
  * Builds the prebuilt design-system assets this package ships (#42, D-014).
  *
  * Copies the `@artisanpack-ui/css` entry points (default and headless), the
- * `@artisanpack-ui/behavior` Alpine adapter (`alpine.global.js` and its map)
- * and the `@artisanpack-ui/tokens` PHP token map into the package, then writes
+ * `@artisanpack-ui/behavior` Alpine adapter (`alpine.global.js` and its map),
+ * the behavior package's default icon set (`icons/lucide.json`, D-017) with its
+ * license notice (`icons/LICENSE-lucide.txt`), and the
+ * `@artisanpack-ui/tokens` PHP token map into the package, then writes
  * `dist/manifest.json` with a content hash per file for cache-busting.
  *
  * The Tailwind preset (`@artisanpack-ui/css/tailwind`) is left out on purpose:
@@ -228,6 +230,12 @@ function collect(sources) {
     files: sorted(files),
   };
   outputs.set('dist/manifest.json', Buffer.from(`${JSON.stringify(manifest, null, 2)}\n`));
+
+  // The default icon set Support\IconRegistry resolves names against (D-017),
+  // so a name renders the same SVG as in React and Vue.
+  outputs.set('resources/design-system/icons/lucide.json', readRequired(join(sources.behavior, 'icons', 'lucide.json')));
+  // Lucide is ISC licensed: its notice ships next to the copied icons.
+  outputs.set('resources/design-system/icons/LICENSE-lucide.txt', readRequired(join(sources.behavior, 'icons', 'LICENSE-lucide.txt')));
 
   // The token map Theming\DesignTokens reads, so PHP needs no Node.
   outputs.set('resources/design-system/tokens.php', readRequired(join(sources.tokens, 'generated', 'tokens.php')));

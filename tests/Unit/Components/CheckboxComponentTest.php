@@ -2,199 +2,169 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
-
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
+use ArtisanPack\LivewireUiComponents\Support\IconRegistry;
 use ArtisanPack\LivewireUiComponents\View\Components\Checkbox;
-use Error;
-use RuntimeException;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\MessageBag;
+use Illuminate\Support\ViewErrorBag;
 
-/**
- * Comprehensive unit tests for the Checkbox component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * Checkbox (#47): the design-system markup contract, data-state, the native
+ * indeterminate property, ids and the error lookup. The manifest parity check
+ * is in tests/Feature/DesignSystemParityTest.php.
  */
-class CheckboxComponentTest extends ComponentTestCase
-{
-    protected string $componentClass = Checkbox::class;
 
-    protected array $defaultProperties = [
-        'right'          => false,
-        'hintClass'      => 'fieldset-label',
-        'card'           => false,
-        'cardClass'      => 'card card-compact border-2 border-base-300 hover:border-primary cursor-pointer transition-colors',
-        'errorClass'     => 'text-error',
-        'omitError'      => false,
-        'firstErrorOnly' => false,
-    ];
+test('the fixture renders the contract markup in order', function (): void {
+    $html = Blade::render('<x-artisanpack-checkbox id="offers" label="Email me about new offers" description="At most once a day." error="Required to continue." />');
+    $dom  = designSystemDom($html);
 
-    protected array $requiredProperties = [];
-
-    public function test_checkbox_string_properties(): void
-    {
-        $stringProperties = ['id', 'label', 'hint', 'hintClass', 'cardClass', 'errorField', 'errorClass'];
-        $testValues       = ComponentDataFactory::sampleTexts();
-
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
-
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
+    $parts = [];
+    foreach ($dom->query('//*[@data-scope="checkbox"]') as $element) {
+        $parts[] = $element->getAttribute('data-part');
     }
 
-    public function test_checkbox_boolean_properties(): void
-    {
-        $booleanProperties = ['right', 'card', 'omitError', 'firstErrorOnly'];
+    $root    = $dom->query('//div[contains(@class, "apui-checkbox")]')->item(0);
+    $control = $dom->query('//input')->item(0);
 
-        foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
-            $this->assertTrue($component->$property);
+    expect($parts)->toBe(['box', 'control', 'indicator', 'label', 'description', 'error'])
+        ->and($root->getAttribute('data-state'))->toBe('unchecked')
+        ->and($root->hasAttribute('data-invalid'))->toBeTrue()
+        ->and($control->getAttribute('type'))->toBe('checkbox')
+        ->and($control->getAttribute('id'))->toBe('offers')
+        ->and($control->getAttribute('aria-invalid'))->toBe('true')
+        ->and($control->getAttribute('aria-describedby'))->toBe('offers-description offers-error')
+        ->and($html)->toContain('<label data-scope="checkbox" data-part="label" for="offers">Email me about new offers</label>')
+        ->and($html)->toContain('<span data-scope="checkbox" data-part="indicator" aria-hidden="true">'.IconRegistry::svg('check', ['data-icon' => 'check']).IconRegistry::svg('minus', ['data-icon' => 'minus']).'</span>')
+        ->and($html)->toContain('<p data-scope="checkbox" data-part="error" id="offers-error">'.IconRegistry::svg('circle-alert').'Required to continue.</p>');
+});
 
-            $component = $this->createComponent([$property => false]);
-            $this->assertFalse($component->$property);
-        }
+test('checked renders data-state and the native attribute', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-checkbox checked label="On" />'));
+
+    expect($dom->query('//div[contains(@class, "apui-checkbox")]')->item(0)->getAttribute('data-state'))->toBe('checked')
+        ->and($dom->query('//input')->item(0)->hasAttribute('checked'))->toBeTrue();
+});
+
+test('indeterminate wins over checked', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-checkbox checked indeterminate label="Select all" />'));
+
+    expect($dom->query('//div[contains(@class, "apui-checkbox")]')->item(0)->getAttribute('data-state'))->toBe('indeterminate');
+});
+
+test('the indicator holds the check then the minus, in every state', function (string $props): void {
+    $glyphs = [];
+    foreach (designSystemDom(Blade::render('<x-artisanpack-checkbox '.$props.' label="All" />'))->query('//*[@data-part="indicator"]/svg') as $svg) {
+        $glyphs[] = $svg->getAttribute('data-icon');
     }
 
-    public function test_checkbox_model_name_method(): void
-    {
-        $component = $this->createComponent();
+    expect($glyphs)->toBe(['check', 'minus']);
+})->with(['unchecked' => '', 'checked' => 'checked', 'indeterminate' => 'indeterminate']);
 
-        if (method_exists($component, 'modelName')) {
-            try {
-                $result = $component->modelName();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
+test('Alpine keeps the root data-state in step on change', function (): void {
+    $control = designSystemDom(Blade::render('<x-artisanpack-checkbox label="All" />'))->query('//input')->item(0);
 
-    public function test_checkbox_error_field_name_method(): void
-    {
-        $component = $this->createComponent();
+    expect($control->getAttribute('x-on:change'))
+        ->toBe("\$el.closest('.apui-checkbox').dataset.state = \$el.indeterminate ? 'indeterminate' : (\$el.checked ? 'checked' : 'unchecked')");
+});
 
-        if (method_exists($component, 'errorFieldName')) {
-            try {
-                $result = $component->errorFieldName();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
+test('Alpine sets the native indeterminate property from data-state and follows morphs', function (): void {
+    $control = designSystemDom(Blade::render('<x-artisanpack-checkbox indeterminate label="All" />'))->query('//input')->item(0);
+    $init    = $control->getAttribute('x-init');
 
-    public function test_checkbox_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
+    expect($control->hasAttribute('x-data'))->toBeTrue()
+        ->and($control->hasAttribute('x-effect'))->toBeFalse()
+        ->and($init)->toContain("\$el.indeterminate = 'indeterminate' === root.dataset.state")
+        ->and($init)->toContain('sync();')
+        ->and($init)->toContain("new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ['data-state'] })");
+});
 
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
+test('a server change to indeterminate only changes data-state, which the observer reads', function (): void {
+    $on  = designSystemDom(Blade::render('<x-artisanpack-checkbox indeterminate label="All" />'));
+    $off = designSystemDom(Blade::render('<x-artisanpack-checkbox label="All" />'));
 
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
+    // The input's script is identical either way, so a morph only patches data-state.
+    expect($on->query('//input')->item(0)->getAttribute('x-init'))->toBe($off->query('//input')->item(0)->getAttribute('x-init'))
+        ->and($on->query('//div[contains(@class, "apui-checkbox")]')->item(0)->getAttribute('data-state'))->toBe('indeterminate')
+        ->and($off->query('//div[contains(@class, "apui-checkbox")]')->item(0)->getAttribute('data-state'))->toBe('unchecked');
+});
 
-    public function test_checkbox_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
+test('required sets the native attribute without a required mark', function (): void {
+    $html = Blade::render('<x-artisanpack-checkbox required label="I agree" />');
 
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
+    expect(designSystemDom($html)->query('//input')->item(0)->hasAttribute('required'))->toBeTrue()
+        ->and($html)->not->toContain('data-part="required"');
+});
 
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'Checkbox should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
+test('disabled sets the control and the root', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-checkbox disabled label="Managed" />'));
 
-    public function test_checkbox_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
+    expect($dom->query('//input')->item(0)->hasAttribute('disabled'))->toBeTrue()
+        ->and($dom->query('//div[contains(@class, "apui-checkbox")]')->item(0)->hasAttribute('data-disabled'))->toBeTrue();
+});
 
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
+test('class lands on the root and every other attribute on the control', function (): void {
+    $dom     = designSystemDom(Blade::render('<x-artisanpack-checkbox class="mt-2" wire:model="terms" name="terms" value="1" label="Terms" />'));
+    $root    = $dom->query('//div[contains(@class, "apui-checkbox")]')->item(0);
+    $control = $dom->query('//input')->item(0);
 
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
+    expect($root->getAttribute('class'))->toBe('apui-checkbox mt-2')
+        ->and($root->hasAttribute('wire:model'))->toBeFalse()
+        ->and($control->getAttribute('wire:model'))->toBe('terms')
+        ->and($control->getAttribute('name'))->toBe('terms')
+        ->and($control->getAttribute('value'))->toBe('1');
+});
 
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
+test('the id derives from wire:model, plus the value for array bindings', function (): void {
+    $single = designSystemDom(Blade::render('<x-artisanpack-checkbox wire:model="newsletter" label="News" />'));
+    $admin  = designSystemDom(Blade::render('<x-artisanpack-checkbox wire:model="roles" value="admin" label="Admin" />'));
+    $editor = designSystemDom(Blade::render('<x-artisanpack-checkbox wire:model="roles" value="editor" label="Editor" />'));
 
-    public function test_checkbox_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'Checkbox rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
-}
+    expect($single->query('//input')->item(0)->getAttribute('id'))->toBe('apui-checkbox-newsletter-'.substr(md5('newsletter'), 0, 8))
+        ->and($single->query('//label')->item(0)->getAttribute('for'))->toBe($single->query('//input')->item(0)->getAttribute('id'))
+        ->and($admin->query('//input')->item(0)->getAttribute('id'))->toBe('apui-checkbox-roles-admin-'.substr(md5("roles\0admin"), 0, 8))
+        ->and($editor->query('//input')->item(0)->getAttribute('id'))->toBe('apui-checkbox-roles-editor-'.substr(md5("roles\0editor"), 0, 8));
+});
+
+test('values that slug alike still get different ids', function (): void {
+    $plus  = designSystemDom(Blade::render('<x-artisanpack-checkbox wire:model="grades" value="A+" label="A plus" />'))->query('//input')->item(0)->getAttribute('id');
+    $plain = designSystemDom(Blade::render('<x-artisanpack-checkbox wire:model="grades" value="A" label="A" />'))->query('//input')->item(0)->getAttribute('id');
+
+    expect($plus)->not->toBe($plain);
+});
+
+test('without id or wire:model the id is a stable hash', function (): void {
+    $first  = designSystemDom(Blade::render('<x-artisanpack-checkbox label="A" />'))->query('//input')->item(0)->getAttribute('id');
+    $second = designSystemDom(Blade::render('<x-artisanpack-checkbox label="A" />'))->query('//input')->item(0)->getAttribute('id');
+
+    expect($first)->toMatch('/^apui-checkbox-[0-9a-f]{32}$/')->and($second)->toBe($first);
+});
+
+test('the error comes from $errors for the wire:model name', function (): void {
+    view()->share('errors', (new ViewErrorBag)->put('default', new MessageBag(['terms' => 'Accept the terms.'])));
+
+    $dom = designSystemDom(Blade::render('<x-artisanpack-checkbox wire:model="terms" label="Terms" />'));
+
+    expect($dom->query('//p[@data-part="error"]')->item(0)->textContent)->toBe('Accept the terms.')
+        ->and($dom->query('//input')->item(0)->getAttribute('aria-describedby'))->toBe('apui-checkbox-terms-'.substr(md5('terms'), 0, 8).'-error');
+});
+
+test('label and description slots override the props', function (): void {
+    $html = Blade::render(<<<'BLADE'
+        <x-artisanpack-checkbox id="t" label="Plain">
+            <x-slot:label>I agree to the <a href="/terms">terms</a></x-slot:label>
+            <x-slot:description><em>Required</em></x-slot:description>
+        </x-artisanpack-checkbox>
+        BLADE);
+
+    expect($html)->toContain('<label data-scope="checkbox" data-part="label" for="t">I agree to the <a href="/terms">terms</a></label>')
+        ->toContain('<p data-scope="checkbox" data-part="description" id="t-description"><em>Required</em></p>');
+});
+
+test('the constructor declares only the manifest props', function (): void {
+    $parameters = array_map(
+        static fn (ReflectionParameter $parameter): string => $parameter->getName(),
+        (new ReflectionClass(Checkbox::class))->getConstructor()->getParameters(),
+    );
+
+    expect($parameters)->toBe(['checked', 'indeterminate', 'label', 'description', 'error', 'invalid', 'disabled', 'required', 'errorField', 'classes']);
+});

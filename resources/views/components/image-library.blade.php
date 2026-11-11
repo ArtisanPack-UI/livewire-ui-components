@@ -249,8 +249,8 @@
 
                        {{-- ACTIONS --}}
                        <div class="absolute flex flex-col gap-2 top-3 start-3 cursor-pointer  p-2 rounded-lg ignore-drag">
-                           <x-artisanpack-button @click="removeMedia('{{ $image['uuid'] }}', '{{ $image['url'] }}')" @touchend.prevent="removeMedia('{{ $image['uuid'] }}', '{{ $image['url'] }}')" icon="o-x-circle" :tooltip="$removeText"  class="btn-sm btn-ghost btn-circle" />
-                           <x-artisanpack-button @click="crop('image-{{ $modelName().'.'.$key  }}-{{ $uuid }}')" @touchend.prevent="crop('image-{{ $modelName().'.'.$key }}-{{ $uuid }}')" icon="o-scissors" :tooltip="$cropText"  class="btn-sm btn-ghost btn-circle" />
+                           <x-artisanpack-button @click="removeMedia('{{ $image['uuid'] }}', '{{ $image['url'] }}')" @touchend.prevent="removeMedia('{{ $image['uuid'] }}', '{{ $image['url'] }}')" variant="ghost" color="neutral" size="sm" icon-only leading-icon="o-x-circle" :aria-label="$removeText" :title="$removeText" />
+                           <x-artisanpack-button @click="crop('image-{{ $modelName().'.'.$key  }}-{{ $uuid }}')" @touchend.prevent="crop('image-{{ $modelName().'.'.$key }}-{{ $uuid }}')" variant="ghost" color="neutral" size="sm" icon-only leading-icon="o-scissors" :aria-label="$cropText" :title="$cropText" />
                        </div>
                    </div>
                @endforeach
@@ -262,8 +262,8 @@
            <x-artisanpack-modal id="maryCropModal{{ $uuid }}" x-ref="maryCropModal" :title="$cropTitleText" separator class="backdrop-blur-sm" persistent @keydown.window.esc.prevent="" without-trap-focus>
                <img src="#" crossOrigin="Anonymous" />
                <x-slot:actions>
-                   <x-artisanpack-button :label="$cropCancelText" @click="close()" />
-                   <x-artisanpack-button :label="$cropSaveText" class="btn-primary" @click="save()" />
+                   <x-artisanpack-button variant="outline" color="neutral" @click="close()">{{ $cropCancelText }}</x-artisanpack-button>
+                   <x-artisanpack-button @click="save()">{{ $cropSaveText }}</x-artisanpack-button>
                </x-slot:actions>
            </x-artisanpack-modal>
        </div>

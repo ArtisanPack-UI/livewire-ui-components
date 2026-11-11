@@ -1,98 +1,57 @@
-<div @click.stop>
-    @php
-        // We need this extra step to support models arrays. Ex: wire:model="emails.0"  , wire:model="emails.1"
-        $uuid = $uuid . $modelName()
-    @endphp
-
-    <fieldset class="fieldset py-0">
-        {{-- STANDARD LABEL --}}
-        @if($label && !$inline)
-            <legend class="fieldset-legend mb-0.5">
-                {{ $label }}
-
-                @if($attributes->get('required'))
-                    <span class="text-error">*</span>
-                @endif
-            </legend>
+{{--
+    Select (#46). Markup contract: design-system pilot, Select.
+    `class` lands on the root; every other attribute lands on the native select.
+--}}
+@php
+    $controlId   = $controlId();
+    $message     = $errorMessage( $errors ?? null );
+    $isInvalid   = $invalid || null !== $message;
+    $hasLabel    = $filled( $label );
+    $hasHint     = $filled( $hint );
+    $iconSlot    = isset( $icon ) && $filled( $icon ) ? $icon : null;
+    $hasIcon     = null !== $iconSlot || $filled( $leadingIcon );
+    $placeholder = $placeholderText();
+    $describedBy = $describedBy( array_values( array_filter( [
+        $hasHint ? $controlId . '-hint' : null,
+        null !== $message ? $controlId . '-error' : null,
+    ] ) ) );
+@endphp
+<div
+    {{ $attributes->only( 'class' )->class( $rootClasses( 'apui-select' ) ) }}
+    data-size="{{ $size }}"
+    @if ( $isInvalid ) data-invalid @endif
+    @if ( $disabled ) data-disabled @endif
+>
+    @if ( $hasLabel )
+        <label data-scope="select" data-part="label" for="{{ $controlId }}"{{ $partClass( 'label' ) }}>{{ $content( $label ) }}@if ( $required )<span data-scope="select" data-part="required" aria-hidden="true"{{ $partClass( 'required' ) }}>*</span>@endif</label>
+    @endif
+    <div data-scope="select" data-part="box"{{ $partClass( 'box' ) }}>
+        @if ( $hasIcon )
+            <span data-scope="select" data-part="icon" aria-hidden="true"{{ $partClass( 'icon' ) }}>@if ( null !== $iconSlot ){{ $content( $iconSlot ) }}@else{{ $iconSvg( $leadingIcon ) }}@endif</span>
         @endif
-
-        <label @class(["floating-label" => $label && $inline])>
-            {{-- FLOATING LABEL--}}
-            @if ($label && $inline)
-                <span class="font-semibold">{{ $label }}</span>
+        <select {{ $attributes->except( [ 'class', 'id', 'aria-describedby' ] ) }}
+            data-scope="select"
+            data-part="control"
+            id="{{ $controlId }}"{{ $partClass( 'control' ) }}
+            @if ( $disabled ) disabled @endif
+            @if ( $required ) required @endif
+            @if ( $isInvalid ) aria-invalid="true" @endif
+            @if ( null !== $describedBy ) aria-describedby="{{ $describedBy }}" @endif
+        >
+            @if ( null !== $placeholder )
+                <option value=""@if ( $placeholderSelected() ) selected @endif @if ( $required ) disabled @endif>{{ $placeholder }}</option>
             @endif
-
-            <div @class(["w-full", "join" => $prepend || $append])>
-                {{-- PREPEND --}}
-                @if($prepend)
-                    {{ $prepend }}
-                @endif
-
-                {{-- THE LABEL THAT HOLDS THE INPUT --}}
-                <label
-                    {{
-                        $attributes->whereStartsWith('class')->class([
-                            "select w-full",
-                            "join-item" => $prepend || $append,
-                            "border-dashed" => $attributes->has("readonly") && $attributes->get("readonly") == true,
-                            "!select-error" => $errorFieldName() && $errors->has($errorFieldName()) && !$omitError
-                        ])
-                    }}
-                 >
-
-                    {{-- PREFIX --}}
-                    @if($prefix)
-                        <span class="label">{{ $prefix }}</span>
-                    @endif
-
-                    {{-- ICON LEFT --}}
-                    @if($icon)
-                        <x-artisanpack-icon :name="$icon" class="pointer-events-none w-4 h-4 -ml-1 opacity-40" />
-                    @endif
-
-                    {{-- SELECT --}}
-                    <select id="{{ $uuid }}" class="items-center" {{ $attributes->whereDoesntStartWith('class') }}>
-                        @if($placeholder)
-                            <option value="{{ $placeholderValue }}">{{ $placeholder }}</option>
-                        @endif
-
-                        @foreach ($options as $option)
-                            <option value="{{ data_get($option, $optionValue) }}" @if(data_get($option, 'disabled')) disabled @endif>{{ data_get($option, $optionLabel) }}</option>
-                        @endforeach
-                    </select>
-
-                    {{-- ICON RIGHT --}}
-                    @if($iconRight)
-                        <x-artisanpack-icon :name="$iconRight" class="pointer-events-none w-4 h-4 opacity-40" />
-                    @endif
-
-                    {{-- SUFFIX --}}
-                    @if($suffix)
-                        <span class="label">{{ $suffix }}</span>
-                    @endif
-                </label>
-
-                {{-- APPEND --}}
-                @if($append)
-                    {{ $append }}
-                @endif
-            </div>
-        </label>
-
-        {{-- ERROR --}}
-        @if(!$omitError && $errors->has($errorFieldName()))
-            @foreach($errors->get($errorFieldName()) as $message)
-                @foreach(Arr::wrap($message) as $line)
-                    <div class="{{ $errorClass }}" x-class="text-error">{{ $line }}</div>
-                    @break($firstErrorOnly)
-                @endforeach
-                @break($firstErrorOnly)
+            @foreach ( $normalizedOptions() as $option )
+                <option value="{{ $option['value'] }}"@if ( $isSelected( $option['value'] ) ) selected @endif @if ( $option['disabled'] ) disabled @endif>{{ $option['label'] }}</option>
             @endforeach
-        @endif
-
-        {{-- HINT --}}
-        @if($hint)
-            <div class="{{ $hintClass }}" x-classes="fieldset-label">{{ $hint }}</div>
-        @endif
-    </fieldset>
+            {{ $slot ?? '' }}
+        </select>
+        <span data-scope="select" data-part="indicator" aria-hidden="true"{{ $partClass( 'indicator' ) }}>{{ $iconSvg( 'chevron-down' ) }}</span>
+    </div>
+    @if ( $hasHint )
+        <p data-scope="select" data-part="hint" id="{{ $controlId }}-hint"{{ $partClass( 'hint' ) }}>{{ $content( $hint ) }}</p>
+    @endif
+    @if ( null !== $message )
+        <p data-scope="select" data-part="error" id="{{ $controlId }}-error"{{ $partClass( 'error' ) }}>{{ $iconSvg( 'circle-alert' ) }}{{ $message }}</p>
+    @endif
 </div>

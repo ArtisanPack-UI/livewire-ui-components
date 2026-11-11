@@ -86,6 +86,29 @@ return [
 
 	/*
     |--------------------------------------------------------------------------
+    | Registered Icons
+    |--------------------------------------------------------------------------
+    |
+    | Extra names for the design-system icon registry (D-017), on top of the
+    | default Lucide set. Each value is the inner markup of a 24x24 SVG drawn
+    | with stroke="currentColor"; the registry wraps it in the shared <svg>.
+    | Bodies render unescaped, so use only trusted, static SVG shapes: bodies
+    | with script, style, foreignObject, use, image, a, iframe/object/embed,
+    | on*= handlers or javascript:/vbscript:/data: URLs throw an
+    | InvalidArgumentException when the registry reads them.
+    | A name here replaces a default icon of the same name. Names the registry
+    | doesn't know fall back to blade-icons (o-plus, fas.user, ...).
+    |
+    |    'registered_icons' => [
+    |        'rocket' => '<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2" />',
+    |    ],
+    |
+    | @since 3.0.0
+    */
+	'registered_icons' => [],
+
+	/*
+    |--------------------------------------------------------------------------
     | Theme Generation Settings
     |--------------------------------------------------------------------------
     |

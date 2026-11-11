@@ -1,0 +1,23 @@
+<?php
+
+declare(strict_types=1);
+
+use ArtisanPackUI\DesignSystem\Testing\BladeFixtureHost;
+
+/*
+ * The Blade fixture host (#39, D-016): renders every manifest fixture case
+ * with the registered components into build/gates/html/livewire, which
+ * apui-gates.config.json points stacks.livewire.html at. Run it before
+ * `apui-gates check`: vendor/bin/pest --group=gates
+ */
+
+it('renders the design-system fixtures', function (): void {
+    $components = ['Button', 'Input', 'Select', 'Checkbox', 'Card'];
+    $written    = (new BladeFixtureHost)->write($components, dirname(__DIR__, 2).'/build/gates/html/livewire');
+
+    expect($written)->not->toBeEmpty();
+
+    foreach ($components as $component) {
+        expect(array_filter($written, static fn (string $file): bool => str_contains($file, '/'.$component.'/')))->not->toBeEmpty();
+    }
+})->group('gates');

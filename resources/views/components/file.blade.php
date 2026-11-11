@@ -257,8 +257,8 @@
                <x-artisanpack-modal id="maryCrop{{ $uuid }}" x-ref="maryCrop" :title="$cropTitleText" separator class="backdrop-blur-sm" persistent @keydown.window.esc.prevent="" without-trap-focus>
                    <img src="" />
                    <x-slot:actions>
-                       <x-artisanpack-button :label="$cropCancelText" @click="close()" />
-                       <x-artisanpack-button :label="$cropSaveText" class="btn-primary" @click="save()" x-bind:disabled="processing" />
+                       <x-artisanpack-button variant="outline" color="neutral" @click="close()">{{ $cropCancelText }}</x-artisanpack-button>
+                       <x-artisanpack-button @click="save()" x-bind:disabled="processing">{{ $cropSaveText }}</x-artisanpack-button>
                    </x-slot:actions>
                </x-artisanpack-modal>
            </div>

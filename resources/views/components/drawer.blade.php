@@ -48,26 +48,23 @@
 
         <x-artisanpack-card
             :title="$title"
-            :subtitle="$subtitle"
-            :separator="$separator"
-            :glass="$glass"
-            :glass-tint="$glassTint"
-            :glass-tint-opacity="$glassTintOpacity"
+            :description="$subtitle"
+            :surface="$glass ? 'glass' : 'default'"
             wire:key="drawer-card"
-            {{ $attributes->except('wire:model')->class(['min-h-screen rounded-none px-8']) }}
+            {{ $attributes->except('wire:model')->class(['min-h-screen rounded-none']) }}
         >
             @if($withCloseButton)
-                <x-slot:menu>
-                    <x-artisanpack-button icon="o-x-mark" class="btn-ghost btn-sm btn-circle" @click="close()"/>
-                </x-slot:menu>
+                <x-slot:actions>
+                    <x-artisanpack-button variant="ghost" color="neutral" size="sm" icon-only leading-icon="o-x-mark" :aria-label="__( 'Close' )" @click="close()"/>
+                </x-slot:actions>
             @endif
 
             {{ $slot }}
 
             @if($actions)
-                <x-slot:actions>
+                <x-slot:footer>
                     {{ $actions }}
-                </x-slot:actions>
+                </x-slot:footer>
             @endif
         </x-artisanpack-card>
     </div>

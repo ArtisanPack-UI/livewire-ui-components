@@ -523,11 +523,19 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         // Get the package's default configuration.
         $packageDefaults = config('artisanpack-livewire-ui-components-temp', []);
 
-        // Get the user's custom configuration from config/artisanpack.php.
+        // The file the `livewire-ui-components.config` tag publishes,
+        // config/livewire-ui-components.php, read as `livewire-ui-components`.
+        $publishedConfig = config('livewire-ui-components', []);
+
+        // Get the user's custom configuration from config/artisanpack/livewire-ui-components.php.
         $userConfig = config('artisanpack.livewire-ui-components', []);
 
-        // Merge them, with the user's config overwriting the defaults.
-        $mergedConfig = array_replace_recursive($packageDefaults, $userConfig);
+        // Merge them: defaults, then the published file, then the artisanpack file.
+        $mergedConfig = array_replace_recursive(
+            $packageDefaults,
+            is_array($publishedConfig) ? $publishedConfig : [],
+            is_array($userConfig) ? $userConfig : [],
+        );
 
         // Set the final, correctly merged configuration.
         config(['artisanpack.livewire-ui-components' => $mergedConfig]);

@@ -50,9 +50,11 @@
                     @if($icon)
                         <x-artisanpack-icon :name="$icon" class="pointer-events-none w-4 h-4 opacity-40" />
                     @elseif($placeToggleLeft())
-                        <x-artisanpack-button x-on:click="hidden = !hidden" class="btn-ghost btn-xs btn-circle -m-1">
-                            <x-artisanpack-icon name="{{ $passwordIcon }}" x-show="hidden" class="w-4 h-4 opacity-40" />
-                            <x-artisanpack-icon name="{{ $passwordVisibleIcon }}" x-show="!hidden" x-cloak class="w-4 h-4 opacity-40" />
+                        <x-artisanpack-button variant="ghost" color="neutral" size="xs" icon-only :aria-label="__( 'Toggle password visibility' )" x-on:click="hidden = !hidden" class="-m-1">
+                            <x-slot:icon>
+                                <x-artisanpack-icon name="{{ $passwordIcon }}" x-show="hidden" class="w-4 h-4 opacity-40" />
+                                <x-artisanpack-icon name="{{ $passwordVisibleIcon }}" x-show="!hidden" x-cloak class="w-4 h-4 opacity-40" />
+                            </x-slot:icon>
                         </x-artisanpack-button>
                     @endif
 
@@ -78,9 +80,11 @@
                     @if($iconRight)
                         <x-artisanpack-icon :name="$iconRight" @class(["pointer-events-none w-4 h-4 opacity-40", "!end-10" => $clearable]) />
                     @elseif($placeToggleRight())
-                        <x-artisanpack-button x-on:click="hidden = !hidden" @class(["btn-ghost btn-xs btn-circle -m-1", "!end-9" => $clearable])>
-                            <x-artisanpack-icon name="{{ $passwordIcon }}" x-show="hidden" class="w-4 h-4 opacity-40" />
-                            <x-artisanpack-icon name="{{ $passwordVisibleIcon }}" x-show="!hidden" x-cloak class="w-4 h-4 opacity-40" />
+                        <x-artisanpack-button variant="ghost" color="neutral" size="xs" icon-only :aria-label="__( 'Toggle password visibility' )" x-on:click="hidden = !hidden" @class(["-m-1", "!end-9" => $clearable])>
+                            <x-slot:icon>
+                                <x-artisanpack-icon name="{{ $passwordIcon }}" x-show="hidden" class="w-4 h-4 opacity-40" />
+                                <x-artisanpack-icon name="{{ $passwordVisibleIcon }}" x-show="!hidden" x-cloak class="w-4 h-4 opacity-40" />
+                            </x-slot:icon>
                         </x-artisanpack-button>
                     @endif
 

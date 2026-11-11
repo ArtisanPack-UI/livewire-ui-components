@@ -229,9 +229,10 @@
                     <x-slot:trigger>
                         <x-artisanpack-button
                             type="button"
-                            color="ghost"
+                            variant="ghost"
+                            color="neutral"
                             size="sm"
-                            icon="o-arrow-down-tray"
+                            leading-icon="o-arrow-down-tray"
                             x-bind:disabled="isExporting"
                         >
                             <span x-show="!isExporting">{{ __('Export') }}</span>
@@ -275,9 +276,10 @@
             <template x-if="exportFormats.includes('csv') && !((supportsXlsx && exportFormats.includes('xlsx')) || (supportsPdf && exportFormats.includes('pdf')))">
                 <x-artisanpack-button
                     type="button"
-                    color="ghost"
+                    variant="ghost"
+                    color="neutral"
                     size="sm"
-                    icon="o-arrow-down-tray"
+                    leading-icon="o-arrow-down-tray"
                     x-on:click="exportToCSV()"
                     x-bind:disabled="isExporting"
                 >
@@ -290,9 +292,10 @@
             <template x-if="!exportFormats.includes('csv') && (supportsXlsx && exportFormats.includes('xlsx')) && !(supportsPdf && exportFormats.includes('pdf'))">
                 <x-artisanpack-button
                     type="button"
-                    color="ghost"
+                    variant="ghost"
+                    color="neutral"
                     size="sm"
-                    icon="o-table-cells"
+                    leading-icon="o-table-cells"
                     x-on:click="exportToXlsx()"
                     x-bind:disabled="isExporting"
                 >
@@ -305,9 +308,10 @@
             <template x-if="!exportFormats.includes('csv') && !(supportsXlsx && exportFormats.includes('xlsx')) && (supportsPdf && exportFormats.includes('pdf'))">
                 <x-artisanpack-button
                     type="button"
-                    color="ghost"
+                    variant="ghost"
+                    color="neutral"
                     size="sm"
-                    icon="o-document"
+                    leading-icon="o-document"
                     x-on:click="exportToPdf()"
                     x-bind:disabled="isExporting"
                 >
