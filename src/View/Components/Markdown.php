@@ -38,7 +38,7 @@ class Markdown extends BaseComponent
         public ?string $label = null,
         public ?string $hint = null,
         public ?string $hintClass = 'fieldset-label',
-        public ?string $disk = 'public',
+        public ?string $disk = null,
         public ?string $folder = 'markdown',
         public ?array $config = [],
 
@@ -99,6 +99,20 @@ class Markdown extends BaseComponent
     public function errorFieldName(): ?string
     {
         return $this->errorField ?? $this->modelName();
+    }
+
+    /**
+     * The upload URL's query: the folder, and the disk only when one is set,
+     * so the upload route falls back to its first allowed disk.
+     *
+     * @since 3.0.0
+     */
+    public function uploadQuery(): string
+    {
+        return http_build_query(array_filter(
+            ['disk' => $this->disk, 'folder' => $this->folder],
+            static fn (?string $value): bool => null !== $value && '' !== $value,
+        ));
     }
 
     public function render(): View|Closure|string

@@ -158,19 +158,7 @@ import '../../vendor/artisanpack-ui/livewire-ui-components/resources/js/sparklin
 
 ### Date Pickers
 
-The DatePicker component requires flatpickr:
-
-```bash
-npm install flatpickr
-```
-
-Configure in your `app.js`:
-
-```javascript
-import flatpickr from 'flatpickr';
-import 'flatpickr/dist/flatpickr.min.css';
-window.flatpickr = flatpickr;
-```
+`<x-artisanpack-date-picker>` runs on the design system's behavior engine and needs no third-party library: flatpickr is no longer required. See [DatePicker](docs/components/date-picker.md).
 
 ## 🔌 Extension Hooks
 

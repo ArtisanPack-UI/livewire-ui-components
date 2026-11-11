@@ -1,98 +1,214 @@
 <?php
 
-declare(strict_types=1);
 /**
- * Menu
+ * Menu Component
  *
- * This file contains the Menu class for the ArtisanPack UI Livewire UI Components package.
+ * The design-system navigation Menu (#56): a nav landmark holding links,
+ * titles, separators and collapsible sub-menus.
  *
  * @author     Jacob Martella
- * @copyright  2023 Jacob Martella
+ * @copyright  2026 Jacob Martella
  * @license    MIT
  *
- * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
- * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
+ * @link       https://github.com/ArtisanPack-UI/livewire-ui-components
  * @since      1.0.0
  */
 
+declare(strict_types=1);
+
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
-use ArtisanPack\LivewireUiComponents\Support\GlassHelper;
-use Closure;
+use ArtisanPack\LivewireUiComponents\Support\NavigationContext;
+use ArtisanPack\LivewireUiComponents\View\Concerns\HasStablePartIds;
+use ArtisanPack\LivewireUiComponents\View\Concerns\RendersDesignSystemParts;
 use Illuminate\Contracts\View\View;
+use Illuminate\View\ComponentAttributeBag;
 
 /**
- * Menu Class
+ * Menu Component Class
  *
- * Provides functionality for the Menu component.
+ * Renders the `.apui-menu` nav and its list. Children are `menu-item`,
+ * `menu-sub`, `menu-title` and `menu-separator`; `items` renders the same
+ * children from data. It isn't an ARIA menu and has no behavior widget: a
+ * sub-menu is a disclosure, a button with aria-expanded and a plain Alpine
+ * toggle. Parts are scoped `menu`. The `activate-by-route` attribute marks
+ * items whose href matches the current URL as the current page.
  *
  * @since 1.0.0
  */
 class Menu extends BaseComponent
 {
-    public string $uuid;
+    use HasStablePartIds;
+    use RendersDesignSystemParts;
 
     /**
-     * Create a new component instance.
+     * The prefix of generated ids.
      *
-     * @param  string|null  $id  Optional ID for the component.
-     * @param  string|null  $title  Optional title for the menu.
-     * @param  string|null  $icon  Optional icon name.
-     * @param  string|null  $iconClasses  CSS classes for the icon.
-     * @param  bool|null  $separator  Whether to show a separator.
-     * @param  bool|null  $activateByRoute  Whether to activate by route.
-     * @param  string|null  $activeBgColor  Background color for active state.
-     * @param  string|null  $glass  Glass effect variant ('frosted', 'liquid', 'transparent').
-     * @param  string|null  $glassTint  Tailwind color name or hex code for glass tint.
-     * @param  int|null  $glassTintOpacity  Tint opacity (10-100).
+     * @since 3.0.0
+     */
+    protected string $idPrefix = 'menu';
+
+    /**
+     * Props that change between renders without changing the id.
+     *
+     * @since 3.0.0
+     *
+     * @var list<string>
+     */
+    protected array $idIgnore = ['items', 'label'];
+
+    /**
+     * How many sub-menus have asked for an id.
+     *
+     * @since 3.0.0
+     */
+    private int $subCount = 0;
+
+    /**
+     * Creates the component.
+     *
+     * @since 1.0.0
+     *
+     * @param  array<int, array<string, mixed>>  $items  The menu as data: `{ label, href, icon, badge, current, disabled }`, `{ label, icon, open, items }`, `{ type: 'title', label }` and `{ type: 'separator' }`.
+     * @param  bool  $collapsible  Sub-menus open and close from their item. Off shows every sub-menu under a heading.
+     * @param  string|null  $label  Names the nav landmark.
+     * @param  array<string, string>  $classes  Extra classes per part, children's parts included.
+     */
+    public function __construct(
+        public array $items = [],
+        public bool $collapsible = true,
+        public ?string $label = null,
+        public array $classes = [],
+    ) {
+        app(NavigationContext::class)->enter($this);
+    }
+
+    /**
+     * The Menu whose children are rendering, if any.
+     *
+     * @since 3.0.0
+     *
+     * @return self|null The menu.
+     */
+    public static function current(): ?self
+    {
+        return app(NavigationContext::class)->nearest(self::class);
+    }
+
+    /**
+     * Leaves the context once the view has rendered its children.
+     *
+     * @since 3.0.0
+     */
+    public function finishRendering(): void
+    {
+        app(NavigationContext::class)->leave($this);
+    }
+
+    /**
+     * The next stable id for a sub-menu's list, numbered in render order.
+     *
+     * @since 3.0.0
+     *
+     * @return string The id.
+     */
+    public function nextSubId(): string
+    {
+        return $this->partId('sub-'.++$this->subCount);
+    }
+
+    /**
+     * Whether items match the current URL (the `activate-by-route` attribute).
+     *
+     * @since 3.0.0
+     *
+     * @return bool True when they do.
+     */
+    public function activatesByRoute(): bool
+    {
+        $value = $this->attributes?->get('activate-by-route', $this->attributes?->get('activateByRoute'));
+
+        return null !== $value && false !== $value && 'false' !== $value;
+    }
+
+    /**
+     * The attributes for the nav, without `activate-by-route`.
+     *
+     * @since 3.0.0
+     *
+     * @return ComponentAttributeBag The attributes.
+     */
+    public function rootAttributes(): ComponentAttributeBag
+    {
+        return $this->attributes->except(['activate-by-route', 'activateByRoute', 'id']);
+    }
+
+    /**
+     * The `items` prop as entries the view renders.
+     *
+     * @since 3.0.0
+     *
+     * @param  array<int, mixed>|null  $items  Entries to normalize. Defaults to the prop.
+     *
+     * @return list<array<string, mixed>> The entries.
+     */
+    public function entries(?array $items = null): array
+    {
+        $entries = [];
+        foreach ($items ?? $this->items as $item) {
+            if (! is_array($item)) {
+                continue;
+            }
+
+            $type  = is_string($item['type'] ?? null) ? $item['type'] : null;
+            $label = isset($item['label']) ? (string) $item['label'] : (isset($item['title']) ? (string) $item['title'] : '');
+
+            if ('separator' === $type) {
+                $entries[] = ['type' => 'separator'];
+
+                continue;
+            }
+
+            if ('title' === $type) {
+                $entries[] = ['type' => 'title', 'label' => $label];
+
+                continue;
+            }
+
+            if (is_array($item['items'] ?? null)) {
+                $entries[] = [
+                    'type'     => 'sub',
+                    'label'    => $label,
+                    'icon'     => isset($item['icon']) ? (string) $item['icon'] : null,
+                    'badge'    => isset($item['badge']) && '' !== (string) $item['badge'] ? (string) $item['badge'] : null,
+                    'disabled' => (bool) ($item['disabled'] ?? false),
+                    'open'     => (bool) ($item['open'] ?? false),
+                    'items'    => $this->entries($item['items']),
+                ];
+
+                continue;
+            }
+
+            $entries[] = [
+                'type'     => 'item',
+                'label'    => $label,
+                'href'     => isset($item['href']) ? (string) $item['href'] : (isset($item['link']) ? (string) $item['link'] : null),
+                'icon'     => isset($item['icon']) ? (string) $item['icon'] : null,
+                'badge'    => isset($item['badge']) && '' !== (string) $item['badge'] ? (string) $item['badge'] : null,
+                'current'  => (bool) ($item['current'] ?? $item['active'] ?? false),
+                'disabled' => (bool) ($item['disabled'] ?? false),
+            ];
+        }
+
+        return $entries;
+    }
+
+    /**
+     * Get the view that represents the component.
      *
      * @since 1.0.0
      */
-    public function __construct(
-        public ?string $id = null,
-        public ?string $title = null,
-        public ?string $icon = null,
-        public ?string $iconClasses = 'w-4 h-4',
-        public ?bool $separator = false,
-        public ?bool $activateByRoute = false,
-        public ?string $activeBgColor = 'bg-base-300',
-
-        // Glass effect props
-        public ?string $glass = null,
-        public ?string $glassTint = null,
-        public ?int $glassTintOpacity = null,
-    ) {
-        $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
-    }
-
-    /**
-     * Get the glass effect CSS classes.
-     *
-     * @since 2.0.0
-     *
-     * @return string Space-separated CSS classes.
-     */
-    public function glassClasses(): string
-    {
-        return GlassHelper::getClasses($this->glass, $this->glassTint, $this->glassTintOpacity);
-    }
-
-    /**
-     * Get the glass effect inline styles including accessible text color.
-     *
-     * Combines custom tint color CSS variable with accessible text color
-     * to ensure WCAG 2.0 AA compliance on tinted glass backgrounds.
-     *
-     * @since 2.0.0
-     *
-     * @return string Inline style string.
-     */
-    public function glassStyle(): string
-    {
-        return GlassHelper::getFullInlineStyle($this->glassTint);
-    }
-
-    public function render(): View|Closure|string
+    public function render(): View
     {
         return view('livewire-ui-components::components.menu');
     }

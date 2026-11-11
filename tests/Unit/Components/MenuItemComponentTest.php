@@ -2,186 +2,76 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
-
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
 use ArtisanPack\LivewireUiComponents\View\Components\MenuItem;
-use Error;
-use RuntimeException;
+use Illuminate\Support\Facades\Blade;
 
-/**
- * Comprehensive unit tests for the MenuItem component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * MenuItem (#56): a link, a button without href, or a disabled link.
  */
-class MenuItemComponentTest extends ComponentTestCase
-{
-    protected string $componentClass = MenuItem::class;
 
-    protected array $defaultProperties = [
-        'external'       => false,
-        'noWireNavigate' => false,
-        'active'         => false,
-        'separator'      => false,
-        'hidden'         => false,
-        'disabled'       => false,
-        'exact'          => false,
-    ];
+test('renders a link with wire:navigate, and a button without href', function (): void {
+    $html = Blade::render('<x-artisanpack-menu id="m"><x-artisanpack-menu-item href="/inbox">Inbox</x-artisanpack-menu-item><x-artisanpack-menu-item wire:click="logout">Log out</x-artisanpack-menu-item></x-artisanpack-menu>');
+    $dom  = designSystemDom($html);
 
-    protected array $requiredProperties = [];
+    $link = $dom->query('//a[@data-part="item"]')->item(0);
+    expect($link->getAttribute('href'))->toBe('/inbox')
+        ->and($link->hasAttribute('wire:navigate'))->toBeTrue();
+    $button = $dom->query('//button[@data-part="item"]')->item(0);
+    expect($button->getAttribute('type'))->toBe('button')
+        ->and($button->getAttribute('wire:click'))->toBe('logout');
+});
 
-    public function test_menuitem_string_properties(): void
-    {
-        $stringProperties = ['id', 'title', 'icon', 'iconClasses', 'spinner', 'link', 'route', 'badge', 'badgeClasses', 'bgColor'];
-        $testValues       = ComponentDataFactory::sampleTexts();
+test('keeps the deprecated title, link and active working', function (): void {
+    $html = Blade::render('<x-artisanpack-menu id="m"><x-artisanpack-menu-item title="Old" link="/old" :active="true" /></x-artisanpack-menu>');
+    $link = designSystemDom($html)->query('//a[@data-part="item"]')->item(0);
 
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
+    expect($link->getAttribute('href'))->toBe('/old')
+        ->and($link->getAttribute('aria-current'))->toBe('page')
+        ->and($link->textContent)->toContain('Old');
+});
 
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
-    }
+test('opens external links in a new tab, and honors no-wire-navigate', function (): void {
+    $html = Blade::render('<x-artisanpack-menu id="m"><x-artisanpack-menu-item href="https://example.com" external>Docs</x-artisanpack-menu-item><x-artisanpack-menu-item href="/a" no-wire-navigate>A</x-artisanpack-menu-item><x-artisanpack-menu-item href="/b" :navigate="false">B</x-artisanpack-menu-item></x-artisanpack-menu>');
+    $dom  = designSystemDom($html);
 
-    public function test_menuitem_boolean_properties(): void
-    {
-        $booleanProperties = ['external', 'noWireNavigate', 'active', 'separator', 'hidden', 'disabled', 'exact'];
+    expect($dom->query('//a[@target="_blank" and @rel="noopener"]')->length)->toBe(1)
+        ->and($html)->not->toContain('wire:navigate');
+});
 
-        foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
-            $this->assertTrue($component->$property);
+test('matches routes as a prefix, or exactly with exact', function (): void {
+    $this->get('/properties/12');
+    $prefix = new MenuItem(href: '/properties', activateByRoute: true);
+    $exact  = new MenuItem(href: '/properties', activateByRoute: true, exact: true);
 
-            $component = $this->createComponent([$property => false]);
-            $this->assertFalse($component->$property);
-        }
-    }
+    expect($prefix->isCurrent())->toBeTrue()
+        ->and($exact->isCurrent())->toBeFalse();
+});
 
-    public function test_menuitem_spinner_target_method(): void
-    {
-        $this->assertNull($this->createComponent()->spinnerTarget());
-        $this->assertSame('save', $this->createComponent(['spinner' => 'save'])->spinnerTarget());
-    }
+test('renders nothing when hidden', function (): void {
+    $html = Blade::render('<x-artisanpack-menu id="m"><x-artisanpack-menu-item href="/a" hidden>A</x-artisanpack-menu-item></x-artisanpack-menu>');
 
-    public function test_menuitem_route_matches_method(): void
-    {
-        $component = $this->createComponent();
+    expect(designSystemDom($html)->query('//*[@data-part="item"]')->length)->toBe(0);
+});
 
-        if (method_exists($component, 'routeMatches')) {
-            try {
-                $result = $component->routeMatches();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
+test('escapes the label', function (): void {
+    $html = Blade::render('<x-artisanpack-menu id="m"><x-artisanpack-menu-item href="/a" label="<b>x</b>" /></x-artisanpack-menu>');
 
-    public function test_menuitem_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
+    expect($html)->toContain('&lt;b&gt;x&lt;/b&gt;');
+});
 
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
+test('drops a javascript: href and renders a plain non-link', function (string $href): void {
+    $html = Blade::render('<x-artisanpack-menu id="m"><x-artisanpack-menu-item :href="$href" wire:click="go">Bad</x-artisanpack-menu-item></x-artisanpack-menu>', ['href' => $href]);
+    $item = designSystemDom($html)->query('//*[@data-part="item"]')->item(0);
 
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
+    expect($html)->not->toContain('javascript:')
+        ->and($html)->not->toContain('data:text')
+        ->and($item->nodeName)->toBe('a')
+        ->and($item->hasAttribute('href'))->toBeFalse()
+        ->and($item->hasAttribute('wire:click'))->toBeFalse();
+})->with(['javascript:alert(1)', ' JavaScript:alert(1)', 'data:text/html,<script>alert(1)</script>']);
 
-    public function test_menuitem_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
+test('drops a javascript: href from items data', function (): void {
+    $html = Blade::render('<x-artisanpack-menu id="m" :items="$items" />', ['items' => [['label' => 'Bad', 'href' => 'javascript:alert(1)'], ['label' => 'Bad sub', 'items' => [['label' => 'Inner', 'link' => 'javascript:alert(2)']]]]]);
 
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'MenuItem should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
-
-    public function test_menuitem_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
-
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
-
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_menuitem_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'MenuItem rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
-}
+    expect($html)->not->toContain('javascript:');
+});

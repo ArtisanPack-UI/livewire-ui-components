@@ -4,6 +4,8 @@ title: DatePicker Component
 
 # DatePicker Component
 
+> **Deprecated in 3.0.** `<x-artisanpack-datepicker>` is now an alias of [DatePicker](date-picker), built on the design system, and takes its props; flatpickr, the `datepicker-theme.css` files and the props below no longer apply. Use `<x-artisanpack-date-picker>`. The alias is removed in a later major release.
+
 The DatePicker component is a form element that provides an interactive calendar interface for selecting dates. It offers a user-friendly alternative to the standard date input with enhanced functionality and styling.
 
 ## Installation & Setup

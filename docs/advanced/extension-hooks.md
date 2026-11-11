@@ -102,14 +102,15 @@ public function closeConfirmDialog(): void
 
 ## Extending Spotlight Commands
 
-Add commands to the spotlight search from any package or application code:
+Add commands to the results of the `artisanpack.spotlight` route, which [Spotlight](../components/spotlight) fetches when it has no `groups`, from any package or application code. Each command is an item (`label`, `href`, `description`, `icon`); the filter receives the list the search class returned:
 
 ```php
 Filter::add('ap.livewireUiComponents.spotlightCommands', function (array $commands, ?\Illuminate\Contracts\Auth\Authenticatable $user) {
     if ($user && $user->can('view-reports')) {
         $commands[] = [
-            'label' => 'Open Reports',
-            'route' => route('reports.index'),
+            'label' => __('Open Reports'),
+            'href'  => route('reports.index'),
+            'icon'  => 'file-text',
         ];
     }
 

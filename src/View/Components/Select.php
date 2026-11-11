@@ -81,19 +81,33 @@ class Select extends BaseComponent
 
     /**
      * The options as `value`, `label` and `disabled`, with string values.
+     * A `[ 'label' => …, 'options' => […] ]` entry is an option group
+     * (#53, replacing `select-group`): `group` holds its label and `options`
+     * its normalized options.
      *
      * @since 3.0.0
      *
-     * @return list<array{value: string, label: string, disabled: bool}> The options.
+     * @param  iterable<mixed>|null  $source  The options to normalize. Defaults to the `options` prop.
+     *
+     * @return list<array{group: string, options: list<array{value: string, label: string, disabled: bool}>}|array{value: string, label: string, disabled: bool}> The options and groups.
      */
-    public function normalizedOptions(): array
+    public function normalizedOptions(?iterable $source = null): array
     {
         $options = [];
-        foreach ($this->options as $option) {
+        foreach ($source ?? $this->options as $option) {
             if ($option instanceof Arrayable) {
                 $option = $option->toArray();
             } elseif (is_object($option)) {
                 $option = get_object_vars($option);
+            }
+
+            if (is_array($option) && null === $source && isset($option['options']) && is_iterable($option['options'])) {
+                $options[] = [
+                    'group'   => (string) ($option['label'] ?? ''),
+                    'options' => $this->normalizedOptions($option['options']),
+                ];
+
+                continue;
             }
 
             if (is_array($option)) {

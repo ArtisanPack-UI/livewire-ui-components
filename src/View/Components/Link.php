@@ -1,122 +1,105 @@
 <?php
 
-declare(strict_types=1);
 /**
  * Link Component
  *
- * A component for displaying hyperlinks with customizable styling options.
+ * The design-system Link (#56): an anchor, or a button styled as a link
+ * when there's no href.
  *
  * @author     Jacob Martella
- * @copyright  2023 Jacob Martella
+ * @copyright  2026 Jacob Martella
  * @license    MIT
  *
- * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
+ * @link       https://github.com/ArtisanPack-UI/livewire-ui-components
  * @since      1.0.0
  */
 
+declare(strict_types=1);
+
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
+use ArtisanPack\LivewireUiComponents\Support\SafeUrl;
+use ArtisanPack\LivewireUiComponents\View\Concerns\RendersDesignSystemParts;
 use Illuminate\Contracts\View\View;
 
 /**
  * Link Component Class
  *
- * Provides a customizable link component with support for styling options.
+ * Renders `.apui-link` with `data-tone`, `data-standalone` and the icon and
+ * iconEnd parts. Every attribute lands on the root, so `wire:click` on a
+ * link without href works on the button it renders.
  *
  * @since 1.0.0
  */
 class Link extends BaseComponent
 {
+    use RendersDesignSystemParts;
+
     /**
-     * Constructor for the Link component.
+     * The Breadcrumbs this link is a level of, when it's composed inside one
+     * (2.x usage). It then registers with the trail instead of rendering.
      *
-     * @param  string|null  $id  Optional ID for the link.
-     * @param  string|null  $href  The URL the link points to.
-     * @param  string|null  $color  Text color class.
-     * @param  bool|null  $underline  Whether to show underline.
-     * @param  bool|null  $hoverUnderline  Whether to show underline only on hover.
-     * @param  bool|null  $external  Whether the link should open in a new tab.
-     * @param  bool|null  $noWireNavigate  Disable wire:navigate for links.
-     * @param  string|null  $icon  Optional icon to display before the text.
-     * @param  string|null  $iconRight  Optional icon to display after the text.
-     * @param  string|null  $tooltip  Optional tooltip text.
-     * @param  string|null  $tooltipLeft  Optional tooltip text (left position).
-     * @param  string|null  $tooltipRight  Optional tooltip text (right position).
-     * @param  string|null  $tooltipBottom  Optional tooltip text (bottom position).
+     * @since 3.0.0
+     */
+    public ?Breadcrumbs $trail;
+
+    /**
+     * Creates the component.
      *
-     * @since 1.0.0
+     * @since 3.0.0
+     *
+     * @param  string|null  $href  The destination. Without one (or with an unsafe scheme), a button renders instead.
+     * @param  string  $tone  primary or muted. Emitted as data-tone.
+     * @param  bool  $standalone  A link on its own line: medium weight, underlined on hover.
+     * @param  bool  $external  Opens in a new tab and says so.
+     * @param  string|null  $externalLabel  The visually hidden "opens in a new tab" text. Defaults to __( '(opens in a new tab)' ).
+     * @param  string|null  $leadingIcon  Icon name before the text. An `icon` slot overrides it.
+     * @param  string|null  $trailingIcon  Icon name after the text. An `iconEnd` slot overrides it.
+     * @param  bool  $navigate  Adds wire:navigate to an internal link (default true). Off-site, `#`, `mailto:` and new-tab links never get it.
+     * @param  array<string, string>  $classes  Extra classes per part.
      */
     public function __construct(
-        public ?string $id = null,
         public ?string $href = null,
-        public ?string $color = null,
-        public ?bool $underline = false,
-        public ?bool $hoverUnderline = true,
-        public ?bool $external = false,
-        public ?bool $noWireNavigate = false,
-        public ?string $icon = null,
-        public ?string $iconRight = null,
-        public ?string $tooltip = null,
-        public ?string $tooltipLeft = null,
-        public ?string $tooltipRight = null,
-        public ?string $tooltipBottom = null,
-        public string $uuid = '',
-        public string $tooltipPosition = 'lg:tooltip-top',
+        public string $tone = 'primary',
+        public bool $standalone = false,
+        public bool $external = false,
+        public ?string $externalLabel = null,
+        public ?string $leadingIcon = null,
+        public ?string $trailingIcon = null,
+        public bool $navigate = true,
+        public array $classes = [],
     ) {
-        // Set uuid if not provided or empty
-        if (empty($this->uuid)) {
-            $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
-        }
-
-        // Set tooltip based on the first non-null value if not already set
-        $this->tooltip = $this->tooltip ?? $this->tooltipLeft ?? $this->tooltipRight ?? $this->tooltipBottom;
-
-        // Set tooltipPosition if not explicitly provided (using default value)
-        if ('lg:tooltip-top' === $this->tooltipPosition) {
-            $this->tooltipPosition = $this->tooltipLeft ? 'lg:tooltip-left' : ($this->tooltipRight ? 'lg:tooltip-right' : ($this->tooltipBottom ? 'lg:tooltip-bottom' : 'lg:tooltip-top'));
-        }
+        $this->externalLabel ??= __('(opens in a new tab)');
+        $this->trail         = Breadcrumbs::current();
     }
 
     /**
-     * Get the text color class based on component properties.
+     * The href: null when it's empty or uses an unsafe scheme, which renders
+     * the button form.
      *
-     * @return string The text color class.
+     * @since 3.0.0
      *
-     * @since 1.0.0
+     * @return string|null The href.
      */
-    public function colorClass(): string
+    public function linkHref(): ?string
     {
-        if ($this->color) {
-            return $this->color;
-        }
-
-        return 'text-primary hover:text-primary-focus';
+        return SafeUrl::href($this->href);
     }
 
     /**
-     * Get the underline class based on component properties.
+     * The tone, falling back to primary for unknown values.
      *
-     * @return string The underline class.
+     * @since 3.0.0
      *
-     * @since 1.0.0
+     * @return string primary or muted.
      */
-    public function underlineClass(): string
+    public function toneValue(): string
     {
-        if ($this->underline) {
-            return 'underline';
-        }
-
-        if ($this->hoverUnderline) {
-            return 'no-underline hover:underline';
-        }
-
-        return 'no-underline';
+        return in_array($this->tone, ['primary', 'muted'], true) ? $this->tone : 'primary';
     }
 
     /**
-     * Renders the link component.
-     *
-     * @return View The rendered component.
+     * Get the view that represents the component.
      *
      * @since 1.0.0
      */

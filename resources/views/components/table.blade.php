@@ -598,11 +598,20 @@
     @endif
 
     <!-- Pagination -->
+    {{-- Pagination keeps to its spec; the "Rows per page" Select sits beside it here. --}}
     @if($withPagination)
-        @if($perPage)
-            <x-artisanpack-pagination :rows="$rows" :per-page-values="$perPageValues" wire:model.live="{{ $perPage }}" />
-        @else
-            <x-artisanpack-pagination :rows="$rows" :per-page-values="$perPageValues" />
-        @endif
+        <div class="flex flex-wrap items-center justify-between gap-2 mt-4" data-table-pagination>
+            @if($perPage && $rows instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator && $rows->isNotEmpty())
+                <x-artisanpack-select
+                    size="sm"
+                    placeholder=""
+                    :label="__( 'Rows per page' )"
+                    :options="array_map( 'strval', $perPageValues ?? [] )"
+                    :value="(string) $rows->perPage()"
+                    wire:model.live="{{ $perPage }}"
+                />
+            @endif
+            <x-artisanpack-pagination :rows="$rows" summary />
+        </div>
     @endif
 </div>

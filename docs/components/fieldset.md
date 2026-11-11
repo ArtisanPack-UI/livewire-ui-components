@@ -4,181 +4,45 @@ title: Fieldset Component
 
 # Fieldset Component
 
-The Fieldset component provides a styled container for grouping related form fields, often including a header with title, subtitle, and actions.
+Groups related fields under a legend, built on the ArtisanPack UI design system. It's a native `<fieldset>` and `<legend>`, so the group's name is announced with each field inside.
 
 ## Basic Usage
 
-```php
-<x-artisanpack-fieldset title="Personal Information">
-    <x-artisanpack-input label="First Name" wire:model="firstName" />
-    <x-artisanpack-input label="Last Name" wire:model="lastName" />
-    <x-artisanpack-input label="Email" type="email" wire:model="email" />
+```blade
+<x-artisanpack-fieldset :title="__( 'Contact' )" :description="__( 'Who buyers and renters should reach.' )">
+	<div data-scope="fieldset" data-part="row">
+		<x-artisanpack-input wire:model="name" :label="__( 'Full name' )" />
+		<x-artisanpack-input wire:model="email" type="email" :label="__( 'Email' )" leading-icon="mail" />
+	</div>
+	<x-artisanpack-input wire:model="phone" type="tel" :label="__( 'Phone' )" />
 </x-artisanpack-fieldset>
 ```
 
-## Examples
+Fields side by side go in a row: `<div data-scope="fieldset" data-part="row">`, a grid that wraps on narrow screens.
 
-### With Title and Subtitle
+## Divided and plain
 
-```php
-<x-artisanpack-fieldset
-    title="Account Settings"
-    subtitle="Manage your account preferences and security settings"
->
-    <x-artisanpack-input label="Username" wire:model="username" />
-    <x-artisanpack-password label="Current Password" wire:model="currentPassword" />
-    <x-artisanpack-password label="New Password" wire:model="newPassword" />
+```blade
+<x-artisanpack-fieldset variant="divided" :title="__( 'Billing address' )">
+	<x-artisanpack-checkbox wire:model="sameAddress" :label="__( 'Same as property address' )" />
 </x-artisanpack-fieldset>
-```
-
-### With Icon
-
-```php
-<x-artisanpack-fieldset
-    title="Billing Information"
-    subtitle="Update your billing details"
-    icon="o-credit-card"
->
-    <x-artisanpack-input label="Card Number" wire:model="cardNumber" />
-    <x-artisanpack-input label="Expiry Date" wire:model="expiryDate" />
-    <x-artisanpack-input label="CVV" wire:model="cvv" />
-</x-artisanpack-fieldset>
-```
-
-### Without Separator
-
-```php
-<x-artisanpack-fieldset
-    title="Preferences"
-    :separator="false"
->
-    <x-artisanpack-toggle label="Email Notifications" wire:model="emailNotifications" />
-    <x-artisanpack-toggle label="SMS Notifications" wire:model="smsNotifications" />
-</x-artisanpack-fieldset>
-```
-
-### Custom Colors
-
-```php
-<x-artisanpack-fieldset
-    title="Important Settings"
-    subtitle="These settings affect your account security"
-    bg-color="bg-warning/10"
-    text-color="text-warning"
-    border="border-2 border-warning"
->
-    <x-artisanpack-toggle label="Two-Factor Authentication" wire:model="twoFactorEnabled" />
-    <x-artisanpack-input label="Recovery Email" wire:model="recoveryEmail" />
-</x-artisanpack-fieldset>
-```
-
-### With Actions Slot
-
-```php
-<x-artisanpack-fieldset
-    title="Profile"
-    subtitle="Your public profile information"
->
-    <x-slot:actions>
-        <x-artisanpack-button size="sm" color="primary">
-            Edit Profile
-        </x-artisanpack-button>
-    </x-slot:actions>
-
-    <x-artisanpack-input label="Display Name" wire:model="displayName" />
-    <x-artisanpack-textarea label="Bio" wire:model="bio" />
-</x-artisanpack-fieldset>
-```
-
-### With Middle Slot
-
-```php
-<x-artisanpack-fieldset
-    title="Advanced Options"
->
-    <x-slot:middle>
-        <x-artisanpack-badge value="Beta" color="info" />
-    </x-slot:middle>
-
-    <x-slot:actions>
-        <x-artisanpack-button size="sm" outline>
-            Learn More
-        </x-artisanpack-button>
-    </x-slot:actions>
-
-    <!-- Form fields here -->
+<x-artisanpack-fieldset variant="plain" :title="__( 'Payout account' )" :description="__( 'Locked while a payout is processing.' )" disabled>
+	<x-artisanpack-input :label="__( 'IBAN' )" value="ES91 •••• •••• 1332" />
 </x-artisanpack-fieldset>
 ```
 
 ## Props
 
 | Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `title` | string | `null` | The title to display in the header |
-| `subtitle` | string | `null` | The subtitle to display in the header |
-| `icon` | string | `null` | The icon to display in the header |
-| `separator` | boolean | `true` | Whether to show a separator in the header |
-| `bgColor` | string | `'bg-base-100'` | The background color class |
-| `textColor` | string | `null` | The text color class |
-| `border` | string | `'border border-base-300'` | The border classes |
+|---|---|---|---|
+| `variant` | `panel` · `divided` · `plain` | `panel` | A bordered panel, a section with an edge under it, or no chrome. Emitted as `data-variant`. |
+| `title` | string or slot | none | The group's name, in the legend. |
+| `description` | string or slot | none | Supporting text in the legend. |
+| `disabled` | bool | `false` | Disables every control inside (native `disabled`). |
+| `classes` | array | `[]` | Extra classes per part: `root`, `legend`, `title`, `description`. |
 
-## Slots
+Attributes land on the `<fieldset>`. Don't nest fieldsets more than one level.
 
-| Slot | Description |
-|------|-------------|
-| `default` | The main content area for form fields |
-| `middle` | Content to display in the middle section of the header (between title and actions) |
-| `actions` | Content to display in the actions section of the header (typically buttons) |
+## Upgrading from 2.x
 
-## Styling
-
-### Custom Background and Border
-
-```php
-<x-artisanpack-fieldset
-    title="Dark Theme Section"
-    bg-color="bg-base-200"
-    border="border-2 border-primary"
->
-    <!-- Form fields -->
-</x-artisanpack-fieldset>
-```
-
-### Colored Header
-
-```php
-<x-artisanpack-fieldset
-    title="Success Section"
-    subtitle="Everything looks good"
-    text-color="text-success"
-    icon="o-check-circle"
->
-    <!-- Form fields -->
-</x-artisanpack-fieldset>
-```
-
-## Accessibility
-
-The Fieldset component follows accessibility best practices:
-
-- Uses semantic `<fieldset>` and `<legend>` HTML elements
-- Proper heading hierarchy
-- Screen reader friendly structure
-- Keyboard navigation support
-
-## Use Cases
-
-The Fieldset component is ideal for:
-
-1. **Form Sections**: Group related form fields together
-2. **Settings Panels**: Organize settings into logical sections
-3. **Multi-Step Forms**: Separate form steps visually
-4. **Account Management**: Group account-related inputs
-5. **Profile Editing**: Organize profile information sections
-
-## Related Components
-
-- [Form](Form) - Main form container
-- [Card](Card) - General content container
-- [Header](Header) - Standalone header component
-- [Group](Group) - Group form elements horizontally
+`subtitle` is `description`. `icon`, `separator`, `bg-color`, `text-color`, `border`, `middle` and `actions` are gone; use `variant`, `classes` and your own content.

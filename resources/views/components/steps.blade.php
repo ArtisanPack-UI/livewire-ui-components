@@ -1,42 +1,22 @@
-<div
-        x-data="{
-                steps: [],
-                current: @entangle($attributes->wire('model')),
-                init() {
-                    // Fix weird issue when navigating back
-                    document.addEventListener('livewire:navigating', () => {
-                        document.querySelectorAll('.step').forEach(el =>  el.remove());
-                    });
-                }
-        }"
-        @class([
-            $glassClasses() => $glass,
-        ])
-        @if($glassStyle())
-            style="{{ $glassStyle() }}"
-        @endif
-    >
-        <!-- STEP LABELS -->
-        <ul class="steps [&>*:nth-child(2)]:before:hidden {{ $stepperClasses }}">
-            <template x-for="(step, index) in steps" :key="index">
-                <li
-                    class="step"
-                    :data-content="!step.icon ? step.dataContent || (index + 1) : ''"
-                    :class="(index + 1 <= current) && '{{ $stepsColor }} ' + step.classes"
-                >
-                        <template x-if="step.icon">
-                            <span x-html="step.icon" class="step-icon"></span>
-                        </template>
-                        <span x-html="step.text"></span>
-                </li>
-            </template>
-        </ul>
-
-        <!-- STEP PANELS-->
-        <div {{ $attributes->whereDoesntStartWith('wire') }}>
-            {{ $slot }}
-        </div>
-
-        <!-- Force Tailwind compile steps color -->
-        <span class="hidden step-primary step-error step-success step-neutral step-info step-accent"></span>
-    </div>
+{{--
+    Steps (#56). Markup contract: design-system wave 4, Steps.
+    An ordered list of step children (or the same children from `steps`).
+    wire:model binds the current step; with clickable, completed steps'
+    titles are buttons that set it through $wire.entangle. Use steps or
+    children, not both: data steps number themselves from 1.
+--}}
+@php
+    $alpineData = $alpineData();
+@endphp
+<ol
+    {{ $rootAttributes()->class( $rootClasses( 'apui-steps' ) ) }}
+    data-orientation="{{ $orientationValue() }}"
+    @if ( $filled( $label ) ) aria-label="{{ $label }}" @endif
+    @if ( null !== $alpineData ) x-data="{{ $alpineData }}" @endif
+>
+    @foreach ( $entries() as $entry )
+        <x-artisanpack-step :title="$entry['title']" :description="$entry['description']" :state="$entry['state']" :icon="$entry['icon']" :step="$entry['number']" />
+    @endforeach
+    {{ $slot ?? '' }}
+</ol>
+@php $finishRendering(); @endphp

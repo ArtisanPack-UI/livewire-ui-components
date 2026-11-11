@@ -4,6 +4,8 @@ title: DateTime Component
 
 # DateTime Component
 
+> **Deprecated in 3.0.** `<x-artisanpack-datetime>` now renders [DatePicker](date-picker) in its time mode (`<x-artisanpack-date-picker time>`) and takes its props; the props below no longer apply, and the value is ISO (`2026-11-12T11:00`). It is removed in a later major release.
+
 The DateTime component provides a combined date and time picker, allowing users to select both date and time in a single input field.
 
 ## Basic Usage

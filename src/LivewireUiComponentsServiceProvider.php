@@ -55,6 +55,7 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         'avatar'                  => View\Components\Avatar::class,
         'badge'                   => View\Components\Badge::class,
         'breadcrumbs'             => View\Components\Breadcrumbs::class,
+        'breadcrumbs-item'        => View\Components\BreadcrumbsItem::class,
         'button'                  => View\Components\Button::class,
         'card'                    => View\Components\Card::class,
         'carousel'                => View\Components\Carousel::class,
@@ -64,10 +65,14 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         'choices'                 => View\Components\Choices::class,
         'choices-offline'         => View\Components\ChoicesOffline::class,
         'code'                    => View\Components\Code::class,
+        'code-editor'             => View\Components\CodeEditor::class,
         'collapse'                => View\Components\Collapse::class,
-        'colorpicker'             => View\Components\Colorpicker::class,
-        'datepicker'              => View\Components\DatePicker::class,
-        'datetime'                => View\Components\DateTime::class,
+        'combobox'                => View\Components\Combobox::class,
+        'color-picker'            => View\Components\ColorPicker::class,
+        'colorpicker'             => View\Components\ColorPicker::class, // Deprecated alias of color-picker.
+        'date-picker'             => View\Components\DatePicker::class,
+        'datepicker'              => View\Components\DatePicker::class, // Deprecated alias of date-picker.
+        'datetime'                => View\Components\DateTime::class, // Deprecated: date-picker with time.
         'dialog'                  => View\Components\Dialog::class,
         'diff'                    => View\Components\Diff::class,
         'drawer'                  => View\Components\Drawer::class,
@@ -76,7 +81,7 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         'dropdown-menu-group'     => View\Components\DropdownMenuGroup::class,
         'dropdown-menu-item'      => View\Components\DropdownMenuItem::class,
         'dropdown-menu-separator' => View\Components\DropdownMenuSeparator::class,
-        'editor'                  => View\Components\Editor::class,
+        'editor'                  => View\Components\RichTextEditor::class, // Deprecated alias of rich-text-editor.
         'errors'                  => View\Components\Errors::class,
         'fieldset'                => View\Components\Fieldset::class,
         'file'                    => View\Components\File::class,
@@ -103,6 +108,8 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         'menu-title'              => View\Components\MenuTitle::class,
         'modal'                   => View\Components\Modal::class,
         'nav'                     => View\Components\Nav::class,
+        'navbar'                  => View\Components\Navbar::class,
+        'navbar-item'             => View\Components\NavbarItem::class,
         'pagination'              => View\Components\Pagination::class,
         'password'                => View\Components\Password::class,
         'pin'                     => View\Components\Pin::class,
@@ -114,6 +121,7 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         'radio-group'             => View\Components\RadioGroup::class,
         'range'                   => View\Components\Range::class,
         'rating'                  => View\Components\Rating::class,
+        'rich-text-editor'        => View\Components\RichTextEditor::class,
         'select'                  => View\Components\Select::class,
         'select-group'            => View\Components\SelectGroup::class,
         'separator'               => View\Components\Separator::class,
@@ -137,6 +145,7 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         'toast'                   => View\Components\Toast::class,
         'toaster'                 => View\Components\Toaster::class,
         'toggle'                  => View\Components\Toggle::class,
+        'validation-summary'      => View\Components\ValidationSummary::class,
         'widget-grid'             => View\Components\WidgetGrid::class,
     ];
 
@@ -461,6 +470,12 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
     {
         // Overlay ids rendered so far, per request (Octane resets scoped bindings).
         $this->app->scoped(Support\RenderedIds::class);
+        // The Steps whose step children are rendering, per request.
+        $this->app->scoped(Support\StepsContext::class);
+        // The Breadcrumbs whose composed children are rendering, per request.
+        $this->app->scoped(Support\BreadcrumbsContext::class);
+        // Tabs, Menu and Navbar parents rendering their children (#56).
+        $this->app->scoped(Support\NavigationContext::class);
 
         $this->mergeConfigFrom(__DIR__.'/../config/livewire-ui-components.php', 'artisanpack-livewire-ui-components-temp');
 

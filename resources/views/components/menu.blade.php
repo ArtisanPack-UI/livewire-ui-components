@@ -1,30 +1,18 @@
-<ul
-    {{
-        $attributes->class([
-            "menu w-full",
-            $glassClasses() => $glass,
-        ])
-    }}
-    @if($glassStyle())
-        style="{{ $glassStyle() }}"
-    @endif
+{{--
+    Menu (#56). Markup contract: design-system Menu. The .apui-menu nav holds the
+    list; children are menu-item, menu-sub, menu-title and menu-separator, and
+    `items` renders the same children, before the slot. Parts are scoped menu.
+    Every attribute but activate-by-route lands on the nav.
+--}}
+<nav
+    {{ $rootAttributes()->class( $rootClasses( 'apui-menu' ) ) }}
+    id="{{ $baseId() }}"
+    @if ( $filled( $label ) ) aria-label="{{ $label }}" @endif
+    @if ( $collapsible ) data-collapsible @endif
 >
-    @if($title)
-        <li class="menu-title text-inherit uppercase">
-            <div class="flex items-center gap-2">
-
-                @if($icon)
-                    <x-artisanpack-icon :name="$icon" @class(['inline-flex', $iconClasses])  />
-                @endif
-
-                {{ $title }}
-            </div>
-        </li>
-    @endif
-
-    @if($separator)
-        <hr class="mb-3 border-t-[length:var(--border)] border-base-content/10" />
-    @endif
-
-    {{ $slot }}
-</ul>
+    <ul data-scope="menu" data-part="list"{{ $partClass( 'list' ) }}>
+        @include( 'livewire-ui-components::components.partials.menu-entries', [ 'entries' => $entries() ] )
+        {{ $slot ?? '' }}
+    </ul>
+</nav>
+@php $finishRendering(); @endphp

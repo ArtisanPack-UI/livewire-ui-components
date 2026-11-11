@@ -1,97 +1,81 @@
+{{--
+    Tabs (#56). Markup contract: design-system Tabs. The .apui-tabs root is the
+    machine's root part; the tablist renders a trigger per registered tab, then
+    the panels follow. Children register their triggers while Blade renders the
+    slot, before this view; `tabs` renders the same children from data. Every
+    part has a stable, server-rendered id, per value for triggers and panels
+    (D-015). Attributes land on the root, where value-change is dispatched.
+--}}
+@php
+    $baseId = $baseId();
+    $renderingData( true );
+    ob_start();
+@endphp
+@foreach ( $entries() as $entry )
+    <x-artisanpack-tab
+        :value="$entry['value']"
+        :label="$entry['label']"
+        :icon="$entry['icon']"
+        :count="$entry['count']"
+        :disabled="$entry['disabled']"
+    >{{ $entry['content'] }}</x-artisanpack-tab>
+@endforeach
+@php
+    $dataPanels = new \Illuminate\Support\HtmlString( (string) ob_get_clean() );
+    $renderingData( false );
+    $selected   = $selectedValue();
+@endphp
 <div
-        x-data="{
-            tabs: [],
-            selected:
-                @if($selected)
-                    '{{ $selected }}'
-                @else
-                    @entangle($attributes->wire('model'))
-                @endif
-             ,
-             morphRemovedCleanup: null,
-             _onNavigating: null,
-             init() {
-                 // Fix weird issue when navigating back
-                 // Use a named handler scoped to this component's tabs only
-                 const self = this;
-                 this._onNavigating = () => {
-                     self.$el.querySelectorAll('.tab').forEach(el => el.remove());
-                 };
-                 document.addEventListener('livewire:navigating', this._onNavigating);
-
-                 // Register a single morph.removing hook to handle dynamic tab removal
-                 // Use 'morph.removing' (not 'morph.removed') so contains() check works before detachment
-                 // This works with both Livewire 3 and Livewire 4
-                 this.morphRemovedCleanup = Livewire.hook('morph.removing', ({ el, component }) => {
-                     // Check if the element being removed is a tab component within this instance
-                     if (el && el.hasAttribute && el.hasAttribute('data-tab-component')) {
-                         // Verify the element belongs to this component (must check before detachment)
-                         if (!self.$el.contains(el)) {
-                             return;
-                         }
-                         const tabName = el.getAttribute('data-name');
-                         if (tabName) {
-                             self.tabs = self.tabs.filter(tab => tab.name !== tabName);
-                             // If the removed tab was selected, select the first available tab
-                             if (self.selected === tabName && self.tabs.length > 0) {
-                                 const firstVisibleTab = self.tabs.find(tab => !tab.hidden && !tab.disabled);
-                                 if (firstVisibleTab) {
-                                     self.selected = firstVisibleTab.name;
-                                 }
-                             }
-                         }
-                     }
-                 });
-             },
-             destroy() {
-                 // Clean up the navigating event listener
-                 if (this._onNavigating) {
-                     document.removeEventListener('livewire:navigating', this._onNavigating);
-                     this._onNavigating = null;
-                 }
-                 // Clean up the hook when the component is destroyed
-                 if (this.morphRemovedCleanup) {
-                     this.morphRemovedCleanup();
-                     this.morphRemovedCleanup = null;
-                 }
-             }
-    }"
-        class="{{ $getTabsContainerClass() }}"
-        @if($isVertical())
-            aria-orientation="vertical"
-        @endif
-        x-on:livewire:navigating.window="destroy()"
-        x-class="font-semibold pb-1 border-b-[length:var(--border)] border-b-base-content/50 border-b-base-content/10 flex overflow-x-auto scrollbar-hide relative w-full"
+    {{ $rootAttributes()->class( $rootClasses( 'apui-tabs' ) ) }}
+    id="{{ $baseId }}"
+    data-scope="tabs"
+    data-part="root"
+    data-variant="{{ $variant }}"
+    data-size="{{ $size }}"
+    data-orientation="{{ $orientation }}"
+    data-activation-mode="{{ $activationMode }}"
+    x-data="{{ $alpineData() }}"
+    x-apui:root
 >
-    @if($isVerticalRight())
-        <div role="tablist" {{ $attributes->except(['wire:model', 'wire:model.live'])->class([$verticalContentClass]) }}>
-            {{ $slot }}
-        </div>
-    @endif
-
     <div
-        @class([
-            $getLabelDivClass(),
-            $glassClasses() => $glass,
-        ])
-        @if($glassStyle())
-            style="{{ $glassStyle() }}"
-        @endif
+        data-scope="tabs"
+        data-part="list"
+        id="{{ $partId( 'list' ) }}"
         role="tablist"
+        aria-orientation="{{ $orientation }}"
+        data-orientation="{{ $orientation }}"
+        @if ( $filled( $label ) ) aria-label="{{ $label }}" @endif
+        {{ $partClass( 'list' ) }}
+        x-apui:list
     >
-        <template x-for="tab in tabs">
-            <a
-                    role="tab"
-                    x-html="tab.label"
-                    @click="tab.disabled ? null: selected = tab.name"
-                    :class="{ '{{ $getActiveClass() }} tab-active': selected === tab.name, 'hidden': tab.hidden }"
-                    class="tab {{ $getFinalLabelClass() }}"></a>
-        </template>
+        @foreach ( $triggers() as $trigger )
+            @php $isSelected = $selected === $trigger['value']; @endphp
+            <button
+                type="button"
+                data-scope="tabs"
+                data-part="trigger"
+                id="{{ $valuePartId( 'trigger', $trigger['value'] ) }}"
+                role="tab"
+                data-value="{{ $trigger['value'] }}"
+                data-orientation="{{ $orientation }}"
+                aria-selected="{{ $isSelected ? 'true' : 'false' }}"
+                @if ( $isSelected ) data-selected aria-controls="{{ $valuePartId( 'content', $trigger['value'] ) }}" @endif
+                tabindex="{{ $isSelected ? '0' : '-1' }}"
+                @if ( $trigger['disabled'] ) disabled aria-disabled="true" data-disabled @endif
+                {{ $partClass( 'trigger' ) }}
+                x-apui:trigger="{{ $partArgs( [ 'value' => $trigger['value'], 'disabled' => $trigger['disabled'] ] ) }}"
+            >
+                @if ( null !== $trigger['icon'] )
+                    <span data-scope="tabs" data-part="icon" aria-hidden="true"{{ $partClass( 'icon' ) }}@if ( $mirrors( $trigger['icon'] ) ) data-mirror @endif>{{ $iconSvg( $trigger['icon'] ) }}</span>
+                @endif
+                {{ $trigger['label'] }}
+                @if ( null !== $trigger['count'] )
+                    <span data-scope="tabs" data-part="count"{{ $partClass( 'count' ) }}>{{ $trigger['count'] }}</span>
+                @endif
+            </button>
+        @endforeach
     </div>
-
-    @if(!$isVerticalRight())
-        <div role="tablist" {{ $attributes->except(['wire:model', 'wire:model.live'])->class($isVertical() ? [$verticalContentClass] : ["block"]) }}>
-            {{ $slot }}
-        </div>
-    @endif
+    {{ $dataPanels }}
+    {{ $slot ?? '' }}
 </div>
+@php $finishRendering(); @endphp

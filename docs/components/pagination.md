@@ -4,305 +4,61 @@ title: Pagination Component
 
 # Pagination Component
 
-The Pagination component provides a flexible user interface for navigating through paginated data, with support for multiple display variants ranging from simple to advanced layouts.
+Moves between the pages of a long list, built on the ArtisanPack UI design system (`.apui-pagination`): previous, the first and last pages, the pages around the current one, next, and an optional summary, in a navigation landmark. The control keeps one width as the page changes, collapsing gaps into an ellipsis.
 
-## Basic Usage
+## With a Laravel paginator
+
+Pass the paginator as `rows`. Pages become links to its URLs; inside a Livewire component using `WithPagination` they call `gotoPage()` instead of reloading the page, and keep their `href` for opening in a new tab. A simple or cursor paginator renders previous and next only.
 
 ```blade
-<x-artisanpack-pagination :rows="$users" wire:model.live="perPage" />
+{{-- $listings = Listing::paginate( 10 ) --}}
+<x-artisanpack-pagination :rows="$listings" summary />
 ```
 
-## Pagination Variants
+## With numbers
 
-The pagination component supports multiple variants to suit different use cases:
-
-### Simple Variant
-Perfect for basic data browsing with minimal UI.
+Without a paginator, give `page` and either `total` (with `per-page`) or `page-count`. Every control dispatches a `page-change` browser event with `{ page }`:
 
 ```blade
-<x-artisanpack-pagination 
-    :rows="$users" 
-    wire:model.live="perPage"
-    :simple="true" 
+<x-artisanpack-pagination
+	:page="$page"
+	:total="318"
+	:per-page="10"
+	summary
+	:summary-label="__( 'Showing {from}–{to} of {total} properties' )"
+	wire:page-change="$set( 'page', $event.detail.page )"
 />
 ```
 
-**Features:**
-- Previous/Next buttons only
-- Current page indicator
-- No per-page selector
-- Compact layout
+`x-on:page-change` works the same way in Alpine.
 
-### Compact Variant
-Optimized for mobile and tight spaces.
+## Props
 
-```blade
-<x-artisanpack-pagination 
-    :rows="$users" 
-    wire:model.live="perPage"
-    :compact="true"
-    :size="'sm'"
-/>
-```
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `rows` | paginator | none | A `LengthAwarePaginator`, `Paginator` or `CursorPaginator`. It supplies the numbers and URLs. |
+| `page` | int | `1` | The current page, from 1. |
+| `page-count` | int | none | How many pages there are. Without it, `total / per-page`. |
+| `total` | int | none | How many items the list has. |
+| `per-page` | int | `10` | How many items a page holds. |
+| `siblings` | int | `1` | Pages shown on each side of the current one. |
+| `summary` | bool | `false` | Shows the summary before the pages. |
+| `label` | string | `__( 'Pagination' )` | The navigation landmark's name. Give two paginations on one page different labels. |
+| `previous-label` | string | `__( 'Previous page' )` | The previous button's name. |
+| `next-label` | string | `__( 'Next page' )` | The next button's name. |
+| `page-label` | string | `__( 'Page {page}' )` | Each page's name. |
+| `summary-label` | string | `__( 'Showing {from}–{to} of {total}' )` | The summary, with `{from}`, `{to}`, `{total}`, `{page}` and `{pageCount}`. Without a total it defaults to `__( 'Page {page} of {pageCount}' )`. |
+| `classes` | array | `[]` | Extra classes per part: `root`, `summary`, `previous`, `page`, `ellipsis`, `next`. |
 
-**Features:**
-- Condensed button sizes
-- Icons instead of text labels
-- Limited page numbers
-- Mobile-optimized layout
+## Upgrading from 2.x
 
-### Advanced Variant
-Feature-rich pagination for data-heavy applications.
+- The `simple`, `compact`, `advanced` and `minimal` variants, `size`, `show-first-last` and `show-jump-to` are gone: there is one design.
+- The per-page select (`per-page-values`, `hide-per-page`, `wire:model` on the pagination) is gone. Pair Pagination with a Select for "Rows per page".
+- `show-page-info`, `hide-page-info` and `page-info-template` are `summary` and `summary-label`; the `{from}`, `{to}` and `{total}` placeholders are unchanged. The summary is off by default.
 
-```blade
-<x-artisanpack-pagination 
-    :rows="$users" 
-    wire:model.live="perPage"
-    :advanced="true"
-    :show-jump-to="true"
-    :on-each-side="2"
-    :per-page-values="[10, 25, 50, 100, 250]"
-/>
-```
+## Accessibility
 
-**Features:**
-- Jump-to-page input field
-- Extended per-page options
-- Bulk navigation (jump by 10, 50, 100 pages)
-- Quick navigation shortcuts
-- Detailed pagination controls
-
-### Minimal Variant
-Clean, distraction-free design focused on typography.
-
-```blade
-<x-artisanpack-pagination 
-    :rows="$users" 
-    wire:model.live="perPage"
-    :minimal="true"
-    :hide-per-page="true"
-/>
-```
-
-**Features:**
-- Just page numbers with clean typography
-- Subtle hover effects
-- No additional controls
-- Elegant ellipsis handling
-
-### Default Variant (Enhanced)
-The standard implementation with enhanced features.
-
-```blade
-<x-artisanpack-pagination 
-    :rows="$users" 
-    wire:model.live="perPage"
-    :show-page-info="true"
-    :page-info-template="'Displaying {from} to {to} of {total} records'"
-/>
-```
-
-**Features:**
-- Per-page selector
-- Page numbers with ellipsis
-- Customizable page information
-- Enhanced version of current implementation
-
-## Customization Options
-
-### Size Variants
-Control the overall size of pagination controls:
-
-```blade
-<!-- Small size -->
-<x-artisanpack-pagination :rows="$users" :size="'sm'" />
-
-<!-- Large size -->
-<x-artisanpack-pagination :rows="$users" :size="'lg'" />
-```
-
-### Page Information Templates
-Customize the page information display:
-
-```blade
-<x-artisanpack-pagination 
-    :rows="$users" 
-    :page-info-template="'Items {from}-{to} of {total} total'"
-/>
-```
-
-Available placeholders:
-- `{from}` - First item number on current page
-- `{to}` - Last item number on current page
-- `{total}` - Total number of items
-- `{current}` - Current page number
-- `{last}` - Last page number
-
-### Hiding Components
-Control visibility of specific elements:
-
-```blade
-<x-artisanpack-pagination 
-    :rows="$users" 
-    :hide-per-page="true"
-    :hide-page-info="true"
-/>
-```
-
-## Usage in Livewire Component
-
-```php
-class UserList extends Component
-{
-    public $perPage = 10;
-    
-    public function render()
-    {
-        return view('livewire.user-list', [
-            'users' => User::paginate($this->perPage)
-        ]);
-    }
-}
-```
-
-```blade
-<div>
-    <div class="overflow-x-auto">
-        <table class="table table-zebra">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Created</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($users as $user)
-                    <tr>
-                        <td>{{ $user->name }}</td>
-                        <td>{{ $user->email }}</td>
-                        <td>{{ $user->created_at->format('M j, Y') }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-    
-    <!-- Choose your preferred variant -->
-    <x-artisanpack-pagination :rows="$users" wire:model.live="perPage" />
-</div>
-```
-
-## Real-World Examples
-
-### Mobile-First Design
-```blade
-<x-artisanpack-pagination 
-    :rows="$products" 
-    wire:model.live="perPage"
-    :compact="true"
-    :size="'sm'"
-    :hide-page-info="true"
-/>
-```
-
-### Admin Panel
-```blade
-<x-artisanpack-pagination 
-    :rows="$reports" 
-    wire:model.live="perPage"
-    :advanced="true"
-    :show-jump-to="true"
-    :per-page-values="[25, 50, 100, 250, 500]"
-    :page-info-template="'Records {from} to {to} of {total}'"
-/>
-```
-
-### Blog or Content Site
-```blade
-<x-artisanpack-pagination 
-    :rows="$posts" 
-    wire:model.live="perPage"
-    :minimal="true"
-    :hide-per-page="true"
-    :on-each-side="2"
-/>
-```
-
-### Dashboard Widget
-```blade
-<x-artisanpack-pagination 
-    :rows="$activities" 
-    wire:model.live="perPage"
-    :simple="true"
-/>
-```
-
-## Props Reference
-
-| Name | Type | Default | Description |
-|------|------|---------|-------------|
-| **Basic Props** | | | |
-| id | string | null | Optional identifier for the pagination component |
-| rows | array\|ArrayAccess | | The paginated data to display |
-| perPageValues | array | [10, 20, 50, 100] | Available options for items per page |
-| **Variant Props** | | | |
-| simple | bool | false | Enable simple variant (prev/next only) |
-| compact | bool | false | Enable compact variant (mobile-optimized) |
-| advanced | bool | false | Enable advanced variant (feature-rich) |
-| minimal | bool | false | Enable minimal variant (clean typography) |
-| **Display Options** | | | |
-| hidePerPage | bool | false | Hide the per-page selector |
-| hidePageInfo | bool | false | Hide the page information display |
-| showFirstLast | bool | true | Show first/last page buttons (compact variant) |
-| showJumpTo | bool | false | Show jump-to-page input (advanced variant) |
-| showPageInfo | bool | true | Show page information section |
-| **Customization** | | | |
-| onEachSide | int | 1 | Number of page links on each side of current page |
-| size | string | 'default' | Size variant ('sm', 'default', 'lg') |
-| pageInfoTemplate | string | 'Showing {from} to {to} of {total} results' | Template for page information display |
-
-## Accessibility Features
-
-All pagination variants include:
-- Proper ARIA labels and roles
-- Keyboard navigation support
-- Screen reader compatibility
-- Semantic HTML structure
-- Focus management
-
-## Migration Guide
-
-### From Previous Version
-The component maintains full backward compatibility. Existing implementations will work unchanged:
-
-```blade
-<!-- This continues to work exactly as before -->
-<x-artisanpack-pagination :rows="$users" wire:model.live="perPage" />
-```
-
-### Adopting New Variants
-You can gradually adopt new variants:
-
-```blade
-<!-- Start with simple changes -->
-<x-artisanpack-pagination :rows="$users" wire:model.live="perPage" :size="'sm'" />
-
-<!-- Then try different variants -->
-<x-artisanpack-pagination :rows="$users" wire:model.live="perPage" :compact="true" />
-```
-
-## Performance Considerations
-
-- Variants are rendered conditionally, so unused features don't impact performance
-- JavaScript is only included for advanced variant when `show-jump-to` is enabled
-- All variants support Laravel's built-in pagination caching
-- CSS classes are optimized for minimal specificity conflicts
-
-## Notes
-
-- Only one variant can be active at a time (priority: simple > compact > advanced > minimal > default)
-- The component requires a Livewire model binding (using `wire:model.live`) for per-page functionality
-- The component automatically displays Laravel pagination links for `LengthAwarePaginator` instances
-- Page information is automatically hidden for simple and minimal variants
-- All variants respect Laravel's pagination URL generation and maintain query parameters
+- A `nav` landmark named "Pagination"; the current page has `aria-current="page"`.
+- Previous and next are icon-only with translatable names. On the first or last page they stay focusable with `aria-disabled="true"` and do nothing.
+- Each page is named "Page n"; ellipses are `aria-hidden`.
+- The chevrons mirror in right-to-left layouts.

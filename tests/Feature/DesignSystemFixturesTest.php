@@ -12,7 +12,7 @@ use ArtisanPackUI\DesignSystem\Testing\BladeFixtureHost;
  */
 
 it('renders the design-system fixtures', function (): void {
-    $components = ['Button', 'Input', 'Select', 'Checkbox', 'Card', 'Dialog', 'DropdownMenu', 'Toast'];
+    $components = ['Button', 'Input', 'Select', 'Checkbox', 'Card', 'Dialog', 'DropdownMenu', 'Toast', 'Textarea', 'Password', 'Pin', 'Range', 'Toggle', 'Fieldset', 'Form', 'ValidationSummary', 'Link', 'Breadcrumbs', 'Pagination', 'Steps', 'Combobox', 'RadioGroup', 'CheckboxGroup', 'Rating', 'ColorPicker', 'File', 'DatePicker', 'Spotlight', 'Tabs', 'Menu', 'Navbar', 'Signature', 'RichTextEditor', 'CodeEditor'];
     $written    = (new BladeFixtureHost)->write($components, dirname(__DIR__, 2).'/build/gates/html/livewire');
 
     expect($written)->not->toBeEmpty();

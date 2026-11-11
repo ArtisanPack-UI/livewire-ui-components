@@ -17,7 +17,7 @@
                 {
                     editor: null,
                     value: @entangle($attributes->wire('model')),
-                    uploadUrl: '{{ $uploadUrl }}?disk={{ $disk }}&folder={{ $folder }}&_token={{ csrf_token() }}',
+                    uploadUrl: '{{ $uploadUrl }}?{{ $uploadQuery() }}&_token={{ csrf_token() }}',
                     uploading: false,
                     init() {
                         this.initEditor()

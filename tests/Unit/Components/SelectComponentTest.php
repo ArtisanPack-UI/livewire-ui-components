@@ -165,3 +165,17 @@ test('the constructor declares only the manifest props', function (): void {
 
     expect($parameters)->toBe(['size', 'options', 'label', 'hint', 'error', 'invalid', 'disabled', 'required', 'placeholder', 'value', 'leadingIcon', 'errorField', 'classes']);
 });
+
+test('a label and options entry renders a native optgroup (#53, replaces select-group)', function (): void {
+    $dom = designSystemDom(Blade::render(<<<'BLADE'
+        <x-artisanpack-select value="loft" :options="[
+            [ 'label' => 'Apartments', 'options' => [ [ 'value' => 'studio', 'label' => 'Studio' ], [ 'value' => 'loft', 'label' => 'Loft' ] ] ],
+            [ 'value' => 'other', 'label' => 'Other' ],
+        ]" />
+        BLADE));
+
+    expect($dom->query('//optgroup')->item(0)->getAttribute('label'))->toBe('Apartments')
+        ->and($dom->query('//optgroup/option')->length)->toBe(2)
+        ->and($dom->query('//optgroup/option[@value="loft"]')->item(0)->hasAttribute('selected'))->toBeTrue()
+        ->and($dom->query('//select/option[@value="other"]')->length)->toBe(1);
+});

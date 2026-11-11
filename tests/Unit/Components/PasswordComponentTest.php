@@ -2,243 +2,124 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
-
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
+use ArtisanPack\LivewireUiComponents\Support\IconRegistry;
 use ArtisanPack\LivewireUiComponents\View\Components\Password;
-use Error;
-use RuntimeException;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\MessageBag;
+use Illuminate\Support\ViewErrorBag;
 
-/**
- * Comprehensive unit tests for the Password component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * Password (#53): the design-system markup contract, the reveal button, the
+ * strength meter, requirements, ids and the error lookup. The manifest parity
+ * check is in tests/Feature/DesignSystemParityTest.php.
  */
-class PasswordComponentTest extends ComponentTestCase
-{
-    protected string $componentClass = Password::class;
 
-    protected array $defaultProperties = [
-        'hintClass'           => 'fieldset-label',
-        'inline'              => false,
-        'clearable'           => false,
-        'passwordIcon'        => 'o-eye-slash',
-        'passwordVisibleIcon' => 'o-eye',
-        'right'               => false,
-        'onlyPassword'        => false,
-        'errorClass'          => 'text-error',
-        'omitError'           => false,
-        'firstErrorOnly'      => false,
-        'uuid'                => '',
-    ];
+test('the fixture renders the contract markup in order', function (): void {
+    $html = Blade::render(
+        '<x-artisanpack-password id="pw" label="Password" leading-icon="lock" required strength-meter hint="Use a password you don\'t use elsewhere." error="Passwords don\'t match." :requirements="[ [ \'label\' => \'At least 12 characters\', \'pattern\' => \'.{12,}\' ] ]" />',
+    );
+    $dom = designSystemDom($html);
 
-    protected array $requiredProperties = [];
-
-    public function test_password_string_properties(): void
-    {
-        $stringProperties = ['id', 'label', 'icon', 'iconRight', 'hint', 'hintClass', 'prefix', 'suffix', 'passwordIcon', 'passwordVisibleIcon', 'errorField', 'errorClass', 'uuid'];
-        $testValues       = ComponentDataFactory::sampleTexts();
-
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
-
-                // A left icon needs the password toggle on the right.
-                $extra     = 'icon' === $property ? ['right' => true] : [];
-                $component = $this->createComponent([$property => $value, ...$extra]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
+    $parts = [];
+    foreach ($dom->query('//*[@data-scope="password"]') as $element) {
+        $parts[] = $element->getAttribute('data-part');
     }
 
-    public function test_password_boolean_properties(): void
-    {
-        $booleanProperties = ['inline', 'clearable', 'right', 'onlyPassword', 'omitError', 'firstErrorOnly'];
+    $control = $dom->query('//input')->item(0);
 
-        foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
-            $this->assertTrue($component->$property);
+    expect($parts)->toBe(['label', 'required', 'box', 'icon', 'control', 'reveal', 'strength', 'segment', 'segment', 'segment', 'segment', 'strengthLabel', 'requirements', 'requirement', 'hint', 'error'])
+        ->and($control->getAttribute('type'))->toBe('password')
+        ->and($control->getAttribute('autocomplete'))->toBe('current-password')
+        ->and($control->getAttribute('aria-describedby'))->toBe('pw-hint pw-requirements pw-error')
+        ->and($html)->toContain('<p data-scope="password" data-part="error" id="pw-error">'.IconRegistry::svg('circle-alert').'Passwords don&#039;t match.</p>');
+});
 
-            $component = $this->createComponent([$property => false]);
-            $this->assertFalse($component->$property);
-        }
+test('the reveal button keeps its name and toggles aria-pressed', function (): void {
+    $dom    = designSystemDom(Blade::render('<x-artisanpack-password id="pw" label="Password" />'));
+    $button = $dom->query('//button')->item(0);
+
+    $icons = [];
+    foreach ($dom->query('//button/svg') as $svg) {
+        $icons[] = $svg->getAttribute('data-icon');
     }
 
-    public function test_password_model_name_method(): void
-    {
-        $component = $this->createComponent();
+    expect($button->getAttribute('type'))->toBe('button')
+        ->and($button->getAttribute('aria-label'))->toBe('Show password')
+        ->and($button->getAttribute('aria-pressed'))->toBe('false')
+        ->and($button->getAttribute('aria-controls'))->toBe('pw')
+        ->and($button->getAttribute('x-on:click'))->toBe('revealed = ! revealed')
+        ->and($dom->query('//input')->item(0)->getAttribute('x-bind:type'))->toBe("revealed ? 'text' : 'password'")
+        ->and($icons)->toBe(['eye', 'eye-off']);
+});
 
-        if (method_exists($component, 'modelName')) {
-            try {
-                $result = $component->modelName();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
+test('revealLabel and labels override the built-in text', function (): void {
+    $html = Blade::render('<x-artisanpack-password label="Clave" reveal-label="Mostrar" strength-meter :labels="[ \'strength\' => \'Seguridad\' ]" />');
 
-    public function test_password_error_field_name_method(): void
-    {
-        $component = $this->createComponent();
+    expect($html)->toContain('aria-label="Mostrar"')
+        ->and($html)->toContain('<span>Seguridad</span>');
+});
 
-        if (method_exists($component, 'errorFieldName')) {
-            try {
-                $result = $component->errorFieldName();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
+test('the strength level follows the shared algorithm', function (string $value, int $level): void {
+    expect(Password::strengthLevel($value))->toBe($level);
+})->with([
+    'empty'          => ['', 0],
+    'short'          => ['abc', 1],
+    'eight + digit'  => ['password1', 1],
+    'mixed case'     => ['Password1', 2],
+    'symbol'         => ['Password1!', 3],
+    'long, all four' => ['Password12345!', 4],
+]);
 
-    public function test_password_place_toggle_left_method(): void
-    {
-        $component = $this->createComponent();
+test('the server renders the meter and requirements for the initial value', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-password label="P" value="Password1!" strength-meter :requirements="[ [ \'label\' => \'12+\', \'pattern\' => \'.{12,}\' ], [ \'label\' => \'Number\', \'pattern\' => \'\\d\' ] ]" />'));
 
-        if (method_exists($component, 'placeToggleLeft')) {
-            try {
-                $result = $component->placeToggleLeft();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
+    $items = $dom->query('//li');
 
-    public function test_password_place_toggle_right_method(): void
-    {
-        $component = $this->createComponent();
+    expect($dom->query('//*[@data-part="strength"]')->item(0)->getAttribute('data-level'))->toBe('3')
+        ->and($dom->query('//*[@aria-live="polite"]')->item(0)->textContent)->toBe('Good')
+        ->and($items->item(0)->hasAttribute('data-met'))->toBeFalse()
+        ->and($items->item(0)->textContent)->toContain('(Not met)')
+        ->and($items->item(1)->hasAttribute('data-met'))->toBeTrue()
+        ->and($items->item(1)->textContent)->toContain('(Met)');
+});
 
-        if (method_exists($component, 'placeToggleRight')) {
-            try {
-                $result = $component->placeToggleRight();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
+test('an invalid requirement pattern is never met', function (): void {
+    expect(Password::meets('(', 'anything'))->toBeFalse()
+        ->and(Password::meets('a~b', 'a~b'))->toBeTrue();
+});
 
-    public function test_password_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
+test('autocomplete, size and states render', function (): void {
+    $dom  = designSystemDom(Blade::render('<x-artisanpack-password label="P" autocomplete="new-password" size="lg" disabled readonly />'));
+    $root = $dom->query('//div')->item(0);
 
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
+    expect($dom->query('//input')->item(0)->getAttribute('autocomplete'))->toBe('new-password')
+        ->and($root->getAttribute('data-size'))->toBe('lg')
+        ->and($root->hasAttribute('data-disabled'))->toBeTrue()
+        ->and($root->hasAttribute('data-readonly'))->toBeTrue()
+        ->and($dom->query('//button')->item(0)->hasAttribute('disabled'))->toBeTrue();
+});
 
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
+test('class lands on the root and every other attribute on the control', function (): void {
+    $dom     = designSystemDom(Blade::render('<x-artisanpack-password class="mt-2" wire:model="password" name="password" label="Password" />'));
+    $control = $dom->query('//input')->item(0);
 
-    public function test_password_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
+    expect($dom->query('//div')->item(0)->getAttribute('class'))->toBe('apui-password mt-2')
+        ->and($control->getAttribute('wire:model'))->toBe('password')
+        ->and($control->getAttribute('name'))->toBe('password')
+        ->and($control->getAttribute('id'))->toBe('apui-password-password-'.substr(md5('password'), 0, 8));
+});
 
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
+test('the error comes from $errors for the wire:model name', function (): void {
+    view()->share('errors', (new ViewErrorBag)->put('default', new MessageBag(['password' => 'The password is too short.'])));
 
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'Password should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
+    $dom = designSystemDom(Blade::render('<x-artisanpack-password wire:model="password" label="Password" />'));
 
-    public function test_password_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
+    expect($dom->query('//p[@data-part="error"]')->item(0)->textContent)->toBe('The password is too short.');
+});
 
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
+test('Alpine rereads the control after a form reset and unhooks on destroy', function (): void {
+    $xData = designSystemDom(Blade::render('<x-artisanpack-password label="A" />'))->query('//div')->item(0)->getAttribute('x-data');
 
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_password_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'Password rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
-}
+    expect($xData)->toContain("this.form = input.form; this.onReset = () => setTimeout(read); this.form?.addEventListener('reset', this.onReset);")
+        ->and($xData)->toContain("this.form?.removeEventListener('reset', this.onReset)");
+});

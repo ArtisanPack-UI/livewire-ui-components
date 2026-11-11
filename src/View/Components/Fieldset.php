@@ -1,73 +1,63 @@
 <?php
 
-declare(strict_types=1);
 /**
- * Fieldset
+ * Fieldset Component
  *
- * This file contains the Fieldset class for the ArtisanPack UI Livewire UI Components package.
- * It serves as a styled container for form fields, often including a header.
+ * The design-system Fieldset (#53): groups related fields under a legend.
  *
  * @author     Jacob Martella
- * @copyright  2025 Jacob Martella
+ * @copyright  2026 Jacob Martella
  * @license    MIT
  *
- * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
+ * @link       https://github.com/ArtisanPack-UI/livewire-ui-components
  * @since      1.0.0
  */
 
+declare(strict_types=1);
+
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
-use Closure;
+use ArtisanPack\LivewireUiComponents\View\Concerns\RendersDesignSystemParts;
 use Illuminate\Contracts\View\View;
 
 /**
- * Fieldset Class
+ * Fieldset Component Class
  *
- * Provides functionality for the Fieldset component.
+ * Renders `.apui-fieldset` on a native fieldset, with a legend holding the
+ * title and description. Attributes land on the fieldset. Fields side by
+ * side go in `<div data-scope="fieldset" data-part="row">`.
  *
  * @since 1.0.0
  */
 class Fieldset extends BaseComponent
 {
+    use RendersDesignSystemParts;
+
     /**
-     * Constructor
+     * Creates the component.
      *
-     * Initializes the fieldset component with its properties.
+     * @since 3.0.0
      *
-     * @since 1.0.0
-     *
-     * @param  string|null  $title  Optional. The title to display in the header. Default null.
-     * @param  string|null  $subtitle  Optional. The subtitle to display in the header. Default null.
-     * @param  string|null  $icon  Optional. The icon to display in the header. Default null.
-     * @param  bool  $separator  Optional. Whether to show a separator in the header. Default true.
-     * @param  string|null  $bgColor  Optional. The background color class (e.g., 'bg-base-100'). Default 'bg-base-100'.
-     * @param  string|null  $textColor  Optional. The text color class (e.g., 'text-warning'). Default null.
-     * @param  string|null  $border  Optional. The border classes (e.g., 'border border-base-300'). Default 'border border-base-300'.
-     * @param  mixed  $middle  Optional. Slot for the middle section of the header. Default null.
-     * @param  mixed  $actions  Optional. Slot for the actions section of the header. Default null.
+     * @param  string  $variant  panel, divided or plain.
+     * @param  string|null  $title  The group's name, in the legend. A `title` slot overrides it.
+     * @param  string|null  $description  Supporting text in the legend. A `description` slot overrides it.
+     * @param  bool  $disabled  Disables every control inside.
+     * @param  array<string, string>  $classes  Extra classes per part.
      */
     public function __construct(
+        public string $variant = 'panel',
         public ?string $title = null,
-        public ?string $subtitle = null,
-        public ?string $icon = null,
-        public ?bool $separator = true,
-        public ?string $bgColor = 'bg-base-100',
-        public ?string $textColor = null,
-        public ?string $border = 'border border-base-300',
-
-        // Slots
-        public mixed $middle = null,
-        public mixed $actions = null,
-    ) {
-        //
-    }
+        public ?string $description = null,
+        public bool $disabled = false,
+        public array $classes = [],
+    ) {}
 
     /**
-     * Get the view / contents that represent the component.
+     * Get the view that represents the component.
      *
      * @since 1.0.0
      */
-    public function render(): View|Closure|string
+    public function render(): View
     {
         return view('livewire-ui-components::components.fieldset');
     }

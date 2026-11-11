@@ -2,219 +2,81 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
-
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
 use ArtisanPack\LivewireUiComponents\View\Components\Rating;
-use Error;
-use RuntimeException;
+use Illuminate\Support\Facades\Blade;
 
-/**
- * Comprehensive unit tests for the Rating component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * Rating (#53): read-only (role=img) and input (native radios) markup,
+ * half stars and the translatable labels. The manifest parity check is in
+ * tests/Feature/DesignSystemParityTest.php.
  */
-class RatingComponentTest extends ComponentTestCase
-{
-    protected string $componentClass = Rating::class;
 
-    protected array $defaultProperties = [
-        'total'       => 5,
-        'icon'        => 's-star',
-        'color'       => 'warning',
-        'emptyColor'  => 'gray-200',
-        'size'        => 'md',
-        'halfStars'   => false,
-        'hoverEffect' => false,
-        'showValue'   => false,
-        'valueFormat' => '{value}',
-        'clearable'   => false,
-        'clearIcon'   => 'o-x-circle',
-        'inlineLabel' => false,
-        'required'    => false,
-        'disabled'    => false,
-        'readonly'    => false,
-        'value'       => 0,
-    ];
+test('read-only is one image with the value label, the value and the count', function (): void {
+    $dom  = designSystemDom(Blade::render('<x-artisanpack-rating readonly :value="4.2" :count="17" />'));
+    $root = $dom->query('//div[contains(@class, "apui-rating")]')->item(0);
 
-    protected array $requiredProperties = [];
+    expect($root->getAttribute('role'))->toBe('img')
+        ->and($root->getAttribute('aria-label'))->toBe('4.2 out of 5')
+        ->and($root->hasAttribute('data-readonly'))->toBeTrue()
+        ->and($dom->query('//input')->length)->toBe(0)
+        ->and($dom->query('//*[@data-part="star"][@data-filled]')->length)->toBe(4)
+        ->and($dom->query('//*[@data-part="value"]')->item(0)->textContent)->toBe('4.2')
+        ->and($dom->query('//*[@data-part="count"]')->item(0)->textContent)->toBe('(17 reviews)');
+});
 
-    public function test_rating_string_properties(): void
-    {
-        $stringProperties = ['id', 'icon', 'filledIcon', 'emptyIcon', 'color', 'filledColor', 'emptyColor', 'size', 'valueFormat', 'clearIcon', 'helper', 'error', 'label', 'name'];
-        $testValues       = ComponentDataFactory::sampleTexts();
+test('read-only rounds to the nearest half star', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-rating readonly :value="3.4" />'));
 
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
+    expect($dom->query('//*[@data-part="star"][@data-filled]')->length)->toBe(3)
+        ->and($dom->query('//*[@data-part="star"][@data-half]')->length)->toBe(1);
+});
 
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
-    }
+test('the count is singular for one review', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-rating readonly :value="5" :count="1" />'));
 
-    public function test_rating_boolean_properties(): void
-    {
-        $booleanProperties = ['halfStars', 'hoverEffect', 'showValue', 'clearable', 'inlineLabel', 'required', 'disabled', 'readonly'];
+    expect($dom->query('//*[@data-part="count"]')->item(0)->textContent)->toBe('(1 review)');
+});
 
-        foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
-            $this->assertTrue($component->$property);
+test('the input is a radiogroup of native radios that share a name', function (): void {
+    $dom    = designSystemDom(Blade::render('<x-artisanpack-rating wire:model="score" :value="3" label="Rate the viewing" />'));
+    $root   = $dom->query('//div[contains(@class, "apui-rating")]')->item(0);
+    $inputs = $dom->query('//input');
 
-            $component = $this->createComponent([$property => false]);
-            $this->assertFalse($component->$property);
-        }
-    }
+    expect($root->getAttribute('role'))->toBe('radiogroup')
+        ->and($root->getAttribute('aria-label'))->toBe('Rate the viewing')
+        ->and($inputs->length)->toBe(5)
+        ->and($inputs->item(0)->getAttribute('aria-label'))->toBe('1 out of 5')
+        ->and($inputs->item(0)->getAttribute('wire:model'))->toBe('score')
+        ->and($inputs->item(2)->hasAttribute('checked'))->toBeTrue()
+        ->and($inputs->item(0)->getAttribute('name'))->toBe($inputs->item(4)->getAttribute('name'));
+});
 
-    public function test_rating_model_name_method(): void
-    {
-        $component = $this->createComponent();
+test('labels are templates with :value, :max and :count', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-rating :max="10" :count="3" value-label="Note :value sur :max" count-label=":count avis" />'));
 
-        if (method_exists($component, 'modelName')) {
-            try {
-                $result = $component->modelName();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
+    expect($dom->query('//input')->length)->toBe(10)
+        ->and($dom->query('//input')->item(1)->getAttribute('aria-label'))->toBe('Note 2 sur 10')
+        ->and($dom->query('//*[@data-part="count"]')->item(0)->textContent)->toBe('3 avis');
+});
 
-    public function test_rating_size_method(): void
-    {
-        $component = $this->createComponent();
+test('the input falls back to the translated Rating name', function (): void {
+    $root = designSystemDom(Blade::render('<x-artisanpack-rating />'))->query('//div[contains(@class, "apui-rating")]')->item(0);
 
-        if (method_exists($component, 'size')) {
-            try {
-                $result = $component->size();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
+    expect($root->getAttribute('aria-label'))->toBe('Rating')->and($root->getAttribute('data-size'))->toBe('md');
+});
 
-    public function test_rating_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
+test('disabled disables every radio', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-rating disabled />'));
 
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
+    expect($dom->query('//input[@disabled]')->length)->toBe(5)
+        ->and($dom->query('//div[@data-disabled]')->length)->toBe(1);
+});
 
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
+test('the constructor declares only the manifest props', function (): void {
+    $parameters = array_map(
+        static fn (ReflectionParameter $parameter): string => $parameter->getName(),
+        (new ReflectionClass(Rating::class))->getConstructor()->getParameters(),
+    );
 
-    public function test_rating_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'Rating should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
-
-    public function test_rating_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
-
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
-
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_rating_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'Rating rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
-
-    public function test_rating_size_reads_the_rating_class_or_returns_null(): void
-    {
-        $plain = $this->createComponent();
-        $plain->withAttributes([]);
-        $this->assertNull($plain->size(), 'Without a rating-* class, size() is null so the size prop applies');
-
-        $sized = $this->createComponent();
-        $sized->withAttributes(['class' => 'mask rating-lg']);
-        $this->assertSame('rating-lg', $sized->size());
-    }
-}
+    expect($parameters)->toBe(['value', 'max', 'readonly', 'disabled', 'size', 'count', 'label', 'valueLabel', 'countLabel', 'classes']);
+});

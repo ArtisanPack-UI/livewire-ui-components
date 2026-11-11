@@ -188,6 +188,19 @@ The default toolbar includes the following buttons:
 
 The Markdown component supports image uploads out of the box. When a user drags and drops an image or uses the upload button, the image will be uploaded to the specified disk and folder. By default, images are stored in the `public` disk in the `markdown` folder.
 
+The upload route only accepts images (JPG, PNG, GIF, WebP and AVIF by default; never SVG) up to 5 MB, on a disk listed in the `uploads.disks` config, so add any disk other than `public` there:
+
+```php
+// config/artisanpack/livewire-ui-components.php
+'uploads' => [
+    'disks' => ['public', 's3'],
+    'mimes' => ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif'],
+    'max_size' => 5120, // kilobytes
+],
+```
+
+The folder may contain letters, numbers, dashes, underscores and slashes. Anything else is rejected with a 422.
+
 You can customize the upload location using the `disk` and `folder` props:
 
 ```php

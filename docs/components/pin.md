@@ -4,264 +4,59 @@ title: Pin Component
 
 # Pin Component
 
-The Pin component is a specialized form element designed for entering PIN codes, verification codes, or any other short numeric or alphanumeric sequences. It provides a user-friendly interface with individual input fields for each character, automatic focus management, and validation capabilities.
+A row of single-character cells for one-time codes, built on the ArtisanPack UI design system. One real input with `autocomplete="one-time-code"` lies over the cells, so SMS autofill, paste and screen readers treat the code as one field; the cells mirror its value.
 
 ## Basic Usage
 
-```php
-<x-artisanpack-pin label="Verification Code" length="6" />
-```
-
-## Examples
-
-### Simple PIN Input
-
-```php
-<x-artisanpack-pin 
-    label="PIN Code" 
-    name="pin"
-    length="4"
+```blade
+{{-- `complete` fires with the code once every cell is filled. --}}
+<x-artisanpack-pin
+	wire:model="code"
+	wire:complete="verify"
+	:label="__( 'Verification code' )"
+	:hint="__( 'Enter the 6-digit code we sent to your phone.' )"
+	:group-size="3"
 />
 ```
 
-### PIN with Default Value
+`wire:model` binds natively. Characters the `type` doesn't allow are dropped as people type or paste, and the clean value is what reaches the server. Once every cell is filled, the input dispatches a `complete` browser event with the code as `$event.detail`: listen with `wire:complete` or `x-on:complete`.
 
-```php
-<x-artisanpack-pin 
-    label="Verification Code" 
-    value="123456" 
-    length="6"
-/>
+## Masked and alphanumeric
+
+```blade
+<x-artisanpack-pin wire:model="pin" :label="__( 'PIN' )" :length="4" mask />
+<x-artisanpack-pin wire:model="recoveryCode" :label="__( 'Recovery code' )" :length="8" type="alphanumeric" :group-size="4" />
 ```
 
-### Required PIN
+## Validation and sizes
 
-```php
-<x-artisanpack-pin 
-    label="Security Code" 
-    length="4" 
-    required
-/>
+```blade
+{{-- The error comes from $errors for the wire:model name. --}}
+<x-artisanpack-pin wire:model="code" :label="__( 'Verification code' )" :group-size="3" />
+<x-artisanpack-pin :label="__( 'Small' )" size="sm" :group-size="3" />
+<x-artisanpack-pin :label="__( 'Disabled' )" value="503186" :group-size="3" disabled />
 ```
 
-### Disabled PIN
-
-```php
-<x-artisanpack-pin 
-    label="PIN Code" 
-    value="1234" 
-    length="4" 
-    disabled
-/>
-```
-
-### PIN with Helper Text
-
-```php
-<x-artisanpack-pin 
-    label="Verification Code" 
-    length="6" 
-    helper="Enter the 6-digit code sent to your phone"
-/>
-```
-
-### PIN with Error
-
-```php
-<x-artisanpack-pin 
-    label="PIN Code" 
-    length="4" 
-    error="Invalid PIN code"
-/>
-```
-
-### PIN with Livewire Binding
-
-```php
-<x-artisanpack-pin 
-    label="Verification Code" 
-    length="6" 
-    wire:model="verificationCode"
-/>
-```
-
-### PIN with Custom Type
-
-```php
-<x-artisanpack-pin 
-    label="Alphanumeric Code" 
-    length="6" 
-    type="text"
-/>
-```
-
-### PIN with Mask
-
-```php
-<x-artisanpack-pin 
-    label="PIN Code" 
-    length="4" 
-    masked
-/>
-```
-
-### PIN with Custom Mask Character
-
-```php
-<x-artisanpack-pin 
-    label="PIN Code" 
-    length="4" 
-    masked 
-    mask-char="•"
-/>
-```
-
-### PIN with Auto Submit
-
-```php
-<x-artisanpack-pin 
-    label="Verification Code" 
-    length="6" 
-    auto-submit
-    wire:submit="verifyCode"
-/>
-```
-
-### PIN with Custom Placeholder
-
-```php
-<x-artisanpack-pin 
-    label="PIN Code" 
-    length="4" 
-    placeholder="0"
-/>
-```
-
-### PIN with Custom Separator
-
-```php
-<x-artisanpack-pin 
-    label="Credit Card" 
-    length="16" 
-    separator="-" 
-    group-size="4"
-/>
-```
-
-### PIN with Custom Size
-
-```php
-<x-artisanpack-pin 
-    label="PIN Code" 
-    length="4" 
-    size="lg"
-/>
-```
-
-### PIN with Custom Styles
-
-```php
-<x-artisanpack-pin 
-    label="PIN Code" 
-    length="4" 
-    class="gap-4"
-    input-class="border-2 border-primary focus:border-primary-focus"
-/>
-```
-
-### PIN with Autofocus
-
-```php
-<x-artisanpack-pin 
-    label="Verification Code" 
-    length="6" 
-    autofocus
-/>
-```
-
-### PIN with Completion Callback
-
-```php
-<x-artisanpack-pin 
-    label="PIN Code" 
-    length="4" 
-    x-on:complete="alert('PIN completed: ' + $event.detail.value)"
-/>
-```
+Say why a code failed; don't clear it without telling people.
 
 ## Props
 
 | Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `label` | string | `null` | The label text for the PIN input |
-| `name` | string | `null` | The name attribute for the PIN input |
-| `id` | string | `null` | The ID attribute for the PIN input (auto-generated if not provided) |
-| `value` | string | `null` | The default value for the PIN input |
-| `length` | integer | `4` | The number of characters in the PIN |
-| `type` | string | `'number'` | The type of input (`number` or `text`) |
-| `placeholder` | string | `''` | Placeholder character for each input field |
-| `masked` | boolean | `false` | Whether to mask the input (like a password) |
-| `mask-char` | string | `'*'` | The character to use for masking |
-| `auto-submit` | boolean | `false` | Whether to automatically submit the form when all fields are filled |
-| `separator` | string | `''` | Character to visually separate groups of inputs |
-| `group-size` | integer | `0` | Number of inputs per group (0 means no grouping) |
-| `size` | string | `'md'` | The size of the PIN input fields (`sm`, `md`, `lg`) |
-| `input-class` | string | `null` | Additional classes for the individual input fields |
-| `required` | boolean | `false` | Whether the PIN input is required |
-| `disabled` | boolean | `false` | Whether the PIN input is disabled |
-| `readonly` | boolean | `false` | Whether the PIN input is readonly |
-| `autofocus` | boolean | `false` | Whether the first PIN input should be automatically focused |
-| `helper` | string | `null` | Helper text displayed below the PIN input |
-| `error` | string | `null` | Error message to display |
+|---|---|---|---|
+| `length` | int | `6` | The number of cells. Sets `maxlength`. |
+| `type` | `numeric` · `alphanumeric` | `numeric` | The characters allowed. Numeric sets `inputmode="numeric"`. |
+| `mask` | bool | `false` | Shows a dot per character and makes the control a password input. |
+| `group-size` | int | none | Draws a separator after every `group-size` cells. |
+| `size` | `sm` · `md` | `md` | Cell size. Emitted as `data-size`. |
+| `label` · `hint` | string or slot | none | As Input. |
+| `error` | string | first `$errors` message | Validation message. |
+| `invalid` · `disabled` · `required` | bool | `false` | As Input. |
+| `value` | string | none | The code. `wire:model` binds it instead. |
+| `error-field` | string | the `wire:model` name | The `$errors` key to read. |
+| `classes` | array | `[]` | Extra classes per part: `root`, `label`, `required`, `cells`, `control`, `cell`, `separator`, `hint`, `error`. |
 
-## Events
+## Upgrading from 2.x
 
-The Pin component supports the following events:
-
-- `input` - Triggered when any input field changes
-- `change` - Triggered when the PIN value changes
-- `complete` - Triggered when all fields are filled
-- `focus` - Triggered when an input field is focused
-- `blur` - Triggered when an input field loses focus
-
-It also supports all Livewire model binding directives:
-
-- `wire:model`
-- `wire:model.defer`
-- `wire:model.lazy`
-
-## Styling
-
-The Pin component provides a customizable PIN input interface. You can customize the appearance by:
-
-1. Using the provided props (`size`, `input-class`, etc.)
-2. Adding custom classes via the `class` attribute
-3. Customizing the spacing between input fields
-
-### Custom Styling Example
-
-```php
-<x-artisanpack-pin 
-    label="Custom styled PIN" 
-    length="4" 
-    class="gap-6"
-    input-class="h-16 w-16 text-2xl font-bold border-2 border-primary rounded-lg focus:border-primary-focus focus:ring-primary"
-/>
-```
-
-## Accessibility
-
-The Pin component follows accessibility best practices:
-
-- Associates labels with inputs using proper HTML markup
-- Includes appropriate ARIA attributes
-- Supports keyboard navigation (arrow keys to move between fields)
-- Maintains focus management (automatically moves focus to the next field)
-- Ensures adequate color contrast
-- Provides clear feedback on input status
-
-## Related Components
-
-- [Form](form) - Container for form elements
-- [Input](input) - Standard text input
-- [Password](password) - Password input component
+- `size` (the number of cells) is now `length`, and `size` is the cell size.
+- `numeric` is `type="numeric"` (the default); `hide` and `hide-type` are `mask`.
+- The `completed` and `incomplete` events are replaced by `complete` (present tense, as in every stack). Use `wire:model` or `x-on:input` to follow partial codes.

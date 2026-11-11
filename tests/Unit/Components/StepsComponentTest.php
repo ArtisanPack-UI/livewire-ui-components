@@ -2,156 +2,157 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
+use Illuminate\Support\Facades\Blade;
+use Livewire\Component;
+use Livewire\Livewire;
 
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
-use ArtisanPack\LivewireUiComponents\View\Components\Steps;
-use Error;
-use RuntimeException;
-
-/**
- * Comprehensive unit tests for the Steps component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * Steps (#56): the design-system markup contract. The manifest parity check
+ * is in tests/Feature/DesignSystemParityTest.php.
  */
-class StepsComponentTest extends ComponentTestCase
+
+class StepsLivewireTestComponent extends Component
 {
-    protected string $componentClass = Steps::class;
+    public int $progress = 3;
 
-    protected array $defaultProperties = [
-        'vertical'   => false,
-        'stepsColor' => 'step-neutral',
-    ];
-
-    protected array $requiredProperties = [];
-
-    public function test_steps_string_properties(): void
+    public function render(): string
     {
-        $stringProperties = ['id', 'stepsColor', 'stepperClasses'];
-        $testValues       = ComponentDataFactory::sampleTexts();
-
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
-
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
-    }
-
-    public function test_steps_boolean_properties(): void
-    {
-        $booleanProperties = ['vertical'];
-
-        foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
-            $this->assertTrue($component->$property);
-
-            $component = $this->createComponent([$property => false]);
-            $this->assertFalse($component->$property);
-        }
-    }
-
-    public function test_steps_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
-
-    public function test_steps_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'Steps should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
-
-    public function test_steps_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
-
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
-
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_steps_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'Steps rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
+        return <<<'BLADE'
+            <div>
+                <x-artisanpack-steps wire:model="progress" clickable>
+                    <x-artisanpack-step title="Cart" />
+                    <x-artisanpack-step title="Shipping" />
+                    <x-artisanpack-step title="Payment" />
+                    <x-artisanpack-step title="Confirm" />
+                </x-artisanpack-steps>
+            </div>
+            BLADE;
     }
 }
+
+/**
+ * Each step's state, in order.
+ *
+ * @return list<string>
+ */
+function stepStates(DOMXPath $dom): array
+{
+    $states = [];
+    foreach ($dom->query('//li[@data-part="step"]') as $step) {
+        $states[] = $step->getAttribute('data-state');
+    }
+
+    return $states;
+}
+
+test('composes an ordered list from step children', function (): void {
+    $dom = designSystemDom(Blade::render(<<<'BLADE'
+        <x-artisanpack-steps :value="2" label="Listing progress">
+            <x-artisanpack-step title="Basics" description="Title and type" />
+            <x-artisanpack-step title="Location" />
+            <x-artisanpack-step title="Pricing" />
+        </x-artisanpack-steps>
+        BLADE));
+    $root = $dom->query('//ol')->item(0);
+
+    expect($root->getAttribute('class'))->toBe('apui-steps')
+        ->and($root->getAttribute('data-orientation'))->toBe('horizontal')
+        ->and($root->getAttribute('aria-label'))->toBe('Listing progress')
+        ->and(stepStates($dom))->toBe(['complete', 'current', 'upcoming'])
+        ->and($dom->query('//li[@aria-current="step"]'))->toHaveCount(1)
+        ->and(trim($dom->query('//li[@aria-current="step"]/*[@data-part="title"]')->item(0)->textContent))->toBe('Location');
+
+    $parts = [];
+    foreach ($dom->query('//li[1]/*') as $element) {
+        $parts[] = $element->getAttribute('data-part');
+    }
+    expect($parts)->toBe(['marker', 'title', 'connector', 'description']);
+});
+
+test('markers show numbers, a check or an x, with hidden state text', function (): void {
+    $dom = designSystemDom(Blade::render(<<<'BLADE'
+        <x-artisanpack-steps :value="3">
+            <x-artisanpack-step title="A" />
+            <x-artisanpack-step title="B" state="error" />
+            <x-artisanpack-step title="C" />
+            <x-artisanpack-step title="D" />
+        </x-artisanpack-steps>
+        BLADE));
+
+    $markers = $dom->query('//*[@data-part="marker"]');
+
+    expect(stepStates($dom))->toBe(['complete', 'error', 'current', 'upcoming'])
+        ->and($markers->item(0)->getElementsByTagName('svg'))->toHaveCount(1)
+        ->and(trim($markers->item(0)->textContent))->toBe('Completed')
+        ->and(trim($markers->item(1)->textContent))->toBe('Error')
+        ->and(trim($markers->item(2)->textContent))->toBe('3')
+        ->and($dom->query('//*[@data-part="marker"]/span[@aria-hidden="true"]'))->toHaveCount(2)
+        ->and($dom->query('//*[@data-part="connector"][@aria-hidden="true"]'))->toHaveCount(4);
+});
+
+test('steps data renders the same children', function (): void {
+    $data = designSystemDom(Blade::render('<x-artisanpack-steps :value="2" orientation="vertical" :steps="$steps" />', [
+        'steps' => [
+            ['title' => 'Cart', 'description' => 'Two items'],
+            ['title' => 'Shipping'],
+            ['title' => 'Payment', 'icon' => 'lock'],
+        ],
+    ]));
+
+    expect($data->query('//ol')->item(0)->getAttribute('data-orientation'))->toBe('vertical')
+        ->and(stepStates($data))->toBe(['complete', 'current', 'upcoming'])
+        ->and($data->query('//li[3]/*[@data-part="marker"]/svg'))->toHaveCount(1)
+        ->and(trim($data->query('//li[1]/*[@data-part="description"]')->item(0)->textContent))->toBe('Two items');
+});
+
+test('the 2.x step and text props still work', function (): void {
+    $dom = designSystemDom(Blade::render(<<<'BLADE'
+        <x-artisanpack-steps :value="2">
+            <x-artisanpack-step :step="1" text="Cart" />
+            <x-artisanpack-step :step="2" text="Shipping" />
+        </x-artisanpack-steps>
+        BLADE));
+
+    expect(stepStates($dom))->toBe(['complete', 'current'])
+        ->and(trim($dom->query('//li[2]/*[@data-part="title"]')->item(0)->textContent))->toBe('Shipping');
+});
+
+test('without value every step is upcoming, and labels are translatable', function (): void {
+    $plain = designSystemDom(Blade::render('<x-artisanpack-steps :steps="[[\'title\' => \'A\'], [\'title\' => \'B\']]" />'));
+    $de    = designSystemDom(Blade::render('<x-artisanpack-steps :value="2" complete-label="Erledigt" :steps="[[\'title\' => \'A\'], [\'title\' => \'B\']]" />'));
+
+    expect(stepStates($plain))->toBe(['upcoming', 'upcoming'])
+        ->and(trim($de->query('//*[@data-part="marker"]')->item(0)->textContent))->toBe('Erledigt');
+});
+
+test('classes reach the root and the children', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-steps :classes="[\'root\' => \'r\', \'title\' => \'t\', \'step\' => \'s\']" :steps="[[\'title\' => \'A\']]" />'));
+
+    expect($dom->query('//ol')->item(0)->getAttribute('class'))->toBe('apui-steps r')
+        ->and($dom->query('//li')->item(0)->getAttribute('class'))->toBe('s')
+        ->and($dom->query('//*[@data-part="title"]')->item(0)->getAttribute('class'))->toBe('t');
+});
+
+test('clickable without wire:model keeps plain titles', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-steps :value="2" clickable :steps="[[\'title\' => \'A\'], [\'title\' => \'B\']]" />'));
+
+    expect($dom->query('//button'))->toHaveCount(0)
+        ->and($dom->query('//ol')->item(0)->hasAttribute('x-data'))->toBeFalse();
+});
+
+test('wire:model reads the property, and clickable turns completed steps into buttons', function (): void {
+    $html = Livewire::test(StepsLivewireTestComponent::class)->html();
+    $dom  = designSystemDom($html);
+
+    expect(stepStates($dom))->toBe(['complete', 'complete', 'current', 'upcoming'])
+        ->and($dom->query('//button[@data-part="title"]'))->toHaveCount(2)
+        ->and($dom->query('//button[@data-part="title"]')->item(1)->getAttribute('x-on:click'))->toBe('value = 2')
+        ->and($dom->query('//ol')->item(0)->getAttribute('x-data'))->toBe("{ value: \$wire.entangle('progress').live }")
+        ->and($html)->not->toContain('wire:model');
+});
+
+test('setting the property moves the current step', function (): void {
+    $html = Livewire::test(StepsLivewireTestComponent::class)->set('progress', 1)->html();
+
+    expect(stepStates(designSystemDom($html)))->toBe(['current', 'upcoming', 'upcoming', 'upcoming']);
+});

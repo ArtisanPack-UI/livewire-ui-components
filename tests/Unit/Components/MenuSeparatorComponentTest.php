@@ -2,140 +2,22 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
+use Illuminate\Support\Facades\Blade;
 
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
-use ArtisanPack\LivewireUiComponents\View\Components\MenuSeparator;
-use Error;
-use RuntimeException;
-
-/**
- * Comprehensive unit tests for the MenuSeparator component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * MenuSeparator (#56): a rule hidden from assistive technology.
  */
-class MenuSeparatorComponentTest extends ComponentTestCase
-{
-    protected string $componentClass = MenuSeparator::class;
 
-    protected array $defaultProperties = [];
+test('renders a hidden separator item', function (): void {
+    $html = Blade::render('<x-artisanpack-menu id="m"><x-artisanpack-menu-separator /></x-artisanpack-menu>');
+    $li   = designSystemDom($html)->query('//li[@data-part="separator"]')->item(0);
 
-    protected array $requiredProperties = [];
+    expect($li->getAttribute('aria-hidden'))->toBe('true')
+        ->and(trim($li->textContent))->toBe('');
+});
 
-    public function test_menuseparator_string_properties(): void
-    {
-        $stringProperties = ['id', 'title', 'icon', 'iconClasses'];
-        $testValues       = ComponentDataFactory::sampleTexts();
+test('follows the rule with a title for the deprecated title', function (): void {
+    $html = Blade::render('<x-artisanpack-menu id="m"><x-artisanpack-menu-separator title="More" /></x-artisanpack-menu>');
 
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
-
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
-    }
-
-    public function test_menuseparator_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
-
-    public function test_menuseparator_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'MenuSeparator should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
-
-    public function test_menuseparator_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
-
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
-
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_menuseparator_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'MenuSeparator rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
-}
+    expect(trim(designSystemDom($html)->query('//li[@data-part="title"]')->item(0)->textContent))->toBe('More');
+});

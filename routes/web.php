@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use ArtisanPack\LivewireUiComponents\Http\Requests\UploadRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
@@ -33,12 +34,20 @@ Route::middleware('web')->prefix(config('artisanpack.livewire-ui-components.rout
     );
 })->name('artisanpack.spotlight');
 
-Route::middleware(['web', 'auth'])->prefix(config('artisanpack.livewire-ui-components.route_prefix'))->post('/artisanpack/upload', function (Request $request) {
-    $disk   = $request->disk ?? 'public';
-    $folder = $request->folder ?? 'editor';
+/**
+ * Image Upload Route.
+ *
+ * Stores an image from the RichTextEditor or Markdown component and returns its
+ * URL. UploadRequest limits it to images on an allowed disk and folder (see the
+ * `uploads` config).
+ *
+ * @since 2.0.0
+ */
+Route::middleware(['web', 'auth'])->prefix(config('artisanpack.livewire-ui-components.route_prefix'))->post('/artisanpack/upload', function (UploadRequest $request) {
+    $disk = $request->disk();
 
-    $file = Storage::disk($disk)->put($folder, $request->file('file'), 'public');
-    $url  = Storage::disk($disk)->url($file);
+    $file = Storage::disk($disk)->putFile($request->folder(), $request->file('file'), 'public');
+    abort_if(false === $file, 500, __('The image could not be stored.'));
 
-    return ['location' => $url];
+    return ['location' => Storage::disk($disk)->url($file)];
 })->name('artisanpack.upload');

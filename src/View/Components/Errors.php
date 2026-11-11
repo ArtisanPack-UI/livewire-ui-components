@@ -26,6 +26,7 @@ use Illuminate\Contracts\View\View;
  * Provides functionality for the Errors component.
  *
  * @since 1.0.0
+ * @deprecated 3.0.0 Use ValidationSummary (`<x-artisanpack-validation-summary>`). Removed in a later major release.
  */
 class Errors extends BaseComponent
 {

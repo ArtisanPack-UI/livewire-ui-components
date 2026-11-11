@@ -1,175 +1,93 @@
 ---
-title: Radio Group Component
+title: RadioGroup Component
 ---
 
-# Radio Group Component
+# RadioGroup Component
 
-The Radio Group component displays a group of radio buttons, allowing users to select a single option from a set of choices.
+Chooses exactly one option from a small set, built on the ArtisanPack UI design system. It renders native radios in a `fieldset` with a `legend`, so the platform supplies the radio group role, roving focus and arrow keys (which follow the text direction under RTL). RadioGroup replaces the deprecated [Radio](radio) and [Group](group) components; Group's joined buttons are the `segmented` variant.
 
 ## Basic Usage
 
-```php
+```blade
 <x-artisanpack-radio-group
-    label="Select your preference"
-    :options="$preferences"
-    wire:model="selectedPreference"
+	wire:model="visibility"
+	:label="__( 'Listing visibility' )"
+	:options="[
+		[ 'value' => 'public', 'label' => __( 'Public' ), 'description' => __( 'Anyone can find it in search.' ) ],
+		[ 'value' => 'unlisted', 'label' => __( 'Unlisted' ), 'description' => __( 'Only people with the link.' ) ],
+		[ 'value' => 'private', 'label' => __( 'Private' ), 'description' => __( 'Only you and co-owners.' ) ],
+	]"
 />
 ```
 
-## Examples
+`wire:model` lands on every native radio, so it binds natively, with its modifiers (`.live`, `.blur`). Options are strings, or arrays (or objects, or `Arrayable`s) with `value`, `label`, `description`, `meta` and `disabled`.
 
-### Simple Radio Group
+## Cards
 
-```php
+Use cards when options need a description or a price to compare. The whole card is the radio's label, so it's clickable anywhere.
+
+```blade
 <x-artisanpack-radio-group
-    label="Size"
-    :options="[
-        ['id' => 'small', 'name' => 'Small'],
-        ['id' => 'medium', 'name' => 'Medium'],
-        ['id' => 'large', 'name' => 'Large'],
-        ['id' => 'xlarge', 'name' => 'Extra Large'],
-    ]"
-    wire:model="size"
+	wire:model="plan"
+	variant="cards"
+	orientation="horizontal"
+	:label="__( 'Plan' )"
+	:options="[
+		[ 'value' => 'starter', 'label' => __( 'Starter' ), 'description' => __( 'Up to 5 listings' ), 'meta' => __( '$0 / month' ) ],
+		[ 'value' => 'growth', 'label' => __( 'Growth' ), 'description' => __( 'Up to 50 listings' ), 'meta' => __( '$39 / month' ) ],
+	]"
 />
 ```
 
-### Horizontal Layout
+## Segmented
 
-```php
-<x-artisanpack-radio-group
-    label="Gender"
-    :options="$genderOptions"
-    wire:model="gender"
-    horizontal
-/>
-```
+Joined buttons for two to four short options.
 
-### Card Style Radio Buttons
-
-```php
-<x-artisanpack-radio-group
-    label="Choose Plan"
-    :options="$plans"
-    wire:model="selectedPlan"
-    card
-/>
-```
-
-### With Hints
-
-```php
-<x-artisanpack-radio-group
-    label="Subscription Tier"
-    hint="Choose the plan that fits your needs"
-    :options="[
-        ['id' => 'basic', 'name' => 'Basic', 'hint' => '$9/month - Essential features'],
-        ['id' => 'pro', 'name' => 'Pro', 'hint' => '$29/month - Advanced features'],
-        ['id' => 'enterprise', 'name' => 'Enterprise', 'hint' => '$99/month - Full access'],
-    ]"
-    wire:model="subscriptionTier"
-    option-hint="hint"
-/>
-```
-
-### Custom Option Keys
-
-```php
-<x-artisanpack-radio-group
-    label="Country"
-    :options="$countries"
-    wire:model="country"
-    option-value="code"
-    option-label="country_name"
-/>
+```blade
+<x-artisanpack-radio-group wire:model.live="period" variant="segmented" orientation="horizontal" :label="__( 'Billing period' )" :options="[ __( 'Monthly' ), __( 'Yearly' ) ]" />
 ```
 
 ## Props
 
 | Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `label` | string | `null` | Label text for the radio group |
-| `hint` | string | `null` | Hint text displayed below the label |
-| `hintClass` | string | `'fieldset-label'` | CSS classes for the hint text |
-| `options` | Collection\|array | `[]` | Array or Collection of options |
-| `optionValue` | string | `'id'` | Key name for the option value |
-| `optionLabel` | string | `'name'` | Key name for the option label |
-| `optionHint` | string | `'hint'` | Key name for the option hint |
-| `horizontal` | boolean | `false` | Display radio buttons horizontally |
-| `card` | boolean | `false` | Display radio buttons as cards |
-| `cardClass` | string | `'card card-compact border-2 border-base-300 hover:border-primary cursor-pointer transition-colors'` | CSS classes for card style |
-| `errorField` | string | `null` | Field name for validation errors |
-| `errorClass` | string | `'text-error'` | CSS classes for error messages |
-| `omitError` | boolean | `false` | Hide error messages |
-| `firstErrorOnly` | boolean | `false` | Show only the first error |
+|---|---|---|---|
+| `options` | array | `[]` | Strings, or `[ 'value', 'label', 'description', 'meta', 'disabled' ]` entries. |
+| `value` | string | none | The selected value. `wire:model` binds it instead. |
+| `label` | string or slot | none | The legend. |
+| `hint` | string or slot | none | Help text under the options, linked to the fieldset. |
+| `error` | string | `$errors` | Validation message. Defaults to the first message for `error-field`. |
+| `invalid` | bool | `false` | Marks the group invalid without a message. Emitted as `data-invalid`. |
+| `disabled` | bool | `false` | Disables the fieldset and every option. |
+| `required` | bool | `false` | Sets `required` on the radios and shows the required mark. |
+| `orientation` | `vertical` · `horizontal` | `vertical` | Emitted as `data-orientation`. |
+| `variant` | `default` · `cards` · `segmented` | `default` | Emitted as `data-variant`. |
+| `error-field` | string | `wire:model` name | The `$errors` key. |
+| `classes` | array | `[]` | Extra classes per part: `root`, `label`, `required`, `items`, `item`, `box`, `control`, `indicator`, `itemText`, `itemDescription`, `itemMeta`, `hint`, `error`. |
 
-## Validation
+## Attributes and ids
 
-The component integrates with Laravel's validation system:
+`class` lands on the fieldset. Every other attribute lands on every radio. The radios share one `name` (the `name` attribute, else the group id) so arrow keys move between them. The group id is the `id` attribute, else one derived from the `wire:model` name; each radio's id adds `-0`, `-1`, ….
 
-```php
-// In your Livewire component
-public string $selectedOption = '';
+## Markup
 
-protected $rules = [
-    'selectedOption' => 'required|in:option1,option2,option3',
-];
-
-public function save()
-{
-    $this->validate();
-    // Process selected option
-}
-```
-
-```php
-<!-- In your view -->
-<x-artisanpack-radio-group
-    label="Required Selection"
-    :options="$options"
-    wire:model="selectedOption"
-    error-field="selectedOption"
-/>
-```
-
-## Styling
-
-### Custom Card Styling
-
-```php
-<x-artisanpack-radio-group
-    label="Shipping Method"
-    :options="$shippingMethods"
-    wire:model="selectedShipping"
-    card
-    card-class="card border-2 border-primary hover:border-primary-focus bg-base-100 p-4"
-/>
-```
-
-### Custom Hint Styling
-
-```php
-<x-artisanpack-radio-group
-    label="Notification Preference"
-    hint="Choose how you'd like to receive notifications"
-    hint-class="text-sm text-gray-500 font-medium"
-    :options="$notificationOptions"
-    wire:model="notificationPreference"
-/>
+```html
+<fieldset class="apui-radio-group" data-orientation="vertical" data-variant="default" aria-describedby="…-hint">
+	<legend data-scope="radio-group" data-part="label">Plan</legend>
+	<div data-scope="radio-group" data-part="items">
+		<label data-scope="radio-group" data-part="item">
+			<span data-part="box"><input type="radio" data-part="control" name="…" value="starter" /><span data-part="indicator"></span></span>
+			<span data-part="item-text">Starter</span>
+			<span data-part="item-description">Up to 5 listings</span>
+			<span data-part="item-meta">$0 / month</span>
+		</label>
+	</div>
+	<p data-scope="radio-group" data-part="hint">…</p>
+</fieldset>
 ```
 
 ## Accessibility
 
-The Radio Group component follows accessibility best practices:
-
-- Uses semantic fieldset and legend elements
-- Each radio button has a properly associated label
-- Keyboard navigation support (Tab, Arrow keys, Space)
-- ARIA attributes for screen readers
-- Proper focus management
-- Only one radio button can be selected at a time per group
-
-## Related Components
-
-- [Radio](radio) - Single radio button input
-- [Checkbox Group](checkbox-group) - Group of checkboxes (multiple selection)
-- [Select](select) - Dropdown selection
+- Native radios in a fieldset and legend; arrow keys follow the text direction.
+- Hint and error are linked to the fieldset; `invalid` sets `aria-invalid` on every radio; an option's description is linked to its radio.
+- The dot follows the native `:checked` state, so it updates before a deferred `wire:model` round trip.
+- Use [Select](select) for more than about six options.

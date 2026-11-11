@@ -64,6 +64,47 @@ final class SafeUrl
     }
 
     /**
+     * Whether a link should load through Livewire's `wire:navigate`: a
+     * relative URL or an http(s) URL on this host. A fragment (`#…`), a
+     * protocol-relative or off-site URL, and other schemes (`mailto:`,
+     * `tel:`) load normally.
+     *
+     * @since 3.0.0
+     *
+     * @param  string|null  $url  The href.
+     *
+     * @return bool True when the link may use `wire:navigate`.
+     */
+    public static function navigable(?string $url): bool
+    {
+        if (null === $url) {
+            return false;
+        }
+
+        $url = trim($url);
+        if ('' === $url || str_starts_with($url, '#') || str_starts_with($url, '//')) {
+            return false;
+        }
+
+        $scheme = self::scheme($url);
+        if (false === $scheme) {
+            return false;
+        }
+
+        if (null === $scheme) {
+            return true;
+        }
+
+        if (! in_array($scheme, ['http', 'https'], true)) {
+            return false;
+        }
+
+        $host = parse_url($url, PHP_URL_HOST);
+
+        return is_string($host) && 0 === strcasecmp($host, request()->getHost());
+    }
+
+    /**
      * A media source, or null when it's empty or not allowed.
      *
      * @since 3.0.0
@@ -93,7 +134,7 @@ final class SafeUrl
      *
      * @param  string|null  $url  The URL.
      *
-     * @return string|false|null The scheme.
+     * @return false|string|null The scheme.
      */
     private static function scheme(?string $url): string|false|null
     {

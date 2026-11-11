@@ -4,6 +4,8 @@ title: Editor Component
 
 # Editor Component
 
+> **Deprecated in 3.0.** `<x-artisanpack-editor>` is now an alias of [RichTextEditor](rich-text-editor), built on the design system, and takes its props; the setup below (copying `tinymce-editor.js`) and the DaisyUI props no longer apply. Use `<x-artisanpack-rich-text-editor>`. The alias is removed in a later major release.
+
 The Editor component provides a rich text editor with formatting options, image uploads, and more. It's built on top of TinyMCE and integrates with Livewire for two-way data binding.
 
 ## Installation

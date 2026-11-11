@@ -4,307 +4,86 @@ title: Signature Component
 
 # Signature Component
 
-The Signature component is a specialized form element that allows users to draw their signature using a mouse, touch, or stylus. It provides a canvas-based interface for capturing handwritten signatures with various customization options and export capabilities.
+Captures a signature by drawing, typing or uploading, built on the ArtisanPack UI design system. Every mode produces the same value, a PNG data URL, so your code handles one shape. Type mode is always offered: it's the keyboard-accessible path, and drawing is never the only option.
 
 ## Basic Usage
 
-```php
-<x-artisanpack-signature label="Signature" />
-```
+Show who is signing and the date under the pad.
 
-## Examples
-
-### Simple Signature Pad
-
-```php
-<x-artisanpack-signature 
-    label="Please sign here" 
-    name="signature"
+```blade
+<x-artisanpack-signature
+	wire:model="signature"
+	:label="__( 'Signature' )"
+	:hint="__( 'Olivia Rhye · Nov 7, 2026' )"
 />
 ```
 
-### Required Signature
+## Type first
 
-```php
-<x-artisanpack-signature 
-    label="Signature" 
-    required
+Start in type mode, or leave upload out with `modes`. Type is always added.
+
+```blade
+<x-artisanpack-signature
+	wire:model="signature"
+	mode="type"
+	:modes="[ 'draw', 'type' ]"
+	:label="__( 'Signature' )"
+	pen-color="primary"
 />
 ```
 
-### Signature with Helper Text
+## Validation
 
-```php
-<x-artisanpack-signature 
-    label="Signature" 
-    helper="Use your mouse or finger to sign"
+```blade
+{{-- The error comes from $errors for the wire:model name. --}}
+<x-artisanpack-signature
+	wire:model="signature"
+	:label="__( 'Signature' )"
+	:hint="__( 'Sign to accept the lease.' )"
+	required
 />
 ```
 
-### Signature with Error
-
-```php
-<x-artisanpack-signature 
-    label="Signature" 
-    error="Signature is required"
-/>
-```
-
-### Signature with Livewire Binding
-
-```php
-<x-artisanpack-signature 
-    label="Signature" 
-    wire:model="signature"
-/>
-```
-
-### Signature with Custom Dimensions
-
-```php
-<x-artisanpack-signature 
-    label="Signature" 
-    width="500" 
-    height="200"
-/>
-```
-
-### Signature with Custom Background Color
-
-```php
-<x-artisanpack-signature 
-    label="Signature" 
-    background-color="#f3f4f6"
-/>
-```
-
-### Signature with Custom Pen Color
-
-```php
-<x-artisanpack-signature 
-    label="Signature" 
-    pen-color="#3b82f6"
-/>
-```
-
-### Signature with Custom Pen Width
-
-```php
-<x-artisanpack-signature 
-    label="Signature" 
-    pen-width="3"
-/>
-```
-
-### Signature with Border
-
-```php
-<x-artisanpack-signature 
-    label="Signature" 
-    bordered
-/>
-```
-
-### Signature with Custom Border
-
-```php
-<x-artisanpack-signature 
-    label="Signature" 
-    bordered 
-    border-color="#3b82f6" 
-    border-width="2"
-/>
-```
-
-### Signature with Clear Button
-
-```php
-<x-artisanpack-signature 
-    label="Signature" 
-    with-clear-button
-/>
-```
-
-### Signature with Custom Clear Button Text
-
-```php
-<x-artisanpack-signature 
-    label="Signature" 
-    with-clear-button 
-    clear-button-text="Reset Signature"
-/>
-```
-
-### Signature with Download Button
-
-```php
-<x-artisanpack-signature 
-    label="Signature" 
-    with-download-button
-/>
-```
-
-### Signature with Custom Download Button Text
-
-```php
-<x-artisanpack-signature 
-    label="Signature" 
-    with-download-button 
-    download-button-text="Save as Image"
-/>
-```
-
-### Signature with Custom Download Format
-
-```php
-<x-artisanpack-signature 
-    label="Signature" 
-    with-download-button 
-    download-format="png"
-/>
-```
-
-### Signature with Custom Download Filename
-
-```php
-<x-artisanpack-signature 
-    label="Signature" 
-    with-download-button 
-    download-filename="my-signature"
-/>
-```
-
-### Signature with Read-Only Mode
-
-```php
-<x-artisanpack-signature 
-    label="Signature" 
-    :value="$existingSignature" 
-    readonly
-/>
-```
-
-### Signature with Disabled State
-
-```php
-<x-artisanpack-signature 
-    label="Signature" 
-    disabled
-/>
-```
-
-### Signature with Custom Classes
-
-```php
-<x-artisanpack-signature 
-    label="Signature" 
-    class="border-2 border-primary rounded-lg"
-/>
-```
-
-### Signature with Custom Button Classes
-
-```php
-<x-artisanpack-signature 
-    label="Signature" 
-    with-clear-button 
-    with-download-button 
-    button-class="btn btn-sm btn-primary"
-/>
-```
+Validate the value on the server: it's empty, or a `data:image/png;base64,` URL. Check the prefix and the size before you store it.
 
 ## Props
 
 | Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `label` | string | `null` | The label text for the signature pad |
-| `name` | string | `null` | The name attribute for the signature pad |
-| `id` | string | `null` | The ID attribute for the signature pad (auto-generated if not provided) |
-| `value` | string | `null` | The default value for the signature pad (base64 encoded image) |
-| `width` | integer | `300` | The width of the signature pad in pixels |
-| `height` | integer | `150` | The height of the signature pad in pixels |
-| `background-color` | string | `'#ffffff'` | The background color of the signature pad |
-| `pen-color` | string | `'#000000'` | The color of the pen/stroke |
-| `pen-width` | float | `2.0` | The width of the pen/stroke |
-| `bordered` | boolean | `false` | Whether to display a border around the signature pad |
-| `border-color` | string | `'#d1d5db'` | The color of the border |
-| `border-width` | integer | `1` | The width of the border in pixels |
-| `with-clear-button` | boolean | `false` | Whether to display a clear button |
-| `clear-button-text` | string | `'Clear'` | The text for the clear button |
-| `with-download-button` | boolean | `false` | Whether to display a download button |
-| `download-button-text` | string | `'Download'` | The text for the download button |
-| `download-format` | string | `'jpeg'` | The format for downloaded signatures (`jpeg`, `png`, `svg`) |
-| `download-filename` | string | `'signature'` | The filename for downloaded signatures |
-| `button-class` | string | `null` | Additional classes for the buttons |
-| `required` | boolean | `false` | Whether the signature pad is required |
-| `disabled` | boolean | `false` | Whether the signature pad is disabled |
-| `readonly` | boolean | `false` | Whether the signature pad is readonly |
-| `helper` | string | `null` | Helper text displayed below the signature pad |
-| `error` | string | `null` | Error message to display |
+|---|---|---|---|
+| `mode` | string | `draw` | The mode shown first: `draw`, `type` or `upload`. Emitted as `data-mode`. |
+| `modes` | array | all three | The modes offered. `type` is always added. |
+| `pen-color` | string | `default` | The ink: `default` (the text color) or a semantic color's text tone. Emitted as `data-pen-color`. |
+| `label` | string or slot | none | The visible label. It names the group. |
+| `hint` | string or slot | none | Help text, linked with `aria-describedby`. |
+| `error` | string | first `$errors` message | Validation message. Marks the field invalid. |
+| `invalid` | bool | `false` | Marks the field invalid without a message. |
+| `disabled` | bool | `false` | Disables drawing, typing, uploading and the tools. |
+| `required` | bool | `false` | Shows the required mark and sets `aria-required` on the typed name. |
+| `placeholder` | string | `__( 'Sign above the line' )` | The text under the line. |
+| `value` | string | none | The value. `wire:model` binds it instead. |
+| `modes-label` | string | `__( 'Signature method' )` | The mode switch group's accessible name. |
+| `draw-label` | string | `__( 'Draw' )` | The draw mode button. |
+| `type-label` | string | `__( 'Type' )` | The type mode button. |
+| `upload-label` | string | `__( 'Upload' )` | The upload mode button. |
+| `pad-label` | string | `__( 'Signature pad. Draw with a mouse, finger or stylus, or choose Type.' )` | The canvas's accessible name. |
+| `typed-label` | string | `__( 'Type your full name' )` | The typed-name input's accessible name. |
+| `upload-trigger-label` | string | `__( 'Choose an image' )` | The upload trigger's text. |
+| `undo-label` | string | `__( 'Undo stroke' )` | The icon-only undo button's accessible name. |
+| `clear-label` | string | `__( 'Clear' )` | The clear button's text. |
+| `cleared-label` | string | `__( 'Signature cleared.' )` | Announced in the live region after clearing. |
+| `error-field` | string | the `wire:model` name | The `$errors` key to read. |
+| `classes` | array | `[]` | Extra classes per part: `root`, `label`, `required`, `modes`, `mode`, `pad`, `line`, `mark`, `ink`, `typed`, `upload`, `tools`, `undo`, `clear`, `placeholder`, `hint`, `error`. |
 
-## Events
-
-The Signature component supports the following events:
-
-- `begin` - Triggered when the user starts drawing
-- `end` - Triggered when the user stops drawing
-- `change` - Triggered when the signature changes
-- `clear` - Triggered when the signature is cleared
-- `download` - Triggered when the signature is downloaded
-
-It also supports all Livewire model binding directives:
-
-- `wire:model`
-- `wire:model.defer`
-- `wire:model.lazy`
-
-## Methods
-
-The Signature component exposes the following methods that can be accessed via JavaScript:
-
-| Method | Description |
-|--------|-------------|
-| `clear()` | Clears the signature pad |
-| `isEmpty()` | Returns true if the signature pad is empty |
-| `toDataURL(type, quality)` | Converts the signature to a data URL |
-| `fromDataURL(dataURL)` | Loads a signature from a data URL |
-| `toSVG()` | Converts the signature to SVG |
-
-## Styling
-
-The Signature component provides a customizable signature pad interface. You can customize the appearance by:
-
-1. Using the provided props (`width`, `height`, `background-color`, `pen-color`, etc.)
-2. Adding custom classes via the `class` attribute
-3. Customizing the button appearance via the `button-class` attribute
-
-### Custom Styling Example
-
-```php
-<x-artisanpack-signature 
-    label="Custom styled signature" 
-    class="border-2 border-primary rounded-lg shadow-lg"
-    background-color="#f8fafc"
-    pen-color="#3b82f6"
-    pen-width="2.5"
-    with-clear-button
-    with-download-button
-    button-class="bg-primary text-white hover:bg-primary-focus px-4 py-2 rounded-md"
-/>
-```
+`wire:model` binds the value through `$wire.entangle()` (add `.live` to send every change). `class` lands on the root (`.apui-signature`), `name` on a hidden input so plain forms submit the value, and every other attribute on the root. The pad is `wire:ignore`, so a re-render never clears the canvas.
 
 ## Accessibility
 
-The Signature component follows accessibility best practices:
+- The root is a group named by the label and described by the hint and error.
+- Type mode is always offered and is the keyboard path; the canvas is an image whose name points to it.
+- The mode buttons are toggle buttons with `aria-pressed`; switching modes starts over.
+- Undo (icon-only, with a name, mirrored in RTL) and Clear are labeled buttons. Clearing is announced in a polite live region.
+- The ink uses text tones, 4.5:1 on the pad in every theme, and `CanvasText` in forced colors.
 
-- Associates labels with the signature pad using proper HTML markup
-- Includes appropriate ARIA attributes
-- Provides keyboard shortcuts for common actions
-- Ensures adequate color contrast
-- Provides clear feedback on signature status
+## Upgrading from 2.x
 
-## Related Components
-
-- [Form](Form) - Container for form elements
-- [Input](Input) - Standard text input
-- [File](File) - File upload component
+The DaisyUI signature (built on `signature_pad`) is replaced. `height`, `clear-text`, `hint-class`, `config`, `clear-btn-style`, `error-class`, `omit-error` and `first-error-only` are gone; use `clear-label` for the Clear label and `classes` for styling. The value is still a PNG data URL.

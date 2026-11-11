@@ -2,197 +2,95 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
+use ArtisanPack\LivewireUiComponents\Support\IconRegistry;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\MessageBag;
+use Illuminate\Support\ViewErrorBag;
 
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
-use ArtisanPack\LivewireUiComponents\View\Components\Toggle;
-use Error;
-use RuntimeException;
-
-/**
- * Comprehensive unit tests for the Toggle component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * Toggle (#53): the design-system markup contract, role=switch, data-state,
+ * ids and the error lookup. The manifest parity check is in
+ * tests/Feature/DesignSystemParityTest.php.
  */
-class ToggleComponentTest extends ComponentTestCase
-{
-    protected string $componentClass = Toggle::class;
 
-    protected array $defaultProperties = [
-        'right'          => false,
-        'hintClass'      => 'fieldset-label',
-        'errorClass'     => 'text-error',
-        'omitError'      => false,
-        'firstErrorOnly' => false,
-    ];
+test('the fixture renders the contract markup in order', function (): void {
+    $html = Blade::render('<x-artisanpack-toggle id="dark" label="Dark mode" description="Follows your system setting when off." error="Ask your admin." />');
+    $dom  = designSystemDom($html);
 
-    protected array $requiredProperties = [];
-
-    public function test_toggle_string_properties(): void
-    {
-        $stringProperties = ['id', 'label', 'hint', 'hintClass', 'errorField', 'errorClass'];
-        $testValues       = ComponentDataFactory::sampleTexts();
-
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
-
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
+    $parts = [];
+    foreach ($dom->query('//*[@data-scope="toggle"]') as $element) {
+        $parts[] = $element->getAttribute('data-part');
     }
 
-    public function test_toggle_boolean_properties(): void
-    {
-        $booleanProperties = ['right', 'omitError', 'firstErrorOnly'];
+    $root    = $dom->query('//div[contains(@class, "apui-toggle")]')->item(0);
+    $control = $dom->query('//input')->item(0);
 
-        foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
-            $this->assertTrue($component->$property);
+    expect($parts)->toBe(['track', 'control', 'thumb', 'label', 'description', 'error'])
+        ->and($root->getAttribute('data-state'))->toBe('unchecked')
+        ->and($root->getAttribute('data-size'))->toBe('md')
+        ->and($root->getAttribute('data-color'))->toBe('primary')
+        ->and($root->hasAttribute('data-invalid'))->toBeTrue()
+        ->and($control->getAttribute('type'))->toBe('checkbox')
+        ->and($control->getAttribute('role'))->toBe('switch')
+        ->and($control->getAttribute('aria-describedby'))->toBe('dark-description dark-error')
+        ->and($html)->toContain('<label data-scope="toggle" data-part="label" for="dark">Dark mode</label>')
+        ->and($html)->toContain('<p data-scope="toggle" data-part="error" id="dark-error">'.IconRegistry::svg('circle-alert').'Ask your admin.</p>');
+});
 
-            $component = $this->createComponent([$property => false]);
-            $this->assertFalse($component->$property);
-        }
-    }
+test('checked renders data-state and the native attribute', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-toggle checked label="On" />'));
 
-    public function test_toggle_model_name_method(): void
-    {
-        $component = $this->createComponent();
+    expect($dom->query('//div[contains(@class, "apui-toggle")]')->item(0)->getAttribute('data-state'))->toBe('checked')
+        ->and($dom->query('//input')->item(0)->hasAttribute('checked'))->toBeTrue();
+});
 
-        if (method_exists($component, 'modelName')) {
-            try {
-                $result = $component->modelName();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
+test('size and color render as data attributes', function (): void {
+    $root = designSystemDom(Blade::render('<x-artisanpack-toggle size="lg" color="success" label="A" />'))->query('//div')->item(0);
 
-    public function test_toggle_error_field_name_method(): void
-    {
-        $component = $this->createComponent();
+    expect($root->getAttribute('data-size'))->toBe('lg')
+        ->and($root->getAttribute('data-color'))->toBe('success');
+});
 
-        if (method_exists($component, 'errorFieldName')) {
-            try {
-                $result = $component->errorFieldName();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
+test('Alpine keeps the root data-state in step on change', function (): void {
+    $control = designSystemDom(Blade::render('<x-artisanpack-toggle label="A" />'))->query('//input')->item(0);
 
-    public function test_toggle_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
+    expect($control->getAttribute('x-on:change'))
+        ->toBe("\$el.closest('.apui-toggle').dataset.state = \$el.checked ? 'checked' : 'unchecked'");
+});
 
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
+test('disabled and required set the control and the root', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-toggle disabled required label="Managed" />'));
 
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
+    expect($dom->query('//input')->item(0)->hasAttribute('disabled'))->toBeTrue()
+        ->and($dom->query('//input')->item(0)->hasAttribute('required'))->toBeTrue()
+        ->and($dom->query('//div[contains(@class, "apui-toggle")]')->item(0)->hasAttribute('data-disabled'))->toBeTrue();
+});
 
-    public function test_toggle_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
+test('class lands on the root and every other attribute on the control', function (): void {
+    $dom     = designSystemDom(Blade::render('<x-artisanpack-toggle class="mt-2" wire:model.live="darkMode" name="dark" label="Dark mode" />'));
+    $root    = $dom->query('//div[contains(@class, "apui-toggle")]')->item(0);
+    $control = $dom->query('//input')->item(0);
 
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
+    expect($root->getAttribute('class'))->toBe('apui-toggle mt-2')
+        ->and($root->hasAttribute('wire:model.live'))->toBeFalse()
+        ->and($control->getAttribute('wire:model.live'))->toBe('darkMode')
+        ->and($control->getAttribute('name'))->toBe('dark')
+        ->and($control->getAttribute('id'))->toBe('apui-toggle-darkmode-'.substr(md5('darkMode'), 0, 8));
+});
 
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'Toggle should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
+test('the error comes from $errors for the wire:model name', function (): void {
+    view()->share('errors', (new ViewErrorBag)->put('default', new MessageBag(['notify' => 'Turn this on to continue.'])));
 
-    public function test_toggle_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
+    $dom = designSystemDom(Blade::render('<x-artisanpack-toggle wire:model="notify" label="Notify" />'));
 
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
+    expect($dom->query('//p[@data-part="error"]')->item(0)->textContent)->toBe('Turn this on to continue.')
+        ->and($dom->query('//input')->item(0)->getAttribute('aria-invalid'))->toBe('true');
+});
 
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
+test('classes add to their parts', function (): void {
+    $html = Blade::render('<x-artisanpack-toggle :classes="[ \'track\' => \'t\', \'thumb\' => \'k\', \'label\' => \'l\' ]" label="A" />');
 
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_toggle_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'Toggle rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
-}
+    expect($html)->toContain('data-part="track" class="t"')
+        ->and($html)->toContain('data-part="thumb" aria-hidden="true" class="k"')
+        ->and($html)->toContain('data-part="label" for=');
+});

@@ -4,6 +4,8 @@ title: SelectGroup Component
 
 # SelectGroup Component
 
+> **Deprecated in 3.0.** Pass option groups to [Select](select) instead: an `options` entry with `label` and `options` renders a native `<optgroup>`. This component is removed in a later major release.
+
 The SelectGroup component is used to group related select options together with a label, providing better organization and visual hierarchy in select dropdowns.
 
 ## Basic Usage

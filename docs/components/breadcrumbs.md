@@ -4,91 +4,76 @@ title: Breadcrumbs Component
 
 # Breadcrumbs Component
 
-The Breadcrumbs component provides a navigation aid that helps users understand their current location within the application's hierarchy.
+Shows where the current page sits in the hierarchy, built on the ArtisanPack UI design system (`.apui-breadcrumbs`): a navigation landmark holding an ordered list. The last item is the current page; it has `aria-current="page"` and is never a link.
 
 ## Basic Usage
 
 ```blade
 <x-artisanpack-breadcrumbs :items="[
-    ['label' => 'Home', 'link' => '/'],
-    ['label' => 'Products', 'link' => '/products'],
-    ['label' => 'Product Name'],
+	[ 'label' => __( 'Dashboard' ), 'href' => route( 'dashboard' ) ],
+	[ 'label' => __( 'Properties' ), 'href' => route( 'properties.index' ) ],
+	[ 'label' => $property->name ],
 ]" />
 ```
 
-## With Icons
+Start the trail at the section, not always at Home. Don't use Breadcrumbs for steps or history.
+
+## Home icon and overflow
+
+`icon` shows a registry icon before the label; `hideLabel` keeps the label for screen readers only. Past `max-items` (4 by default) the middle levels collapse behind an overflow button. Choosing it reveals them in place and moves focus to the first one. `:max-items="0"` never collapses.
 
 ```blade
-<x-artisanpack-breadcrumbs :items="[
-    ['label' => 'Home', 'link' => '/', 'icon' => 'o-home'],
-    ['label' => 'Products', 'link' => '/products', 'icon' => 'o-shopping-bag'],
-    ['label' => 'Product Name', 'icon' => 'o-tag'],
+<x-artisanpack-breadcrumbs :max-items="4" :items="[
+	[ 'label' => __( 'Home' ), 'href' => '/', 'icon' => 'house', 'hideLabel' => true ],
+	[ 'label' => __( 'Properties' ), 'href' => '/properties' ],
+	[ 'label' => __( 'Lakeview Lofts' ), 'href' => '/properties/lakeview-lofts' ],
+	[ 'label' => __( 'Analytics' ), 'href' => '/properties/lakeview-lofts/analytics' ],
+	[ 'label' => __( 'Visitor' ) ],
 ]" />
 ```
 
-## With Custom Separator
+## Composed
+
+`breadcrumbs-item` children render the same levels as `items`, after them, so a level can hold markup or a `wire:click`. Attributes on an item land on its link. The 2.x form, `<x-artisanpack-link>` children in the slot, still renders as levels.
 
 ```blade
-<x-artisanpack-breadcrumbs 
-    separator="o-chevron-double-right"
-    :items="[
-        ['label' => 'Home', 'link' => '/'],
-        ['label' => 'Products', 'link' => '/products'],
-        ['label' => 'Product Name'],
-    ]" 
-/>
-```
-
-## With Tooltips
-
-```blade
-<x-artisanpack-breadcrumbs :items="[
-    ['label' => 'Home', 'link' => '/', 'tooltip' => 'Go to homepage'],
-    ['label' => 'Products', 'link' => '/products', 'tooltip' => 'View all products'],
-    ['label' => 'Product Name', 'tooltip' => 'You are here'],
-]" />
-```
-
-## With Custom Classes
-
-```blade
-<x-artisanpack-breadcrumbs 
-    link-item-class="text-primary hover:text-primary-focus"
-    text-item-class="text-gray-500"
-    icon-class="w-5 h-5"
-    separator-class="h-4 w-4 mx-2 text-gray-400"
-    :items="[
-        ['label' => 'Home', 'link' => '/'],
-        ['label' => 'Products', 'link' => '/products'],
-        ['label' => 'Product Name'],
-    ]" 
-/>
+<x-artisanpack-breadcrumbs>
+	<x-artisanpack-breadcrumbs-item href="#" wire:click.prevent="setFolder( null )" :label="__( 'All media' )" />
+	<x-artisanpack-breadcrumbs-item :label="$folder->name" />
+</x-artisanpack-breadcrumbs>
 ```
 
 ## Props
 
-| Name | Type | Default | Description |
-|------|------|---------|-------------|
-| id | string | null | Optional identifier for the breadcrumbs |
-| items | array | [] | Array of breadcrumb items. Each item can have: 'label', 'link', 'icon', 'tooltip', 'tooltip-left', 'tooltip-right', 'tooltip-bottom', 'tooltip-top' |
-| separator | string | 'o-chevron-right' | Icon name for the separator between breadcrumb items |
-| linkItemClass | string | "hover:underline text-sm" | CSS classes for breadcrumb items with links |
-| textItemClass | string | "text-sm" | CSS classes for breadcrumb items without links |
-| iconClass | string | "h-4 w-4" | CSS classes for icons in breadcrumb items |
-| separatorClass | string | "h-3 w-3 mx-1 text-base-content/40" | CSS classes for the separator |
-| noWireNavigate | boolean | false | Whether to disable wire:navigate on links |
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `items` | array | `[]` | The trail: `[ 'label' => …, 'href' => …, 'icon' => …, 'hideLabel' => … ]`. The 2.x `link` key still works for `href`. |
+| `max-items` | int | `4` | How many entries show before the middle collapses: the first item, the overflow button and the last `max-items - 2`. |
+| `label` | string | `__( 'Breadcrumb' )` | The navigation landmark's name. |
+| `overflow-label` | string | `__( 'Show {count} more levels' )` | The overflow button's name; `{count}` is the number of hidden levels. |
+| `navigate` | bool | `true` | Adds `wire:navigate` to every internal link. Off-site, `#` and `mailto:` links load normally. |
+| `classes` | array | `[]` | Extra classes per part: `root`, `list`, `item`, `link`, `separator`, `current`, `overflow`. |
 
-## Item Properties
+### breadcrumbs-item
 
-Each item in the `items` array can have the following properties:
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `label` | string | none | The level's name. The default slot overrides it. |
+| `href` | string | none | Where it links. Ignored on the last level. |
+| `icon` | string | none | An icon name before the label. |
+| `hide-label` | bool | `false` | Keeps the label for screen readers only. |
 
-| Name | Type | Description |
-|------|------|-------------|
-| label | string | Text to display for the breadcrumb item |
-| link | string | Optional URL for the breadcrumb item |
-| icon | string | Optional icon name for the breadcrumb item |
-| tooltip | string | Optional tooltip text for the breadcrumb item |
-| tooltip-left | string | Optional tooltip text positioned to the left |
-| tooltip-right | string | Optional tooltip text positioned to the right |
-| tooltip-bottom | string | Optional tooltip text positioned to the bottom |
-| tooltip-top | string | Optional tooltip text positioned to the top |
+Every other attribute on Breadcrumbs lands on the `<nav>`.
+
+## Upgrading from 2.x
+
+- Internal links still add `wire:navigate` by default. `no-wire-navigate` still turns it off but is deprecated: use `:navigate="false"`.
+- `separator`, `link-item-class`, `text-item-class`, `icon-class` and `separator-class` are gone; use `classes`. Item tooltips are gone.
+- `<x-artisanpack-link>` children in the slot still work; prefer `breadcrumbs-item`.
+
+## Accessibility
+
+- A `nav` landmark named "Breadcrumb", with an ordered list.
+- The current page has `aria-current="page"` and isn't a link.
+- Separators are `aria-hidden` and mirror in right-to-left layouts.
+- The overflow button names how many levels it hides and sets `aria-expanded`.
