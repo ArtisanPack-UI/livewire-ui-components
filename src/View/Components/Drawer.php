@@ -1,108 +1,178 @@
 <?php
 
-declare(strict_types=1);
 /**
- * Drawer
+ * Drawer Component
  *
- * This file contains the Drawer class for the ArtisanPack UI Livewire UI Components package.
+ * The design-system Drawer (#58): a panel that slides in from an edge, on
+ * the behavior engine's dialog machine.
  *
- * @since      1.0.0
- * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
- * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
- *
- * @copyright  2023 Jacob Martella
- * @license    MIT
  * @author     Jacob Martella
+ * @copyright  2026 Jacob Martella
+ * @license    MIT
+ *
+ * @link       https://github.com/ArtisanPack-UI/livewire-ui-components
+ * @since      1.0.0
  */
+
+declare(strict_types=1);
 
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
-use ArtisanPack\LivewireUiComponents\Support\GlassHelper;
-use Closure;
+use ArtisanPack\LivewireUiComponents\View\Concerns\HasStablePartIds;
+use ArtisanPack\LivewireUiComponents\View\Concerns\RendersDesignSystemParts;
 use Illuminate\Contracts\View\View;
-use Livewire\WireDirective;
+use Illuminate\Support\Js;
 
 /**
- * Drawer Class
+ * Drawer Component Class
  *
- * Provides functionality for the Drawer component.
+ * Renders `apuiDrawer` (D-019): an optional trigger, then the backdrop and
+ * the positioner holding the `.apui-drawer` panel (the machine's content
+ * part) with its header, body and footer, every part scoped `drawer`.
+ * `wire:model` binds the open state through `$wire.entangle()`; without it,
+ * `open` is plain Alpine state. `class` lands on the panel; every other
+ * attribute lands on the element that holds the Alpine component, where
+ * `open-change` is dispatched.
+ *
+ * The 2.x attributes still work for 3.0, deprecated: `right` (now
+ * `side="end"`), `subtitle` (`description`) and the `actions` slot
+ * (`footer`). `separator`, `with-close-button`, `close-on-escape`,
+ * `without-trap-focus`, `open-on`, `close-on` and the glass tint props are
+ * dropped.
  *
  * @since 1.0.0
  */
 class Drawer extends BaseComponent
 {
-    public string $uuid;
+    use HasStablePartIds;
+    use RendersDesignSystemParts;
 
+    /**
+     * The sides a drawer slides in from.
+     *
+     * @since 3.0.0
+     *
+     * @var list<string>
+     */
+    public const SIDES = ['end', 'start', 'bottom'];
+
+    /**
+     * The 2.x attributes that are dropped, so they never land on the host.
+     *
+     * @since 3.0.0
+     *
+     * @var list<string>
+     */
+    public const DROPPED_ATTRIBUTES = [
+        'right', 'subtitle', 'separator', 'with-close-button', 'withCloseButton', 'close-on-escape', 'closeOnEscape',
+        'without-trap-focus', 'withoutTrapFocus', 'open-on', 'openOn', 'close-on', 'closeOn', 'glass', 'glass-tint',
+        'glassTint', 'glass-tint-opacity', 'glassTintOpacity',
+    ];
+
+    /**
+     * The prefix of generated ids.
+     *
+     * @since 3.0.0
+     */
+    protected string $idPrefix = 'drawer';
+
+    /**
+     * Props that change between renders without changing the id: state and text.
+     *
+     * @since 3.0.0
+     *
+     * @var list<string>
+     */
+    protected array $idIgnore = ['open', 'title', 'description', 'footer', 'trigger', 'closeLabel'];
+
+    /**
+     * Creates the component.
+     *
+     * @since 3.0.0
+     *
+     * @param  bool  $open  Whether it's open. `wire:model` binds it instead.
+     * @param  string  $side  The edge it slides in from: end, start or bottom. end is on the right in LTR, on the left in RTL.
+     * @param  string  $size  The panel's width at the start or end side: sm, md or lg.
+     * @param  string  $surface  The panel's surface: overlay or glass.
+     * @param  string|null  $title  The heading and the panel's accessible name. A `title` slot overrides it.
+     * @param  string|null  $description  Supporting text under the title. A `description` slot overrides it.
+     * @param  string|null  $footer  The actions row. A `footer` slot overrides it.
+     * @param  string|null  $trigger  Content for a trigger button that opens the drawer. A `trigger` slot overrides it.
+     * @param  bool  $modal  Traps focus, locks scroll and hides the rest of the page from assistive technology.
+     * @param  bool  $portal  Renders the drawer at the end of the body (x-teleport). Off renders it in place.
+     * @param  bool  $hideClose  Hides the close button. Escape still closes the drawer.
+     * @param  string|null  $closeLabel  The close button's accessible name. Defaults to "Close", translated.
+     * @param  array<string, string>  $classes  Extra classes per part.
+     */
     public function __construct(
-        public ?string $id = null,
-        public ?bool $right = false,
+        public bool $open = false,
+        public string $side = 'end',
+        public string $size = 'md',
+        public string $surface = 'overlay',
         public ?string $title = null,
-        public ?string $subtitle = null,
-        public ?bool $separator = false,
-        public ?bool $withCloseButton = false,
-        public ?bool $closeOnEscape = false,
-        public ?bool $withoutTrapFocus = false,
-        public ?string $openOn = null,
-        public ?string $closeOn = null,
+        public ?string $description = null,
+        public ?string $footer = null,
+        public ?string $trigger = null,
+        public bool $modal = true,
+        public bool $portal = true,
+        public bool $hideClose = false,
+        public ?string $closeLabel = null,
+        public array $classes = [],
+    ) {}
 
-        // Glass effect props
-        public ?string $glass = null,
-        public ?string $glassTint = null,
-        public ?int $glassTintOpacity = null,
-
-        // Slots
-        public ?string $actions = null,
-    ) {
-        $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
-    }
-
-    public function id(): string
+    /**
+     * The side to render: `side`, or `end` for the deprecated `right`.
+     *
+     * @since 3.0.0
+     *
+     * @return string end, start or bottom.
+     */
+    public function resolvedSide(): string
     {
-        if ($this->id) {
-            return $this->id;
+        if ($this->attributes->has('right') && false !== $this->attributes->get('right')) {
+            return 'end';
         }
 
-        $wireModel = $this->attributes?->wire('model')->value();
-        if ($wireModel && is_string($wireModel)) {
-            return $wireModel;
-        }
-
-        return $this->uuid;
-    }
-
-    public function modelName(): WireDirective
-    {
-        return $this->attributes->wire('model');
+        return in_array($this->side, self::SIDES, true) ? $this->side : 'end';
     }
 
     /**
-     * Get the glass effect CSS classes.
+     * The `x-data` expression: `apuiDrawer()` with the machine id, the open
+     * state and modality.
      *
-     * @since 2.0.0
+     * @since 3.0.0
      *
-     * @return string Space-separated CSS classes.
+     * @return string The expression.
      */
-    public function glassClasses(): string
+    public function alpineData(): string
     {
-        return GlassHelper::getClasses($this->glass, $this->glassTint, $this->glassTintOpacity);
+        return sprintf(
+            'apuiDrawer({ id: %s, open: %s, modal: %s })',
+            Js::from($this->baseId())->toHtml(),
+            $this->openExpression(),
+            $this->modal ? 'true' : 'false',
+        );
     }
 
     /**
-     * Get the glass effect inline styles including accessible text color.
+     * The close button's accessible name: `closeLabel`, else "Close",
+     * translated.
      *
-     * Combines custom tint color CSS variable with accessible text color
-     * to ensure WCAG 2.0 AA compliance on tinted glass backgrounds.
+     * @since 3.0.0
      *
-     * @since 2.0.0
-     *
-     * @return string Inline style string.
+     * @return string The name.
      */
-    public function glassStyle(): string
+    public function closeTriggerLabel(): string
     {
-        return GlassHelper::getFullInlineStyle($this->glassTint);
+        return null !== $this->closeLabel && '' !== $this->closeLabel ? $this->closeLabel : __('Close');
     }
 
-    public function render(): View|Closure|string
+    /**
+     * Get the view that represents the component.
+     *
+     * @since 1.0.0
+     */
+    public function render(): View
     {
         return view('livewire-ui-components::components.drawer');
     }

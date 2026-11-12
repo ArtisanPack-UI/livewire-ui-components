@@ -4,234 +4,59 @@ title: Alert Component
 
 # Alert Component
 
-The Alert component displays important messages or notifications to users in a prominent way. Unlike toasts, alerts are static elements that remain on the page until dismissed by the user or programmatically.
+An inline message about the state of a page or section, built on the ArtisanPack UI design system (`.apui-alert`). Say what happened and what to do next. The tint and the status icon carry the meaning, so it never relies on color alone.
 
 ## Basic Usage
 
-```php
-<x-artisanpack-alert>
-    This is a simple alert message.
+```blade
+<x-artisanpack-alert color="info" :title="__( 'New reporting period' )" :description="__( 'Q4 numbers are now available in Analytics.' )" />
+
+<x-artisanpack-alert color="error" :title="__( 'Payment failed' )">
+	{{ __( 'We couldn’t charge the card ending in 4242. Update it to keep your listings active.' ) }}
+
+	<x-slot:actions>
+		<x-artisanpack-button size="xs" color="error" wire:click="updateCard">{{ __( 'Update card' ) }}</x-artisanpack-button>
+	</x-slot:actions>
 </x-artisanpack-alert>
 ```
 
-## Examples
-
-### Color System
-
-#### Predefined Variants
-
-Use predefined color variants for consistent theming:
-
-```php
-<x-artisanpack-alert 
-    title="Info Alert" 
-    description="This is an informational message."
-    color="info"
->
-</x-artisanpack-alert>
-
-<x-artisanpack-alert 
-    title="Success Alert" 
-    description="Operation completed successfully."
-    color="success"
->
-</x-artisanpack-alert>
-
-<x-artisanpack-alert 
-    title="Warning Alert" 
-    description="Please review this warning."
-    color="warning"
->
-</x-artisanpack-alert>
-
-<x-artisanpack-alert 
-    title="Error Alert" 
-    description="An error has occurred."
-    color="error"
->
-</x-artisanpack-alert>
-```
-
-#### Tailwind Color Palette
-
-Use any Tailwind color with intensity levels:
-
-```php
-<x-artisanpack-alert 
-    title="Custom Blue" 
-    description="Using Tailwind blue-500 color."
-    color="blue-500"
->
-</x-artisanpack-alert>
-
-<x-artisanpack-alert 
-    title="Custom Purple" 
-    description="Using Tailwind purple-600 color."
-    color="purple-600"
->
-</x-artisanpack-alert>
-```
-
-#### Custom Hex Colors
-
-Use custom hex color codes:
-
-```php
-<x-artisanpack-alert 
-    title="Brand Alert" 
-    description="Using custom brand colors."
-    color="#4ecdc4"
->
-</x-artisanpack-alert>
-```
-
-#### Color Adjustments
-
-Fine-tune the background appearance:
-
-```php
-<x-artisanpack-alert 
-    title="Subtle Alert" 
-    description="Very light background."
-    color="blue-500" 
-    color-adjustment="subtle"
->
-</x-artisanpack-alert>
-
-<x-artisanpack-alert 
-    title="Transparent Alert" 
-    description="Transparent background with colored border."
-    color="green-500" 
-    color-adjustment="transparent"
->
-</x-artisanpack-alert>
-```
-
-### Alert with Title and Description
-
-```php
-<x-artisanpack-alert 
-    title="Update Available" 
-    description="A new version of the application is available."
-    color="info"
->
-</x-artisanpack-alert>
-```
-
-### Alert with Icon
-
-```php
-<x-artisanpack-alert 
-    title="Success" 
-    description="Your changes have been saved."
-    icon="o-check-circle" 
-    color="success"
->
-</x-artisanpack-alert>
-```
-
-### Dismissible Alert
-
-```php
-<x-artisanpack-alert 
-    title="Warning" 
-    description="This action cannot be undone."
-    icon="o-exclamation-triangle" 
-    color="warning"
-    dismissible
->
-</x-artisanpack-alert>
-```
-
-### Alert with Shadow
-
-```php
-<x-artisanpack-alert 
-    title="Error" 
-    description="There was a problem processing your request."
-    icon="o-x-circle" 
-    color="error"
-    shadow
->
-</x-artisanpack-alert>
-```
-
-### Alert with Actions
-
-```php
-<x-artisanpack-alert 
-    title="Confirm Action" 
-    description="Are you sure you want to delete this item?"
-    icon="o-question-mark-circle" 
-    class="alert-warning"
->
-    <x-slot:actions>
-        <x-artisanpack-button color="error">Delete</x-artisanpack-button>
-        <x-artisanpack-button color="ghost">Cancel</x-artisanpack-button>
-    </x-slot:actions>
-</x-artisanpack-alert>
-```
-
-### Alert with Custom Content
-
-```php
-<x-artisanpack-alert class="alert-info">
-    <p>This alert contains <strong>custom HTML content</strong> instead of using the title/description props.</p>
-    <p class="mt-2">You can include any HTML elements here.</p>
-</x-artisanpack-alert>
-```
+The default slot fills the description. Named slots (`icon`, `title`, `description`, `actions`) override the props.
 
 ## Props
 
 | Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `id` | string\|null | `null` | Optional ID for the alert element |
-| `title` | string\|null | `null` | The title of the alert, displayed in bold |
-| `icon` | string\|null | `null` | The icon displayed at the beginning of the alert |
-| `description` | string\|null | `null` | A short description displayed under the title |
-| `color` | string\|null | `null` | Color variant, Tailwind color (e.g., 'red-500'), or hex code (e.g., '#ff0000') |
-| `color-adjustment` | string\|null | `null` | Background adjustment: 'lighter', 'darker', 'transparent', or 'subtle' |
-| `shadow` | boolean | `false` | Whether to apply a shadow effect to the alert |
-| `dismissible` | boolean | `false` | Whether the alert can be dismissed by the user |
+|---|---|---|---|
+| `title` | string or slot | none | The headline. |
+| `description` | string or slot | none | Supporting text. The default slot fills it too. |
+| `color` | semantic color | `neutral` | The status. `error` makes the alert `role=alert`; every other color is `role=status`. Emitted as `data-color`. |
+| `variant` | `soft` · `outline` · `solid` | `soft` | `outline` suits dense forms; `solid` is for page-level failures that block work. Emitted as `data-variant`. |
+| `surface` | `default` · `glass` | `default` | Emitted as `data-surface`. Glass keeps default text and tints only the icon. |
+| `icon` | string or slot | the color's status icon | `circle-check`, `triangle-alert`, `circle-alert` or `info`. |
+| `actions` | string or slot | none | Buttons under the text. |
+| `dismissible` | bool | `false` | Adds a close button. |
+| `close-label` | string | `__( 'Dismiss' )` | The close button's accessible name. |
+| `classes` | array | `[]` | Extra classes per part: `root`, `icon`, `title`, `description`, `actions`, `closeTrigger`. |
 
-## Slots
+## Dismissing
 
-| Slot | Description |
-|------|-------------|
-| `default` | The content of the alert (used when no title is provided) |
-| `actions` | Slot for actionable elements like buttons or links |
+A dismissible alert hides itself (the `hidden` attribute) when its close button is pressed, and dispatches `open-change` (`{ open: false }`):
 
-## Styling
-
-The Alert component uses DaisyUI's alert component under the hood, which provides a wide range of styling options. You can customize the appearance of alerts by adding DaisyUI alert classes:
-
-- `alert-info` - Blue info alert
-- `alert-success` - Green success alert
-- `alert-warning` - Yellow warning alert
-- `alert-error` - Red error alert
-
-### Custom Styling Example
-
-```php
-<x-artisanpack-alert 
-    title="Custom Alert" 
-    class="bg-purple-100 text-purple-800 border border-purple-200"
-    icon="o-sparkles"
->
-</x-artisanpack-alert>
+```blade
+<x-artisanpack-alert color="success" :title="__( 'Listing published' )" dismissible wire:open-change="markSeen" />
 ```
+
+To show it again after a server render, give it a new `wire:key`.
 
 ## Accessibility
 
-The Alert component follows accessibility best practices:
+- `role=alert` for errors, announced at once; `role=status` otherwise.
+- The icon is decorative (`aria-hidden`); the title and description carry the meaning.
+- The close button is icon-only, so `close-label` is its only name. Translate it.
 
-- Uses appropriate semantic HTML
-- Includes ARIA attributes for screen readers
-- Provides sufficient color contrast for all alert types
-- Dismissible alerts can be closed with keyboard navigation
+## Upgrading from 2.x
 
-## Related Components
-
-- [Toast](Toast) - Temporary notifications
-- [Modal](Modal) - Dialog boxes for important interactions
-- [Icon](Icon) - SVG icon display
+- `color` takes the eight semantic names only; Tailwind names, hex values and `color-adjustment` are gone.
+- `glass`, `glass-tint` and `glass-tint-opacity` become `surface="glass"`. `shadow`, `uuid` and `id` (as a prop) are gone; `id` is an ordinary attribute.
+- The default icon comes from the color; icons are registry names (`circle-check`), not Heroicons.
+- The default slot is now the description, not a replacement for the title block.
+- The close button's name is `__( 'Dismiss' )` (was "Close"), set with `close-label`.

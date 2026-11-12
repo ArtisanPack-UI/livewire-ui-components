@@ -388,6 +388,7 @@
     --apui-border-muted: var(--apui-gray-150);
     --apui-border-default: var(--apui-gray-500);
     --apui-border-strong: var(--apui-gray-700);
+    --apui-border-soft-edge-width: 0;
     --apui-focus-ring-color: var(--apui-steel-600);
     --apui-focus-ring-offset-color: var(--apui-surface-default);
     --apui-state-hover: oklch(20% 0.01 250 / 0.05);
@@ -488,6 +489,7 @@
     --apui-border-muted: var(--apui-gray-850);
     --apui-border-default: var(--apui-gray-500);
     --apui-border-strong: var(--apui-gray-300);
+    --apui-border-soft-edge-width: 0;
     --apui-focus-ring-color: var(--apui-steel-300);
     --apui-focus-ring-offset-color: var(--apui-surface-default);
     --apui-state-hover: oklch(100% 0 0 / 0.06);
@@ -588,6 +590,7 @@
     --apui-border-muted: var(--apui-gray-700);
     --apui-border-default: var(--apui-gray-1000);
     --apui-border-strong: var(--apui-gray-1000);
+    --apui-border-soft-edge-width: 1px;
     --apui-focus-ring-color: var(--apui-steel-800);
     --apui-focus-ring-offset-color: var(--apui-surface-default);
     --apui-state-hover: oklch(0% 0 0 / 0.08);
@@ -3526,6 +3529,589 @@
     .apui-dialog[data-surface='glass'] {
       background: Canvas;
       backdrop-filter: none;
+    }
+  }
+}
+/*
+ * Drawer (#58). Root `.apui-drawer` is the panel, the dialog machine's
+ * content part (D-019), with data-side, data-size and data-surface. Parts,
+ * scoped drawer: trigger, backdrop (the spec's scrim), positioner, header
+ * (title, description, close-trigger), body, footer, and the bottom sheet's
+ * handle. The side is logical (D-004): `end` is on the right in LTR and on
+ * the left in RTL. `bottom` is the spec's sheet. The machine sets hidden on
+ * the closed parts; the rules below keep it working where they set display.
+ * See design/components/Drawer.
+ */
+@layer apui.components {
+  [data-scope='drawer'][data-part='backdrop'] {
+    position: fixed;
+    inset: 0;
+    z-index: var(--apui-z-modal);
+    background: var(--apui-backdrop);
+  }
+
+  [data-scope='drawer'][data-part='positioner'] {
+    position: fixed;
+    inset: 0;
+    z-index: var(--apui-z-modal);
+    display: flex;
+    justify-content: flex-end;
+    pointer-events: none;
+  }
+
+  [data-scope='drawer'][data-part='positioner'][data-side='start'] {
+    justify-content: flex-start;
+  }
+
+  [data-scope='drawer'][data-part='positioner'][data-side='bottom'] {
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+
+  :is([data-scope='drawer'][data-part='positioner'], .apui-drawer)[hidden],
+  [data-scope='drawer'][data-part='backdrop'][hidden] {
+    display: none;
+  }
+
+  .apui-drawer {
+    --apui-_drawer-enter: 100%;
+
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    box-sizing: border-box;
+    inline-size: min(var(--apui-drawer-width), 100%);
+    block-size: 100%;
+    max-block-size: 100dvh;
+    border-inline-start: var(--apui-border-width) solid var(--apui-border-muted);
+    border-start-start-radius: var(--apui-drawer-radius);
+    border-end-start-radius: var(--apui-drawer-radius);
+    background: var(--apui-surface-overlay);
+    box-shadow: var(--apui-elevation-overlay);
+    color: var(--apui-text-default);
+    font-family: var(--apui-font-family-sans);
+    font-size: var(--apui-type-body-md-font-size);
+    line-height: var(--apui-type-body-md-line-height);
+    outline: none;
+    pointer-events: auto;
+
+    /* Buttons inside ring against the panel, not the page. */
+    --apui-focus-ring-offset-color: var(--apui-surface-overlay);
+  }
+
+  .apui-drawer[data-size='sm'] {
+    inline-size: min(320px, 100%);
+  }
+
+  .apui-drawer[data-size='lg'] {
+    inline-size: min(560px, 100%);
+  }
+
+  .apui-drawer[data-side='start'] {
+    --apui-_drawer-enter: -100%;
+
+    border-inline-start: 0;
+    border-inline-end: var(--apui-border-width) solid var(--apui-border-muted);
+    border-radius: 0;
+    border-start-end-radius: var(--apui-drawer-radius);
+    border-end-end-radius: var(--apui-drawer-radius);
+  }
+
+  /* The slide follows the reading direction: end comes in from the right in LTR. */
+  .apui-drawer:dir(rtl) {
+    --apui-_drawer-enter: -100%;
+  }
+
+  .apui-drawer[data-side='start']:dir(rtl) {
+    --apui-_drawer-enter: 100%;
+  }
+
+  /* The bottom sheet: full width, rounded top corners, a handle. */
+  .apui-drawer[data-side='bottom'] {
+    inline-size: 100%;
+    block-size: auto;
+    max-block-size: min(85dvh, 100%);
+    border: var(--apui-border-width) solid var(--apui-border-muted);
+    border-block-end: 0;
+    border-radius: 0;
+    border-start-start-radius: var(--apui-drawer-radius);
+    border-start-end-radius: var(--apui-drawer-radius);
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
+  }
+
+  [data-scope='drawer'][data-part='handle'] {
+    justify-self: center;
+    inline-size: 36px;
+    block-size: 4px;
+    margin-block-start: 8px;
+    border-radius: var(--apui-radius-full);
+    background: var(--apui-border-default);
+  }
+
+  .apui-drawer[data-state='open'] {
+    animation: apui-drawer-enter var(--apui-motion-duration-moderate) var(--apui-motion-ease-enter);
+  }
+
+  .apui-drawer[data-side='bottom'][data-state='open'] {
+    animation-name: apui-drawer-rise;
+  }
+
+  [data-scope='drawer'][data-part='backdrop'][data-state='open'] {
+    animation: apui-drawer-fade var(--apui-motion-duration-moderate) var(--apui-motion-ease-enter);
+  }
+
+  @keyframes apui-drawer-enter {
+    from {
+      transform: translateX(var(--apui-_drawer-enter));
+    }
+  }
+
+  @keyframes apui-drawer-rise {
+    from {
+      transform: translateY(100%);
+    }
+  }
+
+  @keyframes apui-drawer-fade {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .apui-drawer[data-state='open'],
+    [data-scope='drawer'][data-part='backdrop'][data-state='open'] {
+      animation: none;
+    }
+  }
+
+  /* Glass is a surface (D-006). */
+  .apui-drawer[data-surface='glass'] {
+    --apui-text-muted: var(--apui-text-muted-glass);
+    --apui-focus-ring-offset-color: transparent;
+
+    border-color: var(--apui-surface-glass-border);
+    background: var(--apui-surface-glass);
+    box-shadow: var(--apui-elevation-glass);
+    backdrop-filter: blur(var(--apui-surface-glass-blur))
+      saturate(var(--apui-surface-glass-saturation));
+  }
+
+  @supports not (backdrop-filter: blur(1px)) {
+    .apui-drawer[data-surface='glass'] {
+      border-color: var(--apui-border-muted);
+      background: var(--apui-surface-overlay);
+    }
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    .apui-drawer[data-surface='glass'] {
+      border-color: var(--apui-border-muted);
+      background: var(--apui-surface-overlay);
+      backdrop-filter: none;
+    }
+  }
+
+  /* Header: title and description, the close button at the end. */
+  [data-scope='drawer'][data-part='header'] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 12px;
+    align-items: start;
+    padding-block: 20px 16px;
+    padding-inline: 24px 16px;
+    border-block-end: var(--apui-border-width) solid var(--apui-border-muted);
+  }
+
+  [data-scope='drawer'][data-part='title'] {
+    grid-column: 1;
+    margin: 0;
+    font-size: var(--apui-type-heading-md-font-size);
+    font-weight: var(--apui-font-weight-semibold);
+    line-height: var(--apui-type-heading-md-line-height);
+  }
+
+  [data-scope='drawer'][data-part='description'] {
+    grid-column: 1;
+    margin: 2px 0 0;
+    color: var(--apui-text-muted);
+    font-size: var(--apui-type-body-sm-font-size);
+    line-height: var(--apui-type-body-sm-line-height);
+  }
+
+  [data-scope='drawer'][data-part='close-trigger'] {
+    grid-row: 1;
+    grid-column: 2;
+    margin-block-start: -2px;
+  }
+
+  [data-scope='drawer'][data-part='body'] {
+    display: grid;
+    align-content: start;
+    gap: var(--apui-field-gap);
+    padding: 20px 24px;
+    overflow: auto;
+  }
+
+  [data-scope='drawer'][data-part='footer'] {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 16px 24px;
+    border-block-start: var(--apui-border-width) solid var(--apui-border-muted);
+  }
+
+  @media (forced-colors: active) {
+    .apui-drawer {
+      border-color: CanvasText;
+    }
+
+    .apui-drawer[data-surface='glass'] {
+      background: Canvas;
+      backdrop-filter: none;
+    }
+
+    [data-scope='drawer'][data-part='handle'] {
+      background: CanvasText;
+    }
+  }
+}
+/*
+ * Popover (#58). Root `.apui-popover` is the panel, Zag's content part
+ * (D-019), with data-placement (the requested side: top, bottom, start or
+ * end) and, once the machine has positioned it, data-side (the physical side
+ * it settled on, after flipping). Parts, scoped popover: trigger, positioner,
+ * arrow, title, body and actions. The arrow is drawn by this stylesheet where
+ * the spec draws it, so it's the same with or without the machine. See
+ * design/components/Popover.
+ */
+@layer apui.components {
+  [data-scope='popover'][data-part='positioner'] {
+    z-index: var(--apui-z-overlay);
+  }
+
+  .apui-popover {
+    --apui-_popover-arrow: 12px;
+
+    position: relative;
+    display: grid;
+    gap: 10px;
+    box-sizing: border-box;
+    inline-size: min(300px, calc(100vw - 16px));
+    padding: 16px;
+    border: var(--apui-border-width) solid var(--apui-border-muted);
+    border-radius: var(--apui-popover-radius);
+    background: var(--apui-surface-overlay);
+    box-shadow: var(--apui-elevation-overlay);
+    color: var(--apui-text-default);
+    font-family: var(--apui-font-family-sans);
+    font-size: var(--apui-type-body-md-font-size);
+    line-height: var(--apui-type-body-md-line-height);
+    outline: none;
+
+    /* Controls inside ring against the panel, not the page. */
+    --apui-focus-ring-offset-color: var(--apui-surface-overlay);
+  }
+
+  .apui-popover[hidden] {
+    display: none;
+  }
+
+  .apui-popover[data-state='open'] {
+    animation: apui-popover-enter var(--apui-motion-duration-fast) var(--apui-motion-ease-enter);
+  }
+
+  @keyframes apui-popover-enter {
+    from {
+      opacity: 0;
+      transform: scale(0.98);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .apui-popover[data-state='open'] {
+      animation: none;
+    }
+  }
+
+  [data-scope='popover'][data-part='title'] {
+    margin: 0;
+    font-size: var(--apui-type-body-md-font-size);
+    font-weight: var(--apui-font-weight-semibold);
+    line-height: var(--apui-type-body-md-line-height);
+  }
+
+  [data-scope='popover'][data-part='body'] {
+    display: grid;
+    gap: 10px;
+  }
+
+  [data-scope='popover'][data-part='actions'] {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  /*
+   * The arrow: a square turned to a point, drawn with the panel's surface and
+   * the two borders that face out, on the edge that faces the trigger: 24px
+   * from the panel's start on the top and bottom sides, 16px from its top on
+   * the start and end sides, as the spec draws it. The part itself has no
+   * box: the machine writes an inline position on it (to follow the
+   * trigger's center), which a box-less element ignores, so the arrow looks
+   * the same with or without the machine, in server markup and in every
+   * stack. Its ::before is the square, with its physical top and left
+   * borders before it's turned; turns are physical too. The side is the
+   * machine's data-side once it has positioned the panel (after flipping),
+   * else the requested data-placement; data-side is physical and
+   * data-placement logical (end is the right in LTR).
+   */
+  [data-scope='popover'][data-part='arrow'] {
+    display: contents;
+  }
+
+  [data-scope='popover'][data-part='arrow']::before {
+    --apui-_popover-arrow-edge: calc(var(--apui-_popover-arrow) / -2 - var(--apui-border-width));
+
+    position: absolute;
+    box-sizing: border-box;
+    inline-size: var(--apui-_popover-arrow);
+    block-size: var(--apui-_popover-arrow);
+    border: var(--apui-border-width) solid var(--apui-border-muted);
+    border-inline-end: 0;
+    border-block-end: 0;
+    background: var(--apui-surface-overlay);
+    content: '';
+    rotate: 45deg;
+    pointer-events: none;
+  }
+
+  .apui-popover:dir(rtl) [data-scope='popover'][data-part='arrow']::before {
+    border-inline-start: 0;
+    border-inline-end: var(--apui-border-width) solid var(--apui-border-muted);
+  }
+
+  .apui-popover:is([data-side='bottom'], :not([data-side])[data-placement='bottom'])
+    [data-scope='popover'][data-part='arrow']::before {
+    inset-block-start: var(--apui-_popover-arrow-edge);
+    inset-inline-start: 24px;
+  }
+
+  .apui-popover:is([data-side='top'], :not([data-side])[data-placement='top'])
+    [data-scope='popover'][data-part='arrow']::before {
+    inset-block-end: var(--apui-_popover-arrow-edge);
+    inset-inline-start: 24px;
+    rotate: 225deg;
+  }
+
+  .apui-popover:is(
+      [data-side='right']:dir(ltr),
+      [data-side='left']:dir(rtl),
+      :not([data-side])[data-placement='end']
+    )
+    [data-scope='popover'][data-part='arrow']::before {
+    inset-block-start: 16px;
+    inset-inline-start: var(--apui-_popover-arrow-edge);
+  }
+
+  .apui-popover:is(
+      [data-side='left']:dir(ltr),
+      [data-side='right']:dir(rtl),
+      :not([data-side])[data-placement='start']
+    )
+    [data-scope='popover'][data-part='arrow']::before {
+    inset-block-start: 16px;
+    inset-inline-end: var(--apui-_popover-arrow-edge);
+  }
+
+  /* The trigger is on the panel's left: the arrow points left. */
+  .apui-popover:is(
+      [data-side='right'],
+      :not([data-side])[data-placement='end']:dir(ltr),
+      :not([data-side])[data-placement='start']:dir(rtl)
+    )
+    [data-scope='popover'][data-part='arrow']::before {
+    rotate: 315deg;
+  }
+
+  /* The trigger is on the panel's right: the arrow points right. */
+  .apui-popover:is(
+      [data-side='left'],
+      :not([data-side])[data-placement='start']:dir(ltr),
+      :not([data-side])[data-placement='end']:dir(rtl)
+    )
+    [data-scope='popover'][data-part='arrow']::before {
+    rotate: 135deg;
+  }
+
+  @media (forced-colors: active) {
+    .apui-popover,
+    [data-scope='popover'][data-part='arrow']::before {
+      border-color: CanvasText;
+    }
+  }
+}
+/*
+ * Tooltip (#59). Root `.apui-tooltip` is the label, Zag's content part
+ * (D-019), with data-size, data-placement (the requested side: top, bottom,
+ * start or end) and, once the machine has positioned it, data-side (the
+ * physical side it settled on). Parts, scoped tooltip: trigger (the author's
+ * control), positioner, arrow and kbd. The arrow is drawn by this
+ * stylesheet, centered on the edge that faces the trigger, so it's the same
+ * with or without the machine. See design/components/Tooltip.
+ */
+@layer apui.components {
+  [data-scope='tooltip'][data-part='positioner'] {
+    z-index: var(--apui-z-tooltip);
+  }
+
+  .apui-tooltip {
+    --apui-_tooltip-arrow: 8px;
+
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-sizing: border-box;
+    max-inline-size: 240px;
+    padding-block: 5px;
+    padding-inline: 8px;
+    border-radius: var(--apui-tooltip-radius);
+    background: var(--apui-surface-inverse);
+    color: var(--apui-text-inverse);
+    font-family: var(--apui-font-family-sans);
+    font-size: var(--apui-type-caption-font-size);
+    font-weight: var(--apui-font-weight-medium);
+    line-height: var(--apui-type-caption-line-height);
+    overflow-wrap: anywhere;
+  }
+
+  .apui-tooltip[hidden] {
+    display: none;
+  }
+
+  /* Long text: a paragraph rather than a label. */
+  .apui-tooltip[data-size='lg'] {
+    display: block;
+    padding-block: 8px;
+    padding-inline: 10px;
+    font-size: var(--apui-type-body-sm-font-size);
+    font-weight: var(--apui-font-weight-regular);
+    line-height: var(--apui-type-body-sm-line-height);
+  }
+
+  .apui-tooltip[data-state='open'] {
+    animation: apui-tooltip-enter var(--apui-motion-duration-fast) var(--apui-motion-ease-enter);
+  }
+
+  .apui-tooltip[data-instant] {
+    animation: none;
+  }
+
+  @keyframes apui-tooltip-enter {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .apui-tooltip[data-state='open'] {
+      animation: none;
+    }
+  }
+
+  [data-scope='tooltip'][data-part='kbd'] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-inline-size: 18px;
+    block-size: 18px;
+    padding-inline: 4px;
+    border: var(--apui-border-width) solid color-mix(in srgb, currentcolor 70%, transparent);
+    border-block-end-width: 2px;
+    border-radius: var(--apui-kbd-radius);
+    background: transparent;
+    color: inherit;
+    font-family: var(--apui-font-family-mono);
+    font-size: 11px;
+    font-weight: var(--apui-font-weight-regular);
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  [data-scope='tooltip'][data-part='kbd'] + [data-scope='tooltip'][data-part='kbd'] {
+    margin-inline-start: -4px;
+  }
+
+  /*
+   * The arrow: a square turned to a point, in the label's color, centered on
+   * the edge that faces the trigger. The part itself has no box: the machine
+   * writes an inline position on it (to follow the trigger), which a box-less
+   * element ignores, so the arrow looks the same with or without the machine,
+   * in server markup and in every stack. Its ::before is the square. The side
+   * is the machine's data-side once it has positioned the label (after
+   * flipping), else the requested data-placement; data-side is physical and
+   * data-placement logical (end is the right in LTR).
+   */
+  [data-scope='tooltip'][data-part='arrow'] {
+    display: contents;
+  }
+
+  [data-scope='tooltip'][data-part='arrow']::before {
+    position: absolute;
+    inline-size: var(--apui-_tooltip-arrow);
+    block-size: var(--apui-_tooltip-arrow);
+    background: var(--apui-surface-inverse);
+    content: '';
+    rotate: 45deg;
+    pointer-events: none;
+  }
+
+  .apui-tooltip:is([data-side='top'], :not([data-side])[data-placement='top'])
+    [data-scope='tooltip'][data-part='arrow']::before {
+    inset-block-end: calc(var(--apui-_tooltip-arrow) / -2);
+    inset-inline-start: calc(50% - var(--apui-_tooltip-arrow) / 2);
+  }
+
+  .apui-tooltip:is([data-side='bottom'], :not([data-side])[data-placement='bottom'])
+    [data-scope='tooltip'][data-part='arrow']::before {
+    inset-block-start: calc(var(--apui-_tooltip-arrow) / -2);
+    inset-inline-start: calc(50% - var(--apui-_tooltip-arrow) / 2);
+  }
+
+  .apui-tooltip:is(
+      [data-side='right']:dir(ltr),
+      [data-side='left']:dir(rtl),
+      :not([data-side])[data-placement='end']
+    )
+    [data-scope='tooltip'][data-part='arrow']::before {
+    inset-block-start: calc(50% - var(--apui-_tooltip-arrow) / 2);
+    inset-inline-start: calc(var(--apui-_tooltip-arrow) / -2);
+  }
+
+  .apui-tooltip:is(
+      [data-side='left']:dir(ltr),
+      [data-side='right']:dir(rtl),
+      :not([data-side])[data-placement='start']
+    )
+    [data-scope='tooltip'][data-part='arrow']::before {
+    inset-block-start: calc(50% - var(--apui-_tooltip-arrow) / 2);
+    inset-inline-end: calc(var(--apui-_tooltip-arrow) / -2);
+  }
+
+  @media (forced-colors: active) {
+    .apui-tooltip {
+      border: var(--apui-border-width) solid CanvasText;
+    }
+
+    [data-scope='tooltip'][data-part='arrow']::before {
+      background: CanvasText;
+    }
+
+    [data-scope='tooltip'][data-part='kbd'] {
+      border-color: CanvasText;
     }
   }
 }
@@ -8374,6 +8960,372 @@
   }
 }
 /*
+ * Table (#62). Root `.apui-table` is the frame around three regions: the
+ * toolbar (title and toolbar content), the scroll part holding the native
+ * table, and the footer (footer content, then Pagination). Grid parts:
+ * head-cell (th, aria-sort when sortable), sort (the header button), row,
+ * cell, select (the Checkbox column), expand-trigger, expansion (the
+ * full-width row under an expanded one), and primary/secondary for two-line
+ * cells. Selected rows carry aria-selected; numeric cells data-numeric.
+ *
+ * Density reassigns --apui-row-height and --apui-cell-padding-x through
+ * data-density (on the root or any ancestor). The type steps down a size in
+ * compact, which no density token covers, so that one rule reads the
+ * attribute. The header sticks inside the scroll part, which scrolls once
+ * --apui-table-max-block-size gives it a height.
+ */
+@layer apui.components {
+  .apui-table {
+    min-inline-size: 0;
+    overflow: hidden;
+    border: var(--apui-border-width) solid var(--apui-border-muted);
+    border-radius: var(--apui-table-radius);
+    background: var(--apui-surface-default);
+    color: var(--apui-text-default);
+    font-family: var(--apui-font-family-sans);
+    font-size: var(--apui-type-body-md-font-size);
+    line-height: var(--apui-type-body-md-line-height);
+  }
+
+  .apui-table[data-surface='glass'] {
+    --apui-text-muted: var(--apui-text-muted-glass);
+    --apui-focus-ring-offset-color: transparent;
+
+    border-color: var(--apui-surface-glass-border);
+    background: var(--apui-surface-glass);
+    box-shadow: var(--apui-elevation-glass);
+    backdrop-filter: blur(var(--apui-surface-glass-blur))
+      saturate(var(--apui-surface-glass-saturation));
+  }
+
+  @supports not (backdrop-filter: blur(1px)) {
+    .apui-table[data-surface='glass'] {
+      border-color: var(--apui-border-muted);
+      background: var(--apui-surface-raised);
+    }
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    .apui-table[data-surface='glass'] {
+      border-color: var(--apui-border-muted);
+      background: var(--apui-surface-raised);
+      backdrop-filter: none;
+    }
+  }
+
+  [data-scope='table'][data-part='toolbar'] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding-block: 12px;
+    padding-inline: var(--apui-cell-padding-x);
+    border-block-end: var(--apui-border-width) solid var(--apui-border-muted);
+  }
+
+  [data-scope='table'][data-part='title'] {
+    margin: 0;
+    margin-inline-end: auto;
+    color: var(--apui-text-default);
+    font-size: var(--apui-type-body-lg-font-size);
+    font-weight: var(--apui-font-weight-semibold);
+    line-height: var(--apui-type-body-lg-line-height);
+  }
+
+  [data-scope='table'][data-part='scroll'] {
+    max-block-size: var(--apui-table-max-block-size, none);
+    overflow: auto;
+  }
+
+  [data-scope='table'][data-part='table'] {
+    inline-size: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: var(--apui-type-body-md-font-size);
+    line-height: var(--apui-type-body-md-line-height);
+  }
+
+  :where([data-density='compact']) [data-scope='table'][data-part='table'] {
+    font-size: var(--apui-type-body-sm-font-size);
+    line-height: var(--apui-type-body-sm-line-height);
+  }
+
+  /* Header cells: the head-cell part, the select-all cell, and the empty
+     cells over the expand and drag-handle columns. */
+  [data-scope='table'][data-part='table'] > thead > tr > :is(th, td) {
+    box-sizing: border-box;
+    block-size: calc(var(--apui-row-height) - 4px);
+    padding-block: 0;
+    padding-inline: var(--apui-cell-padding-x);
+    border-block-end: var(--apui-border-width) solid var(--apui-border-muted);
+    background: var(--apui-surface-sunken);
+    color: var(--apui-text-muted);
+    font-size: var(--apui-type-caption-font-size);
+    font-weight: var(--apui-table-head-weight);
+    line-height: var(--apui-type-caption-line-height);
+    text-align: start;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+
+  .apui-table[data-sticky-header]
+    [data-scope='table'][data-part='table']
+    > thead
+    > tr
+    > :is(th, td) {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 1;
+  }
+
+  .apui-table[data-surface='glass']
+    [data-scope='table'][data-part='table']
+    > thead
+    > tr
+    > :is(th, td) {
+    background: transparent;
+  }
+
+  [data-scope='table'][data-part='head-cell'][aria-sort] {
+    color: var(--apui-text-default);
+  }
+
+  [data-scope='table'][data-part='sort'] {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--apui-radius-xs);
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    font: inherit;
+    text-align: inherit;
+  }
+
+  [data-scope='table'][data-part='sort'] > svg {
+    flex: none;
+    inline-size: var(--apui-icon-size-sm);
+    block-size: var(--apui-icon-size-sm);
+    color: var(--apui-text-muted);
+  }
+
+  /* Body cells. */
+  [data-scope='table'][data-part='table'] > :is(tbody, tfoot) > tr > td {
+    box-sizing: border-box;
+    block-size: var(--apui-row-height);
+    padding-block: 0;
+    padding-inline: var(--apui-cell-padding-x);
+    border-block-end: var(--apui-border-width) solid var(--apui-border-muted);
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+
+  [data-scope='table'][data-part='table'] > tbody:last-child > tr:last-child > td,
+  [data-scope='table'][data-part='table']
+    > tbody:last-child
+    > tr:has(+ [data-part='expansion'][hidden]:last-child)
+    > td,
+  [data-scope='table'][data-part='table'] > tfoot > tr:last-child > td {
+    border-block-end: 0;
+  }
+
+  [data-scope='table'][data-part='row']:hover > td {
+    background-image: linear-gradient(var(--apui-state-hover), var(--apui-state-hover));
+  }
+
+  [data-scope='table'][data-part='row'][aria-selected='true'] > td {
+    background-color: var(--apui-selected-bg);
+  }
+
+  [data-scope='table'][data-part='row'][data-clickable] {
+    cursor: pointer;
+  }
+
+  [data-scope='table'][data-part='row'][aria-hidden='true']:hover > td {
+    background-image: none;
+  }
+
+  [data-scope='table'][data-part='table'] [data-numeric] {
+    font-variant-numeric: tabular-nums;
+    text-align: end;
+  }
+
+  [data-scope='table'][data-part='cell']:focus-visible {
+    outline: var(--apui-focus-ring-width) solid transparent;
+    box-shadow: inset 0 0 0 var(--apui-focus-ring-width) var(--apui-focus-ring-color);
+  }
+
+  /* The checkbox, expand, drag-handle and actions columns shrink to fit. */
+  [data-scope='table'][data-part='select'],
+  [data-scope='table'][data-part='table'] [data-shrink] {
+    inline-size: 1%;
+  }
+
+  [data-scope='table'][data-part='select'],
+  [data-scope='table'][data-part='table'] [data-shrink]:not(:last-child) {
+    padding-inline-end: 0;
+  }
+
+  [data-scope='table'][data-part='select'] > .apui-checkbox {
+    vertical-align: middle;
+  }
+
+  [data-scope='table'][data-part='table'] td[data-actions] {
+    text-align: end;
+  }
+
+  [data-scope='table'][data-part='expand-trigger'],
+  .apui-table [data-drag-handle] {
+    display: inline-grid;
+    place-items: center;
+    box-sizing: border-box;
+    inline-size: var(--apui-control-height-xs);
+    block-size: var(--apui-control-height-xs);
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--apui-radius-xs);
+    background: none;
+    color: var(--apui-text-muted);
+    cursor: pointer;
+    vertical-align: middle;
+  }
+
+  .apui-table [data-drag-handle] {
+    cursor: grab;
+  }
+
+  [data-scope='table'][data-part='expand-trigger']:hover,
+  .apui-table [data-drag-handle]:hover {
+    background: var(--apui-state-hover);
+    color: var(--apui-text-default);
+  }
+
+  [data-scope='table'][data-part='expand-trigger'] > svg,
+  .apui-table [data-drag-handle] > svg {
+    inline-size: var(--apui-icon-size-md);
+    block-size: var(--apui-icon-size-md);
+    transition: rotate var(--apui-motion-duration-fast) var(--apui-motion-ease-standard);
+  }
+
+  [data-scope='table'][data-part='expand-trigger'][aria-expanded='true'] > svg {
+    rotate: 90deg;
+  }
+
+  [dir='rtl'] [data-scope='table'][data-part='expand-trigger'][data-mirror] > svg {
+    scale: -1 1;
+  }
+
+  [dir='rtl'] [data-scope='table'][data-part='expand-trigger'][aria-expanded='true'] > svg {
+    rotate: -90deg;
+  }
+
+  [data-scope='table']:is([data-part='sort'], [data-part='expand-trigger']):focus-visible,
+  .apui-table [data-drag-handle]:focus-visible {
+    outline: var(--apui-focus-ring-width) solid transparent;
+    box-shadow:
+      0 0 0 var(--apui-focus-ring-offset) var(--apui-focus-ring-offset-color),
+      0 0 0 calc(var(--apui-focus-ring-offset) + var(--apui-focus-ring-width))
+        var(--apui-focus-ring-color);
+  }
+
+  [data-scope='table'][data-part='expansion'][hidden] {
+    display: none;
+  }
+
+  [data-scope='table'][data-part='table'] > tbody > [data-part='expansion'] > td {
+    block-size: auto;
+    padding-block: 12px;
+    white-space: normal;
+  }
+
+  [data-scope='table'][data-part='primary'] {
+    color: var(--apui-text-default);
+    font-weight: var(--apui-font-weight-medium);
+  }
+
+  [data-scope='table'][data-part='secondary'] {
+    display: block;
+    color: var(--apui-text-muted);
+    font-size: var(--apui-type-caption-font-size);
+    line-height: var(--apui-type-caption-line-height);
+  }
+
+  /* Two-line cells grow the row a little; keep a breath above and below. */
+  [data-scope='table'][data-part='cell']:has(> [data-part='secondary']) {
+    padding-block: 6px;
+  }
+
+  /* Loading: one skeleton line per cell. The skeleton's own rule draws it. */
+  [data-scope='table'][data-part='cell'] > .apui-skeleton {
+    inline-size: 60%;
+    min-inline-size: 32px;
+  }
+
+  [data-scope='table'][data-part='table'] > tbody > tr > td[data-empty] {
+    block-size: auto;
+    padding: 0;
+    white-space: normal;
+  }
+
+  [data-scope='table'][data-part='footer'] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-block: 10px;
+    padding-inline: var(--apui-cell-padding-x);
+    border-block-start: var(--apui-border-width) solid var(--apui-border-muted);
+    color: var(--apui-text-muted);
+    font-size: var(--apui-type-body-sm-font-size);
+    line-height: var(--apui-type-body-sm-line-height);
+  }
+
+  [data-scope='table'][data-part='footer'] > .apui-pagination {
+    margin-inline-start: auto;
+  }
+
+  .apui-table [data-load-more] {
+    display: flex;
+    justify-content: center;
+    padding: 12px var(--apui-cell-padding-x);
+    color: var(--apui-text-muted);
+    font-size: var(--apui-type-body-sm-font-size);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='table'][data-part='expand-trigger'] > svg {
+      transition: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .apui-table[data-surface='glass'] {
+      background: Canvas;
+      backdrop-filter: none;
+    }
+
+    [data-scope='table'][data-part='row'][aria-selected='true'] > td {
+      background: Highlight;
+      color: HighlightText;
+      forced-color-adjust: none;
+    }
+
+    [data-scope='table'][data-part='sort'] > svg {
+      color: CanvasText;
+    }
+
+    [data-scope='table'][data-part='expand-trigger'],
+    .apui-table [data-drag-handle] {
+      color: ButtonText;
+    }
+  }
+}
+/*
  * Steps (#56). Root `.apui-steps` is the ordered list, with data-orientation
  * (horizontal, vertical). Parts: step (li, data-state complete, current,
  * upcoming or error), marker, title (a button on completed steps when
@@ -8969,6 +9921,4594 @@
     [data-scope='spotlight'][data-part='search']:has([data-part='query']:focus-visible) {
       outline: var(--apui-focus-ring-width) solid Highlight;
       outline-offset: calc(var(--apui-focus-ring-width) * -1);
+    }
+  }
+}
+/*
+ * Stat (#61). Root `.apui-stat` with data-size (sm, md, lg), data-color (the
+ * icon tile and the emphasis fill), data-emphasis and data-bare. Parts: top
+ * (label and icon), label, icon, value, unit, foot (delta and description),
+ * delta (data-trend up, down or flat: an arrow and text, never color alone)
+ * and description. KpiCard is built from Stat: the rules for the parts they
+ * share cover the kpi-card scope too, so the two never drift.
+ * See design/components/Stat.
+ */
+@layer apui.components {
+  .apui-stat,
+  .apui-kpi-card {
+    --apui-_stat-tone-soft: var(--apui-color-neutral-soft);
+    --apui-_stat-tone-soft-foreground: var(--apui-color-neutral-soft-foreground);
+  }
+
+  :is(.apui-stat, .apui-kpi-card)[data-color='primary'] {
+    --apui-_stat-tone-soft: var(--apui-color-primary-soft);
+    --apui-_stat-tone-soft-foreground: var(--apui-color-primary-soft-foreground);
+  }
+
+  :is(.apui-stat, .apui-kpi-card)[data-color='secondary'] {
+    --apui-_stat-tone-soft: var(--apui-color-secondary-soft);
+    --apui-_stat-tone-soft-foreground: var(--apui-color-secondary-soft-foreground);
+  }
+
+  :is(.apui-stat, .apui-kpi-card)[data-color='accent'] {
+    --apui-_stat-tone-soft: var(--apui-color-accent-soft);
+    --apui-_stat-tone-soft-foreground: var(--apui-color-accent-soft-foreground);
+  }
+
+  :is(.apui-stat, .apui-kpi-card)[data-color='success'] {
+    --apui-_stat-tone-soft: var(--apui-color-success-soft);
+    --apui-_stat-tone-soft-foreground: var(--apui-color-success-soft-foreground);
+  }
+
+  :is(.apui-stat, .apui-kpi-card)[data-color='warning'] {
+    --apui-_stat-tone-soft: var(--apui-color-warning-soft);
+    --apui-_stat-tone-soft-foreground: var(--apui-color-warning-soft-foreground);
+  }
+
+  :is(.apui-stat, .apui-kpi-card)[data-color='error'] {
+    --apui-_stat-tone-soft: var(--apui-color-error-soft);
+    --apui-_stat-tone-soft-foreground: var(--apui-color-error-soft-foreground);
+  }
+
+  :is(.apui-stat, .apui-kpi-card)[data-color='info'] {
+    --apui-_stat-tone-soft: var(--apui-color-info-soft);
+    --apui-_stat-tone-soft-foreground: var(--apui-color-info-soft-foreground);
+  }
+
+  .apui-stat {
+    display: grid;
+    align-content: start;
+    gap: 4px;
+    box-sizing: border-box;
+    min-inline-size: 0;
+    padding: var(--apui-card-padding);
+    border: var(--apui-border-width) solid var(--apui-border-muted);
+    border-radius: var(--apui-card-radius);
+    background: var(--apui-surface-default);
+    color: var(--apui-text-default);
+    font-family: var(--apui-font-family-sans);
+  }
+
+  .apui-stat[data-bare] {
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+
+  /* Parts, shared with KpiCard */
+  :is([data-scope='stat'], [data-scope='kpi-card'])[data-part='top'] {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-block-end: 4px;
+  }
+
+  :is([data-scope='stat'], [data-scope='kpi-card'])[data-part='label'] {
+    min-inline-size: 0;
+    color: var(--apui-text-muted);
+    font-size: var(--apui-type-body-sm-font-size);
+    font-weight: var(--apui-font-weight-medium);
+    line-height: var(--apui-type-body-sm-line-height);
+  }
+
+  :is([data-scope='stat'], [data-scope='kpi-card'])[data-part='icon'] {
+    display: grid;
+    flex: none;
+    place-items: center;
+    inline-size: 32px;
+    block-size: 32px;
+    border-radius: var(--apui-radius-md);
+    background: var(--apui-_stat-tone-soft);
+    color: var(--apui-_stat-tone-soft-foreground);
+  }
+
+  :is([data-scope='stat'], [data-scope='kpi-card'])[data-part='icon'] > svg {
+    inline-size: var(--apui-icon-size-md);
+    block-size: var(--apui-icon-size-md);
+  }
+
+  :is([data-scope='stat'], [data-scope='kpi-card'])[data-part='value'] {
+    min-inline-size: 0;
+    font-size: var(--apui-type-stat-md-font-size);
+    font-variant-numeric: tabular-nums;
+    font-weight: var(--apui-type-stat-md-font-weight);
+    letter-spacing: var(--apui-type-stat-md-letter-spacing);
+    line-height: var(--apui-type-stat-md-line-height);
+    overflow-wrap: anywhere;
+  }
+
+  .apui-stat[data-size='lg'] > [data-scope='stat'][data-part='value'],
+  .apui-kpi-card[data-size='lg'] [data-scope='kpi-card'][data-part='value'] {
+    font-size: var(--apui-type-stat-lg-font-size);
+    letter-spacing: var(--apui-type-stat-lg-letter-spacing);
+    line-height: var(--apui-type-stat-lg-line-height);
+  }
+
+  .apui-stat[data-size='sm'] > [data-scope='stat'][data-part='value'],
+  .apui-kpi-card[data-size='sm'] [data-scope='kpi-card'][data-part='value'] {
+    font-size: var(--apui-type-stat-sm-font-size);
+    letter-spacing: var(--apui-type-stat-sm-letter-spacing);
+    line-height: var(--apui-type-stat-sm-line-height);
+  }
+
+  :is([data-scope='stat'], [data-scope='kpi-card'])[data-part='unit'] {
+    margin-inline-start: 2px;
+    color: var(--apui-text-muted);
+    font-size: 0.55em;
+    font-weight: var(--apui-font-weight-medium);
+    letter-spacing: 0;
+  }
+
+  :is([data-scope='stat'], [data-scope='kpi-card'])[data-part='foot'] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    color: var(--apui-text-muted);
+    font-size: var(--apui-type-caption-font-size);
+    line-height: var(--apui-type-caption-line-height);
+  }
+
+  :is([data-scope='stat'], [data-scope='kpi-card'])[data-part='delta'] {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-variant-numeric: tabular-nums;
+    font-weight: var(--apui-font-weight-medium);
+  }
+
+  :is([data-scope='stat'], [data-scope='kpi-card'])[data-part='delta'][data-trend='up'] {
+    color: var(--apui-color-success-text);
+  }
+
+  :is([data-scope='stat'], [data-scope='kpi-card'])[data-part='delta'][data-trend='down'] {
+    color: var(--apui-color-error-text);
+  }
+
+  :is([data-scope='stat'], [data-scope='kpi-card'])[data-part='delta'] > svg {
+    flex: none;
+    inline-size: var(--apui-icon-size-sm);
+    block-size: var(--apui-icon-size-sm);
+  }
+
+  /* Emphasis: a soft fill in the stat's color, for the one stat that matters. */
+  .apui-stat[data-emphasis] {
+    border-color: transparent;
+    background: var(--apui-_stat-tone-soft);
+  }
+
+  .apui-stat[data-emphasis]
+    > :is([data-scope='stat'][data-part='foot'], [data-scope='stat'][data-part='top'])
+    > [data-scope='stat']:is([data-part='label'], [data-part='description']),
+  .apui-stat[data-emphasis] > [data-scope='stat'][data-part='foot'] {
+    color: var(--apui-_stat-tone-soft-foreground);
+  }
+
+  .apui-stat[data-emphasis] > [data-scope='stat'][data-part='top'] > [data-part='icon'] {
+    background: var(--apui-surface-default);
+  }
+
+  @media (forced-colors: active) {
+    .apui-stat[data-emphasis] {
+      border-color: CanvasText;
+    }
+
+    :is([data-scope='stat'], [data-scope='kpi-card'])[data-part='icon'] {
+      border: 1px solid CanvasText;
+    }
+  }
+}
+/*
+ * KpiCard (#61). Root `.apui-card.apui-kpi-card`: a Card built from Stat,
+ * with data-color (the icon tile and the target bar). Parts: top (label,
+ * period, icon), row (summary beside the sparkline), summary (value and
+ * foot), sparkline (a Sparkline), target (a Progress and targetText). The
+ * label, icon, value, unit, foot, delta and description rules live in
+ * stat.css, shared with Stat. See design/components/KpiCard.
+ */
+@layer apui.components {
+  .apui-kpi-card {
+    display: grid;
+    align-content: start;
+    gap: 12px;
+    padding: var(--apui-card-padding);
+  }
+
+  [data-scope='kpi-card'][data-part='top'] > [data-part='label'] {
+    margin-inline-end: auto;
+  }
+
+  [data-scope='kpi-card'][data-part='period'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+  }
+
+  [data-scope='kpi-card'][data-part='row'] {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+    min-inline-size: 0;
+  }
+
+  [data-scope='kpi-card'][data-part='summary'] {
+    display: grid;
+    gap: 4px;
+    min-inline-size: 0;
+  }
+
+  [data-scope='kpi-card'][data-part='sparkline'] {
+    flex: none;
+  }
+
+  [data-scope='kpi-card'][data-part='target'] {
+    display: grid;
+    gap: 6px;
+    color: var(--apui-text-muted);
+    font-size: var(--apui-type-caption-font-size);
+    line-height: var(--apui-type-caption-line-height);
+  }
+
+  [data-scope='kpi-card'][data-part='targetText'] {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 4px 12px;
+  }
+}
+/*
+ * Sparkline (#61). Root `svg.apui-sparkline`, role=img, with data-variant
+ * (line, area, bar). Parts: area, line, dot (the latest value), bar and
+ * baseline (zero, when the values cross it). One color for the whole trend,
+ * never up or down. A chart plot, so it stays LTR (D-004): the coordinates
+ * are drawn left to right in every direction. See design/components/Sparkline.
+ */
+@layer apui.components {
+  .apui-sparkline {
+    --apui-_sparkline-color: var(--apui-chart-1);
+
+    display: inline-block;
+    flex: none;
+    overflow: visible;
+    vertical-align: middle;
+  }
+
+  [data-scope='sparkline'][data-part='line'] {
+    fill: none;
+    stroke: var(--apui-_sparkline-color);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.75;
+  }
+
+  [data-scope='sparkline'][data-part='area'] {
+    fill: var(--apui-_sparkline-color);
+    opacity: 0.12;
+  }
+
+  [data-scope='sparkline'][data-part='dot'] {
+    fill: var(--apui-_sparkline-color);
+    stroke: var(--apui-focus-ring-offset-color);
+    stroke-width: 2;
+  }
+
+  [data-scope='sparkline'][data-part='bar'] {
+    fill: var(--apui-_sparkline-color);
+  }
+
+  [data-scope='sparkline'][data-part='baseline'] {
+    stroke: var(--apui-chart-grid);
+    stroke-dasharray: 2 2;
+    stroke-width: 1;
+  }
+
+  @media (forced-colors: active) {
+    [data-scope='sparkline'][data-part='line'] {
+      stroke: CanvasText;
+    }
+
+    [data-scope='sparkline']:is([data-part='dot'], [data-part='bar']) {
+      fill: CanvasText;
+    }
+
+    [data-scope='sparkline'][data-part='area'] {
+      fill: none;
+    }
+
+    [data-scope='sparkline'][data-part='baseline'] {
+      stroke: GrayText;
+    }
+  }
+}
+/*
+ * Timeline (#61). Root `ol.apui-timeline` with data-variant: icon markers
+ * (default) or small dots. Parts: item (li), marker (data-color, aria-hidden),
+ * head (the event and its time), time (a time element), body and card. The
+ * line between markers is the item's ::before, drawn from the inline start,
+ * so it mirrors in RTL. See design/components/Timeline.
+ */
+@layer apui.components {
+  .apui-timeline {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    color: var(--apui-text-default);
+    font-family: var(--apui-font-family-sans);
+    list-style: none;
+  }
+
+  [data-scope='timeline'][data-part='item'] {
+    position: relative;
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr);
+    gap: 0 12px;
+    padding-block-end: 20px;
+  }
+
+  [data-scope='timeline'][data-part='item']::before {
+    content: '';
+    position: absolute;
+    inset-block: 34px 2px;
+    inset-inline-start: 15.5px;
+    inline-size: 1px;
+    background: var(--apui-border-muted);
+  }
+
+  [data-scope='timeline'][data-part='item']:last-child {
+    padding-block-end: 0;
+  }
+
+  [data-scope='timeline'][data-part='item']:last-child::before {
+    content: none;
+  }
+
+  [data-scope='timeline'][data-part='marker'] {
+    --apui-_timeline-tone-soft: var(--apui-color-neutral-soft);
+    --apui-_timeline-tone-soft-foreground: var(--apui-color-neutral-soft-foreground);
+    --apui-_timeline-tone-solid: var(--apui-border-default);
+
+    display: grid;
+    grid-column: 1;
+    grid-row: 1 / span 3;
+    place-items: center;
+    box-sizing: border-box;
+    inline-size: 32px;
+    block-size: 32px;
+    border-radius: var(--apui-radius-full);
+    background: var(--apui-_timeline-tone-soft);
+    box-shadow: 0 0 0 3px var(--apui-focus-ring-offset-color);
+    color: var(--apui-_timeline-tone-soft-foreground);
+  }
+
+  [data-scope='timeline'][data-part='marker'] > svg {
+    inline-size: var(--apui-icon-size-md);
+    block-size: var(--apui-icon-size-md);
+  }
+
+  /* No icon: a small dot in the circle. */
+  [data-scope='timeline'][data-part='marker']:empty::after {
+    content: '';
+    inline-size: 6px;
+    block-size: 6px;
+    border-radius: var(--apui-radius-full);
+    background: currentcolor;
+  }
+
+  [data-scope='timeline'][data-part='marker'][data-color='primary'] {
+    --apui-_timeline-tone-soft: var(--apui-color-primary-soft);
+    --apui-_timeline-tone-soft-foreground: var(--apui-color-primary-soft-foreground);
+    --apui-_timeline-tone-solid: var(--apui-color-primary);
+  }
+
+  [data-scope='timeline'][data-part='marker'][data-color='secondary'] {
+    --apui-_timeline-tone-soft: var(--apui-color-secondary-soft);
+    --apui-_timeline-tone-soft-foreground: var(--apui-color-secondary-soft-foreground);
+    --apui-_timeline-tone-solid: var(--apui-color-secondary);
+  }
+
+  [data-scope='timeline'][data-part='marker'][data-color='accent'] {
+    --apui-_timeline-tone-soft: var(--apui-color-accent-soft);
+    --apui-_timeline-tone-soft-foreground: var(--apui-color-accent-soft-foreground);
+    --apui-_timeline-tone-solid: var(--apui-color-accent);
+  }
+
+  [data-scope='timeline'][data-part='marker'][data-color='neutral'] {
+    --apui-_timeline-tone-solid: var(--apui-text-muted);
+  }
+
+  [data-scope='timeline'][data-part='marker'][data-color='success'] {
+    --apui-_timeline-tone-soft: var(--apui-color-success-soft);
+    --apui-_timeline-tone-soft-foreground: var(--apui-color-success-soft-foreground);
+    --apui-_timeline-tone-solid: var(--apui-color-success);
+  }
+
+  [data-scope='timeline'][data-part='marker'][data-color='warning'] {
+    --apui-_timeline-tone-soft: var(--apui-color-warning-soft);
+    --apui-_timeline-tone-soft-foreground: var(--apui-color-warning-soft-foreground);
+    --apui-_timeline-tone-solid: var(--apui-color-warning);
+  }
+
+  [data-scope='timeline'][data-part='marker'][data-color='error'] {
+    --apui-_timeline-tone-soft: var(--apui-color-error-soft);
+    --apui-_timeline-tone-soft-foreground: var(--apui-color-error-soft-foreground);
+    --apui-_timeline-tone-solid: var(--apui-color-error);
+  }
+
+  [data-scope='timeline'][data-part='marker'][data-color='info'] {
+    --apui-_timeline-tone-soft: var(--apui-color-info-soft);
+    --apui-_timeline-tone-soft-foreground: var(--apui-color-info-soft-foreground);
+    --apui-_timeline-tone-solid: var(--apui-color-info);
+  }
+
+  /* Dot markers: compact, for status histories. Icons are decorative and left out. */
+  .apui-timeline[data-variant='dot'] [data-scope='timeline'][data-part='marker'] {
+    inline-size: 10px;
+    block-size: 10px;
+    margin: 11px;
+    background: var(--apui-_timeline-tone-solid);
+  }
+
+  .apui-timeline[data-variant='dot'] [data-scope='timeline'][data-part='marker'] > svg,
+  .apui-timeline[data-variant='dot'] [data-scope='timeline'][data-part='marker']::after {
+    display: none;
+  }
+
+  [data-scope='timeline'][data-part='head'] {
+    display: flex;
+    flex-wrap: wrap;
+    grid-column: 2;
+    align-items: baseline;
+    gap: 8px;
+    min-inline-size: 0;
+    padding-block-start: 6px;
+    font-size: var(--apui-type-body-md-font-size);
+    line-height: var(--apui-type-body-md-line-height);
+  }
+
+  [data-scope='timeline'][data-part='time'] {
+    margin-inline-start: auto;
+    color: var(--apui-text-muted);
+    font-size: var(--apui-type-caption-font-size);
+    line-height: var(--apui-type-caption-line-height);
+    white-space: nowrap;
+  }
+
+  [data-scope='timeline'][data-part='body'] {
+    grid-column: 2;
+    margin-block-start: 6px;
+    color: var(--apui-text-muted);
+    font-size: var(--apui-type-body-sm-font-size);
+    line-height: var(--apui-type-body-sm-line-height);
+  }
+
+  [data-scope='timeline'][data-part='card'] {
+    grid-column: 2;
+    margin-block-start: 8px;
+    padding: 10px 12px;
+    border-radius: var(--apui-radius-md);
+    background: var(--apui-surface-sunken);
+    color: var(--apui-text-default);
+    font-size: var(--apui-type-body-sm-font-size);
+    line-height: var(--apui-type-body-sm-line-height);
+  }
+
+  @media (forced-colors: active) {
+    [data-scope='timeline'][data-part='marker'] {
+      border: 1px solid CanvasText;
+    }
+
+    .apui-timeline[data-variant='dot'] [data-scope='timeline'][data-part='marker'] {
+      background: CanvasText;
+    }
+
+    [data-scope='timeline'][data-part='item']::before {
+      background: CanvasText;
+    }
+
+    [data-scope='timeline'][data-part='card'] {
+      border: 1px solid CanvasText;
+    }
+  }
+}
+/*
+ * Diff (#61). Root `.apui-diff` with data-view (unified, split). Parts:
+ * header (icon, file, counts, actions), table, hunk (a @@ row), line (a row,
+ * data-type ctx, add or del), lineNumber, sign and code (every cell carries
+ * its side's data-type, so split rows mix them), and ins / del around changed
+ * words. Signs and counts carry the meaning in text, never color alone. The header mirrors in RTL; the table's
+ * content stays LTR (D-004). See design/components/Diff.
+ */
+@layer apui.components {
+  .apui-diff {
+    box-sizing: border-box;
+    min-inline-size: 0;
+    overflow: hidden;
+    border: var(--apui-border-width) solid var(--apui-border-muted);
+    border-radius: var(--apui-radius-md);
+    background: var(--apui-surface-default);
+    color: var(--apui-text-default);
+    font-family: var(--apui-font-family-sans);
+  }
+
+  [data-scope='diff'][data-part='header'] {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-block-end: var(--apui-border-width) solid var(--apui-border-muted);
+    font-size: var(--apui-type-body-sm-font-size);
+    line-height: var(--apui-type-body-sm-line-height);
+  }
+
+  [data-scope='diff'][data-part='icon'] {
+    display: inline-flex;
+    flex: none;
+    color: var(--apui-text-muted);
+  }
+
+  [data-scope='diff'][data-part='icon'] > svg {
+    inline-size: var(--apui-icon-size-md);
+    block-size: var(--apui-icon-size-md);
+  }
+
+  [data-scope='diff'][data-part='file'] {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+    font-family: var(--apui-font-family-mono);
+    font-size: var(--apui-type-code-sm-font-size);
+  }
+
+  [data-scope='diff'][data-part='counts'] {
+    display: inline-flex;
+    gap: 8px;
+    margin-inline-start: auto;
+    font-variant-numeric: tabular-nums;
+    font-weight: var(--apui-font-weight-medium);
+  }
+
+  /* "+3" and "−2" read the same way in RTL: the sign stays before the number. */
+  [data-scope='diff'][data-part='counts'] > [data-type] {
+    direction: ltr;
+    unicode-bidi: isolate;
+  }
+
+  [data-scope='diff'][data-part='counts'] > [data-type='add'] {
+    color: var(--apui-color-success-text);
+  }
+
+  [data-scope='diff'][data-part='counts'] > [data-type='del'] {
+    color: var(--apui-color-error-text);
+  }
+
+  [data-scope='diff'][data-part='actions'] {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* The table is code: it stays LTR in every direction (D-004). */
+  [data-scope='diff'][data-part='table'] {
+    inline-size: 100%;
+    border-collapse: collapse;
+    direction: ltr;
+    font-family: var(--apui-font-family-mono);
+    font-size: 12.5px;
+    line-height: 20px;
+  }
+
+  [data-scope='diff'][data-part='table'] td {
+    padding: 0 8px;
+    vertical-align: top;
+  }
+
+  [data-scope='diff'][data-part='lineNumber'] {
+    inline-size: 1%;
+    background: var(--apui-surface-sunken);
+    color: var(--apui-text-muted);
+    font-variant-numeric: tabular-nums;
+    text-align: end;
+    user-select: none;
+    white-space: nowrap;
+  }
+
+  [data-scope='diff'][data-part='sign'] {
+    inline-size: 1%;
+    color: var(--apui-text-muted);
+    user-select: none;
+    white-space: pre;
+  }
+
+  [data-scope='diff'][data-part='code'] {
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+  }
+
+  .apui-diff[data-view='split'] [data-scope='diff'][data-part='code'] {
+    inline-size: 48%;
+  }
+
+  .apui-diff[data-view='split'] [data-scope='diff'][data-part='lineNumber']:not(:first-child) {
+    border-inline-start: var(--apui-border-width) solid var(--apui-border-muted);
+  }
+
+  /* Added and deleted cells: every cell of a line carries its data-type. */
+  td[data-scope='diff'][data-type='add'] {
+    background: var(--apui-color-success-soft);
+    color: var(--apui-color-success-soft-foreground);
+  }
+
+  td[data-scope='diff'][data-type='del'] {
+    background: var(--apui-color-error-soft);
+    color: var(--apui-color-error-soft-foreground);
+  }
+
+  [data-scope='diff'][data-part='hunk'] > td {
+    padding-block: 2px;
+    background: var(--apui-color-info-soft);
+    color: var(--apui-color-info-soft-foreground);
+  }
+
+  [data-scope='diff'][data-part='ins'] {
+    box-shadow: inset 0 -2px 0 var(--apui-color-success-border);
+    font-weight: var(--apui-font-weight-semibold);
+    text-decoration: none;
+  }
+
+  [data-scope='diff'][data-part='del'] {
+    font-weight: var(--apui-font-weight-semibold);
+    text-decoration: line-through;
+    text-decoration-color: var(--apui-color-error-border);
+  }
+
+  @media (forced-colors: active) {
+    [data-scope='diff'][data-part='ins'] {
+      text-decoration: underline;
+      box-shadow: none;
+    }
+
+    [data-scope='diff'][data-part='del'] {
+      text-decoration-color: CanvasText;
+    }
+  }
+}
+/*
+ * Badge (#61). Root `.apui-badge`: a small, non-interactive label for a
+ * status, category or count. data-variant (solid, soft, outline, ghost),
+ * data-color and data-size (sm, md, lg). Parts: dot, icon, label. The text is
+ * always there; the dot and the icon are decorative. See design/components/Badge.
+ */
+@layer apui.components {
+  .apui-badge {
+    --apui-_h: 20px;
+    --apui-_px: 8px;
+    --apui-_fs: var(--apui-type-caption-font-size);
+    --apui-_ic: 12px;
+
+    /* The tone every variant reads; data-color reassigns it. Neutral by default. */
+    --apui-_solid: var(--apui-color-neutral);
+    --apui-_solid-border: transparent;
+    --apui-_on-solid: var(--apui-color-neutral-foreground);
+    --apui-_soft: var(--apui-color-neutral-soft);
+    --apui-_on-soft: var(--apui-color-neutral-soft-foreground);
+    --apui-_tone-border: var(--apui-color-neutral-border);
+    --apui-_tone-text: var(--apui-color-neutral-text);
+
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    box-sizing: border-box;
+    block-size: var(--apui-_h);
+    max-inline-size: 100%;
+    padding-inline: var(--apui-_px);
+    border: var(--apui-border-width) solid transparent;
+    border-radius: var(--apui-badge-radius);
+    background-color: var(--apui-_soft);
+    color: var(--apui-_on-soft);
+    font-family: var(--apui-font-family-sans);
+    font-size: var(--apui-_fs);
+    font-weight: var(--apui-font-weight-medium);
+    line-height: 16px;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+
+  /* Sizes */
+  .apui-badge[data-size='sm'] {
+    --apui-_h: 18px;
+    --apui-_px: 6px;
+    --apui-_fs: 11px;
+  }
+
+  .apui-badge[data-size='lg'] {
+    --apui-_h: 24px;
+    --apui-_px: 10px;
+    --apui-_fs: var(--apui-type-body-sm-font-size);
+    --apui-_ic: 14px;
+  }
+
+  /* Colors: reassign the tone. */
+  .apui-badge[data-color='primary'] {
+    --apui-_solid: var(--apui-color-primary);
+    --apui-_on-solid: var(--apui-color-primary-foreground);
+    --apui-_soft: var(--apui-color-primary-soft);
+    --apui-_on-soft: var(--apui-color-primary-soft-foreground);
+    --apui-_tone-border: var(--apui-color-primary-border);
+    --apui-_tone-text: var(--apui-color-primary-text);
+  }
+
+  .apui-badge[data-color='secondary'] {
+    --apui-_solid: var(--apui-color-secondary);
+    --apui-_on-solid: var(--apui-color-secondary-foreground);
+    --apui-_soft: var(--apui-color-secondary-soft);
+    --apui-_on-soft: var(--apui-color-secondary-soft-foreground);
+    --apui-_tone-border: var(--apui-color-secondary-border);
+    --apui-_tone-text: var(--apui-color-secondary-text);
+  }
+
+  /* Accent and warning fills are light, so solid badges keep an edge. */
+  .apui-badge[data-color='accent'] {
+    --apui-_solid: var(--apui-color-accent);
+    --apui-_solid-border: var(--apui-color-accent-border);
+    --apui-_on-solid: var(--apui-color-accent-foreground);
+    --apui-_soft: var(--apui-color-accent-soft);
+    --apui-_on-soft: var(--apui-color-accent-soft-foreground);
+    --apui-_tone-border: var(--apui-color-accent-border);
+    --apui-_tone-text: var(--apui-color-accent-text);
+  }
+
+  .apui-badge[data-color='success'] {
+    --apui-_solid: var(--apui-color-success);
+    --apui-_on-solid: var(--apui-color-success-foreground);
+    --apui-_soft: var(--apui-color-success-soft);
+    --apui-_on-soft: var(--apui-color-success-soft-foreground);
+    --apui-_tone-border: var(--apui-color-success-border);
+    --apui-_tone-text: var(--apui-color-success-text);
+  }
+
+  .apui-badge[data-color='warning'] {
+    --apui-_solid: var(--apui-color-warning);
+    --apui-_solid-border: var(--apui-color-warning-border);
+    --apui-_on-solid: var(--apui-color-warning-foreground);
+    --apui-_soft: var(--apui-color-warning-soft);
+    --apui-_on-soft: var(--apui-color-warning-soft-foreground);
+    --apui-_tone-border: var(--apui-color-warning-border);
+    --apui-_tone-text: var(--apui-color-warning-text);
+  }
+
+  .apui-badge[data-color='error'] {
+    --apui-_solid: var(--apui-color-error);
+    --apui-_on-solid: var(--apui-color-error-foreground);
+    --apui-_soft: var(--apui-color-error-soft);
+    --apui-_on-soft: var(--apui-color-error-soft-foreground);
+    --apui-_tone-border: var(--apui-color-error-border);
+    --apui-_tone-text: var(--apui-color-error-text);
+  }
+
+  .apui-badge[data-color='info'] {
+    --apui-_solid: var(--apui-color-info);
+    --apui-_on-solid: var(--apui-color-info-foreground);
+    --apui-_soft: var(--apui-color-info-soft);
+    --apui-_on-soft: var(--apui-color-info-soft-foreground);
+    --apui-_tone-border: var(--apui-color-info-border);
+    --apui-_tone-text: var(--apui-color-info-text);
+  }
+
+  /* Variants. soft is the default. */
+  .apui-badge[data-variant='solid'] {
+    border-color: var(--apui-_solid-border);
+    background-color: var(--apui-_solid);
+    color: var(--apui-_on-solid);
+  }
+
+  .apui-badge[data-variant='outline'] {
+    border-color: var(--apui-_tone-border);
+    background-color: transparent;
+    color: var(--apui-_tone-text);
+  }
+
+  .apui-badge[data-variant='ghost'] {
+    padding-inline: 0;
+    background-color: transparent;
+    color: var(--apui-text-default);
+  }
+
+  /*
+   * Soft badges get an edge from --apui-border-soft-edge-width: 0 in light and
+   * dark (the spec draws none), 1px in high contrast, where the fill alone sits
+   * too close to the page. The outline lies over the transparent border.
+   */
+  .apui-badge:not([data-variant='solid'], [data-variant='outline'], [data-variant='ghost']) {
+    outline: var(--apui-border-soft-edge-width) solid var(--apui-_tone-border);
+    outline-offset: calc(-1 * var(--apui-border-width));
+  }
+
+  /* Parts */
+  [data-scope='badge'][data-part='dot'] {
+    flex: none;
+    inline-size: 6px;
+    block-size: 6px;
+    border-radius: var(--apui-radius-full);
+    background-color: currentcolor;
+  }
+
+  .apui-badge[data-variant='ghost'] [data-scope='badge'][data-part='dot'] {
+    background-color: var(--apui-_solid);
+  }
+
+  [data-scope='badge'][data-part='icon'] {
+    display: inline-flex;
+    flex: none;
+    inline-size: var(--apui-_ic);
+    block-size: var(--apui-_ic);
+  }
+
+  [data-scope='badge'][data-part='icon'] > svg {
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  [dir='rtl'] [data-scope='badge'][data-part='icon'][data-mirror] > svg {
+    scale: -1 1;
+  }
+
+  [data-scope='badge'][data-part='label'] {
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  @media (forced-colors: active) {
+    .apui-badge {
+      border-color: CanvasText;
+    }
+
+    [data-scope='badge'][data-part='dot'],
+    .apui-badge[data-variant='ghost'] [data-scope='badge'][data-part='dot'] {
+      background-color: CanvasText;
+    }
+  }
+}
+/*
+ * Avatar (#61). Root `.apui-avatar`: a person or organization as an image,
+ * initials or an icon, with data-size (xs…xl, the control heights),
+ * data-shape (circle, square) and data-color (the initials' tone). Parts:
+ * image, initials, status; without initials an icon shows instead. The root is role=img named after the person,
+ * so the parts are decorative. The image sits over the initials, so a broken
+ * image shows them instead.
+ *
+ * `.apui-avatar-group` overlaps a row of avatars, each ringed in the surface
+ * color. See design/components/Avatar.
+ */
+@layer apui.components {
+  .apui-avatar {
+    --apui-_s: var(--apui-control-height-md);
+    --apui-_soft: var(--apui-color-neutral-soft);
+    --apui-_on-soft: var(--apui-color-neutral-soft-foreground);
+
+    position: relative;
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    box-sizing: border-box;
+    inline-size: var(--apui-_s);
+    block-size: var(--apui-_s);
+    border-radius: var(--apui-avatar-radius);
+    background-color: var(--apui-_soft);
+    color: var(--apui-_on-soft);
+    font-family: var(--apui-font-family-sans);
+    font-size: calc(var(--apui-_s) * 0.38);
+    font-weight: var(--apui-font-weight-medium);
+    line-height: 1;
+    vertical-align: middle;
+    user-select: none;
+  }
+
+  /* Sizes match the control heights, so an avatar lines up with a button. */
+  .apui-avatar[data-size='xs'] {
+    --apui-_s: var(--apui-control-height-xs);
+  }
+
+  .apui-avatar[data-size='sm'] {
+    --apui-_s: var(--apui-control-height-sm);
+  }
+
+  .apui-avatar[data-size='lg'] {
+    --apui-_s: var(--apui-control-height-lg);
+  }
+
+  .apui-avatar[data-size='xl'] {
+    --apui-_s: var(--apui-control-height-xl);
+  }
+
+  .apui-avatar[data-shape='square'] {
+    border-radius: var(--apui-radius-sm);
+  }
+
+  /* Colors: the initials' tone. */
+  .apui-avatar[data-color='primary'] {
+    --apui-_soft: var(--apui-color-primary-soft);
+    --apui-_on-soft: var(--apui-color-primary-soft-foreground);
+  }
+
+  .apui-avatar[data-color='secondary'] {
+    --apui-_soft: var(--apui-color-secondary-soft);
+    --apui-_on-soft: var(--apui-color-secondary-soft-foreground);
+  }
+
+  .apui-avatar[data-color='accent'] {
+    --apui-_soft: var(--apui-color-accent-soft);
+    --apui-_on-soft: var(--apui-color-accent-soft-foreground);
+  }
+
+  .apui-avatar[data-color='success'] {
+    --apui-_soft: var(--apui-color-success-soft);
+    --apui-_on-soft: var(--apui-color-success-soft-foreground);
+  }
+
+  .apui-avatar[data-color='warning'] {
+    --apui-_soft: var(--apui-color-warning-soft);
+    --apui-_on-soft: var(--apui-color-warning-soft-foreground);
+  }
+
+  .apui-avatar[data-color='error'] {
+    --apui-_soft: var(--apui-color-error-soft);
+    --apui-_on-soft: var(--apui-color-error-soft-foreground);
+  }
+
+  .apui-avatar[data-color='info'] {
+    --apui-_soft: var(--apui-color-info-soft);
+    --apui-_on-soft: var(--apui-color-info-soft-foreground);
+  }
+
+  /* Parts. Initials, icon and image share the one grid cell. */
+  .apui-avatar > :is([data-scope='avatar'], svg) {
+    grid-area: 1 / 1;
+  }
+
+  [data-scope='avatar'][data-part='initials'] {
+    letter-spacing: 0;
+    white-space: nowrap;
+  }
+
+  /* Without initials, an icon: decorative, like everything inside the root. */
+  .apui-avatar > svg {
+    inline-size: calc(var(--apui-_s) * 0.55);
+    block-size: calc(var(--apui-_s) * 0.55);
+  }
+
+  [data-scope='avatar'][data-part='image'] {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    border-radius: inherit;
+    object-fit: cover;
+  }
+
+  [data-scope='avatar'][data-part='status'] {
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline-end: 0;
+    box-sizing: border-box;
+    inline-size: max(8px, calc(var(--apui-_s) * 0.28));
+    block-size: max(8px, calc(var(--apui-_s) * 0.28));
+    border-radius: var(--apui-radius-full);
+    background-color: var(--apui-color-success);
+    box-shadow: 0 0 0 2px var(--apui-focus-ring-offset-color);
+  }
+
+  [data-scope='avatar'][data-part='status'][data-status='away'] {
+    background-color: var(--apui-color-warning);
+  }
+
+  [data-scope='avatar'][data-part='status'][data-status='offline'] {
+    background-color: var(--apui-text-subtle);
+  }
+
+  /* Group: overlapping avatars, each ringed in the surface they sit on. */
+  .apui-avatar-group {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .apui-avatar-group > .apui-avatar {
+    box-shadow: 0 0 0 2px var(--apui-focus-ring-offset-color);
+  }
+
+  .apui-avatar-group > .apui-avatar + .apui-avatar {
+    margin-inline-start: calc(var(--apui-_s) * -0.25);
+  }
+
+  @media (forced-colors: active) {
+    .apui-avatar {
+      border: 1px solid CanvasText;
+    }
+
+    [data-scope='avatar'][data-part='status'] {
+      border: 2px solid Canvas;
+      background-color: CanvasText;
+    }
+
+    [data-scope='avatar'][data-part='status'][data-status='offline'] {
+      background-color: Canvas;
+      box-shadow: 0 0 0 2px CanvasText;
+    }
+  }
+}
+/*
+ * Heading (#58). Root `.apui-heading` on h1–h6: data-level is the semantic
+ * level and data-size the visual size from the type scale (1 largest, 6
+ * smallest), which defaults to the level. Part: eyebrow, a short uppercase
+ * label rendered just before the heading. Never heavier than 600.
+ * See design/components/Heading.
+ */
+@layer apui.components {
+  .apui-heading {
+    margin: 0;
+    color: var(--apui-text-default);
+    font-family: var(--apui-font-family-sans);
+    font-size: var(--apui-type-heading-xl-font-size);
+    font-weight: var(--apui-font-weight-semibold);
+    line-height: var(--apui-type-heading-xl-line-height);
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+
+  .apui-heading[data-size='1'] {
+    font-size: var(--apui-type-display-lg-font-size);
+    line-height: var(--apui-type-display-lg-line-height);
+    letter-spacing: -0.02em;
+  }
+
+  .apui-heading[data-size='2'] {
+    font-size: var(--apui-type-heading-xl-font-size);
+    line-height: var(--apui-type-heading-xl-line-height);
+    letter-spacing: -0.015em;
+  }
+
+  .apui-heading[data-size='3'] {
+    font-size: var(--apui-type-heading-lg-font-size);
+    line-height: var(--apui-type-heading-lg-line-height);
+    letter-spacing: -0.01em;
+  }
+
+  .apui-heading[data-size='4'] {
+    font-size: var(--apui-type-heading-md-font-size);
+    line-height: var(--apui-type-heading-md-line-height);
+    letter-spacing: -0.01em;
+  }
+
+  .apui-heading[data-size='5'] {
+    font-size: var(--apui-type-heading-sm-font-size);
+    line-height: var(--apui-type-heading-sm-line-height);
+    letter-spacing: 0;
+  }
+
+  .apui-heading[data-size='6'] {
+    font-size: var(--apui-type-body-md-font-size);
+    line-height: var(--apui-type-body-md-line-height);
+    letter-spacing: 0;
+  }
+
+  [data-scope='heading'][data-part='eyebrow'] {
+    display: block;
+    margin: 0;
+    margin-block-end: 6px;
+    color: var(--apui-text-muted);
+    font-family: var(--apui-font-family-sans);
+    font-size: var(--apui-type-eyebrow-font-size);
+    font-weight: var(--apui-type-eyebrow-font-weight);
+    line-height: var(--apui-type-eyebrow-line-height);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+}
+/*
+ * Text (#58). Root `.apui-text`: body copy. data-size (xs, sm, md, lg,
+ * lead), data-tone (default, muted, success, warning, error) and data-weight
+ * (regular, medium, semibold). data-truncate cuts one line with an ellipsis;
+ * data-clamp cuts after --apui-text-clamp lines (2 by default). Paragraphs
+ * keep to the measure. See design/components/Text.
+ */
+@layer apui.components {
+  .apui-text {
+    max-inline-size: var(--apui-measure);
+    margin: 0;
+    color: var(--apui-text-default);
+    font-family: var(--apui-font-family-sans);
+    font-size: var(--apui-type-body-md-font-size);
+    font-weight: var(--apui-font-weight-regular);
+    line-height: var(--apui-type-body-md-line-height);
+  }
+
+  /* Sizes */
+  .apui-text[data-size='xs'] {
+    font-size: var(--apui-type-caption-font-size);
+    line-height: var(--apui-type-caption-line-height);
+  }
+
+  .apui-text[data-size='sm'] {
+    font-size: var(--apui-type-body-sm-font-size);
+    line-height: var(--apui-type-body-sm-line-height);
+  }
+
+  .apui-text[data-size='lg'] {
+    font-size: var(--apui-type-body-lg-font-size);
+    line-height: var(--apui-type-body-lg-line-height);
+  }
+
+  /* Lead introduces a page or section, in the muted tone unless one is set. */
+  .apui-text[data-size='lead'] {
+    font-size: var(--apui-type-heading-md-font-size);
+    line-height: 28px;
+  }
+
+  .apui-text[data-size='lead']:is([data-tone='default'], :not([data-tone])) {
+    color: var(--apui-text-muted);
+  }
+
+  /* Tones. Status tones are never the only signal: the words say it too. */
+  .apui-text[data-tone='muted'] {
+    color: var(--apui-text-muted);
+  }
+
+  .apui-text[data-tone='success'] {
+    color: var(--apui-color-success-text);
+  }
+
+  .apui-text[data-tone='warning'] {
+    color: var(--apui-color-warning-text);
+  }
+
+  .apui-text[data-tone='error'] {
+    color: var(--apui-color-error-text);
+  }
+
+  /* Weights */
+  .apui-text[data-weight='medium'] {
+    font-weight: var(--apui-font-weight-medium);
+  }
+
+  .apui-text[data-weight='semibold'] {
+    font-weight: var(--apui-font-weight-semibold);
+  }
+
+  /* Truncation keeps the full text in the title attribute. */
+  .apui-text[data-truncate] {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .apui-text[data-clamp] {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: var(--apui-text-clamp, 2);
+    line-clamp: var(--apui-text-clamp, 2);
+  }
+}
+/*
+ * ListItem (#58). Root `.apui-list-item`: a row with leading, title,
+ * description and trailing parts. An `<li>` inside a `.apui-list`, a `<div>`
+ * on its own. data-interactive marks a row whose title is a link or a button;
+ * that control stretches over the whole row, so the row is one target and
+ * trailing controls stay clickable above it. data-selected (aria-current on
+ * the control) and data-disabled are states.
+ *
+ * `.apui-list` (ul/ol) holds the rows: data-variant plain, bordered (a framed
+ * surface with rules between rows) or divided (rules only).
+ * See design/components/ListItem.
+ */
+@layer apui.components {
+  .apui-list {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .apui-list[data-variant='bordered'] {
+    overflow: hidden;
+    border: var(--apui-border-width) solid var(--apui-border-muted);
+    border-radius: var(--apui-radius-lg);
+    background-color: var(--apui-surface-default);
+  }
+
+  .apui-list:is([data-variant='bordered'], [data-variant='divided']) > * + * {
+    border-block-start: var(--apui-border-width) solid var(--apui-border-muted);
+  }
+
+  .apui-list-item {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 2px 12px;
+    align-items: center;
+    box-sizing: border-box;
+    min-block-size: var(--apui-row-height);
+    padding-block: 10px;
+    padding-inline: var(--apui-cell-padding-x);
+    color: var(--apui-text-default);
+    font-family: var(--apui-font-family-sans);
+    list-style: none;
+  }
+
+  .apui-list-item[data-interactive]:not([data-disabled]) {
+    cursor: pointer;
+  }
+
+  .apui-list-item[data-interactive]:not([data-disabled]):hover {
+    background-color: var(--apui-state-hover);
+  }
+
+  .apui-list-item[data-selected] {
+    background-color: var(--apui-selected-bg);
+  }
+
+  .apui-list-item[data-selected][data-interactive]:not([data-disabled]):hover {
+    background-image: linear-gradient(var(--apui-state-hover), var(--apui-state-hover));
+  }
+
+  .apui-list-item[data-disabled] {
+    color: var(--apui-text-disabled);
+  }
+
+  /* The ring sits inside the row, so rows in a list don't overlap it. */
+  .apui-list-item:has([data-scope='list-item'][data-part='title']:focus-visible) {
+    box-shadow:
+      inset 0 0 0 var(--apui-focus-ring-width) var(--apui-focus-ring-color),
+      inset 0 0 0 calc(var(--apui-focus-ring-width) + var(--apui-focus-ring-offset))
+        var(--apui-focus-ring-offset-color);
+  }
+
+  /* Parts */
+  [data-scope='list-item'][data-part='leading'] {
+    display: inline-flex;
+    grid-row: span 2;
+    grid-column: 1;
+    align-items: center;
+    color: var(--apui-text-muted);
+  }
+
+  [data-scope='list-item'][data-part='leading'] > svg {
+    inline-size: var(--apui-icon-size-lg);
+    block-size: var(--apui-icon-size-lg);
+  }
+
+  [data-scope='list-item'][data-part='title'] {
+    grid-column: 2;
+    min-inline-size: 0;
+    overflow: hidden;
+    color: inherit;
+    font-size: var(--apui-type-body-md-font-size);
+    font-weight: var(--apui-font-weight-medium);
+    line-height: var(--apui-type-body-md-line-height);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* An interactive title is a link or a button that covers the row. */
+  :is(a, button)[data-scope='list-item'][data-part='title'] {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    font-family: inherit;
+    text-align: start;
+    text-decoration: none;
+    cursor: inherit;
+  }
+
+  :is(a, button)[data-scope='list-item'][data-part='title']:focus-visible {
+    outline: var(--apui-focus-ring-width) solid transparent;
+  }
+
+  :is(a, button)[data-scope='list-item'][data-part='title']::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  [data-scope='list-item'][data-part='description'] {
+    grid-column: 2;
+    min-inline-size: 0;
+    overflow: hidden;
+    color: var(--apui-text-muted);
+    font-size: var(--apui-type-body-sm-font-size);
+    line-height: var(--apui-type-body-sm-line-height);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .apui-list-item[data-disabled]
+    [data-scope='list-item']:is(
+      [data-part='description'],
+      [data-part='leading'],
+      [data-part='trailing']
+    ) {
+    color: var(--apui-text-disabled);
+  }
+
+  [data-scope='list-item'][data-part='trailing'] {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    grid-row: 1 / span 2;
+    grid-column: 3;
+    gap: 8px;
+    align-items: center;
+    color: var(--apui-text-muted);
+    font-size: var(--apui-type-body-sm-font-size);
+    line-height: var(--apui-type-body-sm-line-height);
+  }
+
+  /* Without a description the title centers on the row. */
+  .apui-list-item:not(:has([data-part='description']))
+    [data-scope='list-item']:is([data-part='leading'], [data-part='trailing']) {
+    grid-row: 1;
+  }
+
+  @media (forced-colors: active) {
+    .apui-list-item[data-selected] {
+      outline: 2px solid Highlight;
+      outline-offset: -2px;
+    }
+
+    .apui-list-item[data-disabled],
+    .apui-list-item[data-disabled] [data-scope='list-item'] {
+      color: GrayText;
+    }
+  }
+}
+/*
+ * UserMenu (#58). The account menu, composed from Avatar and DropdownMenu:
+ * the panel is `.apui-dropdown-menu.apui-user-menu` and the menu's items,
+ * groups and separators keep the dropdown-menu scope. Parts scoped user-menu:
+ * trigger (the avatar button, with avatar, name, role and indicator), header
+ * (identity at the top of the menu, with avatar, name and email) and theme
+ * (a row of three radio items: light, dark, system).
+ *
+ * The trigger is also the menu machine's trigger. In Alpine the machine writes
+ * its own data-scope (dropdown-menu) onto it, so the trigger rules also match
+ * a trigger holding user-menu parts.
+ * See design/components/UserMenu.
+ */
+@layer apui.components {
+  [data-part='trigger']:is([data-scope='user-menu'], :has(> [data-scope='user-menu'])) {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    box-sizing: border-box;
+    max-inline-size: 100%;
+    min-block-size: 44px;
+    margin: 0;
+    padding-block: 4px;
+    padding-inline: 6px 10px;
+    border: var(--apui-border-width) solid transparent;
+    border-radius: var(--apui-button-radius);
+    background: none;
+    color: var(--apui-text-default);
+    font-family: var(--apui-font-family-sans);
+    font-size: var(--apui-type-body-md-font-size);
+    line-height: var(--apui-type-body-md-line-height);
+    text-align: start;
+    cursor: pointer;
+    transition: background-color var(--apui-motion-duration-fast) var(--apui-motion-ease-standard);
+  }
+
+  [data-part='trigger']:is([data-scope='user-menu'], :has(> [data-scope='user-menu'])):hover,
+  [data-part='trigger']:is(
+      [data-scope='user-menu'],
+      :has(> [data-scope='user-menu'])
+    )[aria-expanded='true'] {
+    background-color: var(--apui-state-hover);
+  }
+
+  [data-part='trigger']:is(
+      [data-scope='user-menu'],
+      :has(> [data-scope='user-menu'])
+    ):focus-visible {
+    outline: var(--apui-focus-ring-width) solid transparent;
+    box-shadow:
+      0 0 0 var(--apui-focus-ring-offset) var(--apui-focus-ring-offset-color),
+      0 0 0 calc(var(--apui-focus-ring-offset) + var(--apui-focus-ring-width))
+        var(--apui-focus-ring-color);
+  }
+
+  /* The trigger's avatar-only form (no name shown) is a round button. */
+  [data-part='trigger']:is(
+      [data-scope='user-menu'],
+      :has(> [data-scope='user-menu'])
+    )[data-avatar-only] {
+    min-block-size: 0;
+    padding: 2px;
+    border-radius: var(--apui-radius-full);
+  }
+
+  [data-scope='user-menu'][data-part='identity'] {
+    display: grid;
+    min-inline-size: 0;
+    line-height: 16px;
+  }
+
+  [data-scope='user-menu'][data-part='name'] {
+    overflow: hidden;
+    font-weight: var(--apui-font-weight-medium);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  [data-scope='user-menu']:is([data-part='role'], [data-part='email']) {
+    overflow: hidden;
+    color: var(--apui-text-muted);
+    font-size: var(--apui-type-caption-font-size);
+    font-weight: var(--apui-font-weight-regular);
+    line-height: var(--apui-type-caption-line-height);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  [data-scope='user-menu'][data-part='indicator'] {
+    display: inline-flex;
+    flex: none;
+    margin-inline-start: auto;
+    color: var(--apui-text-muted);
+  }
+
+  [data-scope='user-menu'][data-part='indicator'] > svg {
+    inline-size: var(--apui-icon-size-sm);
+    block-size: var(--apui-icon-size-sm);
+  }
+
+  .apui-user-menu {
+    inline-size: 260px;
+    max-inline-size: calc(100vw - 32px);
+  }
+
+  [data-scope='user-menu'][data-part='header'] {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding-block: 8px;
+    padding-inline: 10px;
+  }
+
+  [data-scope='user-menu'][data-part='header'] [data-scope='user-menu'][data-part='identity'] {
+    gap: 2px;
+    line-height: var(--apui-type-body-md-line-height);
+  }
+
+  /* Theme: three radio items as a segmented control. */
+  [data-scope='user-menu'][data-part='theme'] {
+    padding-block: 6px;
+    padding-inline: 10px;
+  }
+
+  [data-scope='user-menu'][data-part='theme']
+    [data-scope='dropdown-menu'][data-part='item-group-label'] {
+    padding: 0;
+    margin-block-end: 6px;
+  }
+
+  [data-scope='user-menu'][data-part='theme-options'] {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2px;
+    padding: 2px;
+    border-radius: var(--apui-tabs-radius);
+    background-color: var(--apui-surface-sunken);
+  }
+
+  [data-scope='user-menu'][data-part='theme-options']
+    [data-scope='dropdown-menu'][data-part='item'] {
+    justify-content: center;
+    min-block-size: calc(var(--apui-control-height-sm) - 4px);
+    padding-inline: 8px;
+    border-radius: calc(var(--apui-tabs-radius) - 2px);
+    color: var(--apui-text-muted);
+  }
+
+  [data-scope='user-menu'][data-part='theme-options']
+    [data-scope='dropdown-menu'][data-part='item'][aria-checked='true'] {
+    background-color: var(--apui-surface-raised);
+    box-shadow: inset 0 0 0 1px var(--apui-border-muted);
+    color: var(--apui-text-default);
+  }
+
+  /* The options show icons; the check and the words are for assistive technology. */
+  [data-scope='user-menu'][data-part='theme-options']
+    [data-scope='dropdown-menu']:is([data-part='item-indicator'], [data-part='item-text']) {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  [data-scope='user-menu'][data-part='theme-options']
+    [data-scope='dropdown-menu'][data-part='icon'] {
+    color: inherit;
+  }
+
+  @media (forced-colors: active) {
+    [data-part='trigger']:is([data-scope='user-menu'], :has(> [data-scope='user-menu'])) {
+      border-color: ButtonText;
+    }
+
+    [data-scope='user-menu'][data-part='theme-options']
+      [data-scope='dropdown-menu'][data-part='item'][aria-checked='true'] {
+      outline: 2px solid Highlight;
+      outline-offset: -2px;
+    }
+  }
+}
+/*
+ * Alert (#60). Root `.apui-alert`, role=status (role=alert for errors), with
+ * data-color, data-variant (soft, outline, solid) and data-surface. Parts:
+ * icon, title, description, actions and close-trigger (a ghost Button). A
+ * dismissed alert carries the hidden attribute. Status comes from the tint
+ * and the icon, never a colored side border. See design/components/Alert.
+ */
+@layer apui.components {
+  .apui-alert {
+    --apui-_solid: var(--apui-color-neutral);
+    --apui-_on-solid: var(--apui-color-neutral-foreground);
+    --apui-_solid-border: transparent;
+    --apui-_soft: var(--apui-color-neutral-soft);
+    --apui-_on-soft: var(--apui-color-neutral-soft-foreground);
+    --apui-_tone-border: var(--apui-color-neutral-border);
+    --apui-_tone-text: var(--apui-color-neutral-text);
+
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 4px 12px;
+    align-items: start;
+    box-sizing: border-box;
+    padding-block: 12px;
+    padding-inline: 16px;
+
+    /*
+     * Soft: the tint carries the status. The spec draws no edge; high contrast
+     * adds one through --apui-border-soft-edge-width (see the soft rule below).
+     */
+    border: var(--apui-border-width) solid transparent;
+    border-radius: var(--apui-alert-radius);
+    background: var(--apui-_soft);
+    color: var(--apui-_on-soft);
+    font-family: var(--apui-font-family-sans);
+    font-size: var(--apui-type-body-md-font-size);
+    line-height: 20px;
+
+    /* Buttons inside ring against the alert. */
+    --apui-focus-ring-offset-color: var(--apui-_soft);
+  }
+
+  .apui-alert[hidden] {
+    display: none;
+  }
+
+  .apui-alert[data-color='primary'] {
+    --apui-_solid: var(--apui-color-primary);
+    --apui-_on-solid: var(--apui-color-primary-foreground);
+    --apui-_soft: var(--apui-color-primary-soft);
+    --apui-_on-soft: var(--apui-color-primary-soft-foreground);
+    --apui-_tone-border: var(--apui-color-primary-border);
+    --apui-_tone-text: var(--apui-color-primary-text);
+  }
+
+  .apui-alert[data-color='secondary'] {
+    --apui-_solid: var(--apui-color-secondary);
+    --apui-_on-solid: var(--apui-color-secondary-foreground);
+    --apui-_soft: var(--apui-color-secondary-soft);
+    --apui-_on-soft: var(--apui-color-secondary-soft-foreground);
+    --apui-_tone-border: var(--apui-color-secondary-border);
+    --apui-_tone-text: var(--apui-color-secondary-text);
+  }
+
+  .apui-alert[data-color='accent'] {
+    --apui-_solid: var(--apui-color-accent);
+    --apui-_on-solid: var(--apui-color-accent-foreground);
+    --apui-_solid-border: var(--apui-color-accent-border);
+    --apui-_soft: var(--apui-color-accent-soft);
+    --apui-_on-soft: var(--apui-color-accent-soft-foreground);
+    --apui-_tone-border: var(--apui-color-accent-border);
+    --apui-_tone-text: var(--apui-color-accent-text);
+  }
+
+  .apui-alert[data-color='success'] {
+    --apui-_solid: var(--apui-color-success);
+    --apui-_on-solid: var(--apui-color-success-foreground);
+    --apui-_soft: var(--apui-color-success-soft);
+    --apui-_on-soft: var(--apui-color-success-soft-foreground);
+    --apui-_tone-border: var(--apui-color-success-border);
+    --apui-_tone-text: var(--apui-color-success-text);
+  }
+
+  .apui-alert[data-color='warning'] {
+    --apui-_solid: var(--apui-color-warning);
+    --apui-_on-solid: var(--apui-color-warning-foreground);
+    --apui-_solid-border: var(--apui-color-warning-border);
+    --apui-_soft: var(--apui-color-warning-soft);
+    --apui-_on-soft: var(--apui-color-warning-soft-foreground);
+    --apui-_tone-border: var(--apui-color-warning-border);
+    --apui-_tone-text: var(--apui-color-warning-text);
+  }
+
+  .apui-alert[data-color='error'] {
+    --apui-_solid: var(--apui-color-error);
+    --apui-_on-solid: var(--apui-color-error-foreground);
+    --apui-_soft: var(--apui-color-error-soft);
+    --apui-_on-soft: var(--apui-color-error-soft-foreground);
+    --apui-_tone-border: var(--apui-color-error-border);
+    --apui-_tone-text: var(--apui-color-error-text);
+  }
+
+  .apui-alert[data-color='info'] {
+    --apui-_solid: var(--apui-color-info);
+    --apui-_on-solid: var(--apui-color-info-foreground);
+    --apui-_soft: var(--apui-color-info-soft);
+    --apui-_on-soft: var(--apui-color-info-soft-foreground);
+    --apui-_tone-border: var(--apui-color-info-border);
+    --apui-_tone-text: var(--apui-color-info-text);
+  }
+
+  /* Soft: high contrast's edge, over the transparent border (0 elsewhere). */
+  .apui-alert:not([data-variant='outline'], [data-variant='solid'], [data-surface='glass']) {
+    outline: var(--apui-border-soft-edge-width) solid var(--apui-_tone-border);
+    outline-offset: calc(-1 * var(--apui-border-width));
+  }
+
+  /* Outline: for alerts inside dense forms, where a tint would be too loud. */
+  .apui-alert[data-variant='outline'] {
+    --apui-focus-ring-offset-color: var(--apui-surface-default);
+
+    border-color: var(--apui-_tone-border);
+    background: var(--apui-surface-default);
+    color: var(--apui-text-default);
+  }
+
+  .apui-alert[data-variant='outline'] [data-scope='alert'][data-part='icon'] {
+    color: var(--apui-_tone-text);
+  }
+
+  .apui-alert[data-variant='outline'] [data-scope='alert'][data-part='description'] {
+    color: var(--apui-text-muted);
+  }
+
+  /* Solid: for page-level failures that block work. */
+  .apui-alert[data-variant='solid'] {
+    --apui-focus-ring-offset-color: var(--apui-_solid);
+
+    border-color: var(--apui-_solid-border);
+    background: var(--apui-_solid);
+    color: var(--apui-_on-solid);
+  }
+
+  .apui-alert[data-variant='solid'] [data-scope='alert'][data-part='close-trigger'] {
+    --apui-state-hover: color-mix(in oklab, currentcolor 16%, transparent);
+  }
+
+  /* Glass is a surface (D-006): default text, the icon keeps the status tint. */
+  .apui-alert[data-surface='glass'] {
+    --apui-text-muted: var(--apui-text-muted-glass);
+    --apui-focus-ring-offset-color: transparent;
+
+    border-color: var(--apui-surface-glass-border);
+    background: var(--apui-surface-glass);
+    box-shadow: var(--apui-elevation-glass);
+    color: var(--apui-text-default);
+    backdrop-filter: blur(var(--apui-surface-glass-blur))
+      saturate(var(--apui-surface-glass-saturation));
+  }
+
+  .apui-alert[data-surface='glass'] [data-scope='alert'][data-part='icon'] {
+    color: var(--apui-_tone-text);
+  }
+
+  @supports not (backdrop-filter: blur(1px)) {
+    .apui-alert[data-surface='glass'] {
+      border-color: var(--apui-border-muted);
+      background: var(--apui-surface-raised);
+    }
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    .apui-alert[data-surface='glass'] {
+      border-color: var(--apui-border-muted);
+      background: var(--apui-surface-raised);
+      backdrop-filter: none;
+    }
+  }
+
+  /* Parts */
+  [data-scope='alert'][data-part='icon'] {
+    display: inline-flex;
+    grid-column: 1;
+    grid-row: 1;
+    margin-block-start: 2px;
+  }
+
+  [data-scope='alert'][data-part='icon'] > svg {
+    inline-size: var(--apui-icon-size-md);
+    block-size: var(--apui-icon-size-md);
+  }
+
+  [data-scope='alert'][data-part='title'] {
+    grid-column: 2;
+    margin: 0;
+    font-weight: var(--apui-font-weight-semibold);
+  }
+
+  [data-scope='alert'][data-part='description'] {
+    grid-column: 2;
+    margin: 0;
+  }
+
+  /* Softens the description under a title; solid fills keep full contrast. */
+  .apui-alert:not([data-variant='solid'])
+    [data-scope='alert'][data-part='title']
+    + [data-scope='alert'][data-part='description'] {
+    opacity: 0.92;
+  }
+
+  [data-scope='alert'][data-part='actions'] {
+    display: flex;
+    flex-wrap: wrap;
+    grid-column: 2;
+    gap: 8px;
+    margin-block-start: 8px;
+  }
+
+  /* The close button takes the alert's text color in every variant. */
+  [data-scope='alert'][data-part='close-trigger'] {
+    --apui-button-fg: currentcolor;
+
+    grid-column: 3;
+    grid-row: 1;
+    margin-block-start: -4px;
+    margin-inline-end: -8px;
+  }
+
+  @media (forced-colors: active) {
+    .apui-alert {
+      border-color: CanvasText;
+    }
+
+    .apui-alert[data-surface='glass'] {
+      background: Canvas;
+      backdrop-filter: none;
+    }
+  }
+}
+/*
+ * Loading (#60). Root `.apui-loading`, role=status: an indicator part (a
+ * spinner ring, or three dots with data-variant="dots") and a label part,
+ * visible text or the visually hidden "Loading". data-size xs to xl and
+ * data-color tint the indicator. data-overlay covers the nearest positioned
+ * ancestor on the glass surface; the region it covers sets aria-busy.
+ *
+ * The root stays hidden for --apui-_delay (written inline from `delay`), so
+ * fast loads don't flash. The spinner slows and the dots stop under reduced
+ * motion. See design/components/Loading.
+ */
+@layer apui.components {
+  .apui-loading {
+    --apui-_tone: var(--apui-color-primary);
+    --apui-_spinner: 20px;
+    --apui-_ring: 2px;
+    --apui-_dot: 6px;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--apui-text-muted);
+    font-family: var(--apui-font-family-sans);
+    font-size: var(--apui-type-body-md-font-size);
+    line-height: var(--apui-type-body-md-line-height);
+    vertical-align: middle;
+    animation: apui-loading-delay 1ms linear var(--apui-_delay, 0ms) backwards;
+  }
+
+  @keyframes apui-loading-delay {
+    from {
+      visibility: hidden;
+    }
+  }
+
+  .apui-loading[data-size='xs'] {
+    --apui-_spinner: 12px;
+    --apui-_ring: 1.5px;
+    --apui-_dot: 4px;
+  }
+
+  .apui-loading[data-size='sm'] {
+    --apui-_spinner: 16px;
+    --apui-_dot: 5px;
+  }
+
+  .apui-loading[data-size='lg'] {
+    --apui-_spinner: 28px;
+    --apui-_ring: 2.5px;
+    --apui-_dot: 8px;
+  }
+
+  .apui-loading[data-size='xl'] {
+    --apui-_spinner: 40px;
+    --apui-_ring: 3px;
+    --apui-_dot: 10px;
+  }
+
+  .apui-loading[data-color='secondary'] {
+    --apui-_tone: var(--apui-color-secondary);
+  }
+
+  .apui-loading[data-color='accent'] {
+    --apui-_tone: var(--apui-color-accent);
+  }
+
+  .apui-loading[data-color='neutral'] {
+    --apui-_tone: var(--apui-color-neutral);
+  }
+
+  .apui-loading[data-color='success'] {
+    --apui-_tone: var(--apui-color-success);
+  }
+
+  .apui-loading[data-color='warning'] {
+    --apui-_tone: var(--apui-color-warning);
+  }
+
+  .apui-loading[data-color='error'] {
+    --apui-_tone: var(--apui-color-error);
+  }
+
+  .apui-loading[data-color='info'] {
+    --apui-_tone: var(--apui-color-info);
+  }
+
+  /* Spinner: a ring with one tinted edge. */
+  [data-scope='loading'][data-part='indicator'] {
+    flex: none;
+    box-sizing: border-box;
+    inline-size: var(--apui-_spinner);
+    block-size: var(--apui-_spinner);
+    border: var(--apui-_ring) solid var(--apui-surface-sunken);
+    border-block-start-color: var(--apui-_tone);
+    border-radius: 9999px;
+    animation: apui-loading-spin 0.8s linear infinite;
+  }
+
+  @keyframes apui-loading-spin {
+    to {
+      rotate: 1turn;
+    }
+  }
+
+  /* Dots: three pulses in a row. */
+  .apui-loading[data-variant='dots'] [data-scope='loading'][data-part='indicator'] {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(var(--apui-_dot) * 0.67);
+    inline-size: auto;
+    block-size: auto;
+    border: 0;
+    border-radius: 0;
+    animation: none;
+  }
+
+  .apui-loading[data-variant='dots'] [data-scope='loading'][data-part='indicator'] > span {
+    inline-size: var(--apui-_dot);
+    block-size: var(--apui-_dot);
+    border-radius: 9999px;
+    background: var(--apui-_tone);
+    animation: apui-loading-dot 1.2s ease-in-out infinite;
+  }
+
+  .apui-loading[data-variant='dots']
+    [data-scope='loading'][data-part='indicator']
+    > span:nth-child(2) {
+    animation-delay: 0.15s;
+  }
+
+  .apui-loading[data-variant='dots']
+    [data-scope='loading'][data-part='indicator']
+    > span:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+
+  @keyframes apui-loading-dot {
+    0%,
+    80%,
+    100% {
+      opacity: 0.25;
+      scale: 0.8;
+    }
+
+    40% {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+
+  /* Overlay: covers the region that is loading, on the glass surface. */
+  .apui-loading[data-overlay] {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 12px;
+    border-radius: inherit;
+    background: var(--apui-surface-glass);
+    font-size: var(--apui-type-body-sm-font-size);
+    line-height: var(--apui-type-body-sm-line-height);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='loading'][data-part='indicator'] {
+      animation-duration: 2.4s;
+    }
+
+    .apui-loading[data-variant='dots'] [data-scope='loading'][data-part='indicator'] > span {
+      animation: none;
+      opacity: 0.6;
+    }
+  }
+
+  @media (forced-colors: active) {
+    [data-scope='loading'][data-part='indicator'] {
+      forced-color-adjust: none;
+      border-color: GrayText;
+      border-block-start-color: CanvasText;
+    }
+
+    .apui-loading[data-variant='dots'] [data-scope='loading'][data-part='indicator'] > span {
+      forced-color-adjust: none;
+      background: CanvasText;
+    }
+
+    .apui-loading[data-overlay] {
+      background: Canvas;
+    }
+  }
+}
+/*
+ * Progress (#60). Root `.apui-progress` is the progressbar, with data-size
+ * (sm, md, lg) and data-color. Parts: head (label and value) and track with
+ * its bar; with data-segmented the track holds one bar per step, the done
+ * ones marked data-done. The bar's width comes inline as --apui-_v. data-indeterminate
+ * slides a short bar along the track in the reading direction, and stops
+ * under reduced motion. See design/components/Progress.
+ */
+@layer apui.components {
+  .apui-progress {
+    --apui-_tone: var(--apui-color-primary);
+    --apui-_height: var(--apui-progress-height);
+
+    display: grid;
+    gap: 6px;
+    min-inline-size: 0;
+    font-family: var(--apui-font-family-sans);
+  }
+
+  .apui-progress[data-size='sm'] {
+    --apui-_height: 4px;
+  }
+
+  .apui-progress[data-size='lg'] {
+    --apui-_height: 10px;
+  }
+
+  .apui-progress[data-color='secondary'] {
+    --apui-_tone: var(--apui-color-secondary);
+  }
+
+  .apui-progress[data-color='accent'] {
+    --apui-_tone: var(--apui-color-accent);
+  }
+
+  .apui-progress[data-color='neutral'] {
+    --apui-_tone: var(--apui-color-neutral);
+  }
+
+  .apui-progress[data-color='success'] {
+    --apui-_tone: var(--apui-color-success);
+  }
+
+  .apui-progress[data-color='warning'] {
+    --apui-_tone: var(--apui-color-warning);
+  }
+
+  .apui-progress[data-color='error'] {
+    --apui-_tone: var(--apui-color-error);
+  }
+
+  .apui-progress[data-color='info'] {
+    --apui-_tone: var(--apui-color-info);
+  }
+
+  [data-scope='progress'][data-part='head'] {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: var(--apui-type-body-sm-font-size);
+    line-height: 18px;
+  }
+
+  [data-scope='progress'][data-part='label'] {
+    color: var(--apui-text-default);
+    font-weight: var(--apui-font-weight-medium);
+  }
+
+  [data-scope='progress'][data-part='value'] {
+    color: var(--apui-text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* The track keeps a 1px edge so it shows at 3:1 on every surface. */
+  [data-scope='progress'][data-part='track'] {
+    position: relative;
+    overflow: hidden;
+    block-size: var(--apui-_height);
+    border-radius: 9999px;
+    background: var(--apui-surface-sunken);
+    box-shadow: inset 0 0 0 1px var(--apui-border-muted);
+  }
+
+  [data-scope='progress'][data-part='bar'] {
+    inline-size: var(--apui-_v, 0%);
+    block-size: 100%;
+    border-radius: inherit;
+    background: var(--apui-_tone);
+    transition: inline-size var(--apui-motion-duration-slow) var(--apui-motion-ease-standard);
+  }
+
+  .apui-progress[data-indeterminate] [data-scope='progress'][data-part='bar'] {
+    position: absolute;
+    inset-block: 0;
+    inline-size: 35%;
+    animation: apui-progress-indeterminate 1.4s ease-in-out infinite;
+  }
+
+  @keyframes apui-progress-indeterminate {
+    from {
+      inset-inline-start: -35%;
+    }
+
+    to {
+      inset-inline-start: 100%;
+    }
+  }
+
+  /* Segmented: the track lays out one bar per step; done steps are filled. */
+  .apui-progress[data-segmented] [data-scope='progress'][data-part='track'] {
+    display: grid;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-auto-flow: column;
+    gap: 4px;
+    overflow: visible;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+
+  .apui-progress[data-segmented] [data-scope='progress'][data-part='bar'] {
+    inline-size: auto;
+    border-radius: 9999px;
+    background: var(--apui-surface-sunken);
+    box-shadow: inset 0 0 0 1px var(--apui-border-muted);
+    transition: none;
+  }
+
+  .apui-progress[data-segmented] [data-scope='progress'][data-part='bar'][data-done] {
+    background: var(--apui-_tone);
+    box-shadow: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='progress'][data-part='bar'] {
+      transition: none;
+    }
+
+    .apui-progress[data-indeterminate] [data-scope='progress'][data-part='bar'] {
+      inset-inline-start: 0;
+      animation: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    [data-scope='progress'][data-part='track'],
+    .apui-progress[data-segmented] [data-scope='progress'][data-part='bar'] {
+      forced-color-adjust: none;
+      border: 1px solid CanvasText;
+      background: Canvas;
+      box-shadow: none;
+    }
+
+    [data-scope='progress'][data-part='bar'],
+    .apui-progress[data-segmented] [data-scope='progress'][data-part='bar'][data-done] {
+      forced-color-adjust: none;
+      background: Highlight;
+    }
+  }
+}
+/*
+ * ProgressRadial (#60), built from Progress. Root `.apui-progress-radial`,
+ * role=progressbar, with data-color; its size comes inline as --apui-_s.
+ * Parts: svg (the ring, drawn with a track circle and a bar circle whose
+ * dash offset is the value), value (the number in the center) and label (a
+ * caption under it). The ring starts at the top and fills in the reading
+ * direction; data-indeterminate spins a quarter arc, slowed under reduced
+ * motion. See design/components/ProgressRadial.
+ */
+@layer apui.components {
+  .apui-progress-radial {
+    --apui-_tone: var(--apui-color-primary);
+    --apui-_s: 64px;
+
+    position: relative;
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    inline-size: var(--apui-_s);
+    block-size: var(--apui-_s);
+    font-family: var(--apui-font-family-sans);
+    vertical-align: middle;
+  }
+
+  .apui-progress-radial[data-color='secondary'] {
+    --apui-_tone: var(--apui-color-secondary);
+  }
+
+  .apui-progress-radial[data-color='accent'] {
+    --apui-_tone: var(--apui-color-accent);
+  }
+
+  .apui-progress-radial[data-color='neutral'] {
+    --apui-_tone: var(--apui-color-neutral);
+  }
+
+  .apui-progress-radial[data-color='success'] {
+    --apui-_tone: var(--apui-color-success);
+  }
+
+  .apui-progress-radial[data-color='warning'] {
+    --apui-_tone: var(--apui-color-warning);
+  }
+
+  .apui-progress-radial[data-color='error'] {
+    --apui-_tone: var(--apui-color-error);
+  }
+
+  .apui-progress-radial[data-color='info'] {
+    --apui-_tone: var(--apui-color-info);
+  }
+
+  [data-scope='progress-radial'][data-part='svg'] {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    rotate: -90deg;
+  }
+
+  /* Mirror across the vertical axis, so the ring fills counterclockwise. */
+  [data-scope='progress-radial'][data-part='svg']:dir(rtl) {
+    transform: scaleY(-1);
+  }
+
+  [data-scope='progress-radial'][data-part='track'] {
+    fill: none;
+    stroke: var(--apui-surface-sunken);
+  }
+
+  [data-scope='progress-radial'][data-part='bar'] {
+    fill: none;
+    stroke: var(--apui-_tone);
+    stroke-linecap: round;
+    transition: stroke-dashoffset var(--apui-motion-duration-slow) var(--apui-motion-ease-standard);
+  }
+
+  [data-scope='progress-radial'][data-part='value'] {
+    position: relative;
+    color: var(--apui-text-default);
+    font-size: calc(var(--apui-_s) * 0.24);
+    font-variant-numeric: tabular-nums;
+    font-weight: var(--apui-font-weight-semibold);
+    line-height: 1;
+    text-align: center;
+  }
+
+  [data-scope='progress-radial'][data-part='label'] {
+    display: block;
+    margin-block-start: 2px;
+    color: var(--apui-text-muted);
+    font-size: 11px;
+    font-weight: var(--apui-font-weight-regular);
+    line-height: 14px;
+    text-align: center;
+  }
+
+  .apui-progress-radial[data-indeterminate] [data-scope='progress-radial'][data-part='svg'] {
+    animation: apui-progress-radial-spin 1.2s linear infinite;
+  }
+
+  .apui-progress-radial[data-indeterminate]
+    [data-scope='progress-radial'][data-part='svg']:dir(rtl) {
+    animation-direction: reverse;
+  }
+
+  @keyframes apui-progress-radial-spin {
+    from {
+      rotate: -90deg;
+    }
+
+    to {
+      rotate: 270deg;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='progress-radial'][data-part='bar'] {
+      transition: none;
+    }
+
+    .apui-progress-radial[data-indeterminate] [data-scope='progress-radial'][data-part='svg'] {
+      animation-duration: 3.6s;
+    }
+  }
+
+  @media (forced-colors: active) {
+    [data-scope='progress-radial'][data-part='track'] {
+      forced-color-adjust: none;
+      stroke: GrayText;
+    }
+
+    [data-scope='progress-radial'][data-part='bar'] {
+      forced-color-adjust: none;
+      stroke: Highlight;
+    }
+  }
+}
+/*
+ * Skeleton (#60). Root `.apui-skeleton`: one placeholder shape, hidden from
+ * assistive technology (aria-hidden). data-shape is block (default), text (a
+ * 10px line with its own line spacing) or circle; width and height come
+ * inline. The container that is loading sets aria-busy. The shimmer moves in
+ * the reading direction and stops under reduced motion. See
+ * design/components/Skeleton.
+ */
+@layer apui.components {
+  .apui-skeleton {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border-radius: var(--apui-radius-sm);
+    background: var(--apui-surface-sunken);
+  }
+
+  .apui-skeleton::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, var(--apui-state-hover), transparent);
+    translate: -100% 0;
+    animation: apui-skeleton-shimmer 1.6s ease-in-out infinite;
+  }
+
+  .apui-skeleton:dir(rtl)::after {
+    animation-direction: reverse;
+  }
+
+  @keyframes apui-skeleton-shimmer {
+    to {
+      translate: 100% 0;
+    }
+  }
+
+  .apui-skeleton[data-shape='text'] {
+    block-size: 10px;
+    margin-block: 5px;
+    border-radius: 9999px;
+  }
+
+  .apui-skeleton[data-shape='circle'] {
+    border-radius: 9999px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .apui-skeleton::after {
+      animation: none;
+      opacity: 0;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .apui-skeleton {
+      forced-color-adjust: none;
+      background: GrayText;
+    }
+
+    .apui-skeleton::after {
+      display: none;
+    }
+  }
+}
+/*
+ * EmptyState and ErrorState (#60). Roots `.apui-empty-state` and
+ * `.apui-error-state` share one layout, with data-variant, data-size (sm, md)
+ * and data-align (center, start). Parts, scoped empty-state or error-state:
+ * icon (a tinted tile), numeral (ErrorState's large status number), title
+ * (a heading), description, code (ErrorState's reference for support) and
+ * actions. The variant picks the tile's tint. See design/components/EmptyState
+ * and design/components/ErrorState.
+ */
+@layer apui.components {
+  .apui-empty-state,
+  .apui-error-state {
+    --apui-_tile: var(--apui-color-neutral-soft);
+    --apui-_on-tile: var(--apui-color-neutral-soft-foreground);
+
+    display: grid;
+    gap: 6px;
+    justify-items: center;
+    padding-block: 40px;
+    padding-inline: 24px;
+    font-family: var(--apui-font-family-sans);
+    text-align: center;
+  }
+
+  .apui-empty-state[data-variant='first-use'] {
+    --apui-_tile: var(--apui-color-primary-soft);
+    --apui-_on-tile: var(--apui-color-primary-soft-foreground);
+  }
+
+  .apui-empty-state[data-variant='cleared'] {
+    --apui-_tile: var(--apui-color-success-soft);
+    --apui-_on-tile: var(--apui-color-success-soft-foreground);
+  }
+
+  .apui-error-state:is([data-variant='request'], [data-variant='forbidden']) {
+    --apui-_tile: var(--apui-color-error-soft);
+    --apui-_on-tile: var(--apui-color-error-soft-foreground);
+  }
+
+  .apui-error-state[data-variant='offline'] {
+    --apui-_tile: var(--apui-color-warning-soft);
+    --apui-_on-tile: var(--apui-color-warning-soft-foreground);
+  }
+
+  :is(.apui-empty-state, .apui-error-state)[data-size='sm'] {
+    padding-block: 20px;
+    padding-inline: 16px;
+  }
+
+  :is(.apui-empty-state, .apui-error-state)[data-align='start'] {
+    justify-items: start;
+    text-align: start;
+  }
+
+  [data-scope='empty-state'][data-part='icon'],
+  [data-scope='error-state'][data-part='icon'] {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    inline-size: 48px;
+    block-size: 48px;
+    border-radius: var(--apui-radius-lg);
+    background: var(--apui-_tile);
+    color: var(--apui-_on-tile);
+  }
+
+  :is([data-scope='empty-state'], [data-scope='error-state'])[data-part='icon'] > svg {
+    inline-size: var(--apui-icon-size-lg);
+    block-size: var(--apui-icon-size-lg);
+  }
+
+  :is(.apui-empty-state, .apui-error-state)[data-size='sm']
+    :is([data-scope='empty-state'], [data-scope='error-state'])[data-part='icon'] {
+    inline-size: 40px;
+    block-size: 40px;
+    border-radius: var(--apui-radius-md);
+  }
+
+  :is(.apui-empty-state, .apui-error-state)[data-size='sm']
+    :is([data-scope='empty-state'], [data-scope='error-state'])[data-part='icon']
+    > svg {
+    inline-size: var(--apui-icon-size-md);
+    block-size: var(--apui-icon-size-md);
+  }
+
+  [data-scope='error-state'][data-part='numeral'] {
+    color: var(--apui-text-default);
+    font-size: 96px;
+    font-variant-numeric: tabular-nums;
+    font-weight: var(--apui-font-weight-semibold);
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+
+  :is([data-scope='empty-state'], [data-scope='error-state'])[data-part='title'] {
+    margin: 8px 0 0;
+    color: var(--apui-text-default);
+    font-size: var(--apui-type-heading-sm-font-size);
+    font-weight: var(--apui-font-weight-semibold);
+    line-height: var(--apui-type-heading-sm-line-height);
+  }
+
+  /* A title focused on a full-page error shows the ring. */
+  [data-scope='error-state'][data-part='title']:focus-visible {
+    border-radius: var(--apui-radius-xs);
+    outline: var(--apui-focus-ring-width) solid transparent;
+    box-shadow:
+      0 0 0 var(--apui-focus-ring-offset) var(--apui-focus-ring-offset-color),
+      0 0 0 calc(var(--apui-focus-ring-offset) + var(--apui-focus-ring-width))
+        var(--apui-focus-ring-color);
+  }
+
+  :is([data-scope='empty-state'], [data-scope='error-state'])[data-part='description'] {
+    max-inline-size: 44ch;
+    margin: 0;
+    color: var(--apui-text-muted);
+    font-size: var(--apui-type-body-md-font-size);
+    line-height: 20px;
+  }
+
+  :is(.apui-empty-state, .apui-error-state)[data-size='sm']
+    :is([data-scope='empty-state'], [data-scope='error-state'])[data-part='title'] {
+    margin-block-start: 4px;
+    font-size: var(--apui-type-body-md-font-size);
+    line-height: 20px;
+  }
+
+  :is(.apui-empty-state, .apui-error-state)[data-size='sm']
+    :is([data-scope='empty-state'], [data-scope='error-state'])[data-part='description'] {
+    font-size: var(--apui-type-body-sm-font-size);
+    line-height: var(--apui-type-body-sm-line-height);
+  }
+
+  [data-scope='error-state'][data-part='code'] {
+    margin-block-start: 6px;
+    padding-block: 2px;
+    padding-inline: 8px;
+    border-radius: var(--apui-radius-xs);
+    background: var(--apui-surface-sunken);
+    color: var(--apui-text-muted);
+    font-family: var(--apui-font-family-mono);
+    font-size: var(--apui-type-caption-font-size);
+    line-height: 18px;
+  }
+
+  :is([data-scope='empty-state'], [data-scope='error-state'])[data-part='actions'] {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-block-start: 12px;
+  }
+
+  :is(.apui-empty-state, .apui-error-state)[data-align='start']
+    :is([data-scope='empty-state'], [data-scope='error-state'])[data-part='actions'] {
+    justify-content: start;
+  }
+
+  @media (forced-colors: active) {
+    :is([data-scope='empty-state'], [data-scope='error-state'])[data-part='icon'] {
+      border: 1px solid CanvasText;
+    }
+
+    [data-scope='error-state'][data-part='code'] {
+      border: 1px solid CanvasText;
+    }
+  }
+}
+/*
+ * StreamableContent (#60, Livewire only per D-003). Root
+ * `.apui-streamable-content` with data-state: waiting, streaming, done, error
+ * or stopped. Parts: status (a line saying what's happening, with the Stop
+ * button while streaming), content (the live region the stream writes to),
+ * caret (shown after the text while streaming) and actions. Waiting shows
+ * Skeleton text lines; the caret stops blinking under reduced motion. See
+ * design/components/StreamableContent.
+ */
+@layer apui.components {
+  .apui-streamable-content {
+    display: grid;
+    gap: 10px;
+    color: var(--apui-text-default);
+    font-family: var(--apui-font-family-sans);
+    font-size: var(--apui-type-body-md-font-size);
+    line-height: 22px;
+  }
+
+  [data-scope='streamable-content'][data-part='status'] {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-block-size: 24px;
+    color: var(--apui-text-muted);
+    font-size: var(--apui-type-caption-font-size);
+    line-height: 16px;
+  }
+
+  [data-scope='streamable-content'][data-part='status'] > svg {
+    flex: none;
+    inline-size: var(--apui-icon-size-md);
+    block-size: var(--apui-icon-size-md);
+  }
+
+  /* The Stop button sits at the end of the status line. */
+  [data-scope='streamable-content'][data-part='stop-trigger'] {
+    margin-inline-start: auto;
+  }
+
+  .apui-streamable-content[data-state='error']
+    [data-scope='streamable-content'][data-part='status'] {
+    color: var(--apui-color-error-text);
+  }
+
+  .apui-streamable-content[data-state='done']
+    [data-scope='streamable-content'][data-part='status']
+    > svg {
+    color: var(--apui-color-success-text);
+  }
+
+  [data-scope='streamable-content'][data-part='content'] {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+
+  [data-scope='streamable-content'][data-part='content'] > :first-child {
+    margin-block-start: 0;
+  }
+
+  [data-scope='streamable-content'][data-part='content'] > :last-child {
+    margin-block-end: 0;
+  }
+
+  [data-scope='streamable-content'][data-part='caret'] {
+    display: inline-block;
+    inline-size: 7px;
+    block-size: 16px;
+    margin-inline-start: 2px;
+    border-radius: 1px;
+    background: var(--apui-text-default);
+    vertical-align: -3px;
+    animation: apui-streamable-content-blink 1s steps(1) infinite;
+  }
+
+  @keyframes apui-streamable-content-blink {
+    50% {
+      opacity: 0;
+    }
+  }
+
+  [data-scope='streamable-content'][data-part='actions'] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='streamable-content'][data-part='caret'] {
+      animation: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    [data-scope='streamable-content'][data-part='caret'] {
+      forced-color-adjust: none;
+      background: CanvasText;
+    }
+  }
+}
+/*
+ * Accordion (#58) on Zag's accordion machine. Root `.apui-accordion` with
+ * data-variant (default · separated · flush). Parts, scoped accordion: item
+ * (data-state open or closed), title (the h2–h6 around the trigger), trigger
+ * (aria-expanded), chevron and content (the spec's panel, hidden while
+ * closed). Zag's itemTrigger, itemIndicator and itemContent render as
+ * trigger, chevron and content. See design/components/Accordion.
+ */
+@layer apui.components {
+  .apui-accordion {
+    overflow: hidden;
+    border: var(--apui-border-width) solid var(--apui-border-muted);
+    border-radius: var(--apui-radius-lg);
+    background: var(--apui-surface-default);
+    color: var(--apui-text-default);
+    font-family: var(--apui-font-family-sans);
+  }
+
+  [data-scope='accordion'][data-part='item'] + [data-scope='accordion'][data-part='item'] {
+    border-block-start: var(--apui-border-width) solid var(--apui-border-muted);
+  }
+
+  [data-scope='accordion'][data-part='title'] {
+    margin: 0;
+    font: inherit;
+  }
+
+  [data-scope='accordion'][data-part='trigger'] {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    inline-size: 100%;
+    margin: 0;
+    padding-block: 14px;
+    padding-inline: var(--apui-panel-padding);
+    border: 0;
+    border-radius: 0;
+    background: none;
+    color: var(--apui-text-default);
+    font: inherit;
+    font-size: var(--apui-type-body-md-font-size);
+    font-weight: var(--apui-font-weight-medium);
+    line-height: var(--apui-type-body-md-line-height);
+    text-align: start;
+    cursor: pointer;
+    outline: none;
+  }
+
+  [data-scope='accordion'][data-part='trigger']:hover:not(:disabled) {
+    background: var(--apui-state-hover);
+  }
+
+  /* Inset, so the container's overflow doesn't clip it. */
+  [data-scope='accordion'][data-part='trigger']:focus-visible {
+    outline: var(--apui-focus-ring-width) solid transparent;
+    box-shadow: inset 0 0 0 var(--apui-focus-ring-width) var(--apui-focus-ring-color);
+  }
+
+  [data-scope='accordion'][data-part='trigger']:disabled {
+    color: var(--apui-text-disabled);
+    cursor: not-allowed;
+  }
+
+  [data-scope='accordion'][data-part='chevron'] {
+    display: inline-flex;
+    flex: none;
+    margin-inline-start: auto;
+    color: var(--apui-text-muted);
+    transition: rotate var(--apui-motion-duration-fast) var(--apui-motion-ease-standard);
+  }
+
+  [data-scope='accordion'][data-part='chevron'] > svg {
+    inline-size: var(--apui-icon-size-md);
+    block-size: var(--apui-icon-size-md);
+  }
+
+  [data-scope='accordion'][data-part='trigger'][aria-expanded='true']
+    [data-scope='accordion'][data-part='chevron'] {
+    rotate: 180deg;
+  }
+
+  [data-scope='accordion'][data-part='trigger']:disabled
+    [data-scope='accordion'][data-part='chevron'] {
+    color: inherit;
+  }
+
+  [data-scope='accordion'][data-part='content'] {
+    padding-block: 0 16px;
+    padding-inline: var(--apui-panel-padding);
+    color: var(--apui-text-muted);
+    font-size: var(--apui-type-body-md-font-size);
+    line-height: var(--apui-type-body-md-line-height);
+  }
+
+  .apui-accordion[data-variant='separated'] {
+    display: grid;
+    gap: 8px;
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: none;
+  }
+
+  .apui-accordion[data-variant='separated'] [data-scope='accordion'][data-part='item'] {
+    overflow: hidden;
+    border: var(--apui-border-width) solid var(--apui-border-muted);
+    border-radius: var(--apui-radius-lg);
+    background: var(--apui-surface-default);
+  }
+
+  .apui-accordion[data-variant='flush'] {
+    border: 0;
+    border-radius: 0;
+    background: none;
+  }
+
+  .apui-accordion[data-variant='flush']
+    :is(
+      [data-scope='accordion'][data-part='trigger'],
+      [data-scope='accordion'][data-part='content']
+    ) {
+    padding-inline: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='accordion'][data-part='chevron'] {
+      transition: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .apui-accordion,
+    .apui-accordion[data-variant='separated'] [data-scope='accordion'][data-part='item'],
+    [data-scope='accordion'][data-part='item'] + [data-scope='accordion'][data-part='item'] {
+      border-color: CanvasText;
+    }
+
+    [data-scope='accordion'][data-part='trigger']:focus-visible {
+      outline: var(--apui-focus-ring-width) solid Highlight;
+      outline-offset: calc(-1 * var(--apui-focus-ring-width));
+    }
+
+    [data-scope='accordion'][data-part='trigger']:disabled {
+      color: GrayText;
+    }
+  }
+}
+/*
+ * Collapse (#58) on Zag's collapsible machine, rescoped collapse. Root
+ * `.apui-collapse` with data-variant (section · read-more) and data-state.
+ * Parts: trigger (aria-expanded), icon (Zag's indicator), content (the
+ * spec's panel) and, in a read-more, fade. A closed section's content is
+ * hidden; a closed read-more's is clamped by the machine to
+ * --apui-collapse-clamp-height (64px), so its text stays readable to
+ * assistive technology. See design/components/Collapse.
+ */
+@layer apui.components {
+  .apui-collapse {
+    color: var(--apui-text-default);
+    font-family: var(--apui-font-family-sans);
+  }
+
+  [data-scope='collapse'][data-part='trigger'] {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--apui-radius-xs);
+    background: none;
+    color: var(--apui-color-primary-text);
+    font: inherit;
+    font-size: var(--apui-type-body-md-font-size);
+    font-weight: var(--apui-font-weight-medium);
+    line-height: var(--apui-type-body-md-line-height);
+    cursor: pointer;
+    outline: none;
+  }
+
+  [data-scope='collapse'][data-part='trigger']:hover:not([data-disabled]) {
+    text-decoration-line: underline;
+    text-underline-offset: 3px;
+  }
+
+  [data-scope='collapse'][data-part='trigger']:focus-visible {
+    outline: var(--apui-focus-ring-width) solid transparent;
+    box-shadow:
+      0 0 0 var(--apui-focus-ring-offset) var(--apui-focus-ring-offset-color),
+      0 0 0 calc(var(--apui-focus-ring-offset) + var(--apui-focus-ring-width))
+        var(--apui-focus-ring-color);
+  }
+
+  [data-scope='collapse'][data-part='trigger']:is(:disabled, [data-disabled]) {
+    color: var(--apui-text-disabled);
+    cursor: not-allowed;
+  }
+
+  [data-scope='collapse'][data-part='icon'] {
+    display: inline-flex;
+    flex: none;
+    transition: rotate var(--apui-motion-duration-fast) var(--apui-motion-ease-standard);
+  }
+
+  [data-scope='collapse'][data-part='icon'] > svg {
+    inline-size: var(--apui-icon-size-sm);
+    block-size: var(--apui-icon-size-sm);
+  }
+
+  [data-scope='collapse'][data-part='trigger'][aria-expanded='true']
+    [data-scope='collapse'][data-part='icon'] {
+    rotate: 180deg;
+  }
+
+  .apui-collapse[data-variant='section'] [data-scope='collapse'][data-part='content'] {
+    margin-block-start: 12px;
+  }
+
+  .apui-collapse[data-variant='read-more'] {
+    display: grid;
+    gap: 8px;
+    justify-items: start;
+  }
+
+  .apui-collapse[data-variant='read-more'] [data-scope='collapse'][data-part='content'] {
+    position: relative;
+    justify-self: stretch;
+    color: var(--apui-text-default);
+    font-size: var(--apui-type-body-md-font-size);
+    line-height: var(--apui-type-body-md-line-height);
+  }
+
+  [data-scope='collapse'][data-part='fade'] {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: 0;
+    block-size: 32px;
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      var(--apui-collapse-fade-to, var(--apui-surface-default))
+    );
+    pointer-events: none;
+  }
+
+  .apui-collapse[data-state='open'] [data-scope='collapse'][data-part='fade'] {
+    visibility: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='collapse'][data-part='icon'] {
+      transition: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    [data-scope='collapse'][data-part='trigger'] {
+      color: LinkText;
+    }
+
+    [data-scope='collapse'][data-part='trigger']:focus-visible {
+      outline: var(--apui-focus-ring-width) solid Highlight;
+    }
+
+    [data-scope='collapse'][data-part='trigger']:is(:disabled, [data-disabled]) {
+      color: GrayText;
+    }
+
+    [data-scope='collapse'][data-part='fade'] {
+      visibility: hidden;
+    }
+  }
+}
+/*
+ * AppShell (#58). Root `.apui-app-shell` is the frame: a grid of the sidebar
+ * and the main column on the page surface, with data-collapsed and
+ * data-collapsible. Parts, scoped app-shell: skip-link, sidebar (the aside
+ * island) with brand and footer (holding collapse-trigger), main (the main
+ * landmark: the header, usually a Navbar island, then content). The
+ * navigation is a Menu in the sidebar; collapsed, its items show only their
+ * icons and keep their labels for screen readers. Logical properties put the
+ * sidebar at the inline end in RTL; on a narrow viewport the islands stack.
+ * See design/components/AppShell.
+ */
+@layer apui.components {
+  .apui-app-shell {
+    position: relative;
+    display: grid;
+    grid-template-columns: var(--apui-sidebar-width) minmax(0, 1fr);
+    gap: var(--apui-shell-gutter);
+    min-block-size: 100%;
+    padding: var(--apui-shell-gutter);
+    background: var(--apui-surface-page);
+    color: var(--apui-text-default);
+    font-family: var(--apui-font-family-sans);
+  }
+
+  .apui-app-shell[data-collapsed] {
+    grid-template-columns: var(--apui-sidebar-width-collapsed, 64px) minmax(0, 1fr);
+  }
+
+  /* Hidden until focused, then shown at the frame's inline start. */
+  [data-scope='app-shell'][data-part='skip-link'] {
+    position: absolute;
+    inset-block-start: var(--apui-shell-gutter);
+    inset-inline-start: var(--apui-shell-gutter);
+    z-index: var(--apui-z-sticky);
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  [data-scope='app-shell'][data-part='skip-link']:focus {
+    display: inline-flex;
+    align-items: center;
+    inline-size: auto;
+    block-size: var(--apui-control-height-sm);
+    padding-inline: 12px;
+    overflow: visible;
+    clip-path: none;
+    border-radius: var(--apui-radius-full);
+    background: var(--apui-surface-default);
+    color: var(--apui-text-default);
+    font-size: var(--apui-type-body-md-font-size);
+    font-weight: var(--apui-font-weight-medium);
+    text-decoration: none;
+    outline: var(--apui-focus-ring-width) solid transparent;
+    box-shadow:
+      0 0 0 var(--apui-focus-ring-offset) var(--apui-focus-ring-offset-color),
+      0 0 0 calc(var(--apui-focus-ring-offset) + var(--apui-focus-ring-width))
+        var(--apui-focus-ring-color);
+  }
+
+  [data-scope='app-shell'][data-part='sidebar'] {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-inline-size: 0;
+    padding: 12px;
+    border: var(--apui-border-width) solid var(--apui-border-muted);
+    border-radius: var(--apui-radius-lg);
+    background: var(--apui-surface-default);
+  }
+
+  [data-scope='app-shell'][data-part='brand'] {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+    min-inline-size: 0;
+    padding-block: 4px 12px;
+    padding-inline: 8px;
+    overflow: hidden;
+    font-size: 15px;
+    font-weight: var(--apui-font-weight-semibold);
+    white-space: nowrap;
+  }
+
+  [data-scope='app-shell'][data-part='footer'] {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 10px;
+    min-inline-size: 0;
+    margin-block-start: auto;
+    padding: 8px;
+    padding-block-start: 12px;
+    border-block-start: var(--apui-border-width) solid var(--apui-border-muted);
+  }
+
+  [data-scope='app-shell'][data-part='collapse-trigger'] {
+    box-sizing: border-box;
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--apui-control-height-sm);
+    block-size: var(--apui-control-height-sm);
+    margin: 0;
+    margin-inline-start: auto;
+    padding: 0;
+    border: 0;
+    border-radius: var(--apui-radius-full);
+    background: none;
+    color: var(--apui-text-muted);
+    cursor: pointer;
+    outline: none;
+  }
+
+  [data-scope='app-shell'][data-part='collapse-trigger']:hover {
+    background: var(--apui-state-hover);
+    color: var(--apui-text-default);
+  }
+
+  [data-scope='app-shell'][data-part='collapse-trigger']:focus-visible {
+    outline: var(--apui-focus-ring-width) solid transparent;
+    box-shadow:
+      0 0 0 var(--apui-focus-ring-offset) var(--apui-focus-ring-offset-color),
+      0 0 0 calc(var(--apui-focus-ring-offset) + var(--apui-focus-ring-width))
+        var(--apui-focus-ring-color);
+  }
+
+  [data-scope='app-shell'][data-part='collapse-trigger'] > svg {
+    inline-size: var(--apui-icon-size-md);
+    block-size: var(--apui-icon-size-md);
+    transition: rotate var(--apui-motion-duration-fast) var(--apui-motion-ease-standard);
+  }
+
+  [dir='rtl'] [data-scope='app-shell'][data-part='collapse-trigger'] > svg {
+    scale: -1 1;
+  }
+
+  [data-scope='app-shell'][data-part='collapse-trigger'][aria-pressed='true'] > svg {
+    rotate: 180deg;
+  }
+
+  [data-scope='app-shell'][data-part='main'] {
+    display: grid;
+    gap: var(--apui-shell-gutter);
+    align-content: start;
+    min-inline-size: 0;
+    outline: none;
+  }
+
+  [data-scope='app-shell'][data-part='content'] {
+    display: grid;
+    gap: var(--apui-panel-gap);
+    align-content: start;
+    min-inline-size: 0;
+  }
+
+  /* Collapsed: the sidebar's Menu shows its icons; the labels stay in the accessibility tree. */
+  .apui-app-shell[data-collapsed] [data-scope='app-shell'][data-part='sidebar'] {
+    align-items: center;
+  }
+
+  .apui-app-shell[data-collapsed] [data-scope='app-shell'][data-part='brand'] {
+    justify-content: center;
+    inline-size: 100%;
+    padding-inline: 0;
+  }
+
+  .apui-app-shell[data-collapsed] [data-scope='app-shell'][data-part='footer'] {
+    flex-direction: column;
+    inline-size: 100%;
+    padding-inline: 0;
+    overflow: hidden;
+  }
+
+  .apui-app-shell[data-collapsed] [data-scope='app-shell'][data-part='collapse-trigger'] {
+    margin-inline-start: 0;
+  }
+
+  .apui-app-shell[data-collapsed] [data-scope='app-shell'][data-part='sidebar'] .apui-menu {
+    inline-size: 100%;
+  }
+
+  .apui-app-shell[data-collapsed]
+    [data-scope='app-shell'][data-part='sidebar']
+    [data-scope='menu'][data-part='item'] {
+    justify-content: center;
+    padding-inline: 0;
+  }
+
+  .apui-app-shell[data-collapsed]
+    [data-scope='app-shell'][data-part='sidebar']
+    :is(
+      [data-scope='menu'][data-part='item-text'],
+      [data-scope='menu'][data-part='badge'],
+      [data-scope='menu'][data-part='chevron'],
+      [data-scope='menu'][data-part='title']
+    ) {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Narrow viewports: the islands stack, the sidebar above the main column. */
+  @media (width < 48rem) {
+    .apui-app-shell,
+    .apui-app-shell[data-collapsed] {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='app-shell'][data-part='collapse-trigger'] > svg {
+      transition: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    [data-scope='app-shell'][data-part='sidebar'],
+    [data-scope='app-shell'][data-part='footer'] {
+      border-color: CanvasText;
+    }
+
+    :is(
+      [data-scope='app-shell'][data-part='skip-link'],
+      [data-scope='app-shell'][data-part='collapse-trigger']
+    ):focus-visible {
+      outline: var(--apui-focus-ring-width) solid Highlight;
+    }
+  }
+}
+/*
+ * PageHeader (#58). Root `.apui-page-header` stacks breadcrumbs, the row and
+ * tabs. Parts, scoped page-header: breadcrumbs, row (the title block and the
+ * actions, which wrap under it when there's no room), meta, title (the h1 by
+ * default, heading-xl), description (muted, to the reading measure), actions
+ * and tabs. See design/components/PageHeader.
+ */
+@layer apui.components {
+  .apui-page-header {
+    display: grid;
+    gap: var(--apui-space-2);
+    color: var(--apui-text-default);
+    font-family: var(--apui-font-family-sans);
+  }
+
+  [data-scope='page-header'][data-part='row'] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--apui-space-4);
+  }
+
+  [data-scope='page-header'][data-part='row'] > :first-child {
+    min-inline-size: 0;
+  }
+
+  [data-scope='page-header'][data-part='meta'] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--apui-space-2);
+    margin-block-end: 6px;
+    color: var(--apui-text-muted);
+    font-size: var(--apui-type-caption-font-size);
+    line-height: var(--apui-type-caption-line-height);
+  }
+
+  [data-scope='page-header'][data-part='title'] {
+    margin: 0;
+    color: var(--apui-text-default);
+    font-family: var(--apui-type-heading-xl-font-family);
+    font-size: var(--apui-type-heading-xl-font-size);
+    font-weight: var(--apui-type-heading-xl-font-weight);
+    line-height: var(--apui-type-heading-xl-line-height);
+    letter-spacing: var(--apui-type-heading-xl-letter-spacing);
+    overflow-wrap: anywhere;
+  }
+
+  [data-scope='page-header'][data-part='description'] {
+    max-inline-size: var(--apui-measure);
+    margin: 0;
+    margin-block-start: 4px;
+    color: var(--apui-text-muted);
+    font-size: var(--apui-type-body-md-font-size);
+    line-height: var(--apui-type-body-md-line-height);
+  }
+
+  [data-scope='page-header'][data-part='actions'] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--apui-space-2);
+  }
+
+  [data-scope='page-header'][data-part='tabs'] {
+    min-inline-size: 0;
+  }
+}
+/*
+ * Divider (#58). Root `.apui-divider`: an hr for a plain horizontal rule, or
+ * a div with role separator for a vertical or labelled one. data-orientation
+ * (horizontal · vertical), data-strength (subtle · strong) and, with a
+ * label, data-align (start · center · end). The label part sits between two
+ * rules drawn by the root. See design/components/Divider.
+ */
+@layer apui.components {
+  .apui-divider {
+    --apui-_rule: var(--apui-border-muted);
+
+    flex: none;
+    align-self: stretch;
+    block-size: var(--apui-border-width);
+
+    /*
+     * The rule has no content width. A floor keeps it drawn where its parent
+     * shrinks to fit (an inline-flex row, a fit-content cell); in block and
+     * column layouts it still spans the parent.
+     */
+    min-inline-size: 48px;
+    margin: 0;
+    border: 0;
+    background: var(--apui-_rule);
+    color: var(--apui-text-muted);
+  }
+
+  .apui-divider[data-strength='strong'] {
+    --apui-_rule: var(--apui-border-default);
+  }
+
+  .apui-divider[data-orientation='vertical'] {
+    inline-size: var(--apui-border-width);
+    min-inline-size: 0;
+    block-size: auto;
+    min-block-size: 20px;
+  }
+
+  /* Labelled: the root lays out two rules around the label. */
+  .apui-divider:has(> [data-scope='divider'][data-part='label']) {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    block-size: auto;
+    background: none;
+    font-family: var(--apui-font-family-sans);
+    font-size: var(--apui-type-caption-font-size);
+    line-height: var(--apui-type-caption-line-height);
+  }
+
+  .apui-divider:has(> [data-scope='divider'][data-part='label'])::before,
+  .apui-divider:has(> [data-scope='divider'][data-part='label'])::after {
+    content: '';
+    flex: 1;
+    min-inline-size: 24px;
+    block-size: var(--apui-border-width);
+    background: var(--apui-_rule);
+  }
+
+  .apui-divider[data-align='start']:has(> [data-scope='divider'][data-part='label'])::before,
+  .apui-divider[data-align='end']:has(> [data-scope='divider'][data-part='label'])::after {
+    flex: 0 0 16px;
+    min-inline-size: 0;
+  }
+
+  .apui-divider[data-orientation='vertical']:has(> [data-scope='divider'][data-part='label']) {
+    flex-direction: column;
+    inline-size: auto;
+  }
+
+  .apui-divider[data-orientation='vertical']:has(
+      > [data-scope='divider'][data-part='label']
+    )::before,
+  .apui-divider[data-orientation='vertical']:has(
+      > [data-scope='divider'][data-part='label']
+    )::after {
+    inline-size: var(--apui-border-width);
+    min-inline-size: 0;
+    block-size: auto;
+    min-block-size: 8px;
+  }
+
+  [data-scope='divider'][data-part='label'] {
+    flex: none;
+  }
+
+  @media (forced-colors: active) {
+    .apui-divider,
+    .apui-divider::before,
+    .apui-divider::after {
+      background: CanvasText;
+    }
+
+    .apui-divider:has(> [data-scope='divider'][data-part='label']) {
+      background: none;
+    }
+  }
+}
+/*
+ * Grid (#58), a layout primitive. Root `.apui-grid` with data-columns (1–12),
+ * data-gap (a step of the space scale), data-align (align-items) and
+ * data-justify (justify-items). With --apui-grid-min-item-width set (the
+ * minItemWidth prop), the columns drop rather than narrowing past it, down to
+ * one. (Each track's minimum is a pixel under an exact share, so rounding
+ * never drops a column.) Columns follow the text direction. No spec in design/: built from the
+ * tokens (wave #58 decision).
+ */
+@layer apui.components {
+  .apui-grid {
+    --apui-_columns: 1;
+    --apui-_gap: var(--apui-space-4);
+
+    display: grid;
+    grid-template-columns: repeat(
+      auto-fill,
+      minmax(
+        min(
+          100%,
+          max(
+            var(--apui-grid-min-item-width, 0px),
+            (100% - (var(--apui-_columns) - 1) * var(--apui-_gap)) / var(--apui-_columns) - 1px
+          )
+        ),
+        1fr
+      )
+    );
+    gap: var(--apui-_gap);
+    min-inline-size: 0;
+  }
+
+  .apui-grid[data-columns='2'] {
+    --apui-_columns: 2;
+  }
+
+  .apui-grid[data-columns='3'] {
+    --apui-_columns: 3;
+  }
+
+  .apui-grid[data-columns='4'] {
+    --apui-_columns: 4;
+  }
+
+  .apui-grid[data-columns='5'] {
+    --apui-_columns: 5;
+  }
+
+  .apui-grid[data-columns='6'] {
+    --apui-_columns: 6;
+  }
+
+  .apui-grid[data-columns='7'] {
+    --apui-_columns: 7;
+  }
+
+  .apui-grid[data-columns='8'] {
+    --apui-_columns: 8;
+  }
+
+  .apui-grid[data-columns='9'] {
+    --apui-_columns: 9;
+  }
+
+  .apui-grid[data-columns='10'] {
+    --apui-_columns: 10;
+  }
+
+  .apui-grid[data-columns='11'] {
+    --apui-_columns: 11;
+  }
+
+  .apui-grid[data-columns='12'] {
+    --apui-_columns: 12;
+  }
+
+  /* The space-0 token is a unitless 0, which calc() can't subtract from a length. */
+  .apui-grid[data-gap='0'] {
+    --apui-_gap: 0px;
+  }
+
+  .apui-grid[data-gap='1'] {
+    --apui-_gap: var(--apui-space-1);
+  }
+
+  .apui-grid[data-gap='2'] {
+    --apui-_gap: var(--apui-space-2);
+  }
+
+  .apui-grid[data-gap='3'] {
+    --apui-_gap: var(--apui-space-3);
+  }
+
+  .apui-grid[data-gap='5'] {
+    --apui-_gap: var(--apui-space-5);
+  }
+
+  .apui-grid[data-gap='6'] {
+    --apui-_gap: var(--apui-space-6);
+  }
+
+  .apui-grid[data-gap='8'] {
+    --apui-_gap: var(--apui-space-8);
+  }
+
+  .apui-grid[data-gap='10'] {
+    --apui-_gap: var(--apui-space-10);
+  }
+
+  .apui-grid[data-gap='12'] {
+    --apui-_gap: var(--apui-space-12);
+  }
+
+  .apui-grid[data-gap='16'] {
+    --apui-_gap: var(--apui-space-16);
+  }
+
+  .apui-grid[data-align='start'] {
+    align-items: start;
+  }
+
+  .apui-grid[data-align='center'] {
+    align-items: center;
+  }
+
+  .apui-grid[data-align='end'] {
+    align-items: end;
+  }
+
+  .apui-grid[data-justify='start'] {
+    justify-items: start;
+  }
+
+  .apui-grid[data-justify='center'] {
+    justify-items: center;
+  }
+
+  .apui-grid[data-justify='end'] {
+    justify-items: end;
+  }
+}
+/*
+ * Stack (#58), a layout primitive. Root `.apui-stack` with data-orientation
+ * (vertical · horizontal), data-gap (a step of the space scale), data-align
+ * (align-items), data-justify (justify-content) and data-wrap. A horizontal
+ * stack runs in the text direction. No spec in design/: built from the tokens
+ * (wave #58 decision).
+ */
+@layer apui.components {
+  .apui-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--apui-space-2);
+    min-inline-size: 0;
+  }
+
+  .apui-stack[data-orientation='horizontal'] {
+    flex-direction: row;
+  }
+
+  .apui-stack[data-wrap] {
+    flex-wrap: wrap;
+  }
+
+  .apui-stack[data-gap='0'] {
+    gap: var(--apui-space-0);
+  }
+
+  .apui-stack[data-gap='1'] {
+    gap: var(--apui-space-1);
+  }
+
+  .apui-stack[data-gap='3'] {
+    gap: var(--apui-space-3);
+  }
+
+  .apui-stack[data-gap='4'] {
+    gap: var(--apui-space-4);
+  }
+
+  .apui-stack[data-gap='5'] {
+    gap: var(--apui-space-5);
+  }
+
+  .apui-stack[data-gap='6'] {
+    gap: var(--apui-space-6);
+  }
+
+  .apui-stack[data-gap='8'] {
+    gap: var(--apui-space-8);
+  }
+
+  .apui-stack[data-gap='10'] {
+    gap: var(--apui-space-10);
+  }
+
+  .apui-stack[data-gap='12'] {
+    gap: var(--apui-space-12);
+  }
+
+  .apui-stack[data-gap='16'] {
+    gap: var(--apui-space-16);
+  }
+
+  .apui-stack[data-align='start'] {
+    align-items: flex-start;
+  }
+
+  .apui-stack[data-align='center'] {
+    align-items: center;
+  }
+
+  .apui-stack[data-align='end'] {
+    align-items: flex-end;
+  }
+
+  .apui-stack[data-align='baseline'] {
+    align-items: baseline;
+  }
+
+  .apui-stack[data-justify='center'] {
+    justify-content: center;
+  }
+
+  .apui-stack[data-justify='end'] {
+    justify-content: flex-end;
+  }
+
+  .apui-stack[data-justify='between'] {
+    justify-content: space-between;
+  }
+
+  .apui-stack[data-justify='around'] {
+    justify-content: space-around;
+  }
+
+  .apui-stack[data-justify='evenly'] {
+    justify-content: space-evenly;
+  }
+}
+/*
+ * ImageGallery (#61). Root `.apui-image-gallery` holds the grid and the
+ * lightbox, with data-featured. Grid parts: grid, item (a figure), trigger
+ * (the button that opens the lightbox), image and caption. The lightbox is
+ * a dialog (D-019): the panel `.apui-lightbox` is the machine's content part,
+ * with backdrop and positioner around it and bar (title, download,
+ * close-trigger), stage (image, prev-trigger, next-trigger), thumbs and
+ * thumb inside. The columns come in as --apui-_image-gallery-columns. The
+ * machine sets hidden on the closed parts; the rules below keep it working
+ * where they set display. See design/components/ImageGallery.
+ */
+@layer apui.components {
+  .apui-image-gallery {
+    display: grid;
+    gap: 12px;
+    color: var(--apui-text-default);
+    font-family: var(--apui-font-family-sans);
+  }
+
+  [data-scope='image-gallery'][data-part='grid'] {
+    display: grid;
+    grid-template-columns: repeat(var(--apui-_image-gallery-columns, 4), minmax(0, 1fr));
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+  }
+
+  [data-scope='image-gallery'][data-part='item'] {
+    position: relative;
+    margin: 0;
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--apui-radius-md);
+    background: var(--apui-surface-sunken);
+  }
+
+  /* The featured image spans two columns and two rows. */
+  .apui-image-gallery[data-featured] [data-scope='image-gallery'][data-part='item']:first-child {
+    grid-row: span 2;
+    grid-column: span 2;
+    aspect-ratio: auto;
+  }
+
+  /* The ring sits on the item, outside the clipped image. */
+  [data-scope='image-gallery'][data-part='item']:has(
+      > [data-scope='image-gallery'][data-part='trigger']:focus-visible
+    ) {
+    outline: var(--apui-focus-ring-width) solid transparent;
+    box-shadow:
+      0 0 0 var(--apui-focus-ring-offset) var(--apui-focus-ring-offset-color),
+      0 0 0 calc(var(--apui-focus-ring-offset) + var(--apui-focus-ring-width))
+        var(--apui-focus-ring-color);
+  }
+
+  [data-scope='image-gallery'][data-part='trigger'] {
+    display: block;
+    box-sizing: border-box;
+    inline-size: 100%;
+    block-size: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: inherit;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: zoom-in;
+    appearance: none;
+  }
+
+  [data-scope='image-gallery'][data-part='trigger']:focus-visible {
+    outline: none;
+  }
+
+  [data-scope='image-gallery'][data-part='item'] [data-scope='image-gallery'][data-part='image'] {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+
+  [data-scope='image-gallery'][data-part='caption'] {
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline: 0;
+    padding-block: 24px 8px;
+    padding-inline: 10px;
+    background: linear-gradient(to top, rgb(0 0 0 / 60%), rgb(0 0 0 / 0%));
+    color: #fff;
+    font-size: var(--apui-type-caption-font-size);
+    font-weight: var(--apui-font-weight-medium);
+    line-height: var(--apui-type-caption-line-height);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--apui-motion-duration-fast) var(--apui-motion-ease-standard);
+  }
+
+  /* Captions show on hover and focus, and always where there's no hover. */
+  [data-scope='image-gallery'][data-part='item']:is(:hover, :focus-within)
+    [data-scope='image-gallery'][data-part='caption'] {
+    opacity: 1;
+  }
+
+  @media (hover: none) {
+    [data-scope='image-gallery'][data-part='caption'] {
+      opacity: 1;
+    }
+  }
+
+  /* The lightbox: a dark viewer in every theme, so photos read the same. */
+  [data-scope='image-gallery'][data-part='backdrop'] {
+    position: fixed;
+    inset: 0;
+    z-index: var(--apui-z-modal);
+    background: var(--apui-backdrop);
+  }
+
+  [data-scope='image-gallery'][data-part='positioner'] {
+    position: fixed;
+    inset: 0;
+    z-index: var(--apui-z-modal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    overflow-y: auto;
+  }
+
+  :is([data-scope='image-gallery'][data-part='positioner'], .apui-lightbox)[hidden],
+  [data-scope='image-gallery'][data-part='backdrop'][hidden] {
+    display: none;
+  }
+
+  .apui-lightbox {
+    --apui-_lightbox-bg: rgb(8 10 12 / 92%);
+    --apui-_lightbox-fg: #f4f7fb;
+    --apui-focus-ring-offset-color: #080a0c;
+
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: 12px;
+    box-sizing: border-box;
+    inline-size: min(960px, 100%);
+    max-block-size: 100%;
+    padding: 16px;
+    border-radius: var(--apui-radius-lg);
+    background: var(--apui-_lightbox-bg);
+    color: var(--apui-_lightbox-fg);
+    font-family: var(--apui-font-family-sans);
+    outline: none;
+  }
+
+  .apui-lightbox[data-state='open'] {
+    animation: apui-lightbox-enter var(--apui-motion-duration-moderate)
+      var(--apui-motion-ease-enter);
+  }
+
+  @keyframes apui-lightbox-enter {
+    from {
+      opacity: 0;
+      transform: scale(0.98);
+    }
+  }
+
+  [data-scope='image-gallery'][data-part='bar'] {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-inline-size: 0;
+    font-size: var(--apui-type-body-sm-font-size);
+    line-height: var(--apui-type-body-sm-line-height);
+  }
+
+  [data-scope='image-gallery'][data-part='bar'] .apui-button {
+    --apui-button-fg: var(--apui-_lightbox-fg);
+  }
+
+  [data-scope='image-gallery'][data-part='title'] {
+    flex: 1;
+    min-inline-size: 0;
+    margin: 0;
+    overflow: hidden;
+    font-size: inherit;
+    font-weight: var(--apui-font-weight-medium);
+    line-height: inherit;
+    font-variant-numeric: tabular-nums;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    /* The counter and caption follow the caption's own direction. */
+    unicode-bidi: plaintext;
+  }
+
+  [data-scope='image-gallery'][data-part='stage'] {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-block-size: 0;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--apui-radius-md);
+    background: rgb(0 0 0 / 40%);
+  }
+
+  [data-scope='image-gallery'][data-part='stage']
+    > [data-scope='image-gallery'][data-part='image'] {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: contain;
+  }
+
+  [data-scope='image-gallery']:is([data-part='prev-trigger'], [data-part='next-trigger']) {
+    position: absolute;
+    inset-block-start: 50%;
+    transform: translateY(-50%);
+  }
+
+  [data-scope='image-gallery'][data-part='prev-trigger'] {
+    inset-inline-start: 12px;
+  }
+
+  [data-scope='image-gallery'][data-part='next-trigger'] {
+    inset-inline-end: 12px;
+  }
+
+  [dir='rtl']
+    [data-scope='image-gallery']:is([data-part='prev-trigger'], [data-part='next-trigger'])
+    [data-mirror]
+    > svg {
+    scale: -1 1;
+  }
+
+  [data-scope='image-gallery'][data-part='thumbs'] {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    padding: 4px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+
+  [data-scope='image-gallery'][data-part='thumb'] {
+    flex: none;
+    inline-size: 56px;
+    block-size: 40px;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    border-radius: var(--apui-radius-sm);
+    background: rgb(255 255 255 / 8%);
+    cursor: pointer;
+    opacity: 0.55;
+    appearance: none;
+    transition: opacity var(--apui-motion-duration-fast) var(--apui-motion-ease-standard);
+  }
+
+  [data-scope='image-gallery'][data-part='thumb']:hover {
+    opacity: 0.8;
+  }
+
+  [data-scope='image-gallery'][data-part='thumb'] > img {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+
+  [data-scope='image-gallery'][data-part='thumb']:is([aria-current='true'], :focus-visible) {
+    outline: var(--apui-focus-ring-width) solid transparent;
+    box-shadow:
+      0 0 0 var(--apui-focus-ring-offset) var(--apui-focus-ring-offset-color),
+      0 0 0 calc(var(--apui-focus-ring-offset) + var(--apui-focus-ring-width))
+        var(--apui-focus-ring-color);
+    opacity: 1;
+  }
+
+  /* The current thumb keeps its ring; focus adds a dashed one in the text color. */
+  [data-scope='image-gallery'][data-part='thumb'][aria-current='true']:focus-visible {
+    outline: 2px dashed var(--apui-_lightbox-fg);
+    outline-offset: 6px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='image-gallery']:is([data-part='caption'], [data-part='thumb']) {
+      transition: none;
+    }
+
+    .apui-lightbox[data-state='open'] {
+      animation: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    [data-scope='image-gallery'][data-part='caption'] {
+      background: Canvas;
+      color: CanvasText;
+      opacity: 1;
+    }
+
+    .apui-lightbox {
+      border: 1px solid CanvasText;
+      background: Canvas;
+      color: CanvasText;
+    }
+
+    [data-scope='image-gallery'][data-part='thumb'] {
+      opacity: 1;
+    }
+
+    [data-scope='image-gallery'][data-part='thumb'][aria-current='true'] {
+      outline: 3px solid Highlight;
+    }
+  }
+}
+/*
+ * ImageSlider (#61), on the carousel machine. Root `.apui-image-slider` is
+ * the machine's root (role=region). Parts: viewport (the rounded frame, its
+ * ratio from --apui-_image-slider-ratio), item-group (the scroll-snapping
+ * track), item (a slide), image, caption (title and description, glass),
+ * progress-text (the spec's counter, glass), prev-trigger and next-trigger,
+ * indicator-group and indicator (the spec's dots, glass), autoplay-trigger,
+ * and thumbs and thumb under the frame. See design/components/ImageSlider.
+ */
+@layer apui.components {
+  .apui-image-slider {
+    display: grid;
+    gap: 10px;
+    min-inline-size: 0;
+    color: var(--apui-text-default);
+    font-family: var(--apui-font-family-sans);
+  }
+
+  [data-scope='image-slider'][data-part='viewport'] {
+    position: relative;
+    min-inline-size: 0;
+    overflow: hidden;
+    aspect-ratio: var(--apui-_image-slider-ratio, 21 / 9);
+    border-radius: var(--apui-radius-lg);
+    background: var(--apui-surface-sunken);
+  }
+
+  /* The track fills the frame, so slides get a definite height to cover. */
+  [data-scope='image-slider'][data-part='item-group'] {
+    position: absolute;
+    inset: 0;
+  }
+
+  [data-scope='image-slider'][data-part='item-group']::-webkit-scrollbar {
+    display: none;
+  }
+
+  [data-scope='image-slider'][data-part='item-group']:focus-visible {
+    outline: var(--apui-focus-ring-width) solid var(--apui-focus-ring-color);
+    outline-offset: calc(-1 * var(--apui-focus-ring-width));
+    border-radius: inherit;
+  }
+
+  [data-scope='image-slider'][data-part='item'] {
+    position: relative;
+    block-size: 100%;
+    min-inline-size: 0;
+  }
+
+  /* Out of flow, so the image never sizes the track: it covers its slide. */
+  [data-scope='image-slider'][data-part='image'] {
+    position: absolute;
+    inset: 0;
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+
+  /* Glass overlays: caption, counter and dots (D-006). */
+  [data-scope='image-slider']:is(
+    [data-part='caption'],
+    [data-part='progress-text'],
+    [data-part='indicator-group'],
+    [data-part='autoplay-trigger']
+  ) {
+    --apui-text-muted: var(--apui-text-muted-glass);
+    --apui-focus-ring-offset-color: transparent;
+
+    position: absolute;
+    box-sizing: border-box;
+    border: var(--apui-border-width) solid var(--apui-surface-glass-border);
+    background: var(--apui-surface-glass);
+    box-shadow: var(--apui-elevation-glass);
+    color: var(--apui-text-default);
+    backdrop-filter: blur(var(--apui-surface-glass-blur))
+      saturate(var(--apui-surface-glass-saturation));
+  }
+
+  @supports not (backdrop-filter: blur(1px)) {
+    [data-scope='image-slider']:is(
+      [data-part='caption'],
+      [data-part='progress-text'],
+      [data-part='indicator-group'],
+      [data-part='autoplay-trigger']
+    ) {
+      border-color: var(--apui-border-muted);
+      background: var(--apui-surface-raised);
+    }
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    [data-scope='image-slider']:is(
+      [data-part='caption'],
+      [data-part='progress-text'],
+      [data-part='indicator-group'],
+      [data-part='autoplay-trigger']
+    ) {
+      border-color: var(--apui-border-muted);
+      background: var(--apui-surface-raised);
+      backdrop-filter: none;
+    }
+  }
+
+  [data-scope='image-slider'][data-part='caption'] {
+    inset-block-end: 20px;
+    inset-inline-start: 20px;
+    max-inline-size: min(420px, calc(100% - 40px));
+    padding-block: 14px;
+    padding-inline: 16px;
+    border-radius: var(--apui-radius-lg);
+  }
+
+  [data-scope='image-slider'][data-part='title'] {
+    margin: 0;
+    font-size: var(--apui-type-heading-md-font-size);
+    font-weight: var(--apui-font-weight-semibold);
+    line-height: var(--apui-type-heading-md-line-height);
+  }
+
+  [data-scope='image-slider'][data-part='description'] {
+    margin: 2px 0 0;
+    color: var(--apui-text-muted);
+    font-size: var(--apui-type-body-sm-font-size);
+    line-height: var(--apui-type-body-sm-line-height);
+  }
+
+  [data-scope='image-slider'][data-part='progress-text'] {
+    inset-block-start: 16px;
+    inset-inline-end: 16px;
+    padding-block: 2px;
+    padding-inline: 10px;
+    border-radius: var(--apui-radius-full);
+    font-size: var(--apui-type-caption-font-size);
+    font-weight: var(--apui-font-weight-medium);
+    line-height: var(--apui-type-caption-line-height);
+    font-variant-numeric: tabular-nums;
+
+    /* "2 / 6" reads the same way in RTL: no strong characters, so plaintext
+       lays it out left to right, while the part stays at the inline end. */
+    unicode-bidi: plaintext;
+  }
+
+  [data-scope='image-slider']:is([data-part='prev-trigger'], [data-part='next-trigger']) {
+    position: absolute;
+    inset-block-start: 50%;
+    z-index: 1;
+    box-shadow: var(--apui-elevation-glass);
+    transform: translateY(-50%);
+  }
+
+  [data-scope='image-slider'][data-part='prev-trigger'] {
+    inset-inline-start: 8px;
+  }
+
+  [data-scope='image-slider'][data-part='next-trigger'] {
+    inset-inline-end: 8px;
+  }
+
+  [dir='rtl']
+    [data-scope='image-slider']:is([data-part='prev-trigger'], [data-part='next-trigger'])
+    [data-mirror]
+    > svg {
+    scale: -1 1;
+  }
+
+  [data-scope='image-slider'][data-part='indicator-group'] {
+    inset-block-end: 20px;
+    inset-inline-end: 20px;
+    display: flex;
+    align-items: center;
+    padding-block: 0;
+    padding-inline: 4px;
+    border-radius: var(--apui-radius-full);
+  }
+
+  /* A 24px target (WCAG 2.5.8) around the drawn dot. */
+  [data-scope='image-slider'][data-part='indicator'] {
+    display: grid;
+    place-items: center;
+    box-sizing: border-box;
+    inline-size: 24px;
+    block-size: 24px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--apui-radius-full);
+    background: none;
+    cursor: pointer;
+    appearance: none;
+  }
+
+  [data-scope='image-slider'][data-part='indicator'][aria-current='true'] {
+    inline-size: 32px;
+  }
+
+  [data-scope='image-slider'][data-part='indicator']::before {
+    content: '';
+    inline-size: 8px;
+    block-size: 8px;
+    border-radius: var(--apui-radius-full);
+    background: var(--apui-border-default);
+    transition: inline-size var(--apui-motion-duration-fast) var(--apui-motion-ease-standard);
+  }
+
+  [data-scope='image-slider'][data-part='indicator'][aria-current='true']::before {
+    inline-size: 20px;
+    background: var(--apui-color-primary);
+  }
+
+  [data-scope='image-slider']:is([data-part='indicator'], [data-part='thumb']):focus-visible {
+    outline: var(--apui-focus-ring-width) solid transparent;
+    box-shadow:
+      0 0 0 var(--apui-focus-ring-offset) var(--apui-focus-ring-offset-color),
+      0 0 0 calc(var(--apui-focus-ring-offset) + var(--apui-focus-ring-width))
+        var(--apui-focus-ring-color);
+  }
+
+  [data-scope='image-slider'][data-part='autoplay-trigger'] {
+    inset-block-start: 16px;
+    inset-inline-start: 16px;
+    display: grid;
+    place-items: center;
+    inline-size: var(--apui-control-height-sm);
+    block-size: var(--apui-control-height-sm);
+    margin: 0;
+    padding: 0;
+    border-radius: var(--apui-radius-full);
+    cursor: pointer;
+    appearance: none;
+  }
+
+  [data-scope='image-slider'][data-part='autoplay-trigger'] > svg {
+    inline-size: var(--apui-icon-size-sm);
+    block-size: var(--apui-icon-size-sm);
+  }
+
+  [data-scope='image-slider'][data-part='thumbs'] {
+    display: flex;
+    gap: 6px;
+    padding: 4px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+
+  [data-scope='image-slider'][data-part='thumb'] {
+    flex: none;
+    inline-size: 96px;
+    block-size: 64px;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    border-radius: var(--apui-radius-sm);
+    background: var(--apui-surface-sunken);
+    cursor: pointer;
+    opacity: 0.55;
+    appearance: none;
+    transition: opacity var(--apui-motion-duration-fast) var(--apui-motion-ease-standard);
+  }
+
+  [data-scope='image-slider'][data-part='thumb']:hover {
+    opacity: 0.8;
+  }
+
+  [data-scope='image-slider'][data-part='thumb'] > img {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+
+  [data-scope='image-slider'][data-part='thumb'][aria-current='true'] {
+    box-shadow:
+      0 0 0 var(--apui-focus-ring-offset) var(--apui-surface-page),
+      0 0 0 calc(var(--apui-focus-ring-offset) + var(--apui-focus-ring-width))
+        var(--apui-color-primary);
+    opacity: 1;
+  }
+
+  [data-scope='image-slider'][data-part='thumb']:focus-visible {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='image-slider'][data-part='thumb'],
+    [data-scope='image-slider'][data-part='indicator']::before {
+      transition: none;
+    }
+
+    [data-scope='image-slider'][data-part='item-group'] {
+      scroll-behavior: auto;
+    }
+  }
+
+  @media (forced-colors: active) {
+    [data-scope='image-slider']:is(
+      [data-part='caption'],
+      [data-part='progress-text'],
+      [data-part='indicator-group'],
+      [data-part='autoplay-trigger']
+    ) {
+      border-color: CanvasText;
+      background: Canvas;
+      backdrop-filter: none;
+    }
+
+    [data-scope='image-slider'][data-part='indicator']::before {
+      background: CanvasText;
+    }
+
+    [data-scope='image-slider'][data-part='indicator'][aria-current='true']::before {
+      background: Highlight;
+    }
+
+    [data-scope='image-slider'][data-part='thumb'] {
+      opacity: 1;
+    }
+
+    [data-scope='image-slider'][data-part='thumb'][aria-current='true'] {
+      outline: 3px solid Highlight;
+    }
+  }
+}
+/*
+ * ImageLibrary (#61), Livewire only (D-003). Root `.apui-image-library`, with
+ * data-view (grid, list) and data-dragging while files are dragged over it.
+ * Parts: main, toolbar (search, view toggle, upload), bulk (the selection
+ * bar: count and actions), grid (role=listbox) of assets (role=option, with
+ * thumb, check, type, name and meta), empty, progress, dropzone, and the
+ * details panel (preview, heading, alt text field, metadata, actions). The
+ * toolbar and panel hold Input, Checkbox and Button components.
+ * See design/components/ImageLibrary.
+ */
+@layer apui.components {
+  .apui-image-library {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    overflow: hidden;
+    border: var(--apui-border-width) solid var(--apui-border-muted);
+    border-radius: var(--apui-radius-lg);
+    background: var(--apui-surface-default);
+    color: var(--apui-text-default);
+    font-family: var(--apui-font-family-sans);
+    font-size: var(--apui-type-body-md-font-size);
+    line-height: var(--apui-type-body-md-line-height);
+  }
+
+  .apui-image-library:has(> [data-scope='image-library'][data-part='panel']:not([hidden])) {
+    grid-template-columns: minmax(0, 1fr) 280px;
+  }
+
+  [data-scope='image-library'][data-part='main'] {
+    display: grid;
+    align-content: start;
+    min-inline-size: 0;
+  }
+
+  [data-scope='image-library'][data-part='toolbar'] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding-block: 12px;
+    padding-inline: 16px;
+    border-block-end: var(--apui-border-width) solid var(--apui-border-muted);
+  }
+
+  [data-scope='image-library'][data-part='search'] {
+    flex: 0 1 240px;
+    min-inline-size: 160px;
+  }
+
+  [data-scope='image-library'][data-part='spacer'] {
+    flex: 1;
+  }
+
+  [data-scope='image-library'][data-part='view'] {
+    display: inline-flex;
+    gap: 2px;
+    padding: 2px;
+    border-radius: var(--apui-radius-control);
+    background: var(--apui-surface-sunken);
+  }
+
+  [data-scope='image-library'][data-part='view'] .apui-button[aria-pressed='true'] {
+    background-color: var(--apui-surface-raised);
+    box-shadow: var(--apui-elevation-raised);
+  }
+
+  [data-scope='image-library'][data-part='bulk'] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding-block: 8px;
+    padding-inline: 16px;
+    border-block-end: var(--apui-border-width) solid var(--apui-border-muted);
+    background: var(--apui-selected-bg);
+    color: var(--apui-color-primary-soft-foreground);
+    font-size: var(--apui-type-body-sm-font-size);
+    font-weight: var(--apui-font-weight-medium);
+    line-height: var(--apui-type-body-sm-line-height);
+  }
+
+  [data-scope='image-library'][data-part='bulk'][hidden] {
+    display: none;
+  }
+
+  [data-scope='image-library'][data-part='count'] {
+    flex: 1;
+  }
+
+  [data-scope='image-library'][data-part='progress'] {
+    display: block;
+    inline-size: 100%;
+    block-size: 3px;
+    margin: 0;
+    border: 0;
+    background: var(--apui-surface-sunken);
+    accent-color: var(--apui-color-primary);
+    appearance: none;
+  }
+
+  [data-scope='image-library'][data-part='progress']::-webkit-progress-bar {
+    background: var(--apui-surface-sunken);
+  }
+
+  [data-scope='image-library'][data-part='progress']::-webkit-progress-value {
+    background: var(--apui-color-primary);
+  }
+
+  [data-scope='image-library'][data-part='progress'][hidden] {
+    display: none;
+  }
+
+  [data-scope='image-library'][data-part='grid'] {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    align-content: start;
+    gap: 12px;
+    margin: 0;
+    padding: 16px;
+    outline: none;
+  }
+
+  .apui-image-library[data-view='list'] [data-scope='image-library'][data-part='grid'] {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4px;
+    padding-block: 8px;
+    padding-inline: 8px;
+  }
+
+  [data-scope='image-library'][data-part='asset'] {
+    display: grid;
+    gap: 6px;
+    min-inline-size: 0;
+    border-radius: var(--apui-radius-md);
+    cursor: pointer;
+    outline: none;
+  }
+
+  [data-scope='image-library'][data-part='asset'][hidden] {
+    display: none;
+  }
+
+  .apui-image-library[data-view='list'] [data-scope='image-library'][data-part='asset'] {
+    grid-template-columns: 48px minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 12px;
+    padding: 6px;
+  }
+
+  .apui-image-library[data-view='list'] [data-scope='image-library'][data-part='asset']:hover {
+    background: var(--apui-state-hover);
+  }
+
+  [data-scope='image-library'][data-part='thumb'] {
+    position: relative;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    aspect-ratio: 1;
+    border-radius: var(--apui-radius-md);
+    background: var(--apui-surface-sunken);
+    box-shadow: inset 0 0 0 1px var(--apui-border-muted);
+    color: var(--apui-text-muted);
+  }
+
+  .apui-image-library[data-view='list'] [data-scope='image-library'][data-part='thumb'] {
+    grid-row: span 2;
+    border-radius: var(--apui-radius-sm);
+  }
+
+  [data-scope='image-library'][data-part='thumb'] > img {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+
+  [data-scope='image-library'][data-part='thumb'] > svg {
+    inline-size: var(--apui-icon-size-lg);
+    block-size: var(--apui-icon-size-lg);
+  }
+
+  /* The selected ring, then the focus ring outside it. */
+  [data-scope='image-library'][data-part='asset'][aria-selected='true']
+    [data-scope='image-library'][data-part='thumb'] {
+    box-shadow:
+      0 0 0 2px var(--apui-surface-default),
+      0 0 0 4px var(--apui-color-primary);
+  }
+
+  [data-scope='image-library'][data-part='asset']:focus-visible
+    [data-scope='image-library'][data-part='thumb'] {
+    outline: var(--apui-focus-ring-width) solid transparent;
+    box-shadow:
+      0 0 0 var(--apui-focus-ring-offset) var(--apui-focus-ring-offset-color),
+      0 0 0 calc(var(--apui-focus-ring-offset) + var(--apui-focus-ring-width))
+        var(--apui-focus-ring-color);
+  }
+
+  .apui-image-library[data-view='list']
+    [data-scope='image-library'][data-part='asset']:focus-visible {
+    box-shadow: inset 0 0 0 var(--apui-focus-ring-width) var(--apui-focus-ring-color);
+  }
+
+  .apui-image-library[data-view='list']
+    [data-scope='image-library'][data-part='asset']:focus-visible
+    [data-scope='image-library'][data-part='thumb'] {
+    box-shadow: inset 0 0 0 1px var(--apui-border-muted);
+  }
+
+  [data-scope='image-library'][data-part='check'] {
+    position: absolute;
+    inset-block-start: 8px;
+    inset-inline-start: 8px;
+    display: grid;
+    place-items: center;
+    box-sizing: border-box;
+    inline-size: 18px;
+    block-size: 18px;
+    border: var(--apui-border-width) solid var(--apui-border-default);
+    border-radius: var(--apui-checkbox-radius);
+    background: var(--apui-surface-raised);
+    color: var(--apui-color-primary-foreground);
+  }
+
+  [data-scope='image-library'][data-part='check'] > svg {
+    inline-size: 14px;
+    block-size: 14px;
+    opacity: 0;
+  }
+
+  [data-scope='image-library'][data-part='asset'][aria-selected='true']
+    [data-scope='image-library'][data-part='check'] {
+    border-color: var(--apui-color-primary);
+    background: var(--apui-color-primary);
+  }
+
+  [data-scope='image-library'][data-part='asset'][aria-selected='true']
+    [data-scope='image-library'][data-part='check']
+    > svg {
+    opacity: 1;
+  }
+
+  .apui-image-library[data-view='list'] [data-scope='image-library'][data-part='check'] {
+    inset-block-start: 4px;
+    inset-inline-start: 4px;
+    inline-size: 14px;
+    block-size: 14px;
+  }
+
+  .apui-image-library[data-view='list'] [data-scope='image-library'][data-part='check'] > svg {
+    inline-size: 10px;
+    block-size: 10px;
+  }
+
+  [data-scope='image-library'][data-part='type'] {
+    position: absolute;
+    inset-block-end: 6px;
+    inset-inline-end: 6px;
+    padding-block: 0;
+    padding-inline: 6px;
+    border-radius: var(--apui-radius-xs);
+    background: var(--apui-color-neutral);
+    color: var(--apui-color-neutral-foreground);
+    font-size: 11px;
+    font-weight: var(--apui-font-weight-semibold);
+    line-height: 16px;
+    text-transform: uppercase;
+  }
+
+  [data-scope='image-library'][data-part='name'] {
+    overflow: hidden;
+    font-size: var(--apui-type-caption-font-size);
+    font-weight: var(--apui-font-weight-medium);
+    line-height: var(--apui-type-caption-line-height);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  [data-scope='image-library'][data-part='meta'] {
+    margin-block-start: -4px;
+    color: var(--apui-text-muted);
+    font-size: 11px;
+    line-height: 14px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .apui-image-library[data-view='list'] [data-scope='image-library'][data-part='meta'] {
+    margin-block-start: 0;
+  }
+
+  [data-scope='image-library'][data-part='empty'] {
+    display: grid;
+    place-items: center;
+    gap: 8px;
+    padding-block: 48px;
+    padding-inline: 16px;
+    color: var(--apui-text-muted);
+    text-align: center;
+  }
+
+  [data-scope='image-library'][data-part='empty'][hidden] {
+    display: none;
+  }
+
+  [data-scope='image-library'][data-part='dropzone'] {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    border: 2px dashed var(--apui-color-primary);
+    border-radius: inherit;
+    background: color-mix(in srgb, var(--apui-surface-default) 92%, transparent);
+    color: var(--apui-color-primary-text);
+    font-weight: var(--apui-font-weight-medium);
+    pointer-events: none;
+  }
+
+  [data-scope='image-library'][data-part='dropzone'][hidden] {
+    display: none;
+  }
+
+  [data-scope='image-library'][data-part='panel'] {
+    display: grid;
+    align-content: start;
+    gap: 14px;
+    min-inline-size: 0;
+    padding: 16px;
+    border-inline-start: var(--apui-border-width) solid var(--apui-border-muted);
+    background: var(--apui-surface-default);
+  }
+
+  [data-scope='image-library'][data-part='panel'][hidden] {
+    display: none;
+  }
+
+  [data-scope='image-library'][data-part='preview'] {
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--apui-radius-md);
+    background: var(--apui-surface-sunken);
+    color: var(--apui-text-muted);
+  }
+
+  [data-scope='image-library'][data-part='preview'] > img {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: contain;
+  }
+
+  [data-scope='image-library'][data-part='heading'] {
+    margin: 0;
+    overflow-wrap: anywhere;
+    font-size: var(--apui-type-body-md-font-size);
+    font-weight: var(--apui-font-weight-semibold);
+    line-height: var(--apui-type-body-md-line-height);
+  }
+
+  [data-scope='image-library'][data-part='metadata'] {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 6px 12px;
+    margin: 0;
+    font-size: var(--apui-type-caption-font-size);
+    line-height: var(--apui-type-caption-line-height);
+  }
+
+  [data-scope='image-library'][data-part='metadata'] > dt {
+    color: var(--apui-text-muted);
+  }
+
+  [data-scope='image-library'][data-part='metadata'] > dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+    font-variant-numeric: tabular-nums;
+    text-align: end;
+  }
+
+  [data-scope='image-library'][data-part='actions'] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  /* Narrow: the panel moves under the grid. */
+  @media (max-width: 640px) {
+    .apui-image-library:has(> [data-scope='image-library'][data-part='panel']:not([hidden])) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    [data-scope='image-library'][data-part='panel'] {
+      border-block-start: var(--apui-border-width) solid var(--apui-border-muted);
+      border-inline-start: 0;
+    }
+  }
+
+  @media (forced-colors: active) {
+    [data-scope='image-library'][data-part='asset'][aria-selected='true']
+      [data-scope='image-library'][data-part='thumb'] {
+      outline: 3px solid Highlight;
+    }
+
+    [data-scope='image-library'][data-part='check'] {
+      border-color: CanvasText;
+    }
+
+    [data-scope='image-library'][data-part='asset'][aria-selected='true']
+      [data-scope='image-library'][data-part='check'] {
+      background: Highlight;
+    }
+
+    [data-scope='image-library'][data-part='bulk'] {
+      border-block-end: 1px solid CanvasText;
     }
   }
 }

@@ -4,181 +4,51 @@ title: Collapse Component
 
 # Collapse Component
 
-The Collapse component provides a way to toggle the visibility of content, creating expandable and collapsible sections. It's useful for FAQs, accordion menus, and reducing visual clutter in information-dense interfaces.
+A single disclosure, built on the ArtisanPack UI design system and the behavior engine's collapsible machine: a button that shows and hides one region, such as advanced settings, or a read-more that clamps long text behind a fade.
 
 ## Basic Usage
 
-```php
-<x-artisanpack-collapse>
-    <x-slot:heading>
-        Click to expand
-    </x-slot:heading>
-    
-    <x-slot:content>
-        This content will be hidden until the collapse is toggled.
-    </x-slot:content>
+```blade
+<x-artisanpack-collapse :label="__( 'Advanced settings' )" wire:model="showAdvanced">
+	<x-artisanpack-input :label="__( 'Custom URL' )" wire:model="slug" />
+	<x-artisanpack-toggle :label="__( 'Hide from search engines' )" wire:model="noindex" />
 </x-artisanpack-collapse>
 ```
 
-## Examples
+Say what will appear in the label. `wire:model` binds `open`; without it, `open` sets the initial state. A `trigger` slot replaces the label when it needs markup.
 
-### Basic Collapse
+## Read more
 
-```php
-<x-artisanpack-collapse>
-    <x-slot:heading>
-        What is ArtisanPack UI?
-    </x-slot:heading>
-    
-    <x-slot:content>
-        <p>ArtisanPack UI is a collection of Livewire components for Laravel applications.</p>
-        <p>It provides a comprehensive set of UI components that are easy to use and customize.</p>
-    </x-slot:content>
+```blade
+<x-artisanpack-collapse variant="read-more">
+	<p>{{ $listing->description }}</p>
 </x-artisanpack-collapse>
 ```
 
-### Collapse with Plus/Minus Icons
-
-```php
-<x-artisanpack-collapse :collapsePlusMinus="true">
-    <x-slot:heading>
-        Click to expand (with plus/minus icons)
-    </x-slot:heading>
-    
-    <x-slot:content>
-        This collapse uses plus and minus icons instead of arrows.
-    </x-slot:content>
-</x-artisanpack-collapse>
-```
-
-### Collapse with Separator
-
-```php
-<x-artisanpack-collapse :separator="true">
-    <x-slot:heading>
-        Click to expand (with separator)
-    </x-slot:heading>
-    
-    <x-slot:content>
-        This content has a separator line between the heading and content.
-    </x-slot:content>
-</x-artisanpack-collapse>
-```
-
-### Collapse without Icon
-
-```php
-<x-artisanpack-collapse :noIcon="true">
-    <x-slot:heading>
-        Click to expand (no icon)
-    </x-slot:heading>
-    
-    <x-slot:content>
-        This collapse doesn't display an icon.
-    </x-slot:content>
-</x-artisanpack-collapse>
-```
-
-### Collapse with Livewire Binding
-
-```php
-<x-artisanpack-collapse wire:model="isExpanded">
-    <x-slot:heading>
-        Livewire-controlled collapse
-    </x-slot:heading>
-    
-    <x-slot:content>
-        The state of this collapse is controlled by Livewire.
-    </x-slot:content>
-</x-artisanpack-collapse>
-```
-
-### Collapse with Custom Styling
-
-```php
-<x-artisanpack-collapse class="bg-base-200 rounded-lg">
-    <x-slot:heading class="text-primary font-bold">
-        Custom styled heading
-    </x-slot:heading>
-    
-    <x-slot:content class="prose">
-        <p>This collapse has custom styling applied to both the container and its slots.</p>
-        <ul>
-            <li>Custom background color</li>
-            <li>Rounded corners</li>
-            <li>Styled heading</li>
-            <li>Content with prose styling</li>
-        </ul>
-    </x-slot:content>
-</x-artisanpack-collapse>
-```
-
-### Multiple Collapses in a Group
-
-```php
-<div class="space-y-2">
-    <x-artisanpack-collapse>
-        <x-slot:heading>Section 1</x-slot:heading>
-        <x-slot:content>Content for section 1</x-slot:content>
-    </x-artisanpack-collapse>
-    
-    <x-artisanpack-collapse>
-        <x-slot:heading>Section 2</x-slot:heading>
-        <x-slot:content>Content for section 2</x-slot:content>
-    </x-artisanpack-collapse>
-    
-    <x-artisanpack-collapse>
-        <x-slot:heading>Section 3</x-slot:heading>
-        <x-slot:content>Content for section 3</x-slot:content>
-    </x-artisanpack-collapse>
-</div>
-```
+A read-more shows the first lines (`--apui-collapse-clamp-height`, 64px) behind a fade, with the trigger after them. The trigger reads "Read more", then "Show less" while open (translated; change them with `label` and `open-label`). The clamped text stays in the accessibility tree. Don't clamp text that holds the main point.
 
 ## Props
 
 | Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `id` | string\|null | `null` | Optional ID for the collapse element |
-| `name` | string\|null | `null` | Optional name for the collapse element (used in accordion mode) |
-| `collapsePlusMinus` | boolean\|null | `false` | Whether to use plus/minus icons instead of arrows |
-| `separator` | boolean\|null | `false` | Whether to show a separator line between the heading and content |
-| `noIcon` | boolean\|null | `false` | Whether to hide the toggle icon |
+|---|---|---|---|
+| `open` | bool | `false` | Whether the region shows. `wire:model` binds it instead. |
+| `variant` | `section` · `read-more` | `section` | Emitted as `data-variant`. |
+| `label` | string or `trigger` slot | none | The trigger's text. Read-more defaults it to `__( 'Read more' )`. |
+| `open-label` | string | none | The trigger's text while open. Read-more defaults it to `__( 'Show less' )`. |
+| `disabled` | bool | `false` | The trigger can't be focused or toggled. |
+| `classes` | array | `[]` | Extra classes per part: `root`, `trigger`, `icon`, `content`, `fade`. |
 
-## Slots
+## Events
 
-| Slot | Description |
-|------|-------------|
-| `heading` | The content for the collapse heading/title |
-| `content` | The content that will be shown/hidden when the collapse is toggled |
-
-## Styling
-
-The Collapse component uses DaisyUI's collapse component under the hood, which provides a wide range of styling options. You can customize the appearance by:
-
-1. Adding custom classes via the `class` attribute
-2. Styling the heading and content slots with their own classes
-3. Using the provided props (`collapsePlusMinus`, `separator`, etc.)
-
-### Default Classes
-
-- `collapse` - Base collapse class
-- `border-[length:var(--border)] border-base-content/10` - Default border styling
-- `collapse-arrow` - Applied when using arrow icons (default)
-- `collapse-plus` - Applied when using plus/minus icons
-- `collapse-title` - Applied to the heading slot
-- `collapse-content` - Applied to the content slot
+`open-change` fires on the root when the trigger opens or closes the region (`$event.detail.open`). Setting the bound property doesn't fire it.
 
 ## Accessibility
 
-The Collapse component follows accessibility best practices:
+- The trigger is a button with `aria-expanded` and `aria-controls`; a section's region follows it and is `hidden` while closed.
+- The chevron and the fade are `aria-hidden`.
 
-- Uses appropriate ARIA attributes for expandable content
-- Provides keyboard navigation support
-- Maintains focus management when toggling content
-- Includes visual indicators for the collapsed/expanded state
+## Upgrading from 2.x
 
-## Related Components
-
-- [Accordion](Accordion) - Container for a group of collapses where only one can be open at a time
-- [Card](Card) - Content container that can include collapsible sections
-- [Tab](Tab) - Alternative way to organize content into selectable sections
+- The `heading` and `content` slots still render, deprecated: use `label` (or the `trigger` slot) and the default slot.
+- Inside an accordion, use `accordion-item` instead of `collapse` with `name`.
+- `name`, `separator`, `no-icon`, `collapse-plus-minus` and the glass props are gone.

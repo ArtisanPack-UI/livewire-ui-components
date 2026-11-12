@@ -19,6 +19,12 @@
 - `<x-artisanpack-navbar>` and `navbar-item`, and `<x-artisanpack-breadcrumbs-item>` (#56 in design-system).
 - Select's `options` take `{ label, options }` groups, rendered as `<optgroup>` (D-025).
 - The prebuilt assets and the Lucide icon set are rebuilt from the design system, adding the Tabs, DatePicker, ColorPicker, Spotlight, Combobox and form-editor Alpine components and the icons they draw.
+- Layout, Feedback and Data Display waves, Tooltip and Table on the design system (#58 to #62 in design-system, D-029 to D-044):
+  - New: `<x-artisanpack-tooltip>` (on the behavior engine; it puts the trigger attributes on your own control), `accordion-item`, `app-shell`, `page-header`, `divider`, `grid`, `stack`, `list`, `avatar-group`, `user-menu` (Avatar + DropdownMenu, with a `logout-action` form), `skeleton`, `empty-state`, `error-state` and `timeline`.
+  - Engine widgets for Accordion, Collapse, Drawer, Popover, Tooltip, ImageSlider (carousel) and the ImageGallery lightbox, with stable server-rendered part ids.
+  - Sparkline and Diff render on the server with no JavaScript (`Support\SparklineGeometry`, `Support\DiffBuilder`), so `wire:poll` redraws them.
+  - Every built-in string is a `*-label` prop defaulting through `__()`.
+- The prebuilt assets and the Lucide icon set are rebuilt from the design system for these components.
 
 ### Changed
 - **Breaking:** `<x-artisanpack-toast>` is now the design-system Toast rendered on its own: a static toast (`title`, `description`, `color`, `variant`, `surface`, `icon`, `actions`, `hideClose`, `closeLabel`, `classes`) whose close button dispatches `open-change`. The toaster that 2.x rendered with `<x-artisanpack-toast />` is `<x-artisanpack-toaster />`; its `position`, `color`, `colorAdjustment`, `duration` and glass props are gone.
@@ -43,6 +49,12 @@
   - Spotlight: `searchText`, `noResultsText`, the `append` slot and the dotted shortcut spelling (`meta.g`) still work as deprecated aliases of `placeholder`, `emptyText`, `footer` and `mod+g`. Endpoint results take a registry `icon` name, not HTML. Recent choices are opt-in (`recent`).
   - Tabs and Menu keep the 2.x attributes downstream code uses (`tab name`, `tabs selected`, `menu-item title`/`link`/`active`/`no-wire-navigate`, `menu activate-by-route`).
 - **Breaking:** the `colorpicker` class is renamed `ColorPicker` (PHP class names are case-insensitive, so they can't coexist), and the `colorpicker` tag renders the new component.
+- **Breaking:** Accordion, Collapse, Drawer, Popover, Heading, Text, ListItem, Avatar, Badge, Alert, Loading, Progress, ProgressRadial, StreamableContent, Stat, KpiCard, Sparkline, TimelineItem, Diff, ImageGallery, ImageSlider, ImageLibrary and Table are rebuilt on the design-system markup. DaisyUI classes, glass props and `ColorGenerator` colors are gone; each component's docs page has an "Upgrading from 2.x" section. Most 2.x attributes still work, deprecated.
+- **Breaking:** Drawer opens at the end edge by default (2.x opened at the start). Popover opens on click as a non-modal dialog.
+- **Breaking:** the `tooltip`, `tooltip-left`, `tooltip-right`, `tooltip-bottom` and `tooltip-position` props are gone. Wrap the control in `<x-artisanpack-tooltip content="…">`.
+- **Breaking:** on Table, `class` and other attributes land on the root `<div>`, not the `<table>`. `compact` sets `density="compact"`, and `with-pagination` is `paginated`. An empty table always shows the empty state, and `selectable` and `expandable` can be combined.
+- **Breaking:** Heading's `level` defaults to 2 (was 1).
+- ImageLibrary keeps the `WithMediaSync` contract (`wire:model`, `wire:library`, `:preview`); cropping runs in a design-system Dialog when Cropper.js is on the page.
 
 ### Fixed
 - **Security:** the `artisanpack.upload` route, which the RichTextEditor (TinyMCE) and Markdown components post images to, stored any file on any disk and folder the request named. It now takes images only (JPG, PNG, GIF, WebP and AVIF by default, never SVG), up to `max_size` kilobytes, on a disk in the new `uploads.disks` config (default `public`), in a folder made of letters, numbers, dashes, underscores and slashes, so it can't leave the disk. Anything else gets a 422. Configure it under `uploads` in `config/artisanpack/livewire-ui-components.php`.
@@ -57,9 +69,14 @@
 - `<x-artisanpack-modal>` and `<x-artisanpack-dropdown>`. Use `<x-artisanpack-dialog>` and `<x-artisanpack-dropdown-menu>`. They're removed in a later major release.
 - `artisanpack:generate-theme`, `Styling\ColorGenerator`, `Styling\GlassPresets` and `Styling\HighContrastTheme`. Use `artisanpack:generate-preset`, `Theming\PresetGenerator`, `Theming\GlassSurface` and `Theming\TokenThemes`. They're removed once the components that use them move to the design system.
 - `<x-artisanpack-choices>`, `<x-artisanpack-choices-offline>` and `<x-artisanpack-tags>` (use `combobox`), `<x-artisanpack-datepicker>` and `<x-artisanpack-datetime>` (use `date-picker`, with `time` for the latter), `<x-artisanpack-select-group>` (use `select` with option groups), `<x-artisanpack-radio>` and `<x-artisanpack-group>` (use `radio-group`; `group` is `variant="segmented"`), `<x-artisanpack-errors>` (use `validation-summary`), `<x-artisanpack-editor>` (use `rich-text-editor`), `<x-artisanpack-colorpicker>` (use `color-picker`) and `<x-artisanpack-nav>` (use `navbar`). They're removed in a later major release.
+- `<x-artisanpack-main>`, `<x-artisanpack-header>`, `<x-artisanpack-separator>`, `<x-artisanpack-widget-grid>`, `<x-artisanpack-profile>` and `<x-artisanpack-subheading>`. Use `app-shell`, `page-header`, `divider`, `grid`, `user-menu` and `text size="lead"`.
 
 ### Removed
 - The flatpickr date picker theme CSS and JS. DatePicker runs on the behavior engine and is styled by the design-system tokens.
+- Table's virtual scroll, export toolbar and its events (`TableExporter` stays), `striped`, `no-hover`, `container-class`, `header-glass*` and the `row-selection` events.
+- Divider's (2.x `separator`) loading bar (`progress`, `target`): use Progress.
+- The PhotoSwipe hooks in ImageGallery and ImageSlider; ImageGallery has a built-in lightbox.
+- `resources/js/sparkline.js`, the diff2html Diff renderer and the `jfcherng/php-diff` dependency.
 
 ---
 

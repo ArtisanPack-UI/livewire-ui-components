@@ -1,50 +1,22 @@
-<div class="flex items-center gap-3">
-    <div class="avatar @if(empty($image)) avatar-placeholder @endif">
-        <div 
-            @php
-                $colorClasses = $getColorClasses();
-                $baseClasses = ["w-7", "rounded-full"];
-                
-                // Handle placeholder styling
-                if (empty($image)) {
-                    if (!empty($colorClasses)) {
-                        // Use new color system for placeholder
-                        foreach ($colorClasses as $type => $class) {
-                            if ($type === 'style' && $class) {
-                                // Handle inline styles for hex colors
-                                $attributes = $attributes->merge(['style' => $class]);
-                            } elseif ($type !== 'style' && $class) {
-                                $baseClasses[] = $class;
-                            }
-                        }
-                    } else {
-                        // Fall back to default neutral styling
-                        $baseClasses[] = "bg-neutral";
-                        $baseClasses[] = "text-neutral-content";
-                    }
-                }
-            @endphp
-            {{ $attributes->class($baseClasses) }}
-        >
-            @if(empty($image))
-                <span class="text-xs" alt="{{ $alt }}">{{ $placeholder }}</span>
-            @else
-                <img src="{{ $image }}" alt="{{ $alt }}" />
-            @endif
-        </div>
-    </div>
-    @if($title || $subtitle)
-    <div>
-        @if($title)
-            <div @class(["font-semibold font-lg", is_string($title) ? '' : $title?->attributes->get('class') ]) >
-                {{ $title }}
-            </div>
-        @endif
-        @if($subtitle)
-            <div @class(["text-sm text-base-content/50", is_string($subtitle) ? '' : $subtitle?->attributes->get('class') ]) >
-                {{ $subtitle }}
-            </div>
-        @endif
-    </div>
-    @endif
-</div>
+{{--
+    Avatar (#61). Markup contract: design-system wave, Avatar.
+    A span, role=img named by alt or name plus the status in words; without a
+    name it's decorative (aria-hidden). The image (alt="") sits over the
+    initials, so a broken image shows them; without initials an icon shows.
+    The deprecated 2.x image, placeholder and alt attributes still work.
+--}}
+@php
+    $label      = $accessibleName();
+    $src        = $imageSrc();
+    $letters    = $initialsValue();
+    $iconName   = $iconName();
+    $status     = $statusValue();
+    $attributes = $attributes->except( [ 'image', 'placeholder', 'alt', 'color-adjustment', 'colorAdjustment', 'subtitle' ] );
+@endphp
+<span
+    {{ $attributes->class( $rootClasses( 'apui-avatar' ) ) }}
+    data-size="{{ $sizeValue() }}"
+    data-shape="{{ $shapeValue() }}"
+    data-color="{{ $colorValue() }}"
+    @if ( '' !== $label ) role="img" aria-label="{{ $label }}" @else aria-hidden="true" @endif
+>@if ( null !== $iconName ){{ $iconSvg( $iconName ) }}@else<span data-scope="avatar" data-part="initials" aria-hidden="true"{{ $partClass( 'initials' ) }}>{{ $letters }}</span>@endif @if ( null !== $src )<img data-scope="avatar" data-part="image" src="{{ $src }}" alt="" aria-hidden="true"{{ $partClass( 'image' ) }} />@endif @if ( null !== $status )<span data-scope="avatar" data-part="status" data-status="{{ $status }}" aria-hidden="true"{{ $partClass( 'status' ) }}></span>@endif</span>

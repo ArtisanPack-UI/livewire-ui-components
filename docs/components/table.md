@@ -4,1007 +4,184 @@ title: Table Component
 
 # Table Component
 
-The Table component is a powerful, feature-rich data table for displaying structured information with support for sorting, row selection, expandable rows, custom formatting, pagination, and more.
+Rows of structured data in real table markup, built on the ArtisanPack UI design system (`.apui-table`): a toolbar with the title, the table in a scroll area, and a footer with Pagination. Headers sort, rows select and expand, and loading and empty states are built in.
 
 ## Basic Usage
 
-```php
-<?php
-
-use Livewire\Volt\Component;
-
-new class extends Component {
-    public function with(): array
-    {
-        $headers = [
-            ['key' => 'id', 'label' => '#'],
-            ['key' => 'name', 'label' => 'Name'],
-            ['key' => 'email', 'label' => 'Email'],
-            ['key' => 'role', 'label' => 'Role'],
-        ];
-
-        $users = [
-            ['id' => 1, 'name' => 'John Doe', 'email' => 'john@example.com', 'role' => 'Admin'],
-            ['id' => 2, 'name' => 'Jane Smith', 'email' => 'jane@example.com', 'role' => 'Editor'],
-            ['id' => 3, 'name' => 'Bob Johnson', 'email' => 'bob@example.com', 'role' => 'User'],
-        ];
-
-        return [
-            'headers' => $headers,
-            'users' => $users,
-        ];
-    }
-}; ?>
-
-<x-artisanpack-table :headers="$headers" :rows="$users" />
-```
-
-## Examples
-
-### Table with Sortable Columns
-
-The table supports sorting with a wire:model binding for the sortBy parameter:
-
-```php
-<?php
-
-use Livewire\Volt\Component;
-
-new class extends Component {
-    public array $sortBy = ['column' => 'name', 'direction' => 'asc'];
-
-    public function with(): array
-    {
-        $headers = [
-            ['key' => 'id', 'label' => '#', 'sortable' => false],
-            ['key' => 'name', 'label' => 'Name'],
-            ['key' => 'email', 'label' => 'Email'],
-            ['key' => 'created_at', 'label' => 'Created'],
-        ];
-
-        // Apply sorting logic
-        $users = User::query()
-            ->orderBy($this->sortBy['column'], $this->sortBy['direction'])
-            ->get();
-
-        return [
-            'headers' => $headers,
-            'users' => $users,
-        ];
-    }
-}; ?>
-
+```blade
 <x-artisanpack-table
-    :headers="$headers"
-    :rows="$users"
-    :sort-by="$sortBy"
-    wire:model="sortBy" />
+	:title="__( 'Transaction history' )"
+	:headers="[
+		[ 'key' => 'symbol', 'label' => __( 'Product name' ), 'secondary' => 'company' ],
+		[ 'key' => 'amount', 'label' => __( 'Order amount' ), 'numeric' => true ],
+		[ 'key' => 'date', 'label' => __( 'Date' ) ],
+		[ 'key' => 'owner.name', 'label' => __( 'Executed by' ) ],
+	]"
+	:rows="$transactions"
+/>
 ```
 
-### Table with Custom Cell Rendering
+A column's `key` is a dot path into each row (an array or an object). `numeric` end-aligns the column with tabular figures; `secondary` is a second dot path shown muted under the value. The title names the table; without one, give it a `label`.
 
-Use `@scope` directives to customize individual cell rendering:
+### Columns
 
-```php
-<x-artisanpack-table :headers="$headers" :rows="$users">
-    @scope('cell_name', $user)
-        <div class="flex items-center gap-2">
-            <x-artisanpack-avatar :image="$user->avatar" class="size-8" />
-            <span class="font-semibold">{{ $user->name }}</span>
-        </div>
-    @endscope
+| Key | Description |
+|---|---|
+| `key` | Dot path to the value. Required. |
+| `label` | The header text. |
+| `sortable` | Makes the header a sort button with `aria-sort`. |
+| `numeric` | End-aligns the column with tabular figures. |
+| `hidden` | Leaves the column out. |
+| `secondary` | A second dot path, shown muted under the value. |
+| `class` | Classes for the header and body cells. |
+| `format` | A closure `fn ( $row, $value )`, `[ 'currency', '2.,', '$' ]` (decimals, decimal and thousands separators, prefix) or `[ 'date', 'M j, Y' ]`. |
+| `sortBy` | The column name sorting uses, when it isn't the key. |
+| `disableLink` | Keeps this column's cells out of the row `link`. |
 
-    @scope('cell_email', $user)
-        <a href="mailto:{{ $user->email }}" class="link link-primary">
-            {{ $user->email }}
-        </a>
-    @endscope
+Columns pass through the `ap.livewireUiComponents.tableColumns` filter with the table's `id` (or `default`).
 
-    @scope('cell_status', $user)
-        <x-artisanpack-badge
-            :value="$user->status"
-            class="{{ $user->status === 'active' ? 'badge-success' : 'badge-error' }}" />
-    @endscope
+## Sorting
+
+Sortable headers carry `aria-sort` and hold a button named "Sort by {column}". Clicking one asks for the next sort (ascending first, then toggling): inside a Livewire component with a public `sortBy` property the table sets it, even when it starts as `[]`, and it always dispatches `sort-change` with `{ column, direction }`. The table never sorts rows itself, so sort them in your query.
+
+```blade
+{{-- public array $sortBy = [ 'column' => 'date', 'direction' => 'desc' ]; --}}
+<x-artisanpack-table :headers="$headers" :rows="$this->transactions" :sort-by="$sortBy" />
+```
+
+When any column sets `sortable => true`, only those columns sort. Otherwise, as in 2.x, every column sorts once `sort-by` is set, unless it sets `sortable => false`.
+
+## Selection
+
+`selectable` adds a Checkbox to each row and a select-all box to the header, which is mixed while some rows of the page are selected. `wire:model` binds the selected keys (from `key-by`, `id` by default); add `.live` to send each change.
+
+```blade
+<x-artisanpack-table :headers="$headers" :rows="$rows" selectable wire:model.live="selected" />
+```
+
+Selected rows carry `aria-selected="true"`. Row boxes are named "Select {row}" from the row's first column.
+
+## Cells, headers, actions and expansion
+
+Scoped slots render a column's cells or header, row actions in a last column, and the content of expanded rows. A dotted key such as `user.name` becomes `cell_user.name`.
+
+```blade
+<x-artisanpack-table :headers="$headers" :rows="$transactions" expandable>
+	@scope( 'cell_status', $row )
+		<x-artisanpack-badge :color="$row['color']" :value="$row['status']" />
+	@endscope
+
+	@scope( 'header_amount', $header )
+		{{ $header['label'] }} (USD)
+	@endscope
+
+	@scope( 'actions', $row )
+		<x-artisanpack-button variant="ghost" size="sm" :href="route( 'transactions.show', $row['id'] )">{{ __( 'View' ) }}</x-artisanpack-button>
+	@endscope
+
+	@scope( 'expansion', $row )
+		{{ $row['notes'] }}
+	@endscope
 </x-artisanpack-table>
 ```
 
-### Table with Custom Header Rendering
+`expandable` adds an expand button (with `aria-expanded` and `aria-controls`) to each row; `:expanded="[ 1 ]"` opens rows on render. `expandable-condition="has_notes"` limits it to rows where that path is truthy. Use a Badge for status; don't color whole rows.
 
-Customize header cells using `@scope('header_fieldname')`:
+## Loading and empty states
 
-```php
-<x-artisanpack-table :headers="$headers" :rows="$users">
-    @scope('header_name', $header)
-        <div class="flex items-center gap-2">
-            <x-artisanpack-icon name="o-user" class="size-4" />
-            {{ $header['label'] }}
-        </div>
-    @endscope
+`loading` shows skeleton rows and sets `aria-busy` on the table. With no rows, an EmptyState shows `empty-text` ("No records found." by default); the `empty` slot replaces it.
 
-    @scope('header_email', $header)
-        <div class="flex items-center gap-2">
-            <x-artisanpack-icon name="o-envelope" class="size-4" />
-            {{ $header['label'] }}
-        </div>
-    @endscope
+```blade
+<x-artisanpack-table :headers="$headers" :rows="$rows" :loading="$isLoading">
+	<x-slot:empty>
+		<p>{{ __( 'No transactions yet.' ) }} <a href="{{ route( 'transactions.create' ) }}">{{ __( 'Add one' ) }}</a></p>
+	</x-slot:empty>
 </x-artisanpack-table>
 ```
 
-### Table with Actions Column
+## Footer and pagination
 
-Add an actions column using the `@scope('actions')` directive:
+`footer` (or a `footer` slot) sits at the start of the footer bar. With a paginator in `rows`, `paginated` renders Pagination at its end, and `per-page` names the Livewire property a "Rows per page" Select binds. For other data, `pagination` takes Pagination's props.
 
-```php
-<x-artisanpack-table :headers="$headers" :rows="$users">
-    @scope('actions', $user)
-        <div class="flex gap-2">
-            <x-artisanpack-button
-                icon="o-pencil"
-                wire:click="edit({{ $user->id }})"
-                class="btn-sm btn-ghost" />
-            <x-artisanpack-button
-                icon="o-trash"
-                wire:click="delete({{ $user->id }})"
-                class="btn-sm btn-ghost text-error" />
-        </div>
-    @endscope
-</x-artisanpack-table>
-```
-
-### Table with Striped Rows
-
-```php
+```blade
+{{-- use WithPagination; public int $perPage = 10; --}}
 <x-artisanpack-table
-    :headers="$headers"
-    :rows="$users"
-    striped />
+	:headers="$headers"
+	:rows="Transaction::paginate( $perPage )"
+	paginated
+	per-page="perPage"
+	:footer="__( ':count selected', [ 'count' => count( $selected ) ] )"
+/>
+
+<x-artisanpack-table :headers="$headers" :rows="$rows" :pagination="[ 'page' => 3, 'total' => 128, 'perPage' => 10 ]" />
 ```
 
-### Table with Row Selection
+## Density and surface
 
-Enable row selection with checkboxes:
-
-```php
-<?php
-
-use Livewire\Volt\Component;
-
-new class extends Component {
-    public array $selectedUsers = [];
-
-    public function deleteSelected()
-    {
-        User::whereIn('id', $this->selectedUsers)->delete();
-        $this->selectedUsers = [];
-    }
-}; ?>
-
-<x-artisanpack-table
-    :headers="$headers"
-    :rows="$users"
-    selectable
-    selectable-key="id"
-    wire:model="selectedUsers" />
-
-<div class="mt-4" x-show="$wire.selectedUsers.length > 0">
-    <x-artisanpack-button
-        wire:click="deleteSelected"
-        class="btn-error">
-        Delete Selected ({{ count($selectedUsers) }})
-    </x-artisanpack-button>
-</div>
-```
-
-### Table with Expandable Rows
-
-Create expandable rows for additional details:
-
-```php
-<?php
-
-use Livewire\Volt\Component;
-
-new class extends Component {
-    public array $expandedRows = [];
-}; ?>
-
-<x-artisanpack-table
-    :headers="$headers"
-    :rows="$users"
-    expandable
-    expandable-key="id"
-    expandable-condition="can_expand"
-    wire:model="expandedRows">
-
-    @scope('expansion', $user)
-        <div class="p-4 bg-base-200">
-            <h4 class="font-bold mb-2">Additional Details</h4>
-            <p>Phone: {{ $user->phone }}</p>
-            <p>Address: {{ $user->address }}</p>
-            <p>Department: {{ $user->department }}</p>
-        </div>
-    @endscope
-</x-artisanpack-table>
-```
-
-### Table with Row Links
-
-Make entire rows clickable with the `link` prop:
-
-```php
-<x-artisanpack-table
-    :headers="$headers"
-    :rows="$users"
-    link="/users/{id}/edit" />
-```
-
-You can use any field from the row data in the link pattern:
-
-```php
-<x-artisanpack-table
-    :headers="$headers"
-    :rows="$users"
-    link="/users/{id}/profile/{name}" />
-```
-
-To disable links on specific columns:
-
-```php
-<?php
-$headers = [
-    ['key' => 'id', 'label' => '#'],
-    ['key' => 'name', 'label' => 'Name'],
-    ['key' => 'actions', 'label' => 'Actions', 'disableLink' => true],
-];
-?>
-```
-
-### Table with Pagination
-
-```php
-<?php
-
-use Livewire\Volt\Component;
-use Livewire\WithPagination;
-
-new class extends Component {
-    use WithPagination;
-
-    public int $perPage = 10;
-
-    public function with(): array
-    {
-        return [
-            'users' => User::paginate($this->perPage),
-        ];
-    }
-}; ?>
-
-<x-artisanpack-table
-    :headers="$headers"
-    :rows="$users"
-    with-pagination
-    per-page="perPage"
-    :per-page-values="[5, 10, 20, 50]" />
-```
-
-### Table with Data Formatting
-
-Format cell data using the `format` key in headers:
-
-```php
-<?php
-$headers = [
-    ['key' => 'id', 'label' => '#'],
-    ['key' => 'name', 'label' => 'Name'],
-    [
-        'key' => 'created_at',
-        'label' => 'Created',
-        'format' => ['date', 'M d, Y']
-    ],
-    [
-        'key' => 'price',
-        'label' => 'Price',
-        'format' => ['currency', '20', '$']
-    ],
-];
-?>
-```
-
-You can also use a custom closure for formatting:
-
-```php
-<?php
-$headers = [
-    ['key' => 'id', 'label' => '#'],
-    ['key' => 'name', 'label' => 'Name'],
-    [
-        'key' => 'status',
-        'label' => 'Status',
-        'format' => fn($row, $field) => strtoupper($field)
-    ],
-];
-?>
-```
-
-### Table with Row Decoration
-
-Apply conditional classes to rows:
-
-```php
-<?php
-$rowDecoration = [
-    'bg-success/10' => fn($row) => $row->status === 'active',
-    'bg-error/10' => fn($row) => $row->status === 'inactive',
-    'bg-warning/10' => fn($row) => $row->status === 'pending',
-];
-?>
-
-<x-artisanpack-table
-    :headers="$headers"
-    :rows="$users"
-    :row-decoration="$rowDecoration" />
-```
-
-### Table with Cell Decoration
-
-Apply conditional classes to specific cells:
-
-```php
-<?php
-$cellDecoration = [
-    'email' => [
-        'text-success' => fn($row) => $row->email_verified,
-        'text-error' => fn($row) => !$row->email_verified,
-    ],
-    'status' => [
-        'font-bold text-success' => fn($row) => $row->status === 'active',
-        'font-bold text-error' => fn($row) => $row->status === 'inactive',
-    ],
-];
-?>
-
-<x-artisanpack-table
-    :headers="$headers"
-    :rows="$users"
-    :cell-decoration="$cellDecoration" />
-```
-
-### Table with Custom Empty State
-
-```php
-<x-artisanpack-table
-    :headers="$headers"
-    :rows="$users"
-    show-empty-text
-    empty-text="No users found. Create your first user to get started.">
-
-    @scope('empty')
-        <div class="text-center py-8">
-            <x-artisanpack-icon name="o-users" class="size-16 mx-auto text-base-content/20 mb-4" />
-            <p class="text-lg font-semibold mb-2">No users yet</p>
-            <p class="text-base-content/60 mb-4">Get started by creating your first user.</p>
-            <x-artisanpack-button wire:click="createUser">Create User</x-artisanpack-button>
-        </div>
-    @endscope
-</x-artisanpack-table>
-```
-
-### Table with Hidden Columns
-
-```php
-<?php
-$headers = [
-    ['key' => 'id', 'label' => '#', 'hidden' => true],
-    ['key' => 'name', 'label' => 'Name'],
-    ['key' => 'email', 'label' => 'Email'],
-    ['key' => 'internal_code', 'label' => 'Code', 'hidden' => true],
-];
-?>
-```
-
-### Table with Custom Column Classes
-
-```php
-<?php
-$headers = [
-    ['key' => 'id', 'label' => '#', 'class' => 'w-16 text-center'],
-    ['key' => 'name', 'label' => 'Name', 'class' => 'font-semibold'],
-    ['key' => 'email', 'label' => 'Email', 'class' => 'text-sm'],
-    ['key' => 'created_at', 'label' => 'Created', 'class' => 'text-right'],
-];
-?>
-```
-
-### Table without Headers
-
-```php
-<x-artisanpack-table
-    :headers="$headers"
-    :rows="$users"
-    no-headers />
-```
-
-### Table without Hover Effect
-
-```php
-<x-artisanpack-table
-    :headers="$headers"
-    :rows="$users"
-    no-hover />
-```
-
-### Table with Footer
-
-```php
-<x-artisanpack-table :headers="$headers" :rows="$users">
-    <x-slot:footer>
-        <tr>
-            <td colspan="3" class="text-right font-bold">Total:</td>
-            <td class="font-bold">{{ $users->sum('amount') }}</td>
-        </tr>
-    </x-slot:footer>
-</x-artisanpack-table>
-```
-
-### Table with Row Click Event
-
-```php
-<x-artisanpack-table
-    :headers="$headers"
-    :rows="$users"
-    @row-click="$wire.showUserDetails($event.detail)" />
-```
-
-### Table with Custom Sort Column
-
-By default, sorting uses the header's `key` value. You can specify a different column to sort by:
-
-```php
-<?php
-$headers = [
-    ['key' => 'user.name', 'label' => 'Name', 'sortBy' => 'users.name'],
-    ['key' => 'user.email', 'label' => 'Email', 'sortBy' => 'users.email'],
-];
-?>
-```
-
-### Drag-and-Drop Sorting (Livewire 4+)
-
-The table supports native drag-and-drop sorting using Livewire 4's `wire:sort` directive. This feature is automatically enabled when using Livewire 4 and the `sortable` prop.
-
-**Note:** This feature requires Livewire 4 or higher. On Livewire 3, the `sortable` prop is gracefully ignored.
-
-#### Basic Drag-and-Drop
-
-```php
-<?php
-
-use Livewire\Volt\Component;
-
-new class extends Component {
-    public array $tasks = [
-        ['id' => 1, 'name' => 'Task 1', 'order' => 1],
-        ['id' => 2, 'name' => 'Task 2', 'order' => 2],
-        ['id' => 3, 'name' => 'Task 3', 'order' => 3],
-    ];
-
-    public function updateOrder(array $orderedIds): void
-    {
-        // $orderedIds contains the new order of IDs
-        foreach ($orderedIds as $index => $id) {
-            // Update your database/model with new order
-            Task::where('id', $id)->update(['order' => $index + 1]);
-        }
-
-        // Refresh tasks
-        $this->tasks = Task::orderBy('order')->get()->toArray();
-    }
-}; ?>
-
-<x-artisanpack-table
-    :headers="$headers"
-    :rows="$tasks"
-    sortable
-    wire:sort="updateOrder" />
-```
-
-#### Drag-and-Drop with Sort Handle
-
-Use a dedicated handle for dragging instead of the entire row:
-
-```php
-<x-artisanpack-table
-    :headers="$headers"
-    :rows="$tasks"
-    sortable
-    sort-handle
-    wire:sort="updateOrder" />
-```
-
-You can also provide a custom sort handle using the `sortHandleSlot`:
-
-```php
-<x-artisanpack-table
-    :headers="$headers"
-    :rows="$tasks"
-    sortable
-    sort-handle
-    wire:sort="updateOrder">
-
-    @scope('sortHandleSlot', $row)
-        <x-artisanpack-icon
-            name="o-arrows-up-down"
-            class="cursor-move p-2 w-8 h-8 text-primary hover:text-primary-focus" />
-    @endscope
-</x-artisanpack-table>
-```
-
-#### Cross-List Dragging
-
-Enable dragging items between multiple tables using the `sort-group` prop:
-
-```php
-{{-- Active Tasks Table --}}
-<x-artisanpack-table
-    :headers="$headers"
-    :rows="$activeTasks"
-    sortable
-    sort-group="tasks"
-    wire:sort="updateActiveOrder" />
-
-{{-- Completed Tasks Table --}}
-<x-artisanpack-table
-    :headers="$headers"
-    :rows="$completedTasks"
-    sortable
-    sort-group="tasks"
-    wire:sort="updateCompletedOrder" />
-```
-
-#### Custom Sortable Key
-
-By default, the `keyBy` prop is used for item identification. You can specify a different key:
-
-```php
-<x-artisanpack-table
-    :headers="$headers"
-    :rows="$tasks"
-    sortable
-    sortable-key="uuid"
-    wire:sort="updateOrder" />
-```
-
-### Infinite Scroll (Livewire 4+)
-
-The table supports infinite scrolling using Livewire 4's `wire:intersect` directive. This feature automatically loads more data when the user scrolls to the bottom of the table.
-
-**Note:** This feature requires Livewire 4 or higher. On Livewire 3, the `infinite-scroll` prop is gracefully ignored and you should use standard pagination instead.
-
-#### Basic Infinite Scroll
-
-```php
-<?php
-
-use Livewire\Volt\Component;
-
-new class extends Component {
-    public int $page = 1;
-    public int $perPage = 20;
-    public array $users = [];
-
-    public function mount(): void
-    {
-        $this->loadMore();
-    }
-
-    public function loadMore(): void
-    {
-        $newUsers = User::query()
-            ->skip(($this->page - 1) * $this->perPage)
-            ->take($this->perPage)
-            ->get()
-            ->toArray();
-
-        $this->users = array_merge($this->users, $newUsers);
-        $this->page++;
-    }
-
-    public function hasMorePages(): bool
-    {
-        return User::count() > count($this->users);
-    }
-
-    public function with(): array
-    {
-        return [
-            'headers' => [
-                ['key' => 'id', 'label' => '#'],
-                ['key' => 'name', 'label' => 'Name'],
-                ['key' => 'email', 'label' => 'Email'],
-            ],
-        ];
-    }
-}; ?>
-
-<x-artisanpack-table
-    :headers="$headers"
-    :rows="$users"
-    infinite-scroll
-    :has-more-pages="$this->hasMorePages()" />
-```
-
-#### Custom Load Method
-
-Specify a custom method name to call when loading more data:
-
-```php
-<x-artisanpack-table
-    :headers="$headers"
-    :rows="$users"
-    infinite-scroll
-    infinite-scroll-method="fetchNextPage"
-    :has-more-pages="$hasMore" />
-```
-
-#### Using Modifiers
-
-The `infinite-scroll-modifier` prop supports Livewire 4's intersection modifiers:
-
-- `.once` - Only trigger once
-- `.half` - Trigger when element is 50% visible
-- `.full` - Trigger when element is fully visible
-
-```php
-{{-- Load more only once when scrolled into view --}}
-<x-artisanpack-table
-    :headers="$headers"
-    :rows="$users"
-    infinite-scroll
-    infinite-scroll-modifier="once"
-    :has-more-pages="$hasMore" />
-
-{{-- Trigger when the loading indicator is half visible --}}
-<x-artisanpack-table
-    :headers="$headers"
-    :rows="$items"
-    infinite-scroll
-    infinite-scroll-modifier="half"
-    :has-more-pages="$hasMore" />
-```
-
-#### Custom Loading Text
-
-```php
-<x-artisanpack-table
-    :headers="$headers"
-    :rows="$users"
-    infinite-scroll
-    infinite-scroll-text="Loading more users..."
-    :has-more-pages="$hasMore" />
-```
-
-#### Combining with Other Features
-
-Infinite scroll works alongside other table features:
-
-```php
-<x-artisanpack-table
-    :headers="$headers"
-    :rows="$users"
-    striped
-    infinite-scroll
-    :has-more-pages="$hasMore">
-
-    @scope('cell_name', $user)
-        <div class="flex items-center gap-2">
-            <x-artisanpack-avatar :image="$user->avatar" class="size-8" />
-            <span>{{ $user->name }}</span>
-        </div>
-    @endscope
-
-    @scope('actions', $user)
-        <x-artisanpack-button icon="o-eye" wire:click="view({{ $user->id }})" class="btn-sm" />
-    @endscope
-</x-artisanpack-table>
-```
-
-### Data Export (v2.0+)
-
-The Table component supports exporting data to CSV, Excel (XLSX), and PDF formats. Export can be handled client-side (CSV) or server-side (XLSX, PDF) using the `WithTableExport` trait.
-
-#### Basic Export
-
-Enable export functionality with the `exportable` prop:
-
-```php
-<x-artisanpack-table
-    :headers="$headers"
-    :rows="$users"
-    exportable />
-```
-
-This will display an export button that downloads the table data as a CSV file.
-
-#### Multiple Export Formats
-
-Specify which export formats to allow using the `export-formats` prop:
-
-```php
-<x-artisanpack-table
-    :headers="$headers"
-    :rows="$users"
-    exportable
-    :export-formats="['csv', 'xlsx', 'pdf']" />
-```
-
-When multiple formats are enabled, a dropdown menu appears with all available options.
-
-**Note:** XLSX export requires `phpoffice/phpspreadsheet` to be installed. PDF export requires `barryvdh/laravel-dompdf`. If these packages are not installed, those export options will be automatically hidden.
-
-#### Custom Export Filename
-
-Set a custom filename for the exported file:
-
-```php
-<x-artisanpack-table
-    :headers="$headers"
-    :rows="$users"
-    exportable
-    export-filename="users-report-{{ date('Y-m-d') }}" />
-```
-
-#### Server-Side Export with WithTableExport Trait
-
-For XLSX and PDF exports, you need to use the `WithTableExport` trait in your Livewire component. This handles the server-side generation of these file formats.
-
-```php
-<?php
-
-use ArtisanPack\LivewireUiComponents\Traits\WithTableExport;
-use Livewire\Volt\Component;
-
-new class extends Component {
-    use WithTableExport;
-
-    public function with(): array
-    {
-        $headers = [
-            ['key' => 'id', 'label' => '#'],
-            ['key' => 'name', 'label' => 'Name'],
-            ['key' => 'email', 'label' => 'Email'],
-            ['key' => 'role', 'label' => 'Role'],
-        ];
-
-        $users = User::all()->toArray();
-
-        return [
-            'headers' => $headers,
-            'users' => $users,
-        ];
-    }
-
-    /**
-     * Required: Provide export data for the table.
-     */
-    public function getTableExportData(string $tableId = 'default'): array
-    {
-        return [
-            'headers' => [
-                ['key' => 'id', 'label' => '#'],
-                ['key' => 'name', 'label' => 'Name'],
-                ['key' => 'email', 'label' => 'Email'],
-                ['key' => 'role', 'label' => 'Role'],
-            ],
-            'rows' => User::all()->toArray(),
-            'filename' => 'users-export-' . date('Y-m-d'),
-        ];
-    }
-}; ?>
-
-<x-artisanpack-table
-    :headers="$headers"
-    :rows="$users"
-    exportable
-    :export-formats="['csv', 'xlsx', 'pdf']" />
-```
-
-#### Multiple Tables with Export
-
-When you have multiple exportable tables on the same page, use the `id` prop to distinguish them:
-
-```php
-<?php
-
-use ArtisanPack\LivewireUiComponents\Traits\WithTableExport;
-use Livewire\Volt\Component;
-
-new class extends Component {
-    use WithTableExport;
-
-    public function getTableExportData(string $tableId = 'default'): array
-    {
-        return match($tableId) {
-            'users-table' => [
-                'headers' => $this->userHeaders,
-                'rows' => User::all()->toArray(),
-                'filename' => 'users-export',
-            ],
-            'orders-table' => [
-                'headers' => $this->orderHeaders,
-                'rows' => Order::all()->toArray(),
-                'filename' => 'orders-export',
-            ],
-            default => ['headers' => [], 'rows' => []],
-        };
-    }
-}; ?>
-
-<x-artisanpack-table
-    id="users-table"
-    :headers="$userHeaders"
-    :rows="$users"
-    exportable
-    :export-formats="['csv', 'xlsx']" />
-
-<x-artisanpack-table
-    id="orders-table"
-    :headers="$orderHeaders"
-    :rows="$orders"
-    exportable
-    :export-formats="['csv', 'pdf']" />
-```
-
-#### Export with Formatted Data
-
-The exporter respects your header configuration, including custom formatting:
-
-```php
-<?php
-$headers = [
-    ['key' => 'id', 'label' => '#'],
-    ['key' => 'name', 'label' => 'Full Name'],
-    [
-        'key' => 'created_at',
-        'label' => 'Created',
-        'format' => ['date', 'M d, Y']
-    ],
-    [
-        'key' => 'price',
-        'label' => 'Price',
-        'format' => ['currency', '2', '$']
-    ],
-];
-?>
-
-<x-artisanpack-table
-    :headers="$headers"
-    :rows="$products"
-    exportable />
-```
-
-#### Hidden Columns in Export
-
-Columns marked as `hidden` in the headers will be excluded from exports:
-
-```php
-<?php
-$headers = [
-    ['key' => 'id', 'label' => '#', 'hidden' => true], // Not exported
-    ['key' => 'name', 'label' => 'Name'],
-    ['key' => 'email', 'label' => 'Email'],
-    ['key' => 'internal_code', 'label' => 'Code', 'hidden' => true], // Not exported
-];
-?>
-```
-
-#### Installing Export Dependencies
-
-For full export functionality, install the optional dependencies:
-
-```bash
-# For Excel (XLSX) export
-composer require phpoffice/phpspreadsheet
-
-# For PDF export
-composer require barryvdh/laravel-dompdf
-```
+`density="compact"` (for operational screens) or `comfortable` (for browsing) sets row height, cell padding and type size; unset, the table follows the page's `data-density`. `surface="glass"` puts it on a translucent surface. The header row sticks inside the scroll area; give it a height with `style="--apui-table-max-block-size: 480px"`, or turn it off with `:sticky-header="false"`.
 
 ## Props
 
 | Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `headers` | array | `[]` | Array of header definitions (required) |
-| `rows` | array\|ArrayAccess | `[]` | Data rows to display (required) |
-| `id` | string\|null | `null` | Optional ID for the table |
-| `striped` | bool | `false` | Whether to use striped/zebra rows |
-| `no-headers` | bool | `false` | Whether to hide table headers |
-| `selectable` | bool | `false` | Whether rows can be selected with checkboxes |
-| `selectable-key` | string | `'id'` | Key to use for selectable rows |
-| `expandable` | bool | `false` | Whether rows can be expanded |
-| `expandable-key` | string | `'id'` | Key to use for expandable rows |
-| `expandable-condition` | mixed | `null` | Condition field to determine if a row is expandable |
-| `link` | string\|null | `null` | URL pattern for row links (e.g., `/users/{id}/edit`) |
-| `with-pagination` | bool | `false` | Whether to show pagination controls |
-| `per-page` | string\|null | `null` | Wire model name for items per page |
-| `per-page-values` | array | `[10, 20, 50, 100]` | Available options for items per page |
-| `sort-by` | array | `[]` | Sorting configuration with `column` and `direction` keys |
-| `row-decoration` | array | `[]` | Row decoration rules (class => closure) |
-| `cell-decoration` | array | `[]` | Cell decoration rules (key => [class => closure]) |
-| `show-empty-text` | bool | `false` | Whether to show text when no records found |
-| `empty-text` | string | `'No records found.'` | Text to display when no records found |
-| `container-class` | string | `'overflow-x-auto'` | CSS class for the table container |
-| `no-hover` | bool | `false` | Whether to disable hover effect on rows |
-| `key-by` | string | `'id'` | Field to use as unique key for rows |
-| `sortable` | bool | `false` | Whether rows can be drag-and-drop sorted (Livewire 4+ only) |
-| `sortable-key` | string\|null | `null` | Key to use for sortable item identification (defaults to `key-by`) |
-| `sort-group` | string\|null | `null` | Group name for cross-list dragging (`wire:sort:group`) |
-| `sort-handle` | bool | `false` | Whether to use a sort handle instead of the entire row |
-| `infinite-scroll` | bool | `false` | Whether to enable infinite scrolling (Livewire 4+ only) |
-| `infinite-scroll-method` | string | `'loadMore'` | The Livewire method to call when loading more data |
-| `infinite-scroll-modifier` | string\|null | `null` | Modifier for wire:intersect (`.once`, `.half`, `.full`) |
-| `infinite-scroll-text` | string | `'Scroll for more'` | Text to display while loading more items |
-| `has-more-pages` | bool | `true` | Whether there are more pages to load |
-| `exportable` | bool | `false` | Whether to enable data export functionality (v2.0+) |
-| `export-formats` | array | `['csv']` | Available export formats: `csv`, `xlsx`, `pdf` (v2.0+) |
-| `export-filename` | string\|null | `null` | Custom filename for exports (without extension) (v2.0+) |
+|---|---|---|---|
+| `headers` | array | required | The columns (see Columns). |
+| `rows` | array, Collection or paginator | required | The rows. |
+| `key-by` | string | `id` | Dot path to each row's key, for selection, expansion and `wire:key`. |
+| `title` | string | none | The toolbar title; it names the table. A `title` slot overrides it. |
+| `label` | string | none | The table's accessible name instead of the title. |
+| `density` | string | none | `compact`, `default` or `comfortable`. |
+| `surface` | string | `default` | `default` or `glass`. |
+| `sticky-header` | bool | `true` | Keeps the header row in view while the rows scroll. |
+| `hide-headers` | bool | `false` | Hides the header row visually; screen readers still read it. |
+| `selectable` | bool | `false` | Adds row boxes and a select-all box. |
+| `value` | array | `[]` | The selected keys without `wire:model`. |
+| `expandable` | bool | `false` | Adds an expand button to each row. |
+| `expanded` | array | `[]` | The expanded keys. |
+| `sort-by` | array | `[]` | The current sort: `[ 'column' => …, 'direction' => 'asc' or 'desc' ]`. |
+| `loading` | bool | `false` | Shows skeleton rows and sets `aria-busy`. |
+| `empty-text` | string | `__( 'No records found.' )` | The empty state's title. |
+| `toolbar` | string | none | Toolbar content after the title. A `toolbar` slot overrides it. |
+| `footer` | string | none | Footer content. A `footer` slot overrides it. |
+| `pagination` | array | `[]` | Pagination's props, rendered at the end of the footer. |
+| `paginated` | bool | `false` | Renders Pagination from the paginator in `rows`. |
+| `per-page` | string | none | The Livewire property the "Rows per page" Select binds. |
+| `per-page-values` | array | `[10, 20, 50, 100]` | The "Rows per page" options. |
+| `select-all-label` | string | `__( 'Select all' )` | The select-all box's name. |
+| `select-row-label` | string | `__( 'Select {row}' )` | Each row box's name. |
+| `sort-label` | string | `__( 'Sort by {column}' )` | Each sort button's name. |
+| `expand-label` | string | `__( 'Show details for {row}' )` | Each expand button's name. |
+| `actions-label` | string | `__( 'Actions' )` | The actions column's hidden header. |
+| `classes` | array | `[]` | Extra classes per part: `root`, `toolbar`, `title`, `scroll`, `table`, `headCell`, `sort`, `row`, `cell`, `select`, `expandTrigger`, `expansion`, `primary`, `secondary`, `footer`. |
 
-## Header Configuration
-
-Each header in the `headers` array can have the following keys:
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| `key` | string | required | The field key to display from row data |
-| `label` | string | required | The header label text |
-| `class` | string | `''` | Additional CSS classes for the column |
-| `sortable` | bool | `true` | Whether this column is sortable (when sortBy is enabled) |
-| `sortBy` | string | `null` | Custom column name to use for sorting (defaults to `key`) |
-| `hidden` | bool | `false` | Whether to hide this column |
-| `disableLink` | bool | `false` | Whether to disable row links for this column |
-| `format` | array\|callable | `null` | Formatting rules for cell values |
-
-## Slots
-
-| Slot | Description |
-|------|-------------|
-| `cell_{fieldname}` | Custom rendering for a specific cell (use `@scope`) |
-| `header_{fieldname}` | Custom rendering for a specific header (use `@scope`) |
-| `actions` | Content for the actions column (use `@scope`) |
-| `expansion` | Content for expanded row (use `@scope`) |
-| `empty` | Content to display when there are no rows |
-| `footer` | Content for the table footer |
-| `sortHandleSlot` | Custom content for the sort handle (use `@scope`, Livewire 4+ only) |
+Every other attribute lands on the root `<div>`, except `wire:model`.
 
 ## Events
 
-The Table component supports the following events:
+| Event | Detail | When |
+|---|---|---|
+| `sort-change` | `{ column, direction }` | A sortable header was chosen. |
+| `expanded-change` | the expanded keys | A row was expanded or collapsed. |
+| `row-click` | the row | A row was clicked outside its links, buttons and boxes. Only fires while something listens: `x-on:row-click`, `@row-click` or `wire:row-click`. |
 
-| Event | Payload | Description |
-|-------|---------|-------------|
-| `row-selection` | `{row, selected}` | Fired when a row is selected/deselected |
-| `row-selection-all` | `{selected}` | Fired when all rows are selected/deselected |
-| `row-click` | row data | Fired when a row is clicked (requires `@row-click` attribute) |
-| `table-exported` | `{format, filename}` | Fired when a client-side export (CSV) completes successfully (v2.0+) |
-| `table-export-error` | `{error}` | Fired when an export fails (v2.0+) |
-| `table-export-request` | `{format, tableId}` | Dispatched to request server-side export (XLSX, PDF) (v2.0+) |
+The selection changes through `wire:model`.
 
-## Notes
+## Upgrading from 2.x
 
-- You cannot combine `selectable` with `expandable` - they are mutually exclusive
-- When using dot notation in header keys (e.g., `user.name`), the scope slots use triple underscores: `@scope('cell_user___name')`
-- The table automatically handles responsive scrolling via the container class
-- Row links support nested field references using dot notation (e.g., `{user.id}`)
-- Sorting requires a wire:model binding to a `sortBy` array property in your component
-- The table uses Alpine.js for interactive features like selection and expansion
-- Drag-and-drop sorting (`sortable` prop) requires Livewire 4 or higher and is gracefully ignored on Livewire 3
-- Infinite scroll (`infinite-scroll` prop) requires Livewire 4 or higher and is gracefully ignored on Livewire 3
-- Export functionality requires v2.0+. XLSX export requires `phpoffice/phpspreadsheet`, PDF export requires `barryvdh/laravel-dompdf`
-- For server-side exports (XLSX, PDF), use the `WithTableExport` trait in your Livewire component
+- `headers`, `rows`, `key-by`, `class`, `@scope( 'cell_…', $row )`, `@scope( 'header_…', $header )`, `@scope( 'actions', $row )`, `@scope( 'expansion', $row )`, `sort-by`, `selectable`, `wire:model`, `expandable`, `selectable-key`, `expandable-key`, `expandable-condition`, `link`, `row-decoration`, `cell-decoration`, `format`, `with-pagination`, `per-page`, `per-page-values`, `sortable` (drag and drop), `sort-group`, `sort-handle` and `infinite-scroll` keep working.
+- `class` and other attributes now land on the root `<div>`, not the `<table>`.
+- `compact` sets `density="compact"`; `no-headers` sets `hide-headers`; `with-pagination` is now `paginated`.
+- `selectable` and `expandable` can now be combined. With `expandable` alone, `wire:model` still binds the expanded keys.
+- An empty table now always shows the empty state; `show-empty-text` is no longer needed.
+- A `footer` slot now fills the footer bar. A slot of `<tr>` rows still renders in a `<tfoot>`.
+- The `row-selection` and `row-selection-all` events are gone; read the `wire:model` property.
+- `striped`, `no-hover`, `container-class` and `header-glass`, `header-glass-tint`, `header-glass-tint-opacity` are gone; use `surface="glass"` and `classes`.
+- Virtual scrolling (`virtual-scroll`, `virtual-row-height`, `virtual-buffer`, `virtual-container-height`) and the export toolbar (`exportable`, `export-formats`, `export-filename` and the `table-exported`, `table-export-error` and `table-export-request` events) are removed. The `TableExporter` class remains for server-side exports.
 
-## Related Components
+## Accessibility
 
-- [Pagination](Pagination) - Pagination controls
-- [Button](Button) - Interactive button element
-- [Checkbox](Checkbox) - Checkbox input for row selection
-- [Icon](Icon) - Icon component used in sort indicators
+- Real table markup: `thead` and `tbody`, header cells with `scope="col"`, named by the title or `label`.
+- Sortable headers carry `aria-sort` and a button named "Sort by {column}"; the icon is decorative.
+- Row boxes are named and selected rows carry `aria-selected`; the select-all box is mixed while some rows are selected.
+- Expand buttons carry `aria-expanded` and `aria-controls`; the chevron mirrors in right-to-left layouts.
+- While loading, the table carries `aria-busy` and the skeleton rows are hidden from assistive technology.
+- Every label is translatable.

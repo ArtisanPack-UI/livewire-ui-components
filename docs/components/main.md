@@ -4,6 +4,8 @@ title: Main Component
 
 # Main Component
 
+> **Deprecated in 3.0.** Use [AppShell](app-shell), built on the design system. `main` now renders an AppShell: the `content` slot is the content, the `sidebar` slot the sidebar (its `collapsible` and `collapse-text` attributes still work), and the `footer` slot follows the content. `full-width`, `with-nav`, `collapse-icon` and the sidebar's `drawer`, `right` and `right-mobile` attributes are ignored; on a narrow viewport the sidebar stacks above the content instead of becoming a drawer. This component is removed in a later major release.
+
 The Main component provides a structured page layout with a main content area, an optional sidebar, and an optional footer. It's designed to create consistent, responsive layouts for your application with support for collapsible sidebars and various configuration options.
 
 ## Basic Usage

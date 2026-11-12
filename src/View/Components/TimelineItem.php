@@ -1,51 +1,99 @@
 <?php
 
-declare(strict_types=1);
 /**
- * TimelineItem
+ * TimelineItem Component
  *
- * This file contains the TimelineItem class for the ArtisanPack UI Livewire UI Components package.
+ * One event of the design-system Timeline (#61).
  *
  * @author     Jacob Martella
- * @copyright  2023 Jacob Martella
+ * @copyright  2026 Jacob Martella
  * @license    MIT
  *
- * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
- * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
+ * @link       https://github.com/ArtisanPack-UI/livewire-ui-components
  * @since      1.0.0
  */
 
+declare(strict_types=1);
+
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
-use Closure;
+use ArtisanPack\LivewireUiComponents\View\Concerns\RendersDesignSystemParts;
 use Illuminate\Contracts\View\View;
 
 /**
- * TimelineItem Class
+ * TimelineItem Component Class
  *
- * Provides functionality for the TimelineItem component.
+ * Renders a Timeline's item part (`li`): the marker (icon or dot, with
+ * data-color), the head (title or the default slot, then the time), the body
+ * (description) and the card (the `card` slot or prop). Place it inside
+ * `<x-artisanpack-timeline>`. Every attribute lands on the item.
+ *
+ * 2.x props still work: `subtitle` as `time`. 2.x `first`, `last` and
+ * `pending` are ignored: the list draws its own line.
  *
  * @since 1.0.0
  */
 class TimelineItem extends BaseComponent
 {
-    public string $uuid;
+    use RendersDesignSystemParts;
 
+    /**
+     * The 2.x props read from the attributes, then left off the item.
+     *
+     * @since 3.0.0
+     */
+    public const DEPRECATED_ATTRIBUTES = ['subtitle', 'first', 'last', 'pending'];
+
+    /**
+     * The parent's extra classes per part.
+     *
+     * @since 3.0.0
+     *
+     * @var array<string, string>
+     */
+    public array $classes = [];
+
+    /**
+     * Create a new component instance.
+     *
+     * @since 1.0.0
+     *
+     * @param  string|null  $title  What happened. The default slot replaces it.
+     * @param  string|null  $time  When, as shown ("2h ago").
+     * @param  string|null  $datetime  When, machine-readable (ISO 8601), for the time element.
+     * @param  string|null  $icon  A registry icon name for the marker.
+     * @param  string|null  $color  Tints the marker.
+     * @param  string|null  $description  Muted detail under the head.
+     * @param  string|null  $card  A sunken box under the head. The `card` slot replaces it.
+     */
     public function __construct(
-        public string $title,
-        public ?string $id = null,
-        public ?string $subtitle = null,
-        public ?string $description = null,
+        public ?string $title = null,
+        public ?string $time = null,
+        public ?string $datetime = null,
         public ?string $icon = null,
-        public ?bool $pending = false,
-        public ?bool $first = false,
-        public ?bool $last = false,
-
+        public ?string $color = null,
+        public ?string $description = null,
+        public ?string $card = null,
     ) {
-        $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
+        $this->classes = Timeline::current()?->classes ?? [];
     }
 
-    public function render(): View|Closure|string
+    /**
+     * The marker's color, or null for the neutral default.
+     *
+     * @since 3.0.0
+     */
+    public function colorValue(): ?string
+    {
+        return in_array($this->color, Stat::COLORS, true) ? $this->color : null;
+    }
+
+    /**
+     * Get the view that represents the component.
+     *
+     * @since 1.0.0
+     */
+    public function render(): View
     {
         return view('livewire-ui-components::components.timeline-item');
     }

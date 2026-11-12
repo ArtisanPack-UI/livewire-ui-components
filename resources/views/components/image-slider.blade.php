@@ -1,274 +1,131 @@
+{{--
+    ImageSlider (#61). Markup contract: design-system ImageSlider. The
+    .apui-image-slider root is the carousel machine's root (role=region) and
+    holds the frame (viewport) and the thumbnails. The server renders the
+    machine's layout styles too (the track is a scroll-snapping grid), so the
+    slider lays out before Alpine starts. Slides, dots and thumbs are named
+    per index; every part has a stable, server-rendered id (D-015). The counter follows the widget's index on the client.
+    `class` lands on the root with the other attributes; `wire:model` binds
+    the slide shown.
+--}}
+@php
+    $baseId  = $baseId();
+    $entries = $entries();
+    $count   = count( $entries );
+    $current = $currentIndex();
+    $userStyle = trim( (string) $attributes->get( 'style', '' ) );
+@endphp
 <div
-    x-data="{
-        currentIndex: 0,
-        images: @js($images),
-        autoPlay: {{ $autoPlay ? 'true' : 'false' }},
-        interval: {{ $autoPlayInterval }},
-        loop: {{ $loop ? 'true' : 'false' }},
-        pauseOnHover: {{ $pauseOnHover ? 'true' : 'false' }},
-        transition: '{{ $transition }}',
-        duration: {{ $transitionDuration }},
-        enableLightbox: {{ $enableLightbox ? 'true' : 'false' }},
-        uuid: '{{ $uuid }}',
-        
-        // State
-        loading: true,
-        autoPlayTimer: null,
-        isPaused: false,
-        touchStartX: 0,
-        touchEndX: 0,
-        lightbox: null,
-
-        init() {
-            this.loading = false;
-
-            if (this.autoPlay) {
-                this.startAutoPlay();
-            }
-
-            if (this.enableLightbox && typeof PhotoSwipeLightbox !== 'undefined') {
-                this.initLightbox();
-            }
-
-            // Preload next images
-            this.$nextTick(() => {
-                this.preloadImages();
-            });
-        },
-
-        next() {
-            if (this.currentIndex < this.images.length - 1) {
-                this.currentIndex++;
-            } else if (this.loop) {
-                this.currentIndex = 0;
-            }
-        },
-
-        previous() {
-            if (this.currentIndex > 0) {
-                this.currentIndex--;
-            } else if (this.loop) {
-                this.currentIndex = this.images.length - 1;
-            }
-        },
-
-        goToSlide(index) {
-            this.currentIndex = index;
-        },
-
-        startAutoPlay() {
-            if (!this.autoPlay || this.images.length <= 1) return;
-
-            this.autoPlayTimer = setInterval(() => {
-                if (!this.isPaused) {
-                    this.next();
-                }
-            }, this.interval);
-        },
-
-        stopAutoPlay() {
-            if (this.autoPlayTimer) {
-                clearInterval(this.autoPlayTimer);
-                this.autoPlayTimer = null;
-            }
-        },
-
-        pauseAutoPlay() {
-            if (this.pauseOnHover) {
-                this.isPaused = true;
-            }
-        },
-
-        resumeAutoPlay() {
-            if (this.pauseOnHover) {
-                this.isPaused = false;
-            }
-        },
-
-        handleTouchStart(e) {
-            this.touchStartX = e.touches[0].clientX;
-        },
-
-        handleTouchMove(e) {
-            this.touchEndX = e.touches[0].clientX;
-        },
-
-        handleTouchEnd(e) {
-            const threshold = 50;
-            const diff = this.touchStartX - this.touchEndX;
-
-            if (Math.abs(diff) > threshold) {
-                if (diff > 0) {
-                    this.next();
-                } else {
-                    this.previous();
-                }
-            }
-        },
-
-        preloadImages() {
-            // Preload next and previous images for smoother transitions
-            const nextIndex = (this.currentIndex + 1) % this.images.length;
-            const prevIndex = this.currentIndex === 0 ? this.images.length - 1 : this.currentIndex - 1;
-
-            [nextIndex, prevIndex].forEach(index => {
-                const img = new Image();
-                const imageData = this.images[index];
-                img.src = typeof imageData === 'string' ? imageData : (imageData.url || imageData.src || '');
-            });
-        },
-
-        initLightbox() {
-            try {
-                this.lightbox = new PhotoSwipeLightbox({
-                    gallery: `#lightbox-${this.uuid}`,
-                    children: 'a',
-                    showHideAnimationType: 'fade',
-                    pswpModule: PhotoSwipe
-                });
-
-                this.lightbox.init();
-            } catch (error) {
-                console.warn('PhotoSwipe not available:', error);
-                this.enableLightbox = false;
-            }
-        },
-
-        openLightbox(index) {
-            if (this.lightbox && this.enableLightbox) {
-                // Navigate to specific image in lightbox
-                const items = document.querySelectorAll(`#lightbox-${this.uuid} a`);
-                if (items[index]) {
-                    items[index].click();
-                }
-            }
-        }
-    }"
-    x-init="init()"
-    {{ $attributes->class("relative w-full select-none") }}
-    @keydown.arrow-left="previous()"
-    @keydown.arrow-right="next()"
-    @mouseenter="pauseAutoPlay()"
-    @mouseleave="resumeAutoPlay()"
-    tabindex="0"
+    {{ $rootAttributes()->class( $rootClasses( 'apui-image-slider' ) ) }}
+    id="{{ $baseId }}"
+    data-scope="image-slider"
+    data-part="root"
     role="region"
-    aria-label="Image slider with {{ count($images) }} images"
+    aria-roledescription="carousel"
+    aria-label="{{ $text( 'label' ) }}"
+    data-orientation="horizontal"
+    style="--apui-_image-slider-ratio: {{ $aspectRatio }}; --slides-per-page: 1; --slide-spacing: 0px; --slide-item-size: calc(100% / var(--slides-per-page) - var(--slide-spacing) * (var(--slides-per-page) - 1) / var(--slides-per-page)){{ '' !== $userStyle ? '; ' . rtrim( $userStyle, '; ' ) : '' }}"
+    x-data="{{ $alpineData() }}"
+    x-apui:root
 >
-    <!-- Loading State -->
-    <div x-show="loading" class="absolute inset-0 bg-gray-100 dark:bg-gray-800 animate-pulse rounded-lg flex items-center justify-center">
-        <div class="w-8 h-8 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
-    </div>
-
-    <!-- Image Container -->
-    <div class="relative overflow-hidden rounded-lg {{ $getAspectRatioClass() }}">
-        <!-- Images Track -->
-        <div
-            class="flex {{ $getTransitionClass() }} ease-in-out"
-            :class="transition === 'slide' ? 'duration-{{ $transitionDuration }}' : ''"
-            :style="transition === 'slide' ? 'transform: translateX(-' + (currentIndex * 100) + '%)' : ''"
-        >
-            @foreach($images as $index => $image)
+    <div data-scope="image-slider" data-part="viewport" id="{{ $partId( 'viewport' ) }}"{{ $partClass( 'viewport' ) }}>
+        <div data-scope="image-slider" data-part="item-group" id="{{ $partId( 'item-group' ) }}" data-orientation="horizontal" aria-live="{{ $autoplay ? 'off' : 'polite' }}" tabindex="0" style="display: grid; gap: var(--slide-spacing); scroll-snap-type: x mandatory; grid-auto-flow: column; scrollbar-width: none; overscroll-behavior-x: contain; grid-auto-columns: var(--slide-item-size); overflow-x: auto"{{ $partClass( 'itemGroup' ) }} x-apui:item-group>
+            @foreach ( $entries as $i => $entry )
                 <div
-                    class="w-full flex-shrink-0 relative"
-                    :class="transition === 'fade' ? (currentIndex === {{ $index }} ? 'opacity-100 duration-{{ $transitionDuration }}' : 'opacity-0 absolute inset-0 duration-{{ $transitionDuration }}') : ''"
+                    data-scope="image-slider"
+                    data-part="item"
+                    id="{{ $partId( 'item-' . $i ) }}"
+                    role="group"
+                    data-index="{{ $i }}"
+                    data-orientation="horizontal"
+                    style="flex: 0 0 auto; max-width: 100%; scroll-snap-align: start"
+                    aria-roledescription="slide"
+                    aria-label="{{ $format( 'slide', $i ) }}"
+                    @if ( $i !== $current ) aria-hidden="true" @endif
+                    wire:key="{{ $baseId }}-item-{{ $i }}"
+                    {{ $partClass( 'item' ) }}
+                    x-apui:item="{ index: {{ $i }} }"
                 >
-                    <img
-                        src="{{ is_array($image) ? $image['url'] ?? $image['src'] ?? '' : $image }}"
-                        alt="{{ is_array($image) ? ($image['alt'] ?? 'Image ' . ($index + 1)) : 'Image ' . ($index + 1) }}"
-                        class="w-full h-full object-cover"
-                        @if($index > 0)
-                            loading="lazy"
-                        @endif
-                        onload="this.parentNode.parentNode.parentNode.parentNode.querySelector('[x-show=loading]').style.display = 'none'"
-                    />
-
-                    @if($enableLightbox)
-                        <button
-                            @click="openLightbox({{ $index }})"
-                            class="absolute inset-0 w-full h-full bg-black/0 hover:bg-black/10 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset"
-                            aria-label="View full size image {{ $index + 1 }}"
-                        >
-                            <span class="sr-only">Open image {{ $index + 1 }} in lightbox</span>
-                        </button>
+                    <img data-scope="image-slider" data-part="image" src="{{ $entry['src'] }}" alt="{{ $entry['alt'] }}"@if ( $i > 0 ) loading="lazy"@endif decoding="async"{{ $partClass( 'image' ) }}>
+                    @if ( '' !== $entry['caption'] || '' !== $entry['description'] )
+                        <div data-scope="image-slider" data-part="caption"{{ $partClass( 'caption' ) }}>
+                            @if ( '' !== $entry['caption'] )
+                                <p data-scope="image-slider" data-part="title"{{ $partClass( 'title' ) }}>{{ $entry['caption'] }}</p>
+                            @endif
+                            @if ( '' !== $entry['description'] )
+                                <p data-scope="image-slider" data-part="description"{{ $partClass( 'description' ) }}>{{ $entry['description'] }}</p>
+                            @endif
+                        </div>
                     @endif
                 </div>
             @endforeach
         </div>
-
-        <!-- Navigation Arrows -->
-        @if($withArrows && count($images) > 1)
-            <button
-                @click="previous()"
-                class="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white/80 dark:bg-gray-800/80 hover:bg-white hover:scale-105 dark:hover:bg-gray-800 p-2 rounded-full shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                :disabled="!loop && currentIndex === 0"
-                aria-label="Previous image"
-            >
-                <svg class="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                </svg>
-            </button>
-
-            <button
-                @click="next()"
-                class="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white/80 dark:bg-gray-800/80 hover:bg-white hover:scale-105 dark:hover:bg-gray-800 p-2 rounded-full shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                :disabled="!loop && currentIndex === images.length - 1"
-                aria-label="Next image"
-            >
-                <svg class="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                </svg>
-            </button>
-        @endif
-    </div>
-
-    <!-- Indicators -->
-    @if($withIndicators && count($images) > 1)
-        <div class="flex justify-center space-x-2 mt-4" role="tablist" aria-label="Image indicators">
-            @foreach($images as $index => $image)
+        <span data-scope="image-slider" data-part="progress-text" id="{{ $partId( 'progress-text' ) }}"{{ $partClass( 'progressText' ) }} x-apui:progress-text x-text="progressText">{{ $format( 'counter', $current ) }}</span>
+        <x-artisanpack-button
+            variant="soft"
+            color="neutral"
+            icon-only
+            leading-icon="chevron-left"
+            :aria-label="$text( 'previous' )"
+            :aria-controls="$partId( 'item-group' )"
+            :id="$partId( 'prev-trigger' )"
+            :class="$classes['prevTrigger'] ?? null"
+            data-scope="image-slider"
+            data-part="prev-trigger"
+            x-apui:prev-trigger=""
+        />
+        <x-artisanpack-button
+            variant="soft"
+            color="neutral"
+            icon-only
+            leading-icon="chevron-right"
+            :aria-label="$text( 'next' )"
+            :aria-controls="$partId( 'item-group' )"
+            :id="$partId( 'next-trigger' )"
+            :class="$classes['nextTrigger'] ?? null"
+            data-scope="image-slider"
+            data-part="next-trigger"
+            x-apui:next-trigger=""
+        />
+        <div data-scope="image-slider" data-part="indicator-group" id="{{ $partId( 'indicator-group' ) }}"{{ $partClass( 'indicatorGroup' ) }} x-apui:indicator-group>
+            @foreach ( $entries as $i => $entry )
                 <button
-                    @click="goToSlide({{ $index }})"
-                    class="w-3 h-3 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                    :class="currentIndex === {{ $index }} ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500'"
-                    role="tab"
-                    :aria-selected="currentIndex === {{ $index }}"
-                    aria-label="Go to image {{ $index + 1 }}"
+                    type="button"
+                    data-scope="image-slider"
+                    data-part="indicator"
+                    id="{{ $partId( 'indicator-' . $i ) }}"
+                    aria-label="{{ $format( 'indicator', $i ) }}"
+                    @if ( $i === $current ) aria-current="true" data-current @endif
+                    {{ $partClass( 'indicator' ) }}
+                    x-apui:indicator="{ index: {{ $i }} }"
                 ></button>
             @endforeach
         </div>
-    @endif
-
-    <!-- Counter -->
-    @if($showCounter && count($images) > 1)
-        <div class="absolute top-2 right-2 bg-black/50 text-white px-2 py-1 rounded text-sm font-medium">
-            <span x-text="currentIndex + 1"></span>/<span>{{ count($images) }}</span>
-        </div>
-    @endif
-
-    <!-- Touch/Swipe Areas -->
-    <div
-        class="absolute inset-0 touch-pan-y"
-        x-on:touchstart="handleTouchStart($event)"
-        x-on:touchmove="handleTouchMove($event)"
-        x-on:touchend="handleTouchEnd($event)"
-    ></div>
-
-    <!-- PhotoSwipe Lightbox Container -->
-    @if($enableLightbox)
-        <div
-            id="lightbox-{{ $uuid }}"
-            class="pswp-gallery pswp-gallery--single-column hidden"
-        >
-            @foreach($images as $index => $image)
-                <a
-                    href="{{ is_array($image) ? $image['url'] ?? $image['src'] ?? '' : $image }}"
-                    data-pswp-width="{{ is_array($image) ? ($image['width'] ?? '1200') : '1200' }}"
-                    data-pswp-height="{{ is_array($image) ? ($image['height'] ?? '800') : '800' }}"
-                    target="_blank"
-                >
-                    <img src="{{ is_array($image) ? $image['url'] ?? $image['src'] ?? '' : $image }}" alt="{{ is_array($image) ? ($image['alt'] ?? 'Image ' . ($index + 1)) : 'Image ' . ($index + 1) }}" style="display: none;">
-                </a>
+        @if ( $autoplay )
+            <button
+                type="button"
+                data-scope="image-slider"
+                data-part="autoplay-trigger"
+                id="{{ $partId( 'autoplay-trigger' ) }}"
+                aria-label="{{ $text( 'pause' ) }}"
+                {{ $partClass( 'autoplayTrigger' ) }}
+                x-apui:autoplay-trigger
+            ><template x-if="playing">{{ $iconSvg( 'pause' ) }}</template><template x-if="! playing">{{ $iconSvg( 'play' ) }}</template></button>
+        @endif
+    </div>
+    @if ( $thumbnails && $count > 0 )
+        <div data-scope="image-slider" data-part="thumbs" id="{{ $partId( 'thumbs' ) }}"{{ $partClass( 'thumbs' ) }}>
+            @foreach ( $entries as $i => $entry )
+                <button
+                    type="button"
+                    data-scope="image-slider"
+                    data-part="thumb"
+                    id="{{ $partId( 'thumb-' . $i ) }}"
+                    @if ( $i === $current ) aria-current="true" @endif
+                    {{ $partClass( 'thumb' ) }}
+                    x-apui:thumb="{ index: {{ $i }} }"
+                ><img src="{{ $entry['src'] }}" alt="{{ $entry['alt'] }}" loading="lazy" decoding="async"></button>
             @endforeach
         </div>
     @endif
 </div>
-

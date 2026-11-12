@@ -3219,6 +3219,23 @@ return [
 				'high-contrast' => '#000000',
 			],
 		],
+		'border.soft-edge-width'          => [
+			'cssVar'   => '--apui-border-soft-edge-width',
+			'type'     => 'dimension',
+			'tier'     => 'semantic',
+			'axis'     => 'theme',
+			'varies'   => 'theme',
+			'value'    => [
+				'light'         => '0',
+				'dark'          => '0',
+				'high-contrast' => '1px',
+			],
+			'resolved' => [
+				'light'         => '0',
+				'dark'          => '0',
+				'high-contrast' => '1px',
+			],
+		],
 		'focus-ring.color'                => [
 			'cssVar'   => '--apui-focus-ring-color',
 			'type'     => 'color',

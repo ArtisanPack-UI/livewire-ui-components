@@ -2,143 +2,76 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
+use Illuminate\Support\Facades\Blade;
 
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
-use ArtisanPack\LivewireUiComponents\View\Components\ProgressRadial;
-use Error;
-use RuntimeException;
-
-/**
- * Comprehensive unit tests for the ProgressRadial component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * ProgressRadial (#60): the root is the progressbar. The manifest parity
+ * check is in tests/Feature/DesignSystemParityTest.php.
  */
-class ProgressRadialComponentTest extends ComponentTestCase
+
+function progressRadialRoot(DOMXPath $dom): DOMElement
 {
-    protected string $componentClass = ProgressRadial::class;
-
-    protected array $defaultProperties = [
-        'value' => 0,
-        'unit'  => '%',
-    ];
-
-    protected array $requiredProperties = [];
-
-    public function test_progressradial_string_properties(): void
-    {
-        $stringProperties = ['id', 'unit'];
-        $testValues       = ComponentDataFactory::sampleTexts();
-
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
-
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
-    }
-
-    public function test_progressradial_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
-
-    public function test_progressradial_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'ProgressRadial should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
-
-    public function test_progressradial_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
-
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
-
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_progressradial_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'ProgressRadial rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
+    return $dom->query('//span[contains(@class, "apui-progress-radial")]')->item(0);
 }
+
+test('the ring, value and label render with the spec geometry', function (): void {
+    $dom  = designSystemDom(Blade::render('<x-artisanpack-progress-radial id="goal" :value="68" :size="80" :thickness="7" label="complete" />'));
+    $root = progressRadialRoot($dom);
+    $bar  = $dom->query('//*[@data-part="bar"]')->item(0);
+
+    $parts = [];
+    foreach ($dom->query('//*[@data-scope="progress-radial"]') as $element) {
+        $parts[] = $element->getAttribute('data-part');
+    }
+
+    expect($parts)->toBe(['root', 'svg', 'track', 'bar', 'value', 'label'])
+        ->and($root->getAttribute('role'))->toBe('progressbar')
+        ->and($root->getAttribute('aria-valuenow'))->toBe('68')
+        ->and($root->getAttribute('aria-valuemax'))->toBe('100')
+        ->and($root->getAttribute('aria-labelledby'))->toBe('goal-label')
+        ->and($root->getAttribute('style'))->toBe('--apui-_s: 80px')
+        ->and($root->getAttribute('data-color'))->toBe('primary')
+        ->and($dom->query('//*[@data-part="svg"]')->item(0)->getAttribute('viewbox'))->toBe('0 0 80 80')
+        ->and($bar->getAttribute('cx'))->toBe('40.0')
+        ->and($bar->getAttribute('r'))->toBe('36.5')
+        ->and($bar->getAttribute('stroke-width'))->toBe('7')
+        ->and($bar->getAttribute('stroke-dasharray'))->toBe('229.3')
+        ->and($bar->getAttribute('stroke-dashoffset'))->toBe('73.4')
+        ->and($dom->query('//*[@data-part="value"]')->item(0)->textContent)->toBe('68%complete');
+});
+
+test('indeterminate leaves out aria-valuenow and the value, with a quarter arc', function (): void {
+    $dom  = designSystemDom(Blade::render('<x-artisanpack-progress-radial indeterminate :size="48" :thickness="5" aria-label="Calculating" />'));
+    $root = progressRadialRoot($dom);
+
+    expect($root->hasAttribute('data-indeterminate'))->toBeTrue()
+        ->and($root->hasAttribute('aria-valuenow'))->toBeFalse()
+        ->and($root->getAttribute('aria-label'))->toBe('Calculating')
+        ->and($dom->query('//*[@data-part="value"]'))->toHaveCount(0)
+        ->and($dom->query('//*[@data-part="bar"]')->item(0)->getAttribute('stroke-dashoffset'))->toBe('101.3');
+});
+
+test('hideValue empties the center and names the bar with aria-label', function (): void {
+    $dom  = designSystemDom(Blade::render('<x-artisanpack-progress-radial :value="40" hide-value label="Profile complete" />'));
+    $root = progressRadialRoot($dom);
+
+    expect($dom->query('//*[@data-part="value"]'))->toHaveCount(0)
+        ->and($root->getAttribute('aria-label'))->toBe('Profile complete')
+        ->and($root->hasAttribute('aria-labelledby'))->toBeFalse();
+});
+
+test('valueText replaces the percentage and is the value text', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-progress-radial :value="3" :max="4" value-text="3 of 4" color="success" />'));
+
+    expect(progressRadialRoot($dom)->getAttribute('aria-valuetext'))->toBe('3 of 4')
+        ->and(progressRadialRoot($dom)->getAttribute('aria-valuemax'))->toBe('4')
+        ->and(progressRadialRoot($dom)->getAttribute('data-color'))->toBe('success')
+        ->and($dom->query('//*[@data-part="value"]')->item(0)->textContent)->toBe('3 of 4');
+});
+
+test('an author id lands on the root unchanged', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-progress-radial id="goal" :value="40" />'));
+
+    expect($dom->query('//*[@data-part="root"][@id="goal"]'))->toHaveCount(1)
+        ->and($dom->query('//*[@id="goal-root"]'))->toHaveCount(0);
+});

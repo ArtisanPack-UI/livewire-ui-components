@@ -1,93 +1,67 @@
 <?php
 
-declare(strict_types=1);
 /**
- * Profile
+ * Profile Component
  *
- * This file contains the Profile class for the ArtisanPack UI Livewire UI Components package.
+ * Deprecated alias of the design-system UserMenu (#58): it is an avatar
+ * dropdown, not a profile page.
  *
  * @author     Jacob Martella
- * @copyright  2023 Jacob Martella
+ * @copyright  2026 Jacob Martella
  * @license    MIT
  *
- * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
- * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
+ * @link       https://github.com/ArtisanPack-UI/livewire-ui-components
  * @since      1.0.0
+ * @deprecated 3.0.0 Use <x-artisanpack-user-menu>.
  */
+
+declare(strict_types=1);
 
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
-use ArtisanPack\LivewireUiComponents\Styling\ColorGenerator;
-use Illuminate\Contracts\View\View;
-
 /**
- * Profile Class
+ * Profile Component Class
  *
- * Provides functionality for the Profile component, combining Avatar and Dropdown components.
+ * Maps the 2.x props onto UserMenu: `title` is the name, `subtitle` the role
+ * line and `image` the avatar. `right` aligns the menu to the end. The slot
+ * renders as the menu's items; the theme control is hidden, as 2.x had none.
  *
- * @since 1.0.0
+ * @since      1.0.0
+ * @deprecated 3.0.0 Use <x-artisanpack-user-menu>.
  */
-class Profile extends BaseComponent
+class Profile extends UserMenu
 {
-    public string $uuid;
-
     /**
-     * @param  ?string  $image  The URL of the avatar image.
-     * @param  ?string  $alt  The HTML `alt` attribute
-     * @param  ?string  $placeholder  The placeholder of the avatar.
-     * @param  ?string  $title  The title text displayed beside the avatar.
-     * @param  ?string  $subtitle  The subtitle text displayed beside the avatar.
-     * @param  ?string  $color  Color variant, Tailwind color, or hex code for placeholder/border.
-     * @param  ?string  $colorAdjustment  Background adjustment (lighter, darker, transparent, subtle).
-     * @param  ?bool  $right  Position dropdown to the right.
-     * @param  ?bool  $top  Position dropdown above the trigger.
-     * @param  ?bool  $noXAnchor  Use native dropdown positioning instead of Alpine anchor.
+     * Creates the component.
+     *
+     * @since 3.0.0
+     *
+     * @param  string|null  $image  The avatar image URL.
+     * @param  string|null  $alt  Unused: the trigger is named after the person.
+     * @param  string|null  $placeholder  The name, when title isn't set.
+     * @param  string|null  $title  The person's name.
+     * @param  string|null  $subtitle  The line under the name.
+     * @param  bool|null  $right  Aligns the menu to the trigger's end.
+     * @param  string|null  $logoutAction  A URL Log out posts to.
      */
     public function __construct(
-        public ?string $id = null,
-
-        // Avatar properties
-        public ?string $image = '',
-        public ?string $alt = '',
-        public ?string $placeholder = '',
-        public ?string $color = null,
-        public ?string $colorAdjustment = null,
-        public ?string $title = null,
-        public ?string $subtitle = null,
-
-        // Dropdown properties
-        public ?bool $right = false,
-        public ?bool $top = false,
-        public ?bool $noXAnchor = false,
+        ?string $image = null,
+        ?string $alt = null,
+        ?string $placeholder = null,
+        ?string $title = null,
+        ?string $subtitle = null,
+        ?bool $right = false,
+        ?string $logoutAction = null,
     ) {
-        $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
-    }
-
-    /**
-     * Get color-specific CSS classes using ColorGenerator.
-     *
-     * @since 1.0.0
-     */
-    public function getColorClasses(): array
-    {
-        if (! $this->color) {
-            return [];
-        }
-
-        $colorGenerator = new ColorGenerator;
-
-        // Use ColorGenerator for color resolution
-        $colorClasses = $colorGenerator->resolveComponentColor(
-            $this->color,
-            $this->colorAdjustment,
-            'avatar',
+        parent::__construct(
+            user: [
+                'name'   => $title ?? $placeholder ?? $alt ?? '',
+                'avatar' => $image,
+                'role'   => $subtitle,
+            ],
+            hideTheme: true,
+            align: $right ? 'end' : 'start',
+            logoutAction: $logoutAction,
         );
-
-        return $colorClasses;
-    }
-
-    public function render(): View
-    {
-        return view('livewire-ui-components::components.profile');
     }
 }

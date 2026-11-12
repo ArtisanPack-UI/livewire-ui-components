@@ -1,95 +1,39 @@
 ---
-title: ProgressRadial Component
+title: Progress Radial Component
 ---
 
-# ProgressRadial Component
+# Progress Radial Component
 
-The ProgressRadial component displays a circular progress indicator to visualize the completion status of a task or process.
+Circular progress with the value in the center, built from Progress on the ArtisanPack UI design system (`.apui-progress-radial`). Use it for a single headline percentage; to compare values, use Progress bars.
 
 ## Basic Usage
 
 ```blade
-<x-artisanpack-progress-radial :value="50" />
-```
-
-## With Different Values
-
-```blade
-<x-artisanpack-progress-radial :value="25" />
-<x-artisanpack-progress-radial :value="50" />
-<x-artisanpack-progress-radial :value="75" />
-<x-artisanpack-progress-radial :value="100" />
-```
-
-## With Custom Unit
-
-```blade
-<x-artisanpack-progress-radial :value="42" unit="MB" />
-```
-
-## With Different Colors
-
-```blade
-<x-artisanpack-progress-radial :value="40" class="text-primary" />
-<x-artisanpack-progress-radial :value="40" class="text-secondary" />
-<x-artisanpack-progress-radial :value="40" class="text-accent" />
-<x-artisanpack-progress-radial :value="40" class="text-info" />
-<x-artisanpack-progress-radial :value="40" class="text-success" />
-<x-artisanpack-progress-radial :value="40" class="text-warning" />
-<x-artisanpack-progress-radial :value="40" class="text-error" />
-```
-
-## With Different Sizes
-
-```blade
-<x-artisanpack-progress-radial :value="75" class="text-primary text-xs" />
-<x-artisanpack-progress-radial :value="75" class="text-primary text-sm" />
-<x-artisanpack-progress-radial :value="75" class="text-primary text-base" />
-<x-artisanpack-progress-radial :value="75" class="text-primary text-lg" />
-<x-artisanpack-progress-radial :value="75" class="text-primary text-xl" />
-```
-
-## With Livewire
-
-```blade
-<div>
-    <x-artisanpack-progress-radial :value="$progress" />
-    <x-artisanpack-button label="Start Process" wire:click="startProcess" />
-</div>
-```
-
-```php
-class ProcessExample extends Component
-{
-    public $progress = 0;
-    
-    public function startProcess()
-    {
-        $this->progress = 0;
-        
-        while ($this->progress < 100) {
-            $this->progress += 10;
-            $this->dispatch('refresh');
-            sleep(1);
-        }
-    }
-}
+<x-artisanpack-progress-radial :value="68" :size="80" :thickness="7" :label="__( 'complete' )" />
+<x-artisanpack-progress-radial :value="68" :size="40" :thickness="4" hide-value :label="__( 'Profile complete' )" />
+<x-artisanpack-progress-radial indeterminate :size="48" :aria-label="__( 'Calculating' )" />
 ```
 
 ## Props
 
-| Name | Type | Default | Description |
-|------|------|---------|-------------|
-| id | string | null | Optional identifier for the radial progress |
-| value | float | 0 | Current value of the radial progress (0-100) |
-| unit | string | '%' | Unit to display after the value |
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `value` | number | `0` | The progress, from 0 to `max`. Clamped. |
+| `max` | number | `100` | The value at completion. |
+| `indeterminate` | bool | `false` | A quarter arc spins; `aria-valuenow` is left out. |
+| `size` | number | `64` | The ring's diameter in px. |
+| `thickness` | number | `6` | The ring's stroke width in px. |
+| `color` | semantic color | `primary` | Emitted as `data-color`. |
+| `label` | string | none | A caption under the value that names the progressbar. |
+| `value-text` | string | none | Shown in the center instead of the percentage, and read as `aria-valuetext`. |
+| `hide-value` | bool | `false` | Leaves the center empty; the label still names the progressbar (`aria-label`). |
+| `classes` | array | `[]` | Extra classes per part: `root`, `svg`, `track`, `bar`, `value`, `label`. |
 
-## CSS Classes
+## Accessibility
 
-The component accepts all standard HTML attributes, including CSS classes. The component uses DaisyUI's radial-progress classes for styling. You can customize the appearance using:
+- The root is `role=progressbar`; without a `label`, name it with `aria-label`.
+- The ring fills in the reading direction, counterclockwise in RTL.
 
-- Text color classes: `text-primary`, `text-secondary`, `text-accent`, `text-info`, `text-success`, `text-warning`, `text-error`
-- Text size classes: `text-xs`, `text-sm`, `text-base`, `text-lg`, `text-xl`
-- Size classes: `w-16`, `w-20`, `w-24`, etc.
+## Upgrading from 2.x
 
-The component automatically sets the `--value` CSS variable based on the provided value prop.
+- `unit` is gone: use `value-text` for a value other than a percentage. The DaisyUI `radial-progress` markup is replaced by an SVG ring.

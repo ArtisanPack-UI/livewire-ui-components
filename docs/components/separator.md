@@ -4,6 +4,8 @@ title: Separator Component
 
 # Separator Component
 
+> **Deprecated in 3.0.** Use [Divider](divider), built on the design system. `separator` now renders a Divider; `vertical` is `orientation="vertical"`. The loading bar (`progress`, `target`), `color` and `image` are ignored: use [Progress](progress) for a loading bar. This component is removed in a later major release.
+
 The Separator component provides both horizontal and vertical dividers with optional loading indicators, color customization, and image integration. It's useful for separating content sections and can serve as a visual indicator for loading states.
 
 ## Basic Usage

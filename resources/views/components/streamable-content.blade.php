@@ -1,58 +1,56 @@
 {{--
-    Streamable Content Component
-
-    A container for streaming content with wire:stream support (Livewire 4+).
-    In Livewire 3, the content is displayed statically without streaming.
-
-    @since 2.0.0
+    StreamableContent (#60, Livewire only per D-003). Markup contract:
+    design-system wave #58–#62, StreamableContent. data-state drives the
+    status line, the waiting skeleton, the caret and Stop, which dispatches
+    stop (wire:stop="cancel"). The content is aria-live=polite and aria-busy
+    while waiting or streaming. wire:stream needs Livewire 4; Livewire 3
+    renders the content statically.
 --}}
-
 @php
-    $classes = $attributes->get('class', '');
-    if ($prose) {
-        $classes .= ' prose dark:prose-invert max-w-none';
-    }
-    if ($showCursor) {
-        $classes .= ' streaming-cursor';
-    }
+    $statusSlot = isset( $status ) && $status instanceof \Illuminate\Contracts\Support\Htmlable && $filled( $status ) ? $status : null;
+    $statusIcon = $statusIcon();
+    $hasContent = $filled( $slot );
 @endphp
-
-<{{ $tag }}
-    id="{{ $id ?? $uuid }}"
-    @if($supportsStreaming())
-        wire:stream="{{ $target }}"
-    @endif
-    {{ $attributes->except(['class'])->merge(['class' => trim($classes)]) }}
-    data-streamable-content
-    @if($placeholder && !$slot->isNotEmpty())
-        data-placeholder="{{ $placeholder }}"
-    @endif
+<div
+    {{ $attributes->except( 'id' )->class( $rootClasses( 'apui-streamable-content' ) ) }}
+    x-data
+    data-scope="streamable-content"
+    data-part="root"
+    id="{{ $baseId() }}"
+    data-state="{{ $state }}"
 >
-    @if($slot->isNotEmpty())
-        {{ $slot }}
-    @elseif($placeholder)
-        <span class="text-base-content/50 italic">{{ $placeholder }}</span>
+    <div data-scope="streamable-content" data-part="status" role="status"{{ $partClass( 'status' ) }}>
+        @if ( 'waiting' === $state )
+            <span class="apui-loading" data-variant="spinner" data-size="xs" data-color="primary" aria-hidden="true"><span data-scope="loading" data-part="indicator"></span></span>
+        @elseif ( 'streaming' === $state )
+            <span class="apui-loading" data-variant="dots" data-size="xs" data-color="primary" aria-hidden="true"><span data-scope="loading" data-part="indicator"><span></span><span></span><span></span></span></span>
+        @elseif ( null !== $statusIcon )
+            {{ $iconSvg( $statusIcon ) }}
+        @endif
+        @if ( null !== $statusSlot ){{ $content( $statusSlot ) }}@else{{ $statusText() }}@endif
+        @if ( 'streaming' === $state )
+            <x-artisanpack-button
+                size="xs"
+                variant="outline"
+                color="neutral"
+                leading-icon="square"
+                :class="$classes['stopTrigger'] ?? null"
+                data-scope="streamable-content"
+                data-part="stop-trigger"
+                x-on:click="$dispatch( 'stop' )"
+            >{{ $stopText() }}</x-artisanpack-button>
+        @endif
+    </div>
+    <div data-scope="streamable-content" data-part="content" id="{{ $partId( 'content' ) }}" aria-live="polite" aria-busy="{{ $isBusy() ? 'true' : 'false' }}"{{ $partClass( 'content' ) }}>
+        <span id="{{ $partId( 'stream' ) }}" @if ( $supportsStreaming() ) wire:stream="{{ $target }}" @endif>@if ( $hasContent ){{ $content( $slot ) }}@endif</span>
+        @if ( 'waiting' === $state && ! $hasContent )
+            <span class="apui-skeleton" data-shape="text" aria-hidden="true" style="width: 92%"></span><span class="apui-skeleton" data-shape="text" aria-hidden="true" style="width: 84%"></span><span class="apui-skeleton" data-shape="text" aria-hidden="true" style="width: 56%"></span>
+        @endif
+        @if ( 'streaming' === $state )
+            <span data-scope="streamable-content" data-part="caret" aria-hidden="true"{{ $partClass( 'caret' ) }}></span>
+        @endif
+    </div>
+    @if ( $filled( $actions ) )
+        <div data-scope="streamable-content" data-part="actions"{{ $partClass( 'actions' ) }}>{{ $content( $actions ) }}</div>
     @endif
-</{{ $tag }}>
-
-@if($showCursor)
-    @once
-        <style>
-            .streaming-cursor::after {
-                content: '▋';
-                animation: blink 1s step-end infinite;
-                margin-left: 2px;
-                color: currentColor;
-            }
-
-            .streaming-cursor[data-streaming-complete]::after {
-                display: none;
-            }
-
-            @keyframes blink {
-                0%, 100% { opacity: 1; }
-                50% { opacity: 0; }
-            }
-        </style>
-    @endonce
-@endif
+</div>

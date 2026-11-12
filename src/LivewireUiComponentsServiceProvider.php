@@ -51,8 +51,11 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
      */
     protected array $bladeComponents = [
         'accordion'               => View\Components\Accordion::class,
+        'accordion-item'          => View\Components\AccordionItem::class,
+        'app-shell'               => View\Components\AppShell::class,
         'alert'                   => View\Components\Alert::class,
         'avatar'                  => View\Components\Avatar::class,
+        'avatar-group'            => View\Components\AvatarGroup::class,
         'badge'                   => View\Components\Badge::class,
         'breadcrumbs'             => View\Components\Breadcrumbs::class,
         'breadcrumbs-item'        => View\Components\BreadcrumbsItem::class,
@@ -75,6 +78,7 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         'datetime'                => View\Components\DateTime::class, // Deprecated: date-picker with time.
         'dialog'                  => View\Components\Dialog::class,
         'diff'                    => View\Components\Diff::class,
+        'divider'                 => View\Components\Divider::class,
         'drawer'                  => View\Components\Drawer::class,
         'dropdown'                => View\Components\Dropdown::class,
         'dropdown-menu'           => View\Components\DropdownMenu::class,
@@ -82,12 +86,15 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         'dropdown-menu-item'      => View\Components\DropdownMenuItem::class,
         'dropdown-menu-separator' => View\Components\DropdownMenuSeparator::class,
         'editor'                  => View\Components\RichTextEditor::class, // Deprecated alias of rich-text-editor.
+        'empty-state'             => View\Components\EmptyState::class,
         'errors'                  => View\Components\Errors::class,
+        'error-state'             => View\Components\ErrorState::class,
         'fieldset'                => View\Components\Fieldset::class,
         'file'                    => View\Components\File::class,
         'form'                    => View\Components\Form::class,
         'group'                   => View\Components\Group::class,
-        'header'                  => View\Components\Header::class,
+        'grid'                    => View\Components\Grid::class,
+        'header'                  => View\Components\Header::class, // Deprecated alias of page-header.
         'heading'                 => View\Components\Heading::class,
         'icon'                    => View\Components\Icon::class,
         'image-gallery'           => View\Components\ImageGallery::class,
@@ -97,9 +104,10 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         'kbd'                     => View\Components\Kbd::class,
         'kpi-card'                => View\Components\KpiCard::class,
         'link'                    => View\Components\Link::class,
+        'list'                    => View\Components\ItemList::class,
         'list-item'               => View\Components\ListItem::class,
         'loading'                 => View\Components\Loading::class,
-        'main'                    => View\Components\Main::class,
+        'main'                    => View\Components\Main::class, // Deprecated alias of app-shell.
         'markdown'                => View\Components\Markdown::class,
         'menu'                    => View\Components\Menu::class,
         'menu-item'               => View\Components\MenuItem::class,
@@ -110,11 +118,12 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         'nav'                     => View\Components\Nav::class,
         'navbar'                  => View\Components\Navbar::class,
         'navbar-item'             => View\Components\NavbarItem::class,
+        'page-header'             => View\Components\PageHeader::class,
         'pagination'              => View\Components\Pagination::class,
         'password'                => View\Components\Password::class,
         'pin'                     => View\Components\Pin::class,
         'popover'                 => View\Components\Popover::class,
-        'profile'                 => View\Components\Profile::class,
+        'profile'                 => View\Components\Profile::class, // Deprecated alias of user-menu.
         'progress'                => View\Components\Progress::class,
         'progress-radial'         => View\Components\ProgressRadial::class,
         'radio'                   => View\Components\Radio::class,
@@ -124,15 +133,17 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         'rich-text-editor'        => View\Components\RichTextEditor::class,
         'select'                  => View\Components\Select::class,
         'select-group'            => View\Components\SelectGroup::class,
-        'separator'               => View\Components\Separator::class,
+        'separator'               => View\Components\Separator::class, // Deprecated alias of divider.
         'signature'               => View\Components\Signature::class,
+        'skeleton'                => View\Components\Skeleton::class,
         'sparkline'               => View\Components\Sparkline::class,
         'spotlight'               => View\Components\Spotlight::class,
+        'stack'                   => View\Components\Stack::class,
         'stat'                    => View\Components\Stat::class,
         'streamable-content'      => View\Components\StreamableContent::class,
         'step'                    => View\Components\Step::class,
         'steps'                   => View\Components\Steps::class,
-        'subheading'              => View\Components\Subheading::class,
+        'subheading'              => View\Components\Subheading::class, // Deprecated alias of text size="lead".
         'swap'                    => View\Components\Swap::class,
         'tab'                     => View\Components\Tab::class,
         'table'                   => View\Components\Table::class,
@@ -141,12 +152,15 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         'text'                    => View\Components\Text::class,
         'textarea'                => View\Components\Textarea::class,
         'theme-toggle'            => View\Components\ThemeToggle::class,
+        'timeline'                => View\Components\Timeline::class,
         'timeline-item'           => View\Components\TimelineItem::class,
         'toast'                   => View\Components\Toast::class,
         'toaster'                 => View\Components\Toaster::class,
         'toggle'                  => View\Components\Toggle::class,
+        'tooltip'                 => View\Components\Tooltip::class,
+        'user-menu'               => View\Components\UserMenu::class,
         'validation-summary'      => View\Components\ValidationSummary::class,
-        'widget-grid'             => View\Components\WidgetGrid::class,
+        'widget-grid'             => View\Components\WidgetGrid::class, // Deprecated alias of grid.
     ];
 
     /**

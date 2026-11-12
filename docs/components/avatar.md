@@ -4,134 +4,60 @@ title: Avatar Component
 
 # Avatar Component
 
-The Avatar component displays a user's profile picture with optional title and subtitle text.
+A person or organization as an image, initials or an icon, built on the ArtisanPack UI design system (`.apui-avatar`). Without an image the avatar shows the initials of `name`, in a color picked from a stable hash of the name; without a name, a user icon.
 
 ## Basic Usage
 
 ```blade
-<x-artisanpack-avatar image="/path/to/image.jpg" alt="User Name" />
+<x-artisanpack-avatar name="Olivia Rhye" />
+<x-artisanpack-avatar name="Phoenix Baker" :src="$user->avatar_url" size="lg" />
+<x-artisanpack-avatar name="Apexify" shape="square" color="neutral" />
 ```
 
-## With Placeholder
+The image sits over the initials, so a broken image falls back to them. Only relative, http, https and `data:image` sources are used.
+
+## Status
 
 ```blade
-<x-artisanpack-avatar placeholder="JD" alt="John Doe" />
+<x-artisanpack-avatar name="Olivia Rhye" status="online" />
+<x-artisanpack-avatar name="Lana Steiner" status="away" />
+<x-artisanpack-avatar name="Demi Wilkinson" status="offline" />
 ```
 
-## Color System
+The status is a dot and is also announced in words: "Olivia Rhye (Online)". The words default to `__( 'Online' )`, `__( 'Away' )` and `__( 'Offline' )`; `status-label` overrides them.
 
-### Predefined Variants
-
-Use predefined color variants for avatar backgrounds:
+## Group
 
 ```blade
-<x-artisanpack-avatar placeholder="JD" alt="John Doe" color="primary" />
-<x-artisanpack-avatar placeholder="SM" alt="Sarah Miller" color="secondary" />
-<x-artisanpack-avatar placeholder="AB" alt="Alex Brown" color="accent" />
-<x-artisanpack-avatar placeholder="LJ" alt="Lisa Johnson" color="info" />
-<x-artisanpack-avatar placeholder="MW" alt="Mike Wilson" color="success" />
-<x-artisanpack-avatar placeholder="ER" alt="Emily Rodriguez" color="warning" />
-<x-artisanpack-avatar placeholder="CT" alt="Chris Taylor" color="error" />
+<x-artisanpack-avatar-group :avatars="$members" :max="4" size="sm" :label="__( 'Project members' )" />
 ```
 
-### Tailwind Color Palette
-
-Use any Tailwind color with intensity levels:
-
-```blade
-<x-artisanpack-avatar placeholder="JD" alt="John Doe" color="blue-500" />
-<x-artisanpack-avatar placeholder="SM" alt="Sarah Miller" color="purple-600" />
-<x-artisanpack-avatar placeholder="AB" alt="Alex Brown" color="green-400" />
-<x-artisanpack-avatar placeholder="LJ" alt="Lisa Johnson" color="red-500" />
-<x-artisanpack-avatar placeholder="MW" alt="Mike Wilson" color="yellow-300" />
-```
-
-### Custom Hex Colors
-
-Use custom hex color codes:
-
-```blade
-<x-artisanpack-avatar placeholder="JD" alt="John Doe" color="#ff6b6b" />
-<x-artisanpack-avatar placeholder="SM" alt="Sarah Miller" color="#4ecdc4" />
-<x-artisanpack-avatar placeholder="AB" alt="Alex Brown" color="#ffe66d" />
-```
-
-### Color Adjustments
-
-Fine-tune the background appearance:
-
-```blade
-<!-- Lighter background -->
-<x-artisanpack-avatar placeholder="JD" alt="John Doe" color="blue-500" color-adjustment="lighter" />
-
-<!-- Darker background -->
-<x-artisanpack-avatar placeholder="SM" alt="Sarah Miller" color="blue-500" color-adjustment="darker" />
-
-<!-- Subtle background -->
-<x-artisanpack-avatar placeholder="AB" alt="Alex Brown" color="blue-500" color-adjustment="subtle" />
-```
-
-## With Title and Subtitle
-
-```blade
-<x-artisanpack-avatar 
-    image="/path/to/image.jpg" 
-    alt="John Doe"
-    title="John Doe"
-    subtitle="Software Engineer"
-/>
-```
-
-## With Slot Content
-
-```blade
-<x-artisanpack-avatar image="/path/to/image.jpg" alt="John Doe">
-    <x-slot:title>
-        <div class="flex items-center gap-2">
-            <span>John Doe</span>
-            <x-artisanpack-badge value="Pro" class="badge-primary badge-sm" />
-        </div>
-    </x-slot:title>
-    
-    <x-slot:subtitle>
-        <div class="flex items-center gap-2">
-            <x-artisanpack-icon name="o-envelope" class="w-3 h-3" />
-            <span>john.doe@example.com</span>
-        </div>
-    </x-slot:subtitle>
-</x-artisanpack-avatar>
-```
-
-## Custom Size
-
-```blade
-<x-artisanpack-avatar 
-    image="/path/to/image.jpg" 
-    alt="John Doe"
-    class="w-12 rounded-full"
-/>
-```
+`avatars` takes `{ name, src, alt, initials, icon, color, status }`; past `max` the rest collapse into a +N avatar named by `more-label` (`__( '{count} more' )`). Avatar children render after the data.
 
 ## Props
 
-| Name | Type | Default | Description |
-|------|------|---------|-------------|
-| id | string | null | Optional identifier for the avatar |
-| image | string | '' | URL of the avatar image |
-| alt | string | '' | Alternative text for the avatar image |
-| placeholder | string | '' | Text to display when no image is provided |
-| title | string | null | Title text displayed beside the avatar |
-| subtitle | string | null | Subtitle text displayed beside the avatar |
-| color | string | null | Color variant, Tailwind color (e.g., 'red-500'), or hex code (e.g., '#ff0000') |
-| color-adjustment | string | null | Background adjustment: 'lighter', 'darker', 'transparent', or 'subtle' |
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `name` | string | none | The full name: initials (first and last word), accessible name and hashed color. |
+| `src` | string | none | The image URL. |
+| `alt` | string | none | The accessible name when it should differ from `name`. |
+| `initials` | string | none | Overrides the initials, such as `+4`. |
+| `icon` | string | none | An icon name shown instead of initials. |
+| `size` | `xs` · `sm` · `md` · `lg` · `xl` | `md` | The control heights: 24, 28, 36, 44 or 52px. Emitted as `data-size`. |
+| `shape` | `circle` · `square` | `circle` | Square for organizations and workspaces. Emitted as `data-shape`. |
+| `color` | one of the eight semantic colors | hashed from `name` | The initials' tone. Emitted as `data-color`. |
+| `status` | `online` · `away` · `offline` | none | The presence dot. |
+| `status-label` | string | `__( 'Online' )` … | The status in words, added to the accessible name. |
+| `classes` | array | `[]` | Extra classes per part: `root`, `image`, `initials`, `status`. |
 
-## Slots
+## Upgrading from 2.x
 
-| Name | Description |
-|------|-------------|
-| title | Custom content for the title area |
-| subtitle | Custom content for the subtitle area |
+- `image` is `src` and `placeholder` is `name` (the initials now come from it). Both 2.x attributes still work, deprecated.
+- `title` and `subtitle` are gone: lay out a name beside an avatar with a ListItem, or use the UserMenu.
+- `color` takes the eight semantic names only, and `color-adjustment` is gone.
 
-## CSS Classes
+## Accessibility
 
-The component accepts all standard HTML attributes, including CSS classes. By default, the avatar image is displayed with a size of `w-7` and a `rounded-full` shape. You can override these by passing your own classes to the component.
+- The root is `role="img"` named by `alt` or `name` plus the status; everything inside is decorative.
+- Without a name or `alt` the avatar is decorative (`aria-hidden`).
+- The status is announced in words, never by color alone.

@@ -119,13 +119,14 @@ Many components share common props and slots:
 | [Card](card) | Content container with header and footer | [Card docs](card) |
 | [Collapse](collapse) | Collapsible content | [Collapse docs](collapse) |
 | [Dialog](dialog) | Modal window for a focused task or a confirmation | [Dialog docs](dialog) |
-| [Drawer](drawer) | Side drawer/panel | [Drawer docs](drawer) |
+| [Drawer](drawer) | Panel that slides in from an edge, or a bottom sheet | [Drawer docs](drawer) |
 | [Dropdown](dropdown) | Dropdown menu (deprecated: use DropdownMenu) | [Dropdown docs](dropdown) |
 | [DropdownMenu](dropdown-menu) | Actions and options anchored to a trigger | [DropdownMenu docs](dropdown-menu) |
 | [Separator](separator) | Horizontal rule with styling | [Separator docs](separator) |
 | [Main](main) | Main content container | [Main docs](main) |
 | [Modal](modal) | Modal dialog (deprecated: use Dialog) | [Modal docs](modal) |
-| [Popover](popover) | Popover tooltip | [Popover docs](popover) |
+| [Popover](popover) | Anchored, non-modal panel for a short task | [Popover docs](popover) |
+| [Tooltip](tooltip) | Short label on hover and keyboard focus | [Tooltip docs](tooltip) |
 | [Tabs](tabs) | Views of the same content in a tablist | [Tabs docs](tabs) |
 | [Tab](tab) | Individual tab for Tabs component | [Tab docs](tab) |
 
@@ -164,25 +165,27 @@ Many components share common props and slots:
 | [ImageSlider](image-slider) | Image slider/carousel component | [ImageSlider docs](image-slider) |
 | [Kbd](kbd) | Keyboard key display | [Kbd docs](kbd) |
 | [Link](link) | An inline or standalone link, or a button styled as one | [Link docs](link) |
-| [ListItem](list-item) | List item with various layouts | [ListItem docs](list-item) |
+| [ListItem](list-item) | A row in a List: leading, title, description, trailing | [ListItem docs](list-item) |
 | [Markdown](markdown) | Markdown content display | [Markdown docs](markdown) |
-| [Profile](profile) | User profile display | [Profile docs](profile) |
+| [Profile](profile) | Deprecated alias of UserMenu | [Profile docs](profile) |
+| [UserMenu](user-menu) | The account menu: Avatar + DropdownMenu | [UserMenu docs](user-menu) |
 | [Progress](progress) | Progress bar | [Progress docs](progress) |
 | [ProgressRadial](progress-radial) | Radial progress indicator | [ProgressRadial docs](progress-radial) |
 | [Stat](stat) | Statistics display | [Stat docs](stat) |
 | [Steps](steps) | Progress through a sequence, bound with wire:model | [Steps docs](steps) |
 | [Step](steps) | One step of Steps | [Step docs](step) |
-| [Subheading](subheading) | Styled subheading text | [Subheading docs](subheading) |
-| [Sparkline](sparkline) | Inline sparkline charts | [Sparkline docs](sparkline) |
+| [Subheading](subheading) | Deprecated alias of Text size lead | [Subheading docs](subheading) |
+| [Sparkline](sparkline) | Word-sized trend, drawn as inline SVG | [Sparkline docs](sparkline) |
 | [Table](table) | Data table with sorting, export, and more | [Table docs](table) |
 | [Text](text) | Styled text component | [Text docs](text) |
-| [TimelineItem](timeline-item) | Timeline item display | [TimelineItem docs](timeline-item) |
+| [Timeline](timeline) | Events in order, composed from timeline-item | [Timeline docs](timeline) |
+| [TimelineItem](timeline-item) | One event of a Timeline | [TimelineItem docs](timeline-item) |
 
 ### Dashboard Components (v2.0+)
 
 | Component | Description | Documentation |
 |-----------|-------------|---------------|
-| [KpiCard](kpi-card) | KPI card with sparkline and trend indicator | [KpiCard docs](kpi-card) |
+| [KpiCard](kpi-card) | A metric in a Card with its trend and target | [KpiCard docs](kpi-card) |
 | [WidgetGrid](widget-grid) | Responsive grid for dashboard layouts | [WidgetGrid docs](widget-grid) |
 | [StreamableContent](streamable-content) | Container for streaming content (AI responses) | [StreamableContent docs](streamable-content) |
 
@@ -284,39 +287,24 @@ new class extends Component {
     with-pagination />
 ```
 
-### Dashboard with KPI Cards (v2.0+)
+### Dashboard with KPI Cards (v3.0+)
 
 ```php
-<x-artisanpack-widget-grid :cols="4" :gap="4">
+<x-artisanpack-grid :columns="4">
     <x-artisanpack-kpi-card
-        title="Total Revenue"
-        value="$45,231"
-        icon="o-currency-dollar"
-        :change="12.5"
-        change-label="vs last month"
-        :sparkline-data="[1200, 1350, 1100, 1500, 1400, 1600, 1800]" />
+        :stat="[ 'label' => __( 'Total revenue' ), 'value' => '$45,231', 'icon' => 'wallet', 'change' => 12.5, 'description' => __( 'vs last month' ) ]"
+        :sparkline="[1200, 1350, 1100, 1500, 1400, 1600, 1800]" />
 
     <x-artisanpack-kpi-card
-        title="Active Users"
-        value="2,345"
-        icon="o-users"
-        :change="8.2"
-        change-label="vs last month" />
+        :stat="[ 'label' => __( 'Active users' ), 'value' => '2,345', 'icon' => 'user', 'change' => 8.2, 'description' => __( 'vs last month' ) ]" />
 
     <x-artisanpack-kpi-card
-        title="Orders"
-        value="1,234"
-        icon="o-shopping-cart"
-        :change="-2.4"
-        change-label="vs last month" />
+        :stat="[ 'label' => __( 'Orders' ), 'value' => '1,234', 'change' => -2.4, 'description' => __( 'vs last month' ) ]" />
 
     <x-artisanpack-kpi-card
-        title="Conversion"
-        value="3.24%"
-        icon="o-arrow-path"
-        :change="0.8"
-        change-label="improvement" />
-</x-artisanpack-widget-grid>
+        :stat="[ 'label' => __( 'Conversion' ), 'value' => '3.24', 'unit' => '%', 'change' => 0.8, 'description' => __( 'improvement' ) ]"
+        :target="[ 'value' => 3.24, 'max' => 4, 'label' => __( 'Goal 4%' ) ]" />
+</x-artisanpack-grid>
 ```
 
 ## Next Steps

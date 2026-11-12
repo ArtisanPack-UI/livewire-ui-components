@@ -4,6 +4,8 @@ title: Header Component
 
 # Header Component
 
+> **Deprecated in 3.0.** Use [PageHeader](page-header), built on the design system. `header` now renders a PageHeader: `subtitle` is the description, the title keeps level 2, and the `middle` slot sits in the row before the actions. `separator`, `progress-indicator`, `with-anchor`, `size` and `icon` are ignored. This component is removed in a later major release.
+
 The Header component provides a flexible and consistent way to create page or section headers. It supports titles, subtitles, icons, action buttons, and more, making it ideal for creating structured and visually appealing page layouts.
 
 ## Basic Usage

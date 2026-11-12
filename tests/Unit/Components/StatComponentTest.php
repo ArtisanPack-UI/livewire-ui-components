@@ -2,970 +2,120 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
+use Illuminate\Support\Facades\Blade;
 
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
-use ArtisanPack\LivewireUiComponents\View\Components\Stat;
-use Error;
-use RuntimeException;
-
-/**
- * Comprehensive unit tests for the Stat component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * Stat (#61): the design-system markup contract. The manifest parity check
+ * is in tests/Feature/DesignSystemParityTest.php.
  */
-class StatComponentTest extends ComponentTestCase
+
+function statDom(string $template, array $data = []): DOMXPath
 {
-    protected string $componentClass = Stat::class;
-
-    protected array $defaultProperties = [
-        'color'         => '',
-        'size'          => 'md',
-        'iconPosition'  => 'left',
-        'titlePosition' => 'top',
-        'contentAlign'  => 'left',
-    ];
-
-    protected array $requiredProperties = [];
-
-    public function test_stat_string_properties(): void
-    {
-        $stringProperties = ['id', 'value', 'icon', 'color', 'title', 'description', 'tooltip', 'tooltipLeft', 'tooltipRight', 'tooltipBottom', 'size', 'iconPosition', 'titlePosition', 'contentAlign'];
-        $testValues       = ComponentDataFactory::sampleTexts();
-
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
-
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
-    }
-
-    public function test_stat_size_classes_method(): void
-    {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'sizeClasses')) {
-            try {
-                $result = $component->sizeClasses();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_stat_layout_classes_method(): void
-    {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'layoutClasses')) {
-            try {
-                $result = $component->layoutClasses();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_stat_should_render_icon_first_method(): void
-    {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'shouldRenderIconFirst')) {
-            try {
-                $result = $component->shouldRenderIconFirst();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_stat_should_render_title_first_method(): void
-    {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'shouldRenderTitleFirst')) {
-            try {
-                $result = $component->shouldRenderTitleFirst();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_stat_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
-
-    public function test_stat_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'Stat should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
-
-    public function test_stat_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
-
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
-
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_stat_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'Stat rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
-
-    public function test_stat_glass_props_exist(): void
-    {
-        $component = $this->createComponent([
-            'glass'            => 'frosted',
-            'glassTint'        => 'emerald-500',
-            'glassTintOpacity' => 15,
-        ]);
-
-        $this->assertEquals('frosted', $component->glass);
-        $this->assertEquals('emerald-500', $component->glassTint);
-        $this->assertEquals(15, $component->glassTintOpacity);
-    }
-
-    public function test_stat_glass_classes_without_glass(): void
-    {
-        $component = $this->createComponent();
-
-        $this->assertNull($component->glass);
-        $this->assertEquals('', $component->glassClasses());
-    }
-
-    public function test_stat_glass_classes_with_frosted_variant(): void
-    {
-        $component = $this->createComponent(['glass' => 'frosted']);
-
-        $classes = $component->glassClasses();
-
-        $this->assertStringContainsString('glass-frosted', $classes);
-    }
-
-    public function test_stat_glass_classes_with_transparent_variant(): void
-    {
-        $component = $this->createComponent(['glass' => 'transparent']);
-
-        $classes = $component->glassClasses();
-
-        $this->assertStringContainsString('glass-transparent', $classes);
-    }
-
-    public function test_stat_glass_classes_with_liquid_variant(): void
-    {
-        $component = $this->createComponent(['glass' => 'liquid']);
-
-        $classes = $component->glassClasses();
-
-        $this->assertStringContainsString('glass-liquid', $classes);
-    }
-
-    public function test_stat_glass_classes_with_tailwind_tint(): void
-    {
-        $component = $this->createComponent([
-            'glass'     => 'frosted',
-            'glassTint' => 'blue-500',
-        ]);
-
-        $classes = $component->glassClasses();
-
-        $this->assertStringContainsString('glass-frosted', $classes);
-        $this->assertStringContainsString('glass-tint-blue-500', $classes);
-    }
-
-    public function test_stat_glass_classes_with_hex_tint(): void
-    {
-        $component = $this->createComponent([
-            'glass'     => 'frosted',
-            'glassTint' => '#8b5cf6',
-        ]);
-
-        $classes = $component->glassClasses();
-
-        $this->assertStringContainsString('glass-frosted', $classes);
-        $this->assertStringContainsString('glass-tint-custom', $classes);
-    }
-
-    public function test_stat_glass_classes_with_opacity(): void
-    {
-        $component = $this->createComponent([
-            'glass'            => 'frosted',
-            'glassTint'        => 'emerald-500',
-            'glassTintOpacity' => 60,
-        ]);
-
-        $classes = $component->glassClasses();
-
-        $this->assertStringContainsString('glass-frosted', $classes);
-        $this->assertStringContainsString('glass-tint-emerald-500', $classes);
-        $this->assertStringContainsString('glass-tint-opacity-60', $classes);
-    }
-
-    public function test_stat_glass_style_with_hex_color(): void
-    {
-        $component = $this->createComponent([
-            'glass'     => 'liquid',
-            'glassTint' => '#3b82f6',
-        ]);
-
-        $style = $component->glassStyle();
-
-        $this->assertStringContainsString('--glass-tint-color: #3b82f6', $style);
-    }
-
-    public function test_stat_glass_style_empty_without_custom_tint(): void
-    {
-        $component = $this->createComponent([
-            'glass'     => 'frosted',
-            'glassTint' => 'blue-500', // Tailwind color, not custom hex
-        ]);
-
-        $style = $component->glassStyle();
-
-        // Tailwind colors don't need inline styles (they use CSS classes)
-        // Only hex colors need inline styles
-        $this->assertStringNotContainsString('--glass-tint-color:', $style);
-    }
-
-    public function test_stat_glass_with_value_and_icon(): void
-    {
-        $component = $this->createComponent([
-            'glass'       => 'frosted',
-            'glassTint'   => 'emerald-500',
-            'value'       => '$12,345',
-            'icon'        => 'o-currency-dollar',
-            'title'       => 'Revenue',
-            'description' => '+15% from last month',
-        ]);
-
-        $this->assertEquals('frosted', $component->glass);
-        $this->assertEquals('$12,345', $component->value);
-        $this->assertEquals('o-currency-dollar', $component->icon);
-        $this->assertEquals('Revenue', $component->title);
-        $this->assertStringContainsString('glass-frosted', $component->glassClasses());
-    }
-
-    public function test_stat_sparkline_props_exist(): void
-    {
-        $component = $this->createComponent([
-            'sparklineData'  => [100, 120, 115, 140, 135, 160],
-            'sparklineType'  => 'area',
-            'sparklineColor' => 'blue-500',
-        ]);
-
-        $this->assertEquals([100, 120, 115, 140, 135, 160], $component->sparklineData);
-        $this->assertEquals('area', $component->sparklineType);
-        $this->assertEquals('blue-500', $component->sparklineColor);
-    }
-
-    public function test_stat_sparkline_default_type(): void
-    {
-        $component = $this->createComponent([
-            'sparklineData' => [10, 20, 30],
-        ]);
-
-        $this->assertEquals('line', $component->sparklineType);
-    }
-
-    public function test_stat_has_sparkline_with_data(): void
-    {
-        $component = $this->createComponent([
-            'sparklineData' => [100, 120, 115, 140],
-        ]);
-
-        $this->assertTrue($component->hasSparkline());
-    }
-
-    public function test_stat_has_sparkline_without_data(): void
-    {
-        $component = $this->createComponent();
-
-        $this->assertFalse($component->hasSparkline());
-    }
-
-    public function test_stat_has_sparkline_with_empty_array(): void
-    {
-        $component = $this->createComponent([
-            'sparklineData' => [],
-        ]);
-
-        $this->assertFalse($component->hasSparkline());
-    }
-
-    public function test_stat_sparkline_height_for_xs_size(): void
-    {
-        $component = $this->createComponent([
-            'size'          => 'xs',
-            'sparklineData' => [10, 20, 30],
-        ]);
-
-        $this->assertEquals(24, $component->sparklineHeight());
-    }
-
-    public function test_stat_sparkline_height_for_sm_size(): void
-    {
-        $component = $this->createComponent([
-            'size'          => 'sm',
-            'sparklineData' => [10, 20, 30],
-        ]);
-
-        $this->assertEquals(32, $component->sparklineHeight());
-    }
-
-    public function test_stat_sparkline_height_for_md_size(): void
-    {
-        $component = $this->createComponent([
-            'size'          => 'md',
-            'sparklineData' => [10, 20, 30],
-        ]);
-
-        $this->assertEquals(40, $component->sparklineHeight());
-    }
-
-    public function test_stat_sparkline_height_for_lg_size(): void
-    {
-        $component = $this->createComponent([
-            'size'          => 'lg',
-            'sparklineData' => [10, 20, 30],
-        ]);
-
-        $this->assertEquals(48, $component->sparklineHeight());
-    }
-
-    public function test_stat_sparkline_height_for_xl_size(): void
-    {
-        $component = $this->createComponent([
-            'size'          => 'xl',
-            'sparklineData' => [10, 20, 30],
-        ]);
-
-        $this->assertEquals(56, $component->sparklineHeight());
-    }
-
-    public function test_stat_sparkline_height_for_default_size(): void
-    {
-        $component = $this->createComponent([
-            'sparklineData' => [10, 20, 30],
-        ]);
-
-        $this->assertEquals(40, $component->sparklineHeight());
-    }
-
-    public function test_stat_sparkline_with_glass_variant(): void
-    {
-        $component = $this->createComponent([
-            'glass'          => 'liquid',
-            'glassTint'      => 'emerald-500',
-            'sparklineData'  => [100, 120, 115, 140, 135, 160],
-            'sparklineType'  => 'area',
-            'sparklineColor' => 'emerald-400',
-            'value'          => '1,234',
-            'title'          => 'Users',
-        ]);
-
-        $this->assertEquals('liquid', $component->glass);
-        $this->assertTrue($component->hasSparkline());
-        $this->assertEquals([100, 120, 115, 140, 135, 160], $component->sparklineData);
-        $this->assertStringContainsString('glass-liquid', $component->glassClasses());
-    }
-
-    public function test_stat_sparkline_bar_type(): void
-    {
-        $component = $this->createComponent([
-            'sparklineData' => [10, 20, 15, 25, 30],
-            'sparklineType' => 'bar',
-        ]);
-
-        $this->assertEquals('bar', $component->sparklineType);
-        $this->assertTrue($component->hasSparkline());
-    }
-
-    public function test_stat_sparkline_with_hex_color(): void
-    {
-        $component = $this->createComponent([
-            'sparklineData'  => [10, 20, 30],
-            'sparklineColor' => '#3b82f6',
-        ]);
-
-        $this->assertEquals('#3b82f6', $component->sparklineColor);
-    }
-
-    public function test_stat_trend_props_exist(): void
-    {
-        $component = $this->createComponent([
-            'change'      => 12.5,
-            'changeLabel' => 'vs last month',
-        ]);
-
-        $this->assertEquals(12.5, $component->change);
-        $this->assertEquals('vs last month', $component->changeLabel);
-    }
-
-    public function test_stat_has_change_with_value(): void
-    {
-        $component = $this->createComponent([
-            'change' => 12.5,
-        ]);
-
-        $this->assertTrue($component->hasChange());
-    }
-
-    public function test_stat_has_change_without_value(): void
-    {
-        $component = $this->createComponent();
-
-        $this->assertFalse($component->hasChange());
-    }
-
-    public function test_stat_has_change_with_zero(): void
-    {
-        $component = $this->createComponent([
-            'change' => 0.0,
-        ]);
-
-        $this->assertTrue($component->hasChange());
-    }
-
-    public function test_stat_is_positive_change_with_positive_value(): void
-    {
-        $component = $this->createComponent([
-            'change' => 12.5,
-        ]);
-
-        $this->assertTrue($component->isPositiveChange());
-    }
-
-    public function test_stat_is_positive_change_with_negative_value(): void
-    {
-        $component = $this->createComponent([
-            'change' => -8.3,
-        ]);
-
-        $this->assertFalse($component->isPositiveChange());
-    }
-
-    public function test_stat_is_positive_change_with_zero(): void
-    {
-        $component = $this->createComponent([
-            'change' => 0.0,
-        ]);
-
-        $this->assertTrue($component->isPositiveChange());
-    }
-
-    public function test_stat_formatted_change_positive(): void
-    {
-        $component = $this->createComponent([
-            'change' => 12.5,
-        ]);
-
-        $this->assertEquals('+12.5%', $component->formattedChange());
-    }
-
-    public function test_stat_formatted_change_negative(): void
-    {
-        $component = $this->createComponent([
-            'change' => -8.3,
-        ]);
-
-        $this->assertEquals('-8.3%', $component->formattedChange());
-    }
-
-    public function test_stat_formatted_change_zero(): void
-    {
-        $component = $this->createComponent([
-            'change' => 0.0,
-        ]);
-
-        $this->assertEquals('+0.0%', $component->formattedChange());
-    }
-
-    public function test_stat_formatted_change_without_value(): void
-    {
-        $component = $this->createComponent();
-
-        $this->assertEquals('', $component->formattedChange());
-    }
-
-    public function test_stat_change_color_classes_positive(): void
-    {
-        $component = $this->createComponent([
-            'change' => 12.5,
-        ]);
-
-        $this->assertEquals('text-success', $component->changeColorClasses());
-    }
-
-    public function test_stat_change_color_classes_negative(): void
-    {
-        $component = $this->createComponent([
-            'change' => -8.3,
-        ]);
-
-        $this->assertEquals('text-error', $component->changeColorClasses());
-    }
-
-    public function test_stat_change_color_classes_zero(): void
-    {
-        $component = $this->createComponent([
-            'change' => 0.0,
-        ]);
-
-        $this->assertEquals('text-success', $component->changeColorClasses());
-    }
-
-    public function test_stat_change_color_classes_without_value(): void
-    {
-        $component = $this->createComponent();
-
-        $this->assertEquals('', $component->changeColorClasses());
-    }
-
-    public function test_stat_change_icon_positive(): void
-    {
-        $component = $this->createComponent([
-            'change' => 12.5,
-        ]);
-
-        $this->assertEquals('o-arrow-trending-up', $component->changeIcon());
-    }
-
-    public function test_stat_change_icon_negative(): void
-    {
-        $component = $this->createComponent([
-            'change' => -8.3,
-        ]);
-
-        $this->assertEquals('o-arrow-trending-down', $component->changeIcon());
-    }
-
-    public function test_stat_change_icon_zero(): void
-    {
-        $component = $this->createComponent([
-            'change' => 0.0,
-        ]);
-
-        $this->assertEquals('o-arrow-trending-up', $component->changeIcon());
-    }
-
-    public function test_stat_change_icon_without_value(): void
-    {
-        $component = $this->createComponent();
-
-        $this->assertEquals('', $component->changeIcon());
-    }
-
-    public function test_stat_trend_with_glass_variant(): void
-    {
-        $component = $this->createComponent([
-            'glass'       => 'frosted',
-            'glassTint'   => 'emerald-500',
-            'change'      => 15.2,
-            'changeLabel' => 'vs last week',
-            'value'       => '$12,345',
-            'title'       => 'Revenue',
-        ]);
-
-        $this->assertEquals('frosted', $component->glass);
-        $this->assertTrue($component->hasChange());
-        $this->assertEquals('+15.2%', $component->formattedChange());
-        $this->assertStringContainsString('glass-frosted', $component->glassClasses());
-    }
-
-    public function test_stat_trend_with_sparkline(): void
-    {
-        $component = $this->createComponent([
-            'change'        => -5.7,
-            'changeLabel'   => 'vs yesterday',
-            'sparklineData' => [100, 95, 90, 85, 80],
-            'sparklineType' => 'area',
-            'value'         => '1,234',
-            'title'         => 'Active Users',
-        ]);
-
-        $this->assertTrue($component->hasChange());
-        $this->assertTrue($component->hasSparkline());
-        $this->assertFalse($component->isPositiveChange());
-        $this->assertEquals('-5.7%', $component->formattedChange());
-        $this->assertEquals('text-error', $component->changeColorClasses());
-    }
-
-    public function test_stat_formatted_change_rounds_correctly(): void
-    {
-        $component = $this->createComponent([
-            'change' => 12.567,
-        ]);
-
-        $this->assertEquals('+12.6%', $component->formattedChange());
-    }
-
-    // Animation Tests
-
-    public function test_stat_animate_props_exist(): void
-    {
-        $component = $this->createComponent([
-            'animate'         => true,
-            'animateDuration' => 1500,
-        ]);
-
-        $this->assertTrue($component->animate);
-        $this->assertEquals(1500, $component->animateDuration);
-    }
-
-    public function test_stat_animate_default_values(): void
-    {
-        $component = $this->createComponent();
-
-        $this->assertTrue($component->animate);
-        $this->assertEquals(1000, $component->animateDuration);
-    }
-
-    public function test_stat_animate_can_be_disabled(): void
-    {
-        $component = $this->createComponent([
-            'animate' => false,
-        ]);
-
-        $this->assertFalse($component->animate);
-    }
-
-    public function test_stat_numeric_value_with_currency(): void
-    {
-        $component = $this->createComponent([
-            'value' => '$1,234.56',
-        ]);
-
-        $this->assertEquals(1234.56, $component->numericValue());
-    }
-
-    public function test_stat_numeric_value_with_percentage(): void
-    {
-        $component = $this->createComponent([
-            'value' => '45.5%',
-        ]);
-
-        $this->assertEquals(45.5, $component->numericValue());
-    }
-
-    public function test_stat_numeric_value_with_k_suffix(): void
-    {
-        $component = $this->createComponent([
-            'value' => '2.5K',
-        ]);
-
-        $this->assertEquals(2500.0, $component->numericValue());
-    }
-
-    public function test_stat_numeric_value_with_m_suffix(): void
-    {
-        $component = $this->createComponent([
-            'value' => '1.2M',
-        ]);
-
-        $this->assertEquals(1200000.0, $component->numericValue());
-    }
-
-    public function test_stat_numeric_value_with_b_suffix(): void
-    {
-        $component = $this->createComponent([
-            'value' => '3B',
-        ]);
-
-        $this->assertEquals(3000000000.0, $component->numericValue());
-    }
-
-    public function test_stat_numeric_value_plain_number(): void
-    {
-        $component = $this->createComponent([
-            'value' => '12345',
-        ]);
-
-        $this->assertEquals(12345.0, $component->numericValue());
-    }
-
-    public function test_stat_numeric_value_negative(): void
-    {
-        $component = $this->createComponent([
-            'value' => '-$500',
-        ]);
-
-        $this->assertEquals(-500.0, $component->numericValue());
-    }
-
-    public function test_stat_numeric_value_with_null(): void
-    {
-        $component = $this->createComponent();
-
-        $this->assertNull($component->numericValue());
-    }
-
-    public function test_stat_numeric_value_with_non_numeric(): void
-    {
-        $component = $this->createComponent([
-            'value' => 'Active',
-        ]);
-
-        $this->assertNull($component->numericValue());
-    }
-
-    public function test_stat_value_format_with_currency(): void
-    {
-        $component = $this->createComponent([
-            'value' => '$1,234.56',
-        ]);
-
-        $format = $component->valueFormat();
-
-        $this->assertEquals('$', $format['prefix']);
-        $this->assertEquals('', $format['suffix']);
-        $this->assertEquals(2, $format['decimals']);
-        $this->assertTrue($format['useCommas']);
-    }
-
-    public function test_stat_value_format_with_percentage(): void
-    {
-        $component = $this->createComponent([
-            'value' => '45.5%',
-        ]);
-
-        $format = $component->valueFormat();
-
-        $this->assertEquals('', $format['prefix']);
-        $this->assertEquals('%', $format['suffix']);
-        $this->assertEquals(1, $format['decimals']);
-        $this->assertFalse($format['useCommas']);
-    }
-
-    public function test_stat_value_format_with_k_suffix(): void
-    {
-        $component = $this->createComponent([
-            'value' => '2.5K',
-        ]);
-
-        $format = $component->valueFormat();
-
-        $this->assertEquals('', $format['prefix']);
-        $this->assertEquals('K', $format['suffix']);
-        $this->assertEquals(1, $format['decimals']);
-    }
-
-    public function test_stat_value_format_without_value(): void
-    {
-        $component = $this->createComponent();
-
-        $format = $component->valueFormat();
-
-        $this->assertEquals('', $format['prefix']);
-        $this->assertEquals('', $format['suffix']);
-        $this->assertEquals(0, $format['decimals']);
-        $this->assertFalse($format['useCommas']);
-    }
-
-    public function test_stat_can_animate_with_numeric_value(): void
-    {
-        $component = $this->createComponent([
-            'value'   => '$1,234',
-            'animate' => true,
-        ]);
-
-        $this->assertTrue($component->canAnimate());
-    }
-
-    public function test_stat_cannot_animate_when_disabled(): void
-    {
-        $component = $this->createComponent([
-            'value'   => '$1,234',
-            'animate' => false,
-        ]);
-
-        $this->assertFalse($component->canAnimate());
-    }
-
-    public function test_stat_cannot_animate_with_non_numeric_value(): void
-    {
-        $component = $this->createComponent([
-            'value'   => 'Active',
-            'animate' => true,
-        ]);
-
-        $this->assertFalse($component->canAnimate());
-    }
-
-    public function test_stat_cannot_animate_without_value(): void
-    {
-        $component = $this->createComponent([
-            'animate' => true,
-        ]);
-
-        $this->assertFalse($component->canAnimate());
-    }
-
-    public function test_stat_animation_with_glass_variant(): void
-    {
-        $component = $this->createComponent([
-            'glass'           => 'frosted',
-            'glassTint'       => 'emerald-500',
-            'value'           => '$12,345',
-            'animate'         => true,
-            'animateDuration' => 1200,
-        ]);
-
-        $this->assertEquals('frosted', $component->glass);
-        $this->assertTrue($component->canAnimate());
-        $this->assertEquals(12345.0, $component->numericValue());
-        $this->assertEquals(1200, $component->animateDuration);
-    }
-
-    public function test_stat_animation_with_sparkline_and_change(): void
-    {
-        $component = $this->createComponent([
-            'value'           => '1,234',
-            'change'          => 15.5,
-            'sparklineData'   => [100, 120, 115, 140],
-            'animate'         => true,
-            'animateDuration' => 800,
-        ]);
-
-        $this->assertTrue($component->canAnimate());
-        $this->assertTrue($component->hasChange());
-        $this->assertTrue($component->hasSparkline());
-        $this->assertEquals(1234.0, $component->numericValue());
-    }
-
-    public function test_stat_numeric_value_reads_a_single_comma_by_its_digits(): void
-    {
-        $this->assertSame(12345.0, $this->createComponent(['value' => '$12,345'])->numericValue());
-        $this->assertSame(12.5, $this->createComponent(['value' => '12,5'])->numericValue());
-        $this->assertSame(2.5, $this->createComponent(['value' => '2,50'])->numericValue());
-    }
-
-    public function test_stat_value_format_euro_currency(): void
-    {
-        $component = $this->createComponent([
-            'value' => '€2.500,00',
-        ]);
-
-        $format = $component->valueFormat();
-
-        $this->assertEquals('€', $format['prefix']);
-        $this->assertTrue($format['useCommas']);
-    }
-
-    public function test_stat_numeric_value_with_spaces(): void
-    {
-        $component = $this->createComponent([
-            'value' => '1 234 567',
-        ]);
-
-        $this->assertEquals(1234567.0, $component->numericValue());
-    }
+    return designSystemDom(Blade::render($template, $data));
 }
+
+test('renders the root with its size and color defaults', function (): void {
+    $root = statDom('<x-artisanpack-stat label="Profit" value="$15,708.98" />')->query('//div')->item(0);
+
+    expect($root->getAttribute('class'))->toBe('apui-stat')
+        ->and($root->getAttribute('data-size'))->toBe('md')
+        ->and($root->getAttribute('data-color'))->toBe('neutral')
+        ->and($root->hasAttribute('data-emphasis'))->toBeFalse()
+        ->and($root->hasAttribute('data-bare'))->toBeFalse();
+});
+
+test('renders the label row, value and unit', function (): void {
+    $dom = statDom('<x-artisanpack-stat label="Latency" value="182" unit="ms" icon="wallet" color="info" />');
+
+    expect(trim($dom->query('//*[@data-part="top"]/*[@data-part="label"]')->item(0)->textContent))->toBe('Latency')
+        ->and($dom->query('//*[@data-part="top"]/*[@data-part="icon"][@aria-hidden="true"]/svg'))->toHaveCount(1)
+        ->and($dom->query('//*[@data-part="value"]')->item(0)->textContent)->toBe('182ms')
+        ->and($dom->query('//*[@data-part="value"]/*[@data-part="unit"]')->item(0)->textContent)->toBe('ms')
+        ->and($dom->query('//div[@data-color="info"]'))->toHaveCount(1);
+});
+
+test('formats change as the delta, with hidden direction text and an arrow', function (float $change, string $trend, string $text, string $label): void {
+    $dom   = statDom('<x-artisanpack-stat value="1" :change="$change" description="vs last month" />', ['change' => $change]);
+    $delta = $dom->query('//*[@data-part="foot"]/*[@data-part="delta"]')->item(0);
+
+    expect($delta->getAttribute('data-trend'))->toBe($trend)
+        ->and($delta->getElementsByTagName('svg'))->toHaveCount(1)
+        ->and(trim($dom->query('.//*[@class="apui-sr-only"]', $delta)->item(0)->textContent))->toBe($label)
+        ->and(trim($delta->textContent))->toEndWith($text)
+        ->and(trim($dom->query('//*[@data-part="description"]')->item(0)->textContent))->toBe('vs last month');
+})->with([
+    'up'   => [10.94, 'up', '10.9%', 'Increase'],
+    'down' => [-5.4, 'down', '5.4%', 'Decrease'],
+    'flat' => [0.0, 'flat', '0.0%', 'No change'],
+]);
+
+test('delta text and trend win over change', function (): void {
+    $delta = statDom('<x-artisanpack-stat value="34.6" delta="6.2 hrs" trend="up" :change="-1" down-label="Bajada" />')
+        ->query('//*[@data-part="delta"]')->item(0);
+
+    expect($delta->getAttribute('data-trend'))->toBe('up')
+        ->and(trim($delta->textContent))->toBe('Increase 6.2 hrs');
+});
+
+test('translatable direction labels replace the defaults', function (): void {
+    $delta = statDom('<x-artisanpack-stat value="1" :change="-2" down-label="Baja" />')->query('//*[@data-part="delta"]')->item(0);
+
+    expect(trim($delta->textContent))->toBe('Baja 2.0%');
+});
+
+test('a delta without a trend has no arrow or hidden text', function (): void {
+    $delta = statDom('<x-artisanpack-stat value="7" delta="days in a row" />')->query('//*[@data-part="delta"]')->item(0);
+
+    expect($delta->hasAttribute('data-trend'))->toBeFalse()
+        ->and($delta->getElementsByTagName('svg'))->toHaveCount(0)
+        ->and(trim($delta->textContent))->toBe('days in a row');
+});
+
+test('emphasis and bare are data attributes', function (): void {
+    $root = statDom('<x-artisanpack-stat value="1" emphasis bare size="lg" color="primary" />')->query('//div')->item(0);
+
+    expect($root->hasAttribute('data-emphasis'))->toBeTrue()
+        ->and($root->hasAttribute('data-bare'))->toBeTrue()
+        ->and($root->getAttribute('data-size'))->toBe('lg')
+        ->and($root->getAttribute('data-color'))->toBe('primary');
+});
+
+test('unknown sizes and colors fall back to the defaults', function (): void {
+    $root = statDom('<x-artisanpack-stat value="1" size="xl" color="text-red-500" />')->query('//div')->item(0);
+
+    expect($root->getAttribute('data-size'))->toBe('md')
+        ->and($root->getAttribute('data-color'))->toBe('neutral');
+});
+
+test('the default slot replaces value and the icon slot the named icon', function (): void {
+    $dom = statDom('<x-artisanpack-stat label="Users" icon="wallet"><x-slot:icon><svg data-custom></svg></x-slot:icon><strong>4,200</strong></x-artisanpack-stat>');
+
+    expect($dom->query('//*[@data-part="value"]/strong')->item(0)->textContent)->toBe('4,200')
+        ->and($dom->query('//*[@data-part="icon"]/svg[@data-custom]'))->toHaveCount(1);
+});
+
+test('2.x title and change-label still work, and stay off the root', function (): void {
+    $dom  = statDom('<x-artisanpack-stat title="Revenue" value="$1" change-label="since May" />');
+    $root = $dom->query('//div')->item(0);
+
+    expect(trim($dom->query('//*[@data-part="label"]')->item(0)->textContent))->toBe('Revenue')
+        ->and(trim($dom->query('//*[@data-part="description"]')->item(0)->textContent))->toBe('since May')
+        ->and($root->hasAttribute('title'))->toBeFalse()
+        ->and($root->hasAttribute('change-label'))->toBeFalse();
+});
+
+test('classes reach their parts, and other attributes the root', function (): void {
+    $dom = statDom('<x-artisanpack-stat id="rev" value="1" label="A" :classes="[\'root\' => \'r\', \'value\' => \'v\', \'label\' => \'l\']" />');
+
+    expect($dom->query('//div[@id="rev"]')->item(0)->getAttribute('class'))->toBe('apui-stat r')
+        ->and($dom->query('//*[@data-part="value"]')->item(0)->getAttribute('class'))->toBe('v')
+        ->and($dom->query('//*[@data-part="label"]')->item(0)->getAttribute('class'))->toBe('l');
+});
+
+test('leaves no DaisyUI or Tailwind classes', function (): void {
+    $html = Blade::render('<x-artisanpack-stat label="A" value="1" icon="wallet" :change="2" description="d" emphasis />');
+
+    expect($html)->not->toContain('stat-')
+        ->and($html)->not->toContain('text-success')
+        ->and($html)->not->toContain('rounded');
+});

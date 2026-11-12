@@ -2,217 +2,56 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
+use Illuminate\Support\Facades\Blade;
 
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
-use ArtisanPack\LivewireUiComponents\View\Components\Text;
-use Error;
-use RuntimeException;
-
-/**
- * Comprehensive unit tests for the Text component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * Text (#58): the design-system markup contract. The manifest parity check is
+ * in tests/Feature/DesignSystemParityTest.php.
  */
-class TextComponentTest extends ComponentTestCase
-{
-    protected string $componentClass = Text::class;
 
-    protected array $defaultProperties = [
-        'semibold' => false,
-        'bold'     => false,
-        'center'   => false,
-        'muted'    => false,
-        'lead'     => false,
-        'prose'    => false,
-    ];
+test('renders a paragraph with the default size, tone and weight', function (): void {
+    $root = designSystemDom(Blade::render('<x-artisanpack-text>Body copy</x-artisanpack-text>'))->query('//p[contains(@class, "apui-text")]')->item(0);
 
-    protected array $requiredProperties = [];
+    expect($root->getAttribute('data-size'))->toBe('md')
+        ->and($root->getAttribute('data-tone'))->toBe('default')
+        ->and($root->getAttribute('data-weight'))->toBe('regular')
+        ->and($root->hasAttribute('data-truncate'))->toBeFalse()
+        ->and(trim($root->textContent))->toBe('Body copy');
+});
 
-    public function test_text_string_properties(): void
-    {
-        $stringProperties = ['id', 'size', 'color'];
-        $testValues       = ComponentDataFactory::sampleTexts();
+test('as, size, tone and weight are honored; unknown values fall back', function (): void {
+    $span    = designSystemDom(Blade::render('<x-artisanpack-text as="span" size="lead" tone="error" weight="semibold">Failed</x-artisanpack-text>'))->query('//span')->item(0);
+    $unknown = designSystemDom(Blade::render('<x-artisanpack-text as="h1" size="huge" tone="red" weight="black">X</x-artisanpack-text>'))->query('//p')->item(0);
 
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
+    expect($span->getAttribute('data-size'))->toBe('lead')
+        ->and($span->getAttribute('data-tone'))->toBe('error')
+        ->and($span->getAttribute('data-weight'))->toBe('semibold')
+        ->and($unknown->getAttribute('data-size'))->toBe('md')
+        ->and($unknown->getAttribute('data-tone'))->toBe('default')
+        ->and($unknown->getAttribute('data-weight'))->toBe('regular');
+});
 
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
-    }
+test('truncate copies plain text to title', function (): void {
+    $root = designSystemDom(Blade::render('<x-artisanpack-text truncate>ARK Genomic &amp; Co</x-artisanpack-text>'))->query('//p')->item(0);
 
-    public function test_text_boolean_properties(): void
-    {
-        $booleanProperties = ['semibold', 'bold', 'center', 'muted', 'lead', 'prose'];
+    expect($root->hasAttribute('data-truncate'))->toBeTrue()
+        ->and($root->getAttribute('title'))->toBe('ARK Genomic & Co');
+});
 
-        foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
-            $this->assertTrue($component->$property);
+test('truncate keeps an explicit title and skips markup', function (): void {
+    $titled = designSystemDom(Blade::render('<x-artisanpack-text truncate title="Full">Short</x-artisanpack-text>'))->query('//p')->item(0);
+    $markup = designSystemDom(Blade::render('<x-artisanpack-text truncate><b>Bold</b></x-artisanpack-text>'))->query('//p')->item(0);
 
-            $component = $this->createComponent([$property => false]);
-            $this->assertFalse($component->$property);
-        }
-    }
+    expect($titled->getAttribute('title'))->toBe('Full')
+        ->and($markup->hasAttribute('title'))->toBeFalse();
+});
 
-    public function test_text_font_weight_class_method(): void
-    {
-        $component = $this->createComponent();
+test('clamp sets data-clamp and the line count', function (): void {
+    $root = designSystemDom(Blade::render('<x-artisanpack-text :clamp="3" style="color: red">Long</x-artisanpack-text>'))->query('//p')->item(0);
+    $zero = designSystemDom(Blade::render('<x-artisanpack-text :clamp="0">Long</x-artisanpack-text>'))->query('//p')->item(0);
 
-        if (method_exists($component, 'fontWeightClass')) {
-            try {
-                $result = $component->fontWeightClass();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_text_color_class_method(): void
-    {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'colorClass')) {
-            try {
-                $result = $component->colorClass();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_text_size_class_method(): void
-    {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'sizeClass')) {
-            try {
-                $result = $component->sizeClass();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_text_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
-
-    public function test_text_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'Text should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
-
-    public function test_text_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
-
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
-
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_text_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'Text rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
-}
+    expect($root->getAttribute('data-clamp'))->toBe('3')
+        ->and($root->getAttribute('style'))->toContain('--apui-text-clamp: 3')
+        ->and($root->getAttribute('style'))->toContain('color: red')
+        ->and($zero->hasAttribute('data-clamp'))->toBeFalse();
+});

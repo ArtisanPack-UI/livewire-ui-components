@@ -2,159 +2,32 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
+use Illuminate\Support\Facades\Blade;
 
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
-use ArtisanPack\LivewireUiComponents\View\Components\TimelineItem;
-use Error;
-use RuntimeException;
-
-/**
- * Comprehensive unit tests for the TimelineItem component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * TimelineItem (#61): one event of a Timeline, and its 2.x props. The list
+ * itself is covered by TimelineComponentTest.
  */
-class TimelineItemComponentTest extends ComponentTestCase
-{
-    protected string $componentClass = TimelineItem::class;
 
-    protected array $defaultProperties = [
-        'pending' => false,
-        'first'   => false,
-        'last'    => false,
-    ];
+test('2.x subtitle still works as the time, and old props stay off the item', function (): void {
+    $dom  = designSystemDom(Blade::render('<x-artisanpack-timeline><x-artisanpack-timeline-item title="Order placed" subtitle="Nov 2" first pending /></x-artisanpack-timeline>'));
+    $item = $dom->query('//li')->item(0);
 
-    protected array $requiredProperties = [
-        'title',
-    ];
+    expect($dom->query('//time[@data-part="time"]')->item(0)->textContent)->toBe('Nov 2')
+        ->and($item->hasAttribute('subtitle'))->toBeFalse()
+        ->and($item->hasAttribute('first'))->toBeFalse()
+        ->and($item->hasAttribute('pending'))->toBeFalse();
+});
 
-    public function test_timelineitem_string_properties(): void
-    {
-        $stringProperties = ['title', 'id', 'subtitle', 'description', 'icon'];
-        $testValues       = ComponentDataFactory::sampleTexts();
+test('an unknown color leaves the marker neutral', function (): void {
+    $marker = designSystemDom(Blade::render('<x-artisanpack-timeline-item title="A" color="bg-primary" />'))->query('//*[@data-part="marker"]')->item(0);
 
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
+    expect($marker->hasAttribute('data-color'))->toBeFalse();
+});
 
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
-    }
+test('attributes land on the item', function (): void {
+    $item = designSystemDom(Blade::render('<x-artisanpack-timeline-item title="A" wire:key="event-1" id="e1" />'))->query('//li')->item(0);
 
-    public function test_timelineitem_boolean_properties(): void
-    {
-        $booleanProperties = ['pending', 'first', 'last'];
-
-        foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
-            $this->assertTrue($component->$property);
-
-            $component = $this->createComponent([$property => false]);
-            $this->assertFalse($component->$property);
-        }
-    }
-
-    public function test_timelineitem_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
-
-    public function test_timelineitem_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'TimelineItem should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
-
-    public function test_timelineitem_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
-
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
-
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_timelineitem_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'TimelineItem rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
-}
+    expect($item->getAttribute('id'))->toBe('e1')
+        ->and($item->getAttribute('data-part'))->toBe('item');
+});

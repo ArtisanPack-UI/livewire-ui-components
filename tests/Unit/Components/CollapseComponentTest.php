@@ -2,157 +2,79 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
+use Illuminate\Support\Facades\Blade;
 
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
-use ArtisanPack\LivewireUiComponents\View\Components\Collapse;
-use Error;
-use RuntimeException;
-
-/**
- * Comprehensive unit tests for the Collapse component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * Collapse (#58): the design-system disclosure on the collapsible machine,
+ * as a section or a read-more. The manifest parity check is in
+ * tests/Feature/DesignSystemParityTest.php.
  */
-class CollapseComponentTest extends ComponentTestCase
-{
-    protected string $componentClass = Collapse::class;
 
-    protected array $defaultProperties = [
-        'separator'         => false,
-        'noIcon'            => false,
-        'collapsePlusMinus' => false,
-    ];
+test('renders a closed section: trigger, then the hidden region', function (): void {
+    $dom  = designSystemDom(Blade::render('<x-artisanpack-collapse id="adv" label="Advanced settings">Custom URL</x-artisanpack-collapse>'));
+    $root = $dom->query('//div[contains(@class, "apui-collapse")]')->item(0);
 
-    protected array $requiredProperties = [];
+    expect($root->getAttribute('data-variant'))->toBe('section')
+        ->and($root->getAttribute('data-state'))->toBe('closed')
+        ->and($root->getAttribute('x-data'))->toStartWith('apuiCollapse(');
 
-    public function test_collapse_string_properties(): void
-    {
-        $stringProperties = ['id', 'name'];
-        $testValues       = ComponentDataFactory::sampleTexts();
+    $parts = array_map(static fn (DOMElement $el): string => $el->getAttribute('data-part'), iterator_to_array($dom->query('//*[@data-scope="collapse"]')));
+    expect($parts)->toBe(['root', 'trigger', 'icon', 'content']);
 
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
+    $trigger = $dom->query('//button[@id="adv-trigger"]')->item(0);
+    expect($trigger->getAttribute('aria-expanded'))->toBe('false')
+        ->and($trigger->getAttribute('aria-controls'))->toBe('adv-content')
+        ->and(trim($trigger->textContent))->toBe('Advanced settings')
+        ->and($dom->query('//*[@id="adv-content"]')->item(0)->hasAttribute('hidden'))->toBeTrue();
+});
 
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
-    }
+test('renders open', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-collapse id="adv" label="More" open>Body</x-artisanpack-collapse>'));
 
-    public function test_collapse_boolean_properties(): void
-    {
-        $booleanProperties = ['separator', 'noIcon'];
+    expect($dom->query('//button')->item(0)->getAttribute('aria-expanded'))->toBe('true')
+        ->and($dom->query('//*[@id="adv-content"]')->item(0)->hasAttribute('hidden'))->toBeFalse();
+});
 
-        foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
-            $this->assertTrue($component->$property);
+test('renders a read-more: clamped region with the fade, then the trigger', function (): void {
+    $dom   = designSystemDom(Blade::render('<x-artisanpack-collapse id="desc" variant="read-more">Long text</x-artisanpack-collapse>'));
+    $parts = array_map(static fn (DOMElement $el): string => $el->getAttribute('data-part'), iterator_to_array($dom->query('//*[@data-scope="collapse"]')));
 
-            $component = $this->createComponent([$property => false]);
-            $this->assertFalse($component->$property);
-        }
-    }
+    expect($parts)->toBe(['root', 'content', 'fade', 'trigger', 'icon']);
+    $content = $dom->query('//*[@id="desc-content"]')->item(0);
+    expect($content->hasAttribute('hidden'))->toBeFalse()
+        ->and($content->getAttribute('style'))->toContain('max-height: var(--apui-collapse-clamp-height, 64px)')
+        ->and($content->getAttribute('style'))->not->toContain('min-height')
+        ->and($dom->query('//*[@data-part="fade"]')->item(0)->getAttribute('aria-hidden'))->toBe('true')
+        ->and(trim($dom->query('//button')->item(0)->textContent))->toBe('Read more')
+        ->and($dom->query('//button//*[@x-text]')->item(0)->getAttribute('x-text'))->toContain('Show less');
+});
 
-    public function test_collapse_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
+test('disables the trigger', function (): void {
+    $trigger = designSystemDom(Blade::render('<x-artisanpack-collapse label="A" disabled>B</x-artisanpack-collapse>'))->query('//button')->item(0);
 
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
+    expect($trigger->hasAttribute('disabled'))->toBeTrue()
+        ->and($trigger->hasAttribute('data-disabled'))->toBeTrue();
+});
 
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
+test('takes a trigger slot, and the deprecated heading and content slots', function (): void {
+    $slot = designSystemDom(Blade::render('<x-artisanpack-collapse><x-slot:trigger>Show <strong>more</strong></x-slot:trigger> Body</x-artisanpack-collapse>'));
+    expect($slot->query('//button/strong')->item(0)->textContent)->toBe('more');
 
-    public function test_collapse_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
+    $legacy = designSystemDom(Blade::render('<x-artisanpack-collapse><x-slot:heading>Old title</x-slot:heading><x-slot:content>Old body</x-slot:content></x-artisanpack-collapse>'));
+    expect(trim($legacy->query('//button')->item(0)->textContent))->toBe('Old title')
+        ->and(trim($legacy->query('//*[@data-part="content"]')->item(0)->textContent))->toBe('Old body');
+});
 
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
+test('entangles wire:model', function (): void {
+    $root = designSystemDom(Blade::render('<x-artisanpack-collapse id="adv" label="A" wire:model="advanced">B</x-artisanpack-collapse>'))->query('//div[contains(@class, "apui-collapse")]')->item(0);
 
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'Collapse should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
+    expect($root->getAttribute('x-data'))->toContain('$wire.entangle(\'advanced\')')
+        ->and($root->hasAttribute('wire:model'))->toBeFalse();
+});
 
-    public function test_collapse_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
+test('applies classes per part', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-collapse label="A" :classes="[\'trigger\' => \'my-trigger\', \'content\' => \'my-content\']">B</x-artisanpack-collapse>'));
 
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
-
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_collapse_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'Collapse rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
-}
+    expect($dom->query('//button[contains(@class, "my-trigger")]')->length)->toBe(1)
+        ->and($dom->query('//*[contains(@class, "my-content")]')->length)->toBe(1);
+});
