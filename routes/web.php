@@ -7,17 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
-/**
- * Theme Preview Route.
- *
- * Provides a browser-based theme preview and customization tool.
- *
- * @since 2.0.0
- */
-Route::middleware('web')->prefix(config('artisanpack.livewire-ui-components.route_prefix'))->get('/artisanpack/theme-preview', function () {
-    return view('livewire-ui-components::demos.theme-preview');
-})->name('artisanpack.theme-preview');
-
 Route::middleware('web')->prefix(config('artisanpack.livewire-ui-components.route_prefix'))->get('/artisanpack/toogle-sidebar', function (Request $request): void {
     if ($request->collapsed) {
         session(['artisanpack-sidebar-collapsed' => $request->collapsed]);
@@ -37,7 +26,7 @@ Route::middleware('web')->prefix(config('artisanpack.livewire-ui-components.rout
 /**
  * Image Upload Route.
  *
- * Stores an image from the RichTextEditor or Markdown component and returns its
+ * Stores an image from the RichTextEditor component and returns its
  * URL. UploadRequest limits it to images on an allowed disk and folder (see the
  * `uploads` config).
  *

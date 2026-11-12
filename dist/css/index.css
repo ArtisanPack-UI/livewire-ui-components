@@ -10243,6 +10243,323 @@
   }
 }
 /*
+ * Chart (#63). Root `.apui-card.apui-chart`: a Card holding a bar, line, area
+ * or donut chart drawn as inline SVG, with data-type. Parts: header (title,
+ * description, actions and, for 2+ series, the legend), body (the plot, and
+ * the donut's legend beside it), legend and swatch, plot (svg), grid, axis,
+ * mark (a bar, a slice, or a line chart's focusable category column), line,
+ * area, point (a category's crosshair and dots), crosshair, dot, value (the
+ * one labeled value, and the donut legend's shares), tooltip and table.
+ * Series and slices carry data-series 1–6, read as --apui-chart-1…6 in fixed
+ * order. The plot stays LTR (D-004); the header and legend mirror.
+ * See design/components/Chart.
+ */
+@layer apui.components {
+  .apui-chart {
+    --apui-_chart-color: var(--apui-chart-1);
+
+    display: grid;
+    gap: 12px;
+    padding: var(--apui-card-padding);
+  }
+
+  [data-scope='chart'][data-series='1'] {
+    --apui-_chart-color: var(--apui-chart-1);
+  }
+
+  [data-scope='chart'][data-series='2'] {
+    --apui-_chart-color: var(--apui-chart-2);
+  }
+
+  [data-scope='chart'][data-series='3'] {
+    --apui-_chart-color: var(--apui-chart-3);
+  }
+
+  [data-scope='chart'][data-series='4'] {
+    --apui-_chart-color: var(--apui-chart-4);
+  }
+
+  [data-scope='chart'][data-series='5'] {
+    --apui-_chart-color: var(--apui-chart-5);
+  }
+
+  [data-scope='chart'][data-series='6'] {
+    --apui-_chart-color: var(--apui-chart-6);
+  }
+
+  [data-scope='chart'][data-part='header'] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  [data-scope='chart'][data-part='header'] > div:first-child {
+    min-inline-size: 0;
+  }
+
+  [data-scope='chart'][data-part='title'] {
+    margin: 0;
+    font-size: var(--apui-type-body-lg-font-size);
+    font-weight: var(--apui-font-weight-semibold);
+    line-height: var(--apui-type-body-lg-line-height);
+  }
+
+  [data-scope='chart'][data-part='description'] {
+    margin: 2px 0 0;
+    color: var(--apui-text-muted);
+    font-size: var(--apui-type-body-sm-font-size);
+    line-height: var(--apui-type-body-sm-line-height);
+  }
+
+  [data-scope='chart'][data-part='actions'] {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* The legend sits at the end of the header, before the actions. */
+  [data-scope='chart'][data-part='header'] > [data-scope='chart'][data-part='legend'] {
+    margin-inline-start: auto;
+    padding-block-start: 4px;
+  }
+
+  [data-scope='chart'][data-part='legend'] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin: 0;
+    padding: 0;
+    color: var(--apui-text-muted);
+    font-size: var(--apui-type-caption-font-size);
+    line-height: var(--apui-type-caption-line-height);
+    list-style: none;
+  }
+
+  [data-scope='chart'][data-part='legend'] > li {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  [data-scope='chart'][data-part='swatch'] {
+    flex: none;
+    inline-size: 10px;
+    block-size: 10px;
+    border-radius: 3px;
+    background: var(--apui-_chart-color);
+  }
+
+  [data-scope='chart'][data-part='body'] {
+    position: relative;
+    min-inline-size: 0;
+  }
+
+  /* The donut sits beside its legend, which lists every slice's share. */
+  .apui-chart[data-type='donut'] > [data-scope='chart'][data-part='body'] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .apui-chart[data-type='donut'] [data-scope='chart'][data-part='legend'] {
+    display: grid;
+    flex: 1 1 160px;
+    gap: 10px;
+    font-size: var(--apui-type-body-sm-font-size);
+    line-height: var(--apui-type-body-sm-line-height);
+  }
+
+  .apui-chart[data-type='donut'] [data-scope='chart'][data-part='legend'] > li {
+    gap: 8px;
+  }
+
+  [data-scope='chart'][data-part='legend'] [data-scope='chart'][data-part='value'] {
+    margin-inline-start: auto;
+    color: var(--apui-text-default);
+    font-variant-numeric: tabular-nums;
+    font-weight: var(--apui-font-weight-medium);
+  }
+
+  [data-scope='chart'][data-part='plot'] {
+    display: block;
+    overflow: visible;
+    inline-size: 100%;
+    block-size: auto;
+    direction: ltr;
+  }
+
+  .apui-chart[data-type='donut'] [data-scope='chart'][data-part='plot'] {
+    flex: none;
+    inline-size: 160px;
+  }
+
+  [data-scope='chart'][data-part='grid'] {
+    stroke: var(--apui-chart-grid);
+    stroke-width: 1;
+  }
+
+  [data-scope='chart'][data-part='axis'] {
+    fill: var(--apui-chart-axis);
+    font-family: var(--apui-font-family-sans);
+    font-size: 11px;
+  }
+
+  [data-scope='chart'][data-part='mark'] {
+    fill: var(--apui-_chart-color);
+    outline: none;
+    transition: opacity var(--apui-motion-duration-fast) var(--apui-motion-ease-standard);
+  }
+
+  .apui-chart[data-type='donut'] [data-scope='chart'][data-part='mark'] {
+    stroke: var(--apui-surface-default);
+    stroke-width: 2;
+  }
+
+  /* A line or area chart's mark is the category's hit column: only its focus ring shows. */
+  .apui-chart:is([data-type='line'], [data-type='area']) [data-scope='chart'][data-part='mark'] {
+    fill: transparent;
+  }
+
+  .apui-chart:is([data-type='bar'], [data-type='donut'])
+    [data-scope='chart'][data-part='mark']:is(:hover, [data-state='active']) {
+    opacity: 0.8;
+  }
+
+  [data-scope='chart'][data-part='mark']:focus-visible {
+    outline: var(--apui-focus-ring-width) solid var(--apui-focus-ring-color);
+    outline-offset: var(--apui-focus-ring-offset);
+  }
+
+  [data-scope='chart'][data-part='line'] {
+    fill: none;
+    stroke: var(--apui-_chart-color);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2;
+  }
+
+  [data-scope='chart'][data-part='area'] {
+    fill: var(--apui-_chart-color);
+    opacity: 0.12;
+  }
+
+  [data-scope='chart'][data-part='point'] {
+    pointer-events: none;
+  }
+
+  [data-scope='chart'][data-part='crosshair'] {
+    stroke: var(--apui-border-strong);
+    stroke-dasharray: 3 3;
+    stroke-width: 1;
+  }
+
+  [data-scope='chart'][data-part='dot'] {
+    fill: var(--apui-_chart-color);
+    stroke: var(--apui-surface-default);
+    stroke-width: 2;
+  }
+
+  [data-scope='chart'][data-part='plot'] [data-scope='chart'][data-part='value'] {
+    fill: var(--apui-text-default);
+    font-family: var(--apui-font-family-sans);
+    font-size: 12px;
+    font-weight: var(--apui-font-weight-semibold);
+  }
+
+  [data-scope='chart'][data-part='tooltip'] {
+    position: absolute;
+    z-index: 1;
+    padding: 8px 10px;
+    border: var(--apui-border-width) solid var(--apui-border-muted);
+    border-radius: var(--apui-radius-md);
+    background: var(--apui-surface-overlay);
+    box-shadow: var(--apui-elevation-overlay);
+    color: var(--apui-text-default);
+    font-size: var(--apui-type-caption-font-size);
+    line-height: var(--apui-type-caption-line-height);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  [data-scope='chart'][data-part='tooltip'] > strong {
+    display: block;
+    font-size: var(--apui-type-body-sm-font-size);
+    font-weight: var(--apui-font-weight-semibold);
+  }
+
+  [data-scope='chart'][data-part='table'] {
+    inline-size: 100%;
+    border-collapse: collapse;
+    font-size: var(--apui-type-body-sm-font-size);
+    line-height: var(--apui-type-body-sm-line-height);
+  }
+
+  [data-scope='chart'][data-part='table'] :is(th, td) {
+    padding-block: 6px;
+    padding-inline: 8px;
+    border-block-end: var(--apui-border-width) solid var(--apui-border-muted);
+    text-align: end;
+    font-variant-numeric: tabular-nums;
+  }
+
+  [data-scope='chart'][data-part='table'] :is(th, td):first-child {
+    padding-inline-start: 0;
+    text-align: start;
+  }
+
+  [data-scope='chart'][data-part='table'] thead th {
+    color: var(--apui-text-muted);
+    font-weight: var(--apui-font-weight-medium);
+  }
+
+  [data-scope='chart'][data-part='table'] tbody th {
+    font-weight: var(--apui-font-weight-regular);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='chart'][data-part='mark'] {
+      transition: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    [data-scope='chart']:is([data-part='swatch'], [data-part='dot']) {
+      forced-color-adjust: none;
+      background: CanvasText;
+      fill: CanvasText;
+    }
+
+    .apui-chart:is([data-type='bar'], [data-type='donut']) [data-scope='chart'][data-part='mark'] {
+      fill: CanvasText;
+      stroke: Canvas;
+    }
+
+    [data-scope='chart'][data-part='line'] {
+      stroke: CanvasText;
+    }
+
+    [data-scope='chart'][data-part='area'] {
+      fill: none;
+    }
+
+    [data-scope='chart']:is([data-part='grid'], [data-part='crosshair']) {
+      stroke: GrayText;
+    }
+
+    [data-scope='chart']:is([data-part='axis'], [data-part='value']) {
+      fill: CanvasText;
+    }
+
+    [data-scope='chart'][data-part='mark']:focus-visible {
+      outline-color: Highlight;
+    }
+  }
+}
+/*
  * Timeline (#61). Root `ol.apui-timeline` with data-variant: icon markers
  * (default) or small dots. Parts: item (li), marker (data-color, aria-hidden),
  * head (the event and its time), time (a time element), body and card. The
@@ -14509,6 +14826,1992 @@
 
     [data-scope='image-library'][data-part='bulk'] {
       border-block-end: 1px solid CanvasText;
+    }
+  }
+}
+/*
+ * Icon (#65). Root `span.apui-icon` sizes one glyph: data-size (sm 14, md 16,
+ * lg 20, xl 24) and data-color (the color's text tone; unset, currentColor).
+ * Part: svg (the registry's Lucide glyph, or the author's own svg). The tile
+ * variant (data-variant="tile", plus the apui-icon-tile class) sets it on a
+ * soft-colored rounded square: 32, 40, 48 or 56px, neutral unless
+ * data-color. data-mirror flips it under RTL. See design/components/Icon.
+ */
+@layer apui.components {
+  .apui-icon {
+    --apui-_icon-size: var(--apui-icon-size-md);
+
+    /* The tone a tile and a colored icon read; data-color reassigns it. */
+    --apui-_icon-soft: var(--apui-color-neutral-soft);
+    --apui-_icon-on-soft: var(--apui-color-neutral-soft-foreground);
+    --apui-_icon-edge: var(--apui-color-neutral-border);
+
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--apui-_icon-size);
+    block-size: var(--apui-_icon-size);
+    vertical-align: middle;
+  }
+
+  .apui-icon > svg {
+    display: block;
+    flex: none;
+    inline-size: var(--apui-_icon-size);
+    block-size: var(--apui-_icon-size);
+  }
+
+  .apui-icon[data-size='sm'] {
+    --apui-_icon-size: var(--apui-icon-size-sm);
+  }
+
+  .apui-icon[data-size='lg'] {
+    --apui-_icon-size: var(--apui-icon-size-lg);
+  }
+
+  .apui-icon[data-size='xl'] {
+    --apui-_icon-size: 24px;
+  }
+
+  /* Colors: a plain icon takes the text tone (4.5:1); a tile the soft pair. */
+  .apui-icon[data-color='primary'] {
+    --apui-_icon-soft: var(--apui-color-primary-soft);
+    --apui-_icon-on-soft: var(--apui-color-primary-soft-foreground);
+    --apui-_icon-edge: var(--apui-color-primary-border);
+
+    color: var(--apui-color-primary-text);
+  }
+
+  .apui-icon[data-color='secondary'] {
+    --apui-_icon-soft: var(--apui-color-secondary-soft);
+    --apui-_icon-on-soft: var(--apui-color-secondary-soft-foreground);
+    --apui-_icon-edge: var(--apui-color-secondary-border);
+
+    color: var(--apui-color-secondary-text);
+  }
+
+  .apui-icon[data-color='accent'] {
+    --apui-_icon-soft: var(--apui-color-accent-soft);
+    --apui-_icon-on-soft: var(--apui-color-accent-soft-foreground);
+    --apui-_icon-edge: var(--apui-color-accent-border);
+
+    color: var(--apui-color-accent-text);
+  }
+
+  .apui-icon[data-color='neutral'] {
+    color: var(--apui-color-neutral-text);
+  }
+
+  .apui-icon[data-color='success'] {
+    --apui-_icon-soft: var(--apui-color-success-soft);
+    --apui-_icon-on-soft: var(--apui-color-success-soft-foreground);
+    --apui-_icon-edge: var(--apui-color-success-border);
+
+    color: var(--apui-color-success-text);
+  }
+
+  .apui-icon[data-color='warning'] {
+    --apui-_icon-soft: var(--apui-color-warning-soft);
+    --apui-_icon-on-soft: var(--apui-color-warning-soft-foreground);
+    --apui-_icon-edge: var(--apui-color-warning-border);
+
+    color: var(--apui-color-warning-text);
+  }
+
+  .apui-icon[data-color='error'] {
+    --apui-_icon-soft: var(--apui-color-error-soft);
+    --apui-_icon-on-soft: var(--apui-color-error-soft-foreground);
+    --apui-_icon-edge: var(--apui-color-error-border);
+
+    color: var(--apui-color-error-text);
+  }
+
+  .apui-icon[data-color='info'] {
+    --apui-_icon-soft: var(--apui-color-info-soft);
+    --apui-_icon-on-soft: var(--apui-color-info-soft-foreground);
+    --apui-_icon-edge: var(--apui-color-info-border);
+
+    color: var(--apui-color-info-text);
+  }
+
+  /* The tile: a soft square around a 16, 16, 20 or 24px glyph. */
+  .apui-icon-tile {
+    --apui-_icon-tile: 40px;
+    --apui-_icon-size: var(--apui-icon-size-md);
+
+    box-sizing: border-box;
+    inline-size: var(--apui-_icon-tile);
+    block-size: var(--apui-_icon-tile);
+    border-radius: var(--apui-radius-md);
+    background-color: var(--apui-_icon-soft);
+    color: var(--apui-_icon-on-soft);
+
+    /*
+     * The soft edge: 0 in light and dark (the spec draws none), 1px in high
+     * contrast, where the fill alone sits too close to the page (D-035).
+     */
+    outline: var(--apui-border-soft-edge-width) solid var(--apui-_icon-edge);
+    outline-offset: calc(-1 * var(--apui-border-soft-edge-width));
+  }
+
+  .apui-icon-tile[data-color] {
+    color: var(--apui-_icon-on-soft);
+  }
+
+  .apui-icon-tile[data-size='sm'] {
+    --apui-_icon-tile: 32px;
+    --apui-_icon-size: var(--apui-icon-size-md);
+
+    border-radius: var(--apui-radius-sm);
+  }
+
+  .apui-icon-tile[data-size='lg'] {
+    --apui-_icon-tile: 48px;
+    --apui-_icon-size: var(--apui-icon-size-lg);
+
+    border-radius: var(--apui-radius-lg);
+  }
+
+  .apui-icon-tile[data-size='xl'] {
+    --apui-_icon-tile: 56px;
+    --apui-_icon-size: 24px;
+
+    border-radius: var(--apui-radius-lg);
+  }
+
+  [dir='rtl'] .apui-icon[data-mirror] > svg {
+    scale: -1 1;
+  }
+
+  @media (forced-colors: active) {
+    .apui-icon-tile {
+      outline: 1px solid CanvasText;
+    }
+  }
+}
+/*
+ * Swap (#65). No Claude Design spec: a token-driven toggle like Grid and Stack
+ * (D-032). Root `label.apui-swap` is a square target (control heights sm, md,
+ * lg) with data-size and data-transition (fade, rotate, none); data-state
+ * mirrors the checkbox for the server render. Parts: control (the native
+ * checkbox, transparent over the target), on and off (the contents, stacked
+ * in one grid cell). The checkbox's own :checked state swaps them, so a
+ * Livewire wire:model swaps with no script.
+ */
+@layer apui.components {
+  .apui-swap {
+    --apui-_swap-size: var(--apui-control-height-md);
+    --apui-_swap-icon: var(--apui-icon-size-md);
+
+    position: relative;
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    box-sizing: border-box;
+    inline-size: var(--apui-_swap-size);
+    block-size: var(--apui-_swap-size);
+    border-radius: var(--apui-radius-md);
+    color: var(--apui-text-default);
+    vertical-align: middle;
+    cursor: pointer;
+  }
+
+  .apui-swap[data-size='sm'] {
+    --apui-_swap-size: var(--apui-control-height-sm);
+  }
+
+  .apui-swap[data-size='lg'] {
+    --apui-_swap-size: var(--apui-control-height-lg);
+    --apui-_swap-icon: var(--apui-icon-size-lg);
+  }
+
+  [data-scope='swap'][data-part='control'] {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: inherit;
+  }
+
+  [data-scope='swap']:is([data-part='on'], [data-part='off']) {
+    display: inline-flex;
+    grid-area: 1 / 1;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    transition:
+      opacity var(--apui-motion-duration-moderate) var(--apui-motion-ease-standard),
+      rotate var(--apui-motion-duration-moderate) var(--apui-motion-ease-standard);
+  }
+
+  [data-scope='swap']:is([data-part='on'], [data-part='off']) > svg,
+  [data-scope='swap']:is([data-part='on'], [data-part='off']) > .apui-icon > svg {
+    inline-size: var(--apui-_swap-icon);
+    block-size: var(--apui-_swap-icon);
+  }
+
+  /* Off by default; the checkbox's state swaps the contents. */
+  [data-scope='swap'][data-part='on'],
+  .apui-swap:has(> [data-part='control']:checked) > [data-scope='swap'][data-part='off'] {
+    opacity: 0;
+  }
+
+  .apui-swap:has(> [data-part='control']:checked) > [data-scope='swap'][data-part='on'] {
+    opacity: 1;
+  }
+
+  .apui-swap[data-transition='rotate'] > [data-scope='swap'][data-part='on'],
+  .apui-swap[data-transition='rotate']:has(> [data-part='control']:checked)
+    > [data-scope='swap'][data-part='off'] {
+    rotate: -90deg;
+  }
+
+  .apui-swap[data-transition='rotate']:has(> [data-part='control']:checked)
+    > [data-scope='swap'][data-part='on'] {
+    rotate: 0deg;
+  }
+
+  .apui-swap[data-transition='none'] > [data-scope='swap']:is([data-part='on'], [data-part='off']) {
+    transition: none;
+  }
+
+  /* Hover and press: the state layers Button's ghost variant uses. */
+  .apui-swap:hover,
+  .apui-swap:has(> [data-part='control']:hover) {
+    background-image: linear-gradient(var(--apui-state-hover), var(--apui-state-hover));
+  }
+
+  .apui-swap:active,
+  .apui-swap:has(> [data-part='control']:active) {
+    background-image: linear-gradient(var(--apui-state-pressed), var(--apui-state-pressed));
+  }
+
+  .apui-swap:focus-visible,
+  .apui-swap:has(> [data-part='control']:focus-visible) {
+    outline: var(--apui-focus-ring-width) solid transparent;
+    box-shadow:
+      0 0 0 var(--apui-focus-ring-offset) var(--apui-focus-ring-offset-color),
+      0 0 0 calc(var(--apui-focus-ring-offset) + var(--apui-focus-ring-width))
+        var(--apui-focus-ring-color);
+  }
+
+  /* Disabled: the disabled text color, never opacity alone. */
+  .apui-swap[data-disabled] {
+    background-image: none;
+    color: var(--apui-text-disabled);
+    cursor: not-allowed;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='swap']:is([data-part='on'], [data-part='off']) {
+      transition: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .apui-swap:has(> [data-part='control']:focus-visible) {
+      outline: 2px solid Highlight;
+    }
+
+    .apui-swap[data-disabled] {
+      color: GrayText;
+    }
+  }
+}
+/*
+ * Carousel (#65), on the carousel machine ImageSlider uses (D-041). Root
+ * `.apui-carousel` is the machine's root (role=region). Parts keep Zag's
+ * names (D-019): header and title (with a title, the buttons sit beside it),
+ * viewport, item-group (the spec's track: a scroll-snapping grid), item (the
+ * spec's slide), prev-trigger and next-trigger (the spec's nav: in the
+ * header, or soft buttons over the viewport's edges without one),
+ * indicator-group and indicator (the spec's dots) and autoplay-trigger.
+ * With more than one slide per view the next slide peeks at the inline end.
+ * See design/components/Carousel.
+ */
+@layer apui.components {
+  .apui-carousel {
+    display: grid;
+    gap: 12px;
+    min-inline-size: 0;
+    color: var(--apui-text-default);
+    font-family: var(--apui-font-family-sans);
+  }
+
+  [data-scope='carousel'][data-part='header'] {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-inline-size: 0;
+  }
+
+  [data-scope='carousel'][data-part='title'] {
+    min-inline-size: 0;
+    margin-block: 0;
+    margin-inline: 0 auto;
+    color: var(--apui-text-default);
+    font-size: var(--apui-type-heading-sm-font-size);
+    font-weight: var(--apui-font-weight-semibold);
+    line-height: var(--apui-type-heading-sm-line-height);
+  }
+
+  [data-scope='carousel'][data-part='viewport'] {
+    position: relative;
+    min-inline-size: 0;
+    overflow: hidden;
+    border-radius: var(--apui-radius-lg);
+  }
+
+  /*
+   * The machine writes the track's grid inline: --slides-per-page (perView,
+   * plus a 0.15 peek above one) and --slide-spacing (12px).
+   */
+  [data-scope='carousel'][data-part='item-group'] {
+    min-inline-size: 0;
+    border-radius: inherit;
+    scroll-behavior: smooth;
+  }
+
+  /*
+   * Without a header the buttons overlay the viewport's edges: the track
+   * insets between them, so no neighbor shows under a button.
+   */
+  .apui-carousel:not(:has(> [data-part='header'])) [data-scope='carousel'][data-part='viewport'] {
+    padding-inline: 52px;
+  }
+
+  [data-scope='carousel'][data-part='item-group']::-webkit-scrollbar {
+    display: none;
+  }
+
+  [data-scope='carousel'][data-part='item-group']:focus-visible {
+    outline: var(--apui-focus-ring-width) solid var(--apui-focus-ring-color);
+    outline-offset: calc(-1 * var(--apui-focus-ring-width));
+  }
+
+  [data-scope='carousel'][data-part='item'] {
+    display: grid;
+    min-inline-size: 0;
+  }
+
+  [data-scope='carousel'][data-part='item'] > * {
+    min-inline-size: 0;
+  }
+
+  /* Overlay buttons: soft, centered on the viewport's start and end edges. */
+  [data-scope='carousel'][data-part='viewport']
+    > [data-scope='carousel']:is([data-part='prev-trigger'], [data-part='next-trigger']) {
+    position: absolute;
+    inset-block-start: 50%;
+    z-index: 1;
+    box-shadow: var(--apui-elevation-glass);
+    transform: translateY(-50%);
+  }
+
+  [data-scope='carousel'][data-part='viewport']
+    > [data-scope='carousel'][data-part='prev-trigger'] {
+    inset-inline-start: 8px;
+  }
+
+  [data-scope='carousel'][data-part='viewport']
+    > [data-scope='carousel'][data-part='next-trigger'] {
+    inset-inline-end: 8px;
+  }
+
+  [dir='rtl']
+    [data-scope='carousel']:is([data-part='prev-trigger'], [data-part='next-trigger'])
+    [data-mirror]
+    > svg {
+    scale: -1 1;
+  }
+
+  [data-scope='carousel'][data-part='indicator-group'] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* A 24px target (WCAG 2.5.8) around the drawn dot. */
+  [data-scope='carousel'][data-part='indicator'] {
+    display: grid;
+    place-items: center;
+    box-sizing: border-box;
+    inline-size: 24px;
+    block-size: 24px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--apui-radius-full);
+    background: none;
+    cursor: pointer;
+    appearance: none;
+  }
+
+  [data-scope='carousel'][data-part='indicator'][aria-current='true'] {
+    inline-size: 32px;
+  }
+
+  [data-scope='carousel'][data-part='indicator']::before {
+    content: '';
+    inline-size: 8px;
+    block-size: 8px;
+    border-radius: var(--apui-radius-full);
+    background: var(--apui-border-default);
+    transition: inline-size var(--apui-motion-duration-fast) var(--apui-motion-ease-standard);
+  }
+
+  [data-scope='carousel'][data-part='indicator'][aria-current='true']::before {
+    inline-size: 20px;
+    background: var(--apui-color-primary);
+  }
+
+  [data-scope='carousel'][data-part='indicator']:focus-visible {
+    outline: var(--apui-focus-ring-width) solid transparent;
+    box-shadow:
+      0 0 0 var(--apui-focus-ring-offset) var(--apui-focus-ring-offset-color),
+      0 0 0 calc(var(--apui-focus-ring-offset) + var(--apui-focus-ring-width))
+        var(--apui-focus-ring-color);
+  }
+
+  /* The pause button: glass, at the viewport's top start (D-006). */
+  [data-scope='carousel'][data-part='autoplay-trigger'] {
+    --apui-focus-ring-offset-color: transparent;
+
+    position: absolute;
+    inset-block-start: 12px;
+    inset-inline-start: 12px;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    box-sizing: border-box;
+    inline-size: var(--apui-control-height-sm);
+    block-size: var(--apui-control-height-sm);
+    margin: 0;
+    padding: 0;
+    border: var(--apui-border-width) solid var(--apui-surface-glass-border);
+    border-radius: var(--apui-radius-full);
+    background: var(--apui-surface-glass);
+    box-shadow: var(--apui-elevation-glass);
+    color: var(--apui-text-default);
+    cursor: pointer;
+    appearance: none;
+    backdrop-filter: blur(var(--apui-surface-glass-blur))
+      saturate(var(--apui-surface-glass-saturation));
+  }
+
+  [data-scope='carousel'][data-part='autoplay-trigger'] > svg {
+    inline-size: var(--apui-icon-size-sm);
+    block-size: var(--apui-icon-size-sm);
+  }
+
+  [data-scope='carousel'][data-part='autoplay-trigger']:focus-visible {
+    outline: var(--apui-focus-ring-width) solid var(--apui-focus-ring-color);
+    outline-offset: var(--apui-focus-ring-offset);
+  }
+
+  @supports not (backdrop-filter: blur(1px)) {
+    [data-scope='carousel'][data-part='autoplay-trigger'] {
+      border-color: var(--apui-border-muted);
+      background: var(--apui-surface-raised);
+    }
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    [data-scope='carousel'][data-part='autoplay-trigger'] {
+      border-color: var(--apui-border-muted);
+      background: var(--apui-surface-raised);
+      backdrop-filter: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='carousel'][data-part='item-group'] {
+      scroll-behavior: auto;
+    }
+
+    [data-scope='carousel'][data-part='indicator']::before {
+      transition: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    [data-scope='carousel'][data-part='indicator']::before {
+      background: CanvasText;
+    }
+
+    [data-scope='carousel'][data-part='indicator'][aria-current='true']::before {
+      background: Highlight;
+    }
+
+    [data-scope='carousel'][data-part='autoplay-trigger'] {
+      border-color: CanvasText;
+      background: Canvas;
+      backdrop-filter: none;
+    }
+  }
+}
+/*
+ * ThemeToggle (#65). Root `.apui-theme-toggle`, with data-variant
+ * (segmented · icon · menu) and data-size (sm · md). It composes other
+ * components' markup, so their CSS does most of the work:
+ *
+ * - segmented: the root is also `.apui-tabs`; its list is a radiogroup of
+ *   `role=radio` triggers on the segmented track. Tabs reads aria-selected,
+ *   so the checked radio's surface and edge are repeated here for
+ *   aria-checked. data-icon-only keeps the names visually hidden.
+ * - icon: a ghost, icon-only `.apui-button`.
+ * - menu: an outline `.apui-button` trigger and a `.apui-dropdown-menu` of
+ *   radio items.
+ *
+ * See design/components/ThemeToggle.
+ */
+@layer apui.components {
+  .apui-theme-toggle {
+    display: inline-flex;
+    vertical-align: middle;
+  }
+
+  .apui-theme-toggle.apui-tabs {
+    flex-direction: column;
+  }
+
+  .apui-theme-toggle [data-scope='tabs'][data-part='trigger'][aria-checked='true'] {
+    background: var(--apui-surface-raised);
+    box-shadow: inset 0 0 0 var(--apui-border-width) var(--apui-border-muted);
+    color: var(--apui-text-default);
+  }
+
+  .apui-theme-toggle [data-scope='tabs'][data-part='trigger']:focus-visible {
+    outline: var(--apui-focus-ring-width) solid transparent;
+    box-shadow:
+      0 0 0 var(--apui-focus-ring-offset) var(--apui-focus-ring-offset-color),
+      0 0 0 calc(var(--apui-focus-ring-offset) + var(--apui-focus-ring-width))
+        var(--apui-focus-ring-color);
+  }
+
+  /* Icons alone: square triggers, the names kept for assistive technology. */
+  .apui-theme-toggle[data-icon-only] [data-scope='tabs'][data-part='trigger'] {
+    inline-size: calc(var(--apui-control-height-md) - 6px);
+    padding-inline: 0;
+  }
+
+  .apui-theme-toggle[data-icon-only][data-size='sm'] [data-scope='tabs'][data-part='trigger'] {
+    inline-size: calc(var(--apui-control-height-sm) - 6px);
+  }
+
+  @media (forced-colors: active) {
+    .apui-theme-toggle [data-scope='tabs'][data-part='trigger'][aria-checked='true'] {
+      outline: var(--apui-border-width) solid Highlight;
+      outline-offset: -1px;
+    }
+
+    .apui-theme-toggle [data-scope='tabs'][data-part='trigger']:focus-visible {
+      outline: var(--apui-focus-ring-width) solid Highlight;
+      outline-offset: calc(var(--apui-focus-ring-width) * -1);
+    }
+  }
+}
+/*
+ * ThemePreview (#65, Livewire only, D-003). Root `.apui-theme-preview`, a
+ * radiogroup of `.apui-theme-card` cards. Each card is a label holding the
+ * frame, with a decorative live miniature, and the label part: a native
+ * radio (transparent over its box, as in RadioGroup) and the option's name.
+ * Checked and focus styles read the native radio, so a click shows before a
+ * deferred wire:model round trip.
+ *
+ * The miniature is drawn with the real tokens: it carries data-theme and
+ * data-preset, so the tokens resolve inside it as they would on a page
+ * (docs/tokens, Modes and Presets). A system card shows light and dark
+ * halves. See design/components/ThemePreview.
+ */
+@layer apui.components {
+  /* Cards share each row and wrap below 160px, also in a shrink-to-fit parent. */
+  .apui-theme-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: flex-start;
+    min-inline-size: 0;
+    color: var(--apui-text-default);
+    font-family: var(--apui-font-family-sans);
+  }
+
+  [data-scope='theme-preview'][data-part='card'] {
+    flex: 1 1 160px;
+    display: grid;
+    gap: 8px;
+    align-content: start;
+    min-inline-size: 0;
+    cursor: pointer;
+  }
+
+  [data-scope='theme-preview'][data-part='frame'] {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 16 / 10;
+    border: var(--apui-border-width) solid var(--apui-border-default);
+    border-radius: var(--apui-radius-md);
+    transition:
+      border-color var(--apui-motion-duration-fast) var(--apui-motion-ease-standard),
+      box-shadow var(--apui-motion-duration-fast) var(--apui-motion-ease-standard);
+  }
+
+  [data-scope='theme-preview'][data-part='card']:hover
+    [data-scope='theme-preview'][data-part='frame'] {
+    border-color: var(--apui-border-strong);
+  }
+
+  [data-scope='theme-preview'][data-part='card']:has([data-part='control']:checked)
+    [data-scope='theme-preview'][data-part='frame'] {
+    border-color: var(--apui-color-primary);
+    box-shadow:
+      0 0 0 1px var(--apui-color-primary),
+      0 0 0 4px var(--apui-color-primary-soft);
+  }
+
+  [data-scope='theme-preview'][data-part='card']:has([data-part='control']:focus-visible)
+    [data-scope='theme-preview'][data-part='frame'] {
+    outline: var(--apui-focus-ring-width) solid transparent;
+    box-shadow:
+      0 0 0 var(--apui-focus-ring-offset) var(--apui-focus-ring-offset-color),
+      0 0 0 calc(var(--apui-focus-ring-offset) + var(--apui-focus-ring-width))
+        var(--apui-focus-ring-color);
+  }
+
+  /* The miniature: a page with a sidebar, a header and two tiles. */
+  [data-scope='theme-preview'][data-part='miniature'] {
+    position: absolute;
+    inset-block: 0;
+    inset-inline: 0;
+    display: grid;
+    grid-template-columns: 26% 1fr;
+    gap: 6px;
+    padding: 6px;
+    background: var(--apui-surface-page);
+    color: var(--apui-text-default);
+  }
+
+  [data-scope='theme-preview'][data-part='miniature'][data-half='start'] {
+    inset-inline-end: 50%;
+  }
+
+  [data-scope='theme-preview'][data-part='miniature'][data-half='end'] {
+    inset-inline-start: 50%;
+  }
+
+  [data-scope='theme-preview']:is([data-part='sidebar'], [data-part='tile']) {
+    display: grid;
+    gap: 4px;
+    align-content: start;
+    min-inline-size: 0;
+    border: 1px solid var(--apui-border-muted);
+    border-radius: 5px;
+    background: var(--apui-surface-default);
+  }
+
+  [data-scope='theme-preview'][data-part='sidebar'] {
+    padding-block: 6px;
+    padding-inline: 5px;
+  }
+
+  [data-scope='theme-preview'][data-part='main'] {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 6px;
+    min-inline-size: 0;
+  }
+
+  [data-scope='theme-preview'][data-part='tile'] {
+    padding: 6px;
+  }
+
+  [data-scope='theme-preview'][data-part='tile'][data-header] {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+
+  [data-scope='theme-preview'][data-part='tiles'] {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  [data-scope='theme-preview'][data-part='line'] {
+    display: block;
+    block-size: 4px;
+    border-radius: var(--apui-radius-full);
+    background: var(--apui-border-default);
+  }
+
+  [data-scope='theme-preview'][data-part='line'][data-accent] {
+    background: var(--apui-color-primary);
+  }
+
+  [data-scope='theme-preview'][data-part='line'][data-strong] {
+    block-size: 7px;
+    background: var(--apui-text-default);
+  }
+
+  [data-scope='theme-preview'][data-part='sidebar'] > [data-part='line']:nth-child(1) {
+    inline-size: 80%;
+  }
+
+  [data-scope='theme-preview'][data-part='sidebar'] > [data-part='line']:nth-child(2) {
+    inline-size: 60%;
+  }
+
+  [data-scope='theme-preview'][data-part='sidebar'] > [data-part='line']:nth-child(3) {
+    inline-size: 70%;
+  }
+
+  [data-scope='theme-preview'][data-part='tile'][data-header] > [data-part='line'] {
+    inline-size: 50%;
+  }
+
+  [data-scope='theme-preview'][data-part='tiles']
+    > [data-part='tile']:nth-child(1)
+    > [data-part='line'] {
+    inline-size: 70%;
+  }
+
+  [data-scope='theme-preview'][data-part='tiles']
+    > [data-part='tile']:nth-child(1)
+    > [data-part='line'][data-strong] {
+    inline-size: 40%;
+  }
+
+  [data-scope='theme-preview'][data-part='tiles']
+    > [data-part='tile']:nth-child(2)
+    > [data-part='line'] {
+    inline-size: 60%;
+  }
+
+  [data-scope='theme-preview'][data-part='tiles']
+    > [data-part='tile']:nth-child(2)
+    > [data-part='line'][data-strong] {
+    inline-size: 50%;
+  }
+
+  [data-scope='theme-preview'][data-part='pill'] {
+    display: block;
+    inline-size: 28px;
+    block-size: 8px;
+    border-radius: var(--apui-radius-full);
+    background: var(--apui-color-primary);
+  }
+
+  /* The label: the radio and the option's name. */
+  [data-scope='theme-preview'][data-part='label'] {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--apui-text-default);
+    font-size: var(--apui-type-body-md-font-size);
+    font-weight: var(--apui-font-weight-medium);
+    line-height: var(--apui-type-body-md-line-height);
+  }
+
+  [data-scope='theme-preview'][data-part='box'] {
+    position: relative;
+    display: grid;
+    flex: none;
+    place-items: center;
+    box-sizing: border-box;
+    inline-size: 18px;
+    block-size: 18px;
+    border: var(--apui-border-width) solid var(--apui-border-default);
+    border-radius: var(--apui-radius-full);
+    background: var(--apui-surface-default);
+    transition:
+      background-color var(--apui-motion-duration-fast) var(--apui-motion-ease-standard),
+      border-color var(--apui-motion-duration-fast) var(--apui-motion-ease-standard);
+  }
+
+  [data-scope='theme-preview'][data-part='control'] {
+    position: absolute;
+    z-index: 1;
+    inset: -4px;
+    inline-size: calc(100% + 8px);
+    block-size: calc(100% + 8px);
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  [data-scope='theme-preview'][data-part='indicator'] {
+    inline-size: 8px;
+    block-size: 8px;
+    border-radius: var(--apui-radius-full);
+    background: var(--apui-color-primary-foreground);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  [data-scope='theme-preview'][data-part='card']:hover
+    [data-scope='theme-preview'][data-part='box'] {
+    border-color: var(--apui-border-strong);
+  }
+
+  [data-scope='theme-preview'][data-part='box']:has([data-part='control']:checked) {
+    border-color: var(--apui-color-primary);
+    background: var(--apui-color-primary);
+  }
+
+  [data-scope='theme-preview'][data-part='box']:has([data-part='control']:checked)
+    > [data-part='indicator'] {
+    opacity: 1;
+  }
+
+  [data-scope='theme-preview'][data-part='card']:has([data-part='control']:disabled) {
+    cursor: not-allowed;
+  }
+
+  [data-scope='theme-preview'][data-part='card']:has([data-part='control']:disabled)
+    :is([data-part='frame'], [data-part='label']) {
+    opacity: 0.5;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-scope='theme-preview']:is([data-part='frame'], [data-part='box']) {
+      transition: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    [data-scope='theme-preview'][data-part='card']:has([data-part='control']:checked)
+      [data-scope='theme-preview'][data-part='frame'] {
+      outline: 2px solid Highlight;
+      outline-offset: 1px;
+    }
+
+    [data-scope='theme-preview'][data-part='card']:has([data-part='control']:focus-visible)
+      [data-scope='theme-preview'][data-part='frame'] {
+      outline: var(--apui-focus-ring-width) solid Highlight;
+      outline-offset: 3px;
+    }
+
+    [data-scope='theme-preview'][data-part='box'] {
+      border-color: CanvasText;
+    }
+
+    [data-scope='theme-preview'][data-part='box']:has([data-part='control']:checked) {
+      border-color: Highlight;
+      background: Highlight;
+    }
+
+    [data-scope='theme-preview'][data-part='indicator'] {
+      background: Canvas;
+    }
+  }
+}
+/*
+ * Calendar (#64). Root `.apui-calendar` with data-view (month, week, day,
+ * agenda). Parts: toolbar (Today, previous and next Buttons, the title, the
+ * view tabs — a `.apui-tabs` tablist — and an optional New event Button),
+ * title, body (the tabpanel the tabs control), grid (role=grid) with row,
+ * weekday (column header), cell (gridcell: data-outside, data-today) and
+ * date; event (a button or link, data-color soft tint) with event-time and
+ * event-title; more ("+N more"); and the category legend (legend,
+ * legend-item). The agenda view lays the same parts out as a list. Tints are by category and never the only cue: the title,
+ * time and legend say what each event is. See design/components/Calendar.
+ */
+@layer apui.components {
+  .apui-calendar {
+    min-inline-size: 0;
+    overflow: hidden;
+    border: var(--apui-border-width) solid var(--apui-border-muted);
+    border-radius: var(--apui-radius-lg);
+    background: var(--apui-surface-default);
+    color: var(--apui-text-default);
+    font-family: var(--apui-font-family-sans);
+    font-size: var(--apui-type-body-md-font-size);
+    line-height: var(--apui-type-body-md-line-height);
+  }
+
+  [data-scope='calendar'][data-part='toolbar'] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding-block: 12px;
+    padding-inline: 16px;
+    border-block-end: var(--apui-border-width) solid var(--apui-border-muted);
+  }
+
+  [data-scope='calendar'][data-part='title'] {
+    margin-block: 0;
+    margin-inline: 8px auto;
+    color: var(--apui-text-default);
+    font-size: var(--apui-type-body-lg-font-size);
+    font-weight: var(--apui-font-weight-semibold);
+    line-height: var(--apui-type-body-lg-line-height);
+  }
+
+  /* The grid: a header row of weekdays, then rows of seven (one in day view). */
+  [data-scope='calendar'][data-part='grid'] {
+    display: grid;
+  }
+
+  [data-scope='calendar'][data-part='row'] {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+
+  .apui-calendar[data-view='day'] [data-scope='calendar'][data-part='row'] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  [data-scope='calendar'][data-part='weekday'] {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-inline-size: 0;
+    padding-block: 8px;
+    padding-inline: 10px;
+    border-block-end: var(--apui-border-width) solid var(--apui-border-muted);
+    background: var(--apui-surface-sunken);
+    color: var(--apui-text-muted);
+    font-size: var(--apui-type-caption-font-size);
+    font-weight: var(--apui-font-weight-medium);
+    line-height: var(--apui-type-caption-line-height);
+  }
+
+  [data-scope='calendar'][data-part='cell'] {
+    display: grid;
+    align-content: start;
+    gap: 3px;
+    min-block-size: 104px;
+    min-inline-size: 0;
+    padding: 6px;
+    border-block-end: var(--apui-border-width) solid var(--apui-border-muted);
+    border-inline-end: var(--apui-border-width) solid var(--apui-border-muted);
+  }
+
+  [data-scope='calendar'][data-part='cell']:last-child {
+    border-inline-end: 0;
+  }
+
+  [data-scope='calendar'][data-part='row']:last-child [data-scope='calendar'][data-part='cell'] {
+    border-block-end: 0;
+  }
+
+  .apui-calendar:is([data-view='week'], [data-view='day'])
+    [data-scope='calendar'][data-part='cell'] {
+    min-block-size: 320px;
+  }
+
+  [data-scope='calendar'][data-part='cell'][data-outside] {
+    background: var(--apui-surface-page);
+  }
+
+  [data-scope='calendar'][data-part='cell']:focus-visible {
+    outline: var(--apui-focus-ring-width) solid transparent;
+    box-shadow: inset 0 0 0 var(--apui-focus-ring-width) var(--apui-focus-ring-color);
+  }
+
+  [data-scope='calendar'][data-part='date'] {
+    display: grid;
+    place-items: center;
+    justify-self: start;
+    flex: none;
+    inline-size: 26px;
+    block-size: 26px;
+    border-radius: var(--apui-radius-full);
+    color: var(--apui-text-default);
+    font-size: var(--apui-type-caption-font-size);
+    font-variant-numeric: tabular-nums;
+    font-weight: var(--apui-font-weight-medium);
+    line-height: 1;
+  }
+
+  [data-scope='calendar'][data-part='cell'][data-outside]
+    [data-scope='calendar'][data-part='date'] {
+    color: var(--apui-text-muted);
+  }
+
+  [data-scope='calendar']:is([data-part='cell'], [data-part='weekday'])[data-today]
+    [data-scope='calendar'][data-part='date'] {
+    background: var(--apui-color-primary);
+    color: var(--apui-color-primary-foreground);
+  }
+
+  /* Events: soft tints by category, from the soft color roles. */
+  [data-scope='calendar'][data-part='event'] {
+    --apui-_soft: var(--apui-color-primary-soft);
+    --apui-_on-soft: var(--apui-color-primary-soft-foreground);
+    --apui-_edge: var(--apui-color-primary-border);
+
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-sizing: border-box;
+    inline-size: 100%;
+    min-inline-size: 0;
+    min-block-size: 24px;
+    margin: 0;
+    padding-block: 4px;
+    padding-inline: 6px;
+    border: 0;
+    border-radius: var(--apui-radius-xs);
+    outline: var(--apui-border-soft-edge-width) solid var(--apui-_edge);
+    outline-offset: calc(-1 * var(--apui-border-soft-edge-width));
+    background: var(--apui-_soft);
+    color: var(--apui-_on-soft);
+    cursor: pointer;
+    font: inherit;
+    font-size: var(--apui-type-caption-font-size);
+    font-weight: var(--apui-font-weight-medium);
+    line-height: var(--apui-type-caption-line-height);
+    text-align: start;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  [data-scope='calendar'][data-part='event']:hover {
+    background-image: linear-gradient(var(--apui-state-hover), var(--apui-state-hover));
+  }
+
+  [data-scope='calendar'][data-part='event']:focus-visible {
+    outline: var(--apui-focus-ring-width) solid transparent;
+    box-shadow:
+      0 0 0 var(--apui-focus-ring-offset) var(--apui-focus-ring-offset-color),
+      0 0 0 calc(var(--apui-focus-ring-offset) + var(--apui-focus-ring-width))
+        var(--apui-focus-ring-color);
+  }
+
+  [data-scope='calendar'][data-part='event'][data-color='secondary'] {
+    --apui-_soft: var(--apui-color-secondary-soft);
+    --apui-_on-soft: var(--apui-color-secondary-soft-foreground);
+    --apui-_edge: var(--apui-color-secondary-border);
+  }
+
+  [data-scope='calendar'][data-part='event'][data-color='accent'] {
+    --apui-_soft: var(--apui-color-accent-soft);
+    --apui-_on-soft: var(--apui-color-accent-soft-foreground);
+    --apui-_edge: var(--apui-color-accent-border);
+  }
+
+  [data-scope='calendar'][data-part='event'][data-color='success'] {
+    --apui-_soft: var(--apui-color-success-soft);
+    --apui-_on-soft: var(--apui-color-success-soft-foreground);
+    --apui-_edge: var(--apui-color-success-border);
+  }
+
+  [data-scope='calendar'][data-part='event'][data-color='warning'] {
+    --apui-_soft: var(--apui-color-warning-soft);
+    --apui-_on-soft: var(--apui-color-warning-soft-foreground);
+    --apui-_edge: var(--apui-color-warning-border);
+  }
+
+  [data-scope='calendar'][data-part='event'][data-color='error'] {
+    --apui-_soft: var(--apui-color-error-soft);
+    --apui-_on-soft: var(--apui-color-error-soft-foreground);
+    --apui-_edge: var(--apui-color-error-border);
+  }
+
+  [data-scope='calendar'][data-part='event'][data-color='info'] {
+    --apui-_soft: var(--apui-color-info-soft);
+    --apui-_on-soft: var(--apui-color-info-soft-foreground);
+    --apui-_edge: var(--apui-color-info-border);
+  }
+
+  [data-scope='calendar'][data-part='event'][data-color='neutral'] {
+    --apui-_soft: var(--apui-color-neutral-soft);
+    --apui-_on-soft: var(--apui-color-neutral-soft-foreground);
+    --apui-_edge: var(--apui-color-neutral-border);
+  }
+
+  [data-scope='calendar'][data-part='event-time'] {
+    flex: none;
+    font-variant-numeric: tabular-nums;
+    font-weight: var(--apui-font-weight-regular);
+  }
+
+  [data-scope='calendar'][data-part='event-title'] {
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Week and day: the time sits above the title, and titles wrap. */
+  .apui-calendar:is([data-view='week'], [data-view='day'])
+    [data-scope='calendar'][data-part='event'] {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding-block: 4px;
+    white-space: normal;
+  }
+
+  .apui-calendar:is([data-view='week'], [data-view='day'])
+    [data-scope='calendar'][data-part='event-title'] {
+    overflow-wrap: anywhere;
+  }
+
+  [data-scope='calendar'][data-part='more'] {
+    justify-self: start;
+    min-block-size: 24px;
+    margin: 0;
+    padding-block: 0;
+    padding-inline: 6px;
+    border: 0;
+    border-radius: var(--apui-radius-xs);
+    background: none;
+    color: var(--apui-text-muted);
+    cursor: pointer;
+    font: inherit;
+    font-size: var(--apui-type-caption-font-size);
+    line-height: var(--apui-type-caption-line-height);
+  }
+
+  [data-scope='calendar'][data-part='more']:hover {
+    color: var(--apui-text-default);
+    text-decoration: underline;
+  }
+
+  [data-scope='calendar'][data-part='more']:focus-visible {
+    outline: var(--apui-focus-ring-width) solid transparent;
+    box-shadow:
+      0 0 0 var(--apui-focus-ring-offset) var(--apui-focus-ring-offset-color),
+      0 0 0 calc(var(--apui-focus-ring-offset) + var(--apui-focus-ring-width))
+        var(--apui-focus-ring-color);
+  }
+
+  /*
+   * Agenda: the same parts as a list. The grid is a <ul> of days (row, a
+   * <li>), each with its date (weekday, an <h3>) and its events (cell, a <ul>).
+   */
+  .apui-calendar[data-view='agenda'] [data-scope='calendar'][data-part='grid'] {
+    display: block;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .apui-calendar[data-view='agenda'] [data-scope='calendar'][data-part='row'] {
+    grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
+    gap: 12px;
+    padding-block: 12px;
+    padding-inline: 16px;
+    border-block-end: var(--apui-border-width) solid var(--apui-border-muted);
+  }
+
+  .apui-calendar[data-view='agenda'] [data-scope='calendar'][data-part='row']:last-child {
+    border-block-end: 0;
+  }
+
+  .apui-calendar[data-view='agenda'] [data-scope='calendar'][data-part='weekday'] {
+    align-items: flex-start;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--apui-text-default);
+    font-size: var(--apui-type-body-md-font-size);
+    font-weight: var(--apui-font-weight-semibold);
+    line-height: var(--apui-type-body-md-line-height);
+  }
+
+  .apui-calendar[data-view='agenda'] [data-scope='calendar'][data-part='weekday'][data-today] {
+    color: var(--apui-color-primary-text);
+  }
+
+  .apui-calendar[data-view='agenda'] [data-scope='calendar'][data-part='cell'] {
+    gap: 4px;
+    min-block-size: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    list-style: none;
+  }
+
+  .apui-calendar[data-view='agenda'] [data-scope='calendar'][data-part='event'] {
+    gap: 12px;
+    padding-block: 6px;
+    padding-inline: 10px;
+    font-size: var(--apui-type-body-sm-font-size);
+    line-height: var(--apui-type-body-sm-line-height);
+    white-space: normal;
+  }
+
+  .apui-calendar[data-view='agenda'] [data-scope='calendar'][data-part='event-time'] {
+    min-inline-size: 96px;
+  }
+
+  .apui-calendar[data-view='agenda'] [data-scope='calendar'][data-part='body'] > .apui-empty-state {
+    padding-block: 32px;
+  }
+
+  /* The category key. */
+  [data-scope='calendar'][data-part='legend'] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    margin: 0;
+    padding-block: 10px;
+    padding-inline: 16px;
+    border-block-start: var(--apui-border-width) solid var(--apui-border-muted);
+    list-style: none;
+  }
+
+  [data-scope='calendar'][data-part='legend-item'] {
+    --apui-_soft: var(--apui-color-primary-soft);
+    --apui-_edge: var(--apui-color-primary-border);
+
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--apui-text-default);
+    font-size: var(--apui-type-caption-font-size);
+    line-height: var(--apui-type-caption-line-height);
+  }
+
+  [data-scope='calendar'][data-part='legend-item']::before {
+    content: '';
+    flex: none;
+    inline-size: 10px;
+    block-size: 10px;
+    box-sizing: border-box;
+    border: var(--apui-border-width) solid var(--apui-_edge);
+    border-radius: var(--apui-radius-xs);
+    background: var(--apui-_soft);
+  }
+
+  [data-scope='calendar'][data-part='legend-item'][data-color='secondary'] {
+    --apui-_soft: var(--apui-color-secondary-soft);
+    --apui-_edge: var(--apui-color-secondary-border);
+  }
+
+  [data-scope='calendar'][data-part='legend-item'][data-color='accent'] {
+    --apui-_soft: var(--apui-color-accent-soft);
+    --apui-_edge: var(--apui-color-accent-border);
+  }
+
+  [data-scope='calendar'][data-part='legend-item'][data-color='success'] {
+    --apui-_soft: var(--apui-color-success-soft);
+    --apui-_edge: var(--apui-color-success-border);
+  }
+
+  [data-scope='calendar'][data-part='legend-item'][data-color='warning'] {
+    --apui-_soft: var(--apui-color-warning-soft);
+    --apui-_edge: var(--apui-color-warning-border);
+  }
+
+  [data-scope='calendar'][data-part='legend-item'][data-color='error'] {
+    --apui-_soft: var(--apui-color-error-soft);
+    --apui-_edge: var(--apui-color-error-border);
+  }
+
+  [data-scope='calendar'][data-part='legend-item'][data-color='info'] {
+    --apui-_soft: var(--apui-color-info-soft);
+    --apui-_edge: var(--apui-color-info-border);
+  }
+
+  [data-scope='calendar'][data-part='legend-item'][data-color='neutral'] {
+    --apui-_soft: var(--apui-color-neutral-soft);
+    --apui-_edge: var(--apui-color-neutral-border);
+  }
+
+  @media (forced-colors: active) {
+    [data-scope='calendar'][data-part='event'] {
+      outline: 1px solid CanvasText;
+    }
+
+    :is(
+        [data-scope='calendar'][data-part='cell'],
+        [data-scope='calendar'][data-part='weekday']
+      )[data-today]
+      [data-scope='calendar'][data-part='date'] {
+      outline: 2px solid Highlight;
+    }
+  }
+}
+/*
+ * Code (#65). Root `.apui-code`: a read-only block, or inline code with
+ * data-inline (a code element). A block has data-numbered for line numbers.
+ * Parts: header (file, language, copy and the hidden status live region),
+ * pre (the labeled, focusable scroll region) and line (one per line, with
+ * data-n, and data-highlight on emphasized lines). No syntax highlighting.
+ * Lines don't wrap; the pre scrolls. The header mirrors in RTL; the code
+ * stays LTR (D-004). See design/components/Code.
+ */
+@layer apui.components {
+  .apui-code {
+    box-sizing: border-box;
+    min-inline-size: 0;
+    overflow: hidden;
+    border: var(--apui-border-width) solid var(--apui-border-muted);
+    border-radius: var(--apui-radius-md);
+    background: var(--apui-surface-sunken);
+    color: var(--apui-text-default);
+    font-family: var(--apui-font-family-sans);
+  }
+
+  [data-scope='code'][data-part='header'] {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    min-block-size: 32px;
+    box-sizing: border-box;
+    padding-block: 4px;
+    padding-inline: 12px 4px;
+    border-block-end: var(--apui-border-width) solid var(--apui-border-muted);
+    background: var(--apui-surface-default);
+    color: var(--apui-text-muted);
+    font-size: var(--apui-type-caption-font-size);
+    line-height: var(--apui-type-caption-line-height);
+  }
+
+  [data-scope='code'][data-part='file'] {
+    min-inline-size: 0;
+    margin-inline-end: auto;
+    overflow: hidden;
+    color: var(--apui-text-default);
+    font-family: var(--apui-font-family-mono);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  [data-scope='code'][data-part='language'] {
+    flex: none;
+  }
+
+  [data-scope='code'][data-part='copy'] {
+    flex: none;
+  }
+
+  [data-scope='code'][data-part='copy'][data-state='copied'] {
+    --apui-button-fg: var(--apui-color-success-text);
+  }
+
+  /* The code: LTR in every direction, never wrapped, scrolled instead (D-004). */
+  [data-scope='code'][data-part='pre'] {
+    direction: ltr;
+    unicode-bidi: isolate;
+    box-sizing: border-box;
+    margin: 0;
+    padding-block: 12px;
+    padding-inline: 0;
+    overflow: auto;
+    font-family: var(--apui-type-code-md-font-family);
+    font-size: var(--apui-type-code-md-font-size);
+    line-height: var(--apui-type-code-md-line-height);
+    tab-size: 2;
+    text-align: start;
+  }
+
+  [data-scope='code'][data-part='pre']:focus-visible {
+    outline: var(--apui-focus-ring-width) solid var(--apui-focus-ring-color);
+    outline-offset: calc(var(--apui-focus-ring-width) * -1);
+  }
+
+  /* As wide as the longest line, so a highlight spans the scrolled width. */
+  [data-scope='code'][data-part='pre'] > code {
+    display: inline-block;
+    min-inline-size: 100%;
+    font: inherit;
+  }
+
+  [data-scope='code'][data-part='line'] {
+    display: block;
+    box-sizing: border-box;
+    min-block-size: var(--apui-type-code-md-line-height);
+    padding-inline: 16px;
+    white-space: pre;
+  }
+
+  .apui-code[data-numbered] [data-scope='code'][data-part='line'] {
+    padding-inline-start: 0;
+  }
+
+  .apui-code[data-numbered] [data-scope='code'][data-part='line']::before {
+    display: inline-block;
+    box-sizing: border-box;
+    inline-size: 40px;
+    padding-inline-end: 16px;
+    color: var(--apui-text-muted);
+    content: attr(data-n);
+    font-variant-numeric: tabular-nums;
+    text-align: end;
+    user-select: none;
+  }
+
+  [data-scope='code'][data-part='line'][data-highlight] {
+    background: var(--apui-selected-bg);
+    box-shadow: inset var(--apui-selected-indicator-width) 0 0 var(--apui-color-primary);
+  }
+
+  /* Inline code: a code element in running text. */
+  .apui-code[data-inline] {
+    direction: ltr;
+    unicode-bidi: isolate;
+    display: inline;
+    overflow: visible;
+    padding-block: 1px;
+    padding-inline: 5px;
+    border-radius: var(--apui-radius-xs);
+    font-family: var(--apui-font-family-mono);
+    font-size: 0.9em;
+    overflow-wrap: anywhere;
+  }
+
+  @media (forced-colors: active) {
+    [data-scope='code'][data-part='line'][data-highlight] {
+      box-shadow: none;
+      outline: var(--apui-border-width) solid Highlight;
+      outline-offset: calc(var(--apui-border-width) * -1);
+    }
+  }
+}
+/*
+ * Clipboard (#65). Root `.apui-clipboard` (the spec's `.apui-copy`; D-002
+ * names the root after the component) holds a copy button (part button, a
+ * neutral `.apui-button`) and its live region (part tooltip, role=status),
+ * with data-variant (button, icon, field), data-size (xs, sm, md) and
+ * data-state (idle, copied, failed). The field variant (the spec's
+ * `.apui-copy-field`) shows the value in a read-only box (parts field and
+ * value) joined to an outline button. While copied the button reads "Copied"
+ * in the success color. The tooltip is announced in every variant and shown
+ * only for the icon button, whose label can't change. See
+ * design/components/Clipboard.
+ */
+@layer apui.components {
+  .apui-clipboard {
+    --apui-_h: var(--apui-control-height-sm);
+
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    max-inline-size: 100%;
+    vertical-align: middle;
+  }
+
+  .apui-clipboard[data-size='xs'] {
+    --apui-_h: var(--apui-control-height-xs);
+  }
+
+  .apui-clipboard[data-size='md'] {
+    --apui-_h: var(--apui-control-height-md);
+  }
+
+  [data-scope='clipboard'][data-part='button'] {
+    flex: none;
+  }
+
+  .apui-clipboard[data-state='copied'] > [data-scope='clipboard'][data-part='button'] {
+    --apui-button-fg: var(--apui-color-success-text);
+  }
+
+  /* The copy field: the value's box and the button, joined. */
+  .apui-clipboard[data-variant='field'] {
+    display: flex;
+    inline-size: 100%;
+  }
+
+  [data-scope='clipboard'][data-part='field'] {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    box-sizing: border-box;
+    min-inline-size: 0;
+    block-size: var(--apui-_h);
+    padding-inline: 12px;
+    border: var(--apui-border-width) solid var(--apui-border-muted);
+    border-start-start-radius: var(--apui-input-radius);
+    border-end-start-radius: var(--apui-input-radius);
+    background: var(--apui-surface-sunken);
+    color: var(--apui-text-default);
+    font-family: var(--apui-font-family-mono);
+    font-size: var(--apui-type-code-md-font-size);
+    line-height: var(--apui-type-code-md-line-height);
+  }
+
+  /* Links, keys and IDs read left to right in every direction. */
+  [data-scope='clipboard'][data-part='value'] {
+    direction: ltr;
+    unicode-bidi: isolate;
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .apui-clipboard[data-variant='field'] > [data-scope='clipboard'][data-part='button'] {
+    block-size: var(--apui-_h);
+    margin-inline-start: calc(var(--apui-border-width) * -1);
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+  }
+
+  /* The live region: hidden, still announced. */
+  [data-scope='clipboard'][data-part='tooltip'] {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* The icon button's confirmation: a tooltip below it while copied or failed. */
+  .apui-clipboard[data-variant='icon']:is([data-state='copied'], [data-state='failed'])
+    > [data-scope='clipboard'][data-part='tooltip'] {
+    z-index: var(--apui-z-tooltip);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-sizing: border-box;
+    inline-size: max-content;
+    max-inline-size: 240px;
+    block-size: auto;
+    inset-block-start: calc(100% + 8px);
+    inset-inline: -240px;
+    margin-block: 0;
+    margin-inline: auto;
+    padding-block: 5px;
+    padding-inline: 8px;
+    overflow: visible;
+    border-radius: var(--apui-tooltip-radius);
+    background: var(--apui-surface-inverse);
+    clip-path: none;
+    color: var(--apui-text-inverse);
+    font-family: var(--apui-font-family-sans);
+    font-size: var(--apui-type-caption-font-size);
+    font-weight: var(--apui-font-weight-medium);
+    line-height: var(--apui-type-caption-line-height);
+    white-space: normal;
+  }
+
+  .apui-clipboard[data-variant='icon']:is([data-state='copied'], [data-state='failed'])
+    > [data-scope='clipboard'][data-part='tooltip']::before {
+    position: absolute;
+    inline-size: 8px;
+    block-size: 8px;
+    inset-block-start: -4px;
+    inset-inline-start: calc(50% - 4px);
+    background: var(--apui-surface-inverse);
+    content: '';
+    rotate: 45deg;
+  }
+
+  [data-scope='clipboard'][data-part='tooltip'] svg {
+    flex: none;
+    inline-size: var(--apui-icon-size-sm);
+    block-size: var(--apui-icon-size-sm);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .apui-clipboard[data-variant='icon']:is([data-state='copied'], [data-state='failed'])
+      > [data-scope='clipboard'][data-part='tooltip'] {
+      animation: apui-clipboard-enter var(--apui-motion-duration-fast) var(--apui-motion-ease-enter);
+    }
+  }
+
+  @keyframes apui-clipboard-enter {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @media (forced-colors: active) {
+    [data-scope='clipboard'][data-part='field'] {
+      border-color: CanvasText;
+    }
+
+    .apui-clipboard[data-variant='icon']:is([data-state='copied'], [data-state='failed'])
+      > [data-scope='clipboard'][data-part='tooltip'] {
+      border: var(--apui-border-width) solid CanvasText;
+    }
+  }
+}
+/*
+ * Kbd (#65). Root `.apui-kbd` is one key cap, a kbd element (part key), with
+ * data-size (sm, md). A shortcut is `.apui-kbd-combo`, an outer kbd (part
+ * combo) around its keys, as HTML nests kbd for key combinations. A symbol
+ * key (⌘, ⇧, ↵) shows the symbol and carries its name as hidden text. The
+ * combo keeps its key order in RTL, as Spotlight's shortcut hints do. See
+ * design/components/Kbd.
+ */
+@layer apui.components {
+  .apui-kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-inline-size: 22px;
+    block-size: 22px;
+    margin: 0;
+    padding-inline: 6px;
+    border: var(--apui-border-width) solid var(--apui-border-default);
+    border-block-end-width: 2px;
+    border-radius: var(--apui-kbd-radius);
+    background: var(--apui-surface-raised);
+    color: var(--apui-text-default);
+    font-family: var(--apui-font-family-mono);
+    font-size: var(--apui-type-code-sm-font-size);
+    font-weight: var(--apui-font-weight-regular);
+    line-height: 1;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+
+  .apui-kbd[data-size='sm'] {
+    min-inline-size: 18px;
+    block-size: 18px;
+    padding-inline: 4px;
+    font-size: 11px;
+  }
+
+  .apui-kbd-combo {
+    direction: ltr;
+    unicode-bidi: isolate;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin: 0;
+    color: var(--apui-text-muted);
+    font-family: inherit;
+    font-size: var(--apui-type-code-sm-font-size);
+    vertical-align: middle;
+  }
+
+  @media (forced-colors: active) {
+    .apui-kbd {
+      border-color: CanvasText;
+    }
+  }
+}
+/*
+ * Markdown (#65). Root `.apui-markdown`, with data-mode (preview, write,
+ * split). `.apui-prose` holds the shared prose styles for rendered Markdown,
+ * from either commonmark (Livewire) or renderMarkdown (React, Vue), which
+ * write the same HTML: in preview mode the root carries it too; in write and
+ * split modes the preview part does.
+ * Plain elements are styled under the root: headings keep their levels,
+ * lists, the task list (`[data-part='task']`: a disabled checkbox and its
+ * label), block quotes, code, tables (cells read data-align) and images.
+ * Line length stops at the measure.
+ *
+ * In write and split modes the root holds the design-system Tabs; the
+ * editor part wraps the source Textarea in the mono font, the preview part
+ * is a card-like region with the same prose, and the split part sets the
+ * two side by side. Code blocks here are plain `pre`/`code` in prose tokens:
+ * the Code component (`.apui-code`) is separate. Code stays LTR (D-004).
+ * See design/components/Markdown.
+ */
+@layer apui.components {
+  .apui-prose {
+    max-inline-size: var(--apui-measure);
+    color: var(--apui-text-default);
+    font-family: var(--apui-font-family-sans);
+    font-size: var(--apui-type-body-md-font-size);
+    line-height: 22px;
+    overflow-wrap: break-word;
+  }
+
+  .apui-markdown {
+    display: block;
+    min-inline-size: 0;
+  }
+
+  /* Flow: blocks lose their own margins, then sit 12px apart. */
+  .apui-prose :where(p, figure, ul, ol, dl, blockquote, pre, table, h1, h2, h3, h4, h5, h6) {
+    margin: 0;
+  }
+
+  .apui-prose > * + * {
+    margin-block-start: 12px;
+  }
+
+  .apui-prose > :is(h1, h2, h3, h4, h5, h6):not(:first-child) {
+    margin-block-start: 24px;
+  }
+
+  .apui-prose > :is(h1, h2, h3, h4, h5, h6) + * {
+    margin-block-start: 8px;
+  }
+
+  /* Headings keep their levels; sizes follow the type scale. */
+  .apui-prose :is(h1, h2, h3, h4, h5, h6) {
+    color: var(--apui-text-default);
+    font-weight: var(--apui-font-weight-semibold);
+  }
+
+  .apui-prose h1 {
+    font-size: var(--apui-type-heading-xl-font-size);
+    letter-spacing: var(--apui-type-heading-xl-letter-spacing);
+    line-height: var(--apui-type-heading-xl-line-height);
+  }
+
+  .apui-prose h2 {
+    font-size: var(--apui-type-heading-lg-font-size);
+    letter-spacing: var(--apui-type-heading-lg-letter-spacing);
+    line-height: var(--apui-type-heading-lg-line-height);
+  }
+
+  .apui-prose h3 {
+    font-size: var(--apui-type-heading-md-font-size);
+    line-height: var(--apui-type-heading-md-line-height);
+  }
+
+  .apui-prose h4 {
+    font-size: var(--apui-type-heading-sm-font-size);
+    line-height: var(--apui-type-heading-sm-line-height);
+  }
+
+  .apui-prose :is(h5, h6) {
+    font-size: var(--apui-type-body-md-font-size);
+    line-height: 22px;
+  }
+
+  .apui-prose :is(strong, b) {
+    font-weight: var(--apui-font-weight-semibold);
+  }
+
+  .apui-prose a {
+    color: var(--apui-color-primary-text);
+    text-decoration-color: var(--apui-color-primary-border);
+    text-underline-offset: 3px;
+  }
+
+  .apui-prose a:hover {
+    text-decoration-color: currentcolor;
+  }
+
+  .apui-prose a:focus-visible {
+    border-radius: var(--apui-radius-xs);
+    outline: var(--apui-focus-ring-width) solid transparent;
+    box-shadow:
+      0 0 0 var(--apui-focus-ring-offset) var(--apui-focus-ring-offset-color),
+      0 0 0 calc(var(--apui-focus-ring-offset) + var(--apui-focus-ring-width))
+        var(--apui-focus-ring-color);
+  }
+
+  /* Lists */
+  .apui-prose :is(ul, ol) {
+    padding-inline-start: 22px;
+  }
+
+  .apui-prose li + li,
+  .apui-prose li > * + * {
+    margin-block-start: 4px;
+  }
+
+  .apui-prose li > p + p {
+    margin-block-start: 8px;
+  }
+
+  .apui-prose li::marker {
+    color: var(--apui-text-muted);
+  }
+
+  /* Task list: no marker; the checkbox takes its place. */
+  [data-scope='markdown'][data-part='task'] {
+    margin-inline-start: -22px;
+    list-style: none;
+  }
+
+  [data-scope='markdown'][data-part='task'] label {
+    display: inline-flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  [data-scope='markdown'][data-part='task'] input[type='checkbox'] {
+    display: grid;
+    flex: none;
+    place-content: center;
+    box-sizing: border-box;
+    inline-size: 18px;
+    block-size: 18px;
+    margin: 2px 0 0;
+    border: var(--apui-border-width) solid var(--apui-border-default);
+    border-radius: var(--apui-checkbox-radius);
+    background: var(--apui-surface-default);
+    color: var(--apui-color-primary-foreground);
+    font: inherit;
+    cursor: default;
+    appearance: none;
+  }
+
+  /* The check: a clipped square in the foreground color, shown when checked. */
+  [data-scope='markdown'][data-part='task'] input[type='checkbox']::before {
+    inline-size: 10px;
+    block-size: 10px;
+    background: currentcolor;
+    content: '';
+    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+    transform: scale(0);
+  }
+
+  [data-scope='markdown'][data-part='task'] input[type='checkbox']:checked {
+    border-color: var(--apui-color-primary);
+    background: var(--apui-color-primary);
+  }
+
+  [data-scope='markdown'][data-part='task'] input[type='checkbox']:checked::before {
+    transform: scale(1);
+  }
+
+  /* Quotes, rules */
+  .apui-prose blockquote {
+    padding-block: 4px;
+    padding-inline: 16px;
+    border-inline-start: 3px solid var(--apui-border-default);
+    color: var(--apui-text-muted);
+  }
+
+  .apui-prose blockquote > * + * {
+    margin-block-start: 8px;
+  }
+
+  .apui-prose hr {
+    block-size: var(--apui-border-width);
+    margin-block: 24px;
+    margin-inline: 0;
+    border: 0;
+    background: var(--apui-border-muted);
+  }
+
+  /* Code: plain pre and code in prose tokens. Blocks stay LTR (D-004). */
+  .apui-prose code {
+    font-family: var(--apui-font-family-mono);
+    font-size: 0.9em;
+  }
+
+  .apui-prose :not(pre) > code {
+    padding-block: 1px;
+    padding-inline: 5px;
+    border: var(--apui-border-width) solid var(--apui-border-muted);
+    border-radius: var(--apui-radius-xs);
+    background: var(--apui-surface-sunken);
+  }
+
+  .apui-prose pre {
+    padding-block: 12px;
+    padding-inline: 16px;
+    overflow-x: auto;
+    border: var(--apui-border-width) solid var(--apui-border-muted);
+    border-radius: var(--apui-radius-md);
+    background: var(--apui-surface-sunken);
+    font-size: var(--apui-type-code-md-font-size);
+    line-height: var(--apui-type-code-md-line-height);
+    direction: ltr;
+    text-align: start;
+    tab-size: 2;
+  }
+
+  .apui-prose pre > code {
+    font-size: inherit;
+    white-space: pre;
+  }
+
+  /* Tables keep their header cells; data-align is the column's alignment. */
+  .apui-prose table {
+    inline-size: 100%;
+    border-collapse: collapse;
+    font-size: var(--apui-type-body-sm-font-size);
+    line-height: var(--apui-type-body-sm-line-height);
+  }
+
+  .apui-prose :is(th, td) {
+    padding-block: 6px;
+    padding-inline: 10px;
+    border: var(--apui-border-width) solid var(--apui-border-muted);
+    text-align: start;
+    vertical-align: top;
+  }
+
+  .apui-prose th {
+    background: var(--apui-surface-sunken);
+    font-weight: var(--apui-table-head-weight);
+  }
+
+  .apui-prose :is(th, td)[data-align='center'] {
+    text-align: center;
+  }
+
+  .apui-prose :is(th, td)[data-align='end'] {
+    text-align: end;
+  }
+
+  .apui-prose img {
+    display: block;
+    max-inline-size: 100%;
+    block-size: auto;
+    border-radius: var(--apui-radius-md);
+  }
+
+  .apui-prose kbd {
+    padding-block: 1px;
+    padding-inline: 5px;
+    border: var(--apui-border-width) solid var(--apui-border-default);
+    border-radius: var(--apui-kbd-radius);
+    background: var(--apui-surface-default);
+    font-family: var(--apui-font-family-mono);
+    font-size: 0.85em;
+  }
+
+  .apui-prose mark {
+    background: var(--apui-color-warning-soft);
+    color: var(--apui-color-warning-soft-foreground);
+  }
+
+  /* Write and split: the editor, the preview region and the columns. */
+  [data-scope='markdown'][data-part='editor'] [data-scope='textarea'][data-part='box'] {
+    min-block-size: 300px;
+  }
+
+  [data-scope='markdown'][data-part='editor'] [data-scope='textarea'][data-part='control'] {
+    font-family: var(--apui-font-family-mono);
+    font-size: var(--apui-type-code-md-font-size);
+    line-height: var(--apui-type-code-md-line-height);
+  }
+
+  [data-scope='markdown'][data-part='preview'] {
+    box-sizing: border-box;
+    min-inline-size: 0;
+    max-inline-size: none;
+    padding: var(--apui-card-padding);
+    border: var(--apui-border-width) solid var(--apui-border-muted);
+    border-radius: var(--apui-card-radius);
+    background: var(--apui-surface-default);
+  }
+
+  [data-scope='markdown'][data-part='preview'] > * {
+    max-inline-size: var(--apui-measure);
+  }
+
+  [data-scope='markdown'][data-part='split'] {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    align-items: start;
+  }
+
+  @media (max-width: 640px) {
+    [data-scope='markdown'][data-part='split'] {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (forced-colors: active) {
+    [data-scope='markdown'][data-part='task'] input[type='checkbox'] {
+      border-color: CanvasText;
+    }
+
+    [data-scope='markdown'][data-part='task'] input[type='checkbox']:checked::before {
+      background: CanvasText;
     }
   }
 }

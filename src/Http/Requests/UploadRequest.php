@@ -3,7 +3,7 @@
 /**
  * UploadRequest
  *
- * Validates an image upload from the RichTextEditor and Markdown components.
+ * Validates an image upload from the RichTextEditor component.
  *
  * @author     Jacob Martella
  * @copyright  2026 Jacob Martella

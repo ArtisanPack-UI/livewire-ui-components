@@ -4,236 +4,78 @@ title: Markdown Component
 
 # Markdown Component
 
-The Markdown component provides a full-featured Markdown editor with live preview, image uploads, and formatting tools. It's built on top of EasyMDE and integrates with Livewire for two-way data binding.
+Renders GitHub-flavored Markdown (tables, task lists, strikethrough and autolinks) with the shared prose styles of the ArtisanPack UI design system (`.apui-markdown`, `.apui-prose`), and optionally edits it. It's rendered on the server with [league/commonmark](https://commonmark.thephpleague.com/), writing the same HTML React and Vue render, with no script in preview mode.
 
 ## Basic Usage
 
-```php
-<x-artisanpack-markdown wire:model="content" />
+```blade
+<x-artisanpack-markdown :source="$listing->notes" />
 ```
 
-## Examples
+Headings keep their levels, task-list items are disabled checkboxes labelled by their text, tables keep their header cells (a column's `:---:` or `---:` alignment becomes `data-align`), and line length stops at the reading measure.
 
-### Basic Markdown Editor
+## Write and preview
 
-```php
-<x-artisanpack-markdown 
-    wire:model="content"
-    label="Content"
-    hint="Use Markdown to format your content"
-/>
+`mode="write"` or `mode="split"` adds Write, Preview and Split tabs over a Textarea, opening on that tab; Split sets the source beside the preview. Bind the source with `wire:model`: it goes to the Textarea, and the source defaults to the bound property, so every Livewire update redraws the preview.
+
+```blade
+<x-artisanpack-markdown wire:model.live.debounce.500ms="notes" mode="split" />
 ```
 
-### Markdown Editor with Custom Storage Location
+With a deferred `wire:model`, the preview catches up when the Preview or Split tab is selected, which sends the change first. Typing dispatches a `source-change` browser event with `{ value }`.
 
-```php
-<x-artisanpack-markdown 
-    wire:model="content"
-    disk="s3"
-    folder="blog-posts/images"
-/>
-```
+The panels render on the server, so the Write and Split panels each hold a Textarea bound to the same property; the hidden one is disabled, so a form posts the source once.
 
-### Markdown Editor with Custom Toolbar
+In a plain form, give it a `name` instead of `wire:model`. Both Textareas share one Alpine value, so an edit in Write shows in Split and the other way round, and the form posts the latest source whichever tab is selected. Without Livewire, the preview shows the source the page was rendered with.
 
-```php
-@php
-$config = [
-    'toolbar' => [
-        'heading',
-        'bold',
-        'italic',
-        '|',
-        'unordered-list',
-        'ordered-list',
-        '|',
-        'link',
-        'upload-image',
-        '|',
-        'preview'
-    ]
-];
-@endphp
-
-<x-artisanpack-markdown 
-    wire:model="content"
-    :config="$config"
-/>
-```
-
-### Markdown Editor with Validation
-
-```php
-<x-artisanpack-markdown 
-    wire:model="content"
-    label="Content"
-    required
-/>
-
-<!-- In your Livewire component -->
-protected $rules = [
-    'content' => 'required|min:10',
-];
-```
-
-### Markdown Editor with Custom Error Handling
-
-```php
-<x-artisanpack-markdown 
-    wire:model="content"
-    errorField="post_content"
-    errorClass="text-red-500 text-sm mt-1"
-    :firstErrorOnly="true"
-/>
-```
-
-### Markdown Editor with Custom Configuration
-
-```php
-@php
-$config = [
-    'spellChecker' => true,
-    'autofocus' => true,
-    'placeholder' => 'Write your content here...',
-    'status' => ['lines', 'words', 'cursor'],
-    'lineWrapping' => false,
-    'tabSize' => 4
-];
-@endphp
-
-<x-artisanpack-markdown 
-    wire:model="content"
-    :config="$config"
-/>
-```
-
-### Markdown Editor in a Form
-
-```php
-<form wire:submit.prevent="savePost">
-    <x-artisanpack-input wire:model="title" label="Title" />
-    
-    <x-artisanpack-markdown 
-        wire:model="content"
-        label="Content"
-        hint="Use Markdown to format your post"
-    />
-    
-    <div class="mt-4">
-        <x-artisanpack-button type="submit">Save Post</x-artisanpack-button>
-    </div>
+```blade
+<form method="POST" action="/notes">
+    @csrf
+    <x-artisanpack-markdown name="notes" :source="$note->body" mode="write" />
 </form>
+```
+
+## Raw HTML and links
+
+Raw HTML in the source is escaped and shows as text, and links and images whose URL isn't safe are dropped, keeping their text: links take relative URLs, `http`, `https`, `mailto`, `tel` and `sms`; images relative URLs, `http`, `https`, `blob` and PNG, GIF, JPEG or WebP `data:` images.
+
+`:sanitize="false"` keeps raw HTML that's formatting (`kbd`, `sup`, `sub`, `mark`, `details` and `summary`, `abbr`, tables, lists, headings, …) with a few safe attributes (`title`, `lang`, `dir`, a link's `href`, an image's `src`, `alt`, `width` and `height`, a cell's `colspan` and `rowspan`), and escapes every other tag. Event handlers, `style`, `class`, scripts, styles, frames, SVG and form controls never render, and unsafe URLs are still dropped. To show HTML you fully trust, render it yourself.
+
+```blade
+<x-artisanpack-markdown :source="$release->notes" :sanitize="false" />
 ```
 
 ## Props
 
 | Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `id` | string\|null | `null` | Optional ID for the markdown editor element |
-| `label` | string\|null | `null` | Optional label for the markdown editor |
-| `hint` | string\|null | `null` | Optional hint text displayed below the editor |
-| `hintClass` | string\|null | `'fieldset-label'` | CSS class for the hint text |
-| `disk` | string\|null | `'public'` | Storage disk for image uploads |
-| `folder` | string\|null | `'markdown'` | Folder within the disk for image uploads |
-| `config` | array\|null | `[]` | Additional configuration options for EasyMDE |
-| `errorField` | string\|null | `null` | Custom field name for validation errors |
-| `errorClass` | string\|null | `'text-error'` | CSS class for error messages |
-| `omitError` | boolean\|null | `false` | Whether to hide error messages |
-| `firstErrorOnly` | boolean\|null | `false` | Whether to show only the first error message |
+|---|---|---|---|
+| `source` | string | the `wire:model` property | The Markdown. |
+| `mode` | string | `preview` | `preview`, `write` or `split`. Emitted as `data-mode`. |
+| `sanitize` | bool | `true` | Escape raw HTML. `false` keeps the allowlisted formatting tags. |
+| `tabs-label` | string | `__( 'Markdown mode' )` | Names the mode tabs. |
+| `write-label` | string | `__( 'Write' )` | The Write tab. |
+| `preview-label` | string | `__( 'Preview' )` | The Preview tab. |
+| `split-label` | string | `__( 'Split' )` | The Split tab. |
+| `editor-label` | string | `__( 'Markdown source' )` | Names the source Textarea. |
+| `output-label` | string | `__( 'Rendered preview' )` | Names the preview region in write and split modes. |
+| `classes` | array | `[]` | Extra classes per part: `root`, `editor`, `preview`, `split`. |
 
-## Configuration Options
+`wire:model` and `name` go to the Textarea; every other attribute lands on the root.
 
-The `config` prop accepts an array of options that control how the editor is displayed and behaves. Here are some common options:
+## Events
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `spellChecker` | boolean | `false` | Whether to enable spell checking |
-| `autoSave` | boolean | `false` | Whether to automatically save content to localStorage |
-| `uploadImage` | boolean | `true` | Whether to enable image uploads |
-| `imageAccept` | string | `'image/png, image/jpeg, image/gif, image/avif'` | Accepted image MIME types |
-| `placeholder` | string | - | Placeholder text when the editor is empty |
-| `autofocus` | boolean | - | Whether to focus the editor on load |
-| `lineWrapping` | boolean | - | Whether to wrap long lines |
-| `tabSize` | number | - | Number of spaces per tab |
-| `status` | array | - | Status bar items to display |
-| `toolbar` | array | See below | Toolbar buttons to display |
+| Event | Detail | When |
+|---|---|---|
+| `source-change` | `{ value }` | The source was edited in the Textarea. |
 
-### Default Toolbar
+## Upgrading from 2.x
 
-The default toolbar includes the following buttons:
-
-```php
-[
-    'heading',
-    'bold',
-    'italic',
-    'strikethrough',
-    '|',
-    'code',
-    'quote',
-    'unordered-list',
-    'ordered-list',
-    'horizontal-rule',
-    '|',
-    'link',
-    'upload-image',
-    'table',
-    '|',
-    'preview',
-    'side-by-side'
-]
-```
-
-## Image Uploads
-
-The Markdown component supports image uploads out of the box. When a user drags and drops an image or uses the upload button, the image will be uploaded to the specified disk and folder. By default, images are stored in the `public` disk in the `markdown` folder.
-
-The upload route only accepts images (JPG, PNG, GIF, WebP and AVIF by default; never SVG) up to 5 MB, on a disk listed in the `uploads.disks` config, so add any disk other than `public` there:
-
-```php
-// config/artisanpack/livewire-ui-components.php
-'uploads' => [
-    'disks' => ['public', 's3'],
-    'mimes' => ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif'],
-    'max_size' => 5120, // kilobytes
-],
-```
-
-The folder may contain letters, numbers, dashes, underscores and slashes. Anything else is rejected with a 422.
-
-You can customize the upload location using the `disk` and `folder` props:
-
-```php
-<x-artisanpack-markdown 
-    wire:model="content"
-    disk="s3"
-    folder="uploads/blog-posts"
-/>
-```
-
-## Styling
-
-The Markdown component uses EasyMDE with custom styling to match your application's theme. The editor is wrapped in a fieldset for structure and styling.
-
-### Default Classes
-
-- `fieldset` - Container for the editor
-- `fieldset-legend` - Applied to the label
-- `fieldset-label` - Applied to the hint text
-- `text-error` - Applied to error messages
+- The component no longer embeds EasyMDE: remove the EasyMDE script and styles from your layout. It renders Markdown by default; add `mode="write"` or `mode="split"` where you edited with it, and keep your `wire:model`.
+- `config`, `disk`, `folder`, `label`, `hint`, `hint-class`, `error-field`, `error-class`, `omit-error` and `first-error-only` are removed and ignored. Image uploads from the editor are gone; the `artisanpack.upload` route stays for the RichTextEditor. Put a label and validation messages around the component with a [Fieldset](fieldset).
 
 ## Accessibility
 
-The Markdown component follows accessibility best practices:
-
-- Uses semantic HTML with proper labeling
-- Supports keyboard navigation and shortcuts
-- Provides error messages for validation
-- Includes proper ARIA attributes
-- Maintains focus management
-
-## Related Components
-
-- [Textarea](Textarea) - Simple text area input
-- [Editor](Editor) - Rich text editor
-- [Code](Code) - Code editor with syntax highlighting
+- Headings keep their levels and tables keep their header cells, so the structure reads as written.
+- Task-list checkboxes are real, disabled checkboxes, named by their item's text.
+- The mode tabs are design-system Tabs (the arrow keys follow the text direction); the Textarea and the preview region are named.
+- Links are underlined, never marked by color alone; code blocks stay left to right in right-to-left pages.

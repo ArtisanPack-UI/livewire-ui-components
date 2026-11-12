@@ -1,346 +1,203 @@
 <?php
 
-declare(strict_types=1);
 /**
- * Chart
+ * Chart Component
  *
- * This file contains the Chart class for the ArtisanPack UI Livewire UI Components package.
- * Uses ApexCharts for rendering interactive charts with glass effect support.
+ * The design-system Chart (#63): a bar, line, area or donut chart in a Card,
+ * drawn as inline SVG.
  *
  * @author     Jacob Martella
- * @copyright  2023 Jacob Martella
+ * @copyright  2026 Jacob Martella
  * @license    MIT
  *
- * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
+ * @link       https://github.com/ArtisanPack-UI/livewire-ui-components
  * @since      1.0.0
  */
 
+declare(strict_types=1);
+
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
-use ArtisanPack\LivewireUiComponents\Support\ChartThemes;
-use ArtisanPack\LivewireUiComponents\Support\GlassHelper;
-use Closure;
+use ArtisanPack\LivewireUiComponents\Support\ChartGeometry;
+use ArtisanPack\LivewireUiComponents\View\Concerns\RendersDesignSystemParts;
 use Illuminate\Contracts\View\View;
 
 /**
- * Chart Class
+ * Chart Component Class
  *
- * Provides functionality for the Chart component using ApexCharts.
- * Supports all major chart types: area, bar, line, donut, radialBar, heatmap.
+ * Renders `.apui-card.apui-chart` with data-type: the header (title,
+ * description, the legend for two or more series, actions), the plot (an
+ * SVG computed on the server by ChartGeometry, the same geometry React and
+ * Vue draw, with no chart library), the tooltip, and the data table when
+ * `tabular` is set. `apuiChart` from the behavior package opens the tooltip
+ * on hover and keyboard focus of each mark; the marks are rendered here, so
+ * `wire:poll` and Livewire updates redraw the chart. Every attribute lands on
+ * the root.
+ *
+ * ApexCharts is gone (D-038). The 2.x `series` and `labels` keep their shape,
+ * and `options.xaxis.categories`, `options.labels` and `options.title.text`
+ * still fill labels and title when those aren't set. The other 2.x props
+ * (options, theme, the animation and glass props) are read from the
+ * attributes and dropped; `show-table` still works, as `tabular`.
  *
  * @since 1.0.0
- * @since 2.0.0 Switched to ApexCharts, added glass effect support
+ * @since 3.0.0 Rebuilt on the design system: own SVG, no ApexCharts.
  */
 class Chart extends BaseComponent
 {
-    public string $uuid;
+    use RendersDesignSystemParts;
 
     /**
-     * Valid chart types supported by ApexCharts.
+     * The 2.x props read from the attributes, then left off the root.
      *
-     * @var array<string>
+     * @since 3.0.0
      */
-    protected static array $validTypes = [
-        'area',
-        'bar',
-        'line',
-        'donut',
-        'pie',
-        'radialBar',
-        'heatmap',
-        'scatter',
-        'bubble',
-        'candlestick',
-        'boxPlot',
-        'radar',
-        'polarArea',
-        'rangeBar',
-        'rangeArea',
-        'treemap',
+    public const DEPRECATED_ATTRIBUTES = [
+        'options',
+        'theme',
+        'animated',
+        'animation-speed',
+        'animationSpeed',
+        'animation-easing',
+        'animationEasing',
+        'dynamic-animation',
+        'dynamicAnimation',
+        'dynamic-animation-speed',
+        'dynamicAnimationSpeed',
+        'glass',
+        'glass-tint',
+        'glassTint',
+        'glass-tint-opacity',
+        'glassTintOpacity',
+        'show-table',
+        'showTable',
     ];
 
+    /**
+     * Create a new component instance.
+     *
+     * @since 1.0.0
+     *
+     * @param  string  $type  bar, line, area or donut.
+     * @param  array<int, mixed>|null  $series  [ [ 'name' => …, 'data' => [ … ] ] ], or a plain array of values. Each `data` entry is a value or an ApexCharts-style point (`[ 'x' => …, 'y' => … ]` or `[ x, y ]`). Null draws an empty chart.
+     * @param  array<int, mixed>|null  $labels  The categories: x-axis labels or donut slices. Missing, the points' `x` fill them.
+     * @param  string|null  $title  The heading, which names the plot and the table.
+     * @param  string|null  $description  Supporting text under the title.
+     * @param  string|null  $actions  Header controls. The `actions` slot replaces it.
+     * @param  bool  $tabular  Shows the data table under the plot.
+     * @param  string|null  $prefix  Printed before every value.
+     * @param  string|null  $suffix  Printed after every value.
+     * @param  string  $notation  standard or compact.
+     * @param  float|int|string|null  $width  The plot's viewBox width.
+     * @param  float|int|string|null  $height  The plot's viewBox height.
+     * @param  array<string, string>  $classes  Extra classes per part.
+     */
     public function __construct(
-        public ?string $id = null,
-
-        // ApexCharts props
-        public ?array $options = null,
-        public ?array $series = null,
-        public string $type = 'line',
-        public string|int $height = 350,
-        public string|int|null $width = null,
-
-        // Theme prop
-        public ?string $theme = null,
-
-        // Animation props for real-time updates
-        public bool $animated = true,
-        public int $animationSpeed = 800,
-        public string $animationEasing = 'easeinout',
-        public bool $dynamicAnimation = true,
-        public int $dynamicAnimationSpeed = 350,
-
-        // Glass effect props
-        public ?string $glass = null,
-        public ?string $glassTint = null,
-        public ?int $glassTintOpacity = null,
-    ) {
-        // Use a stable identifier: provided id (as-is) or a prefixed unique id
-        // When an explicit id is provided, use it directly to allow event matching
-        // Avoid serialize($this) as it includes mutable state (options, series)
-        $this->uuid = $id ?? 'artisanpack-chart-'.uniqid('', true);
-    }
+        public string $type = 'bar',
+        public ?array $series = [],
+        public ?array $labels = null,
+        public ?string $title = null,
+        public ?string $description = null,
+        public ?string $actions = null,
+        public bool $tabular = false,
+        public ?string $prefix = null,
+        public ?string $suffix = null,
+        public string $notation = 'standard',
+        public int|float|string|null $width = null,
+        public int|float|string|null $height = null,
+        public array $classes = [],
+    ) {}
 
     /**
-     * Get the validated chart type.
+     * The type: 2.x `pie` draws a donut, anything else unknown a bar.
      *
-     * @since 2.0.0
-     *
-     * @return string The validated chart type.
+     * @since 3.0.0
      */
-    public function chartType(): string
+    public function typeValue(): string
     {
-        if (in_array($this->type, self::$validTypes, true)) {
-            return $this->type;
+        if ('pie' === $this->type) {
+            return 'donut';
         }
 
-        return 'line';
+        return in_array($this->type, ChartGeometry::TYPES, true) ? $this->type : 'bar';
     }
 
     /**
-     * Get the chart height as a string.
+     * The title, with the 2.x `options.title.text` as a fallback.
      *
-     * @since 2.0.0
-     *
-     * @return string The height value (e.g., "350" or "100%").
+     * @since 3.0.0
      */
-    public function chartHeight(): string
+    public function titleText(): string
     {
-        if (is_int($this->height)) {
-            return (string) $this->height;
+        if (null !== $this->title && '' !== $this->title) {
+            return $this->title;
         }
 
-        return $this->height;
+        $text = $this->legacyOptions()['title']['text'] ?? null;
+
+        return is_scalar($text) ? (string) $text : '';
     }
 
     /**
-     * Get the chart width as a string.
+     * Whether the data table shows: `tabular`, or the spec's and 2.x's
+     * `show-table`.
      *
-     * @since 2.0.0
-     *
-     * @return string|null The width value or null for auto.
+     * @since 3.0.0
      */
-    public function chartWidth(): ?string
+    public function showsTable(): bool
     {
-        if (null === $this->width) {
-            return null;
+        if ($this->tabular) {
+            return true;
         }
 
-        if (is_int($this->width)) {
-            return (string) $this->width;
-        }
+        $legacy = $this->attributes->get('show-table', $this->attributes->get('showTable'));
 
-        return $this->width;
+        return true === $legacy || 'true' === $legacy || '' === $legacy || 'show-table' === $legacy || 'showTable' === $legacy;
     }
 
     /**
-     * Get the animation configuration for smooth real-time updates.
+     * Everything the chart draws.
      *
-     * @since 2.0.0
+     * @since 3.0.0
      *
-     * @return array<string, mixed> Animation configuration array.
+     * @return array<string, mixed>
      */
-    public function animationConfig(): array
+    public function geometry(): array
     {
-        return [
-            'enabled'          => $this->animated,
-            'speed'            => $this->animationSpeed,
-            'easing'           => $this->animationEasing,
-            'dynamicAnimation' => [
-                'enabled' => $this->dynamicAnimation,
-                'speed'   => $this->dynamicAnimationSpeed,
-            ],
-        ];
+        $options = $this->legacyOptions();
+        $labels  = $this->labels ?? $options['xaxis']['categories'] ?? $options['labels'] ?? [];
+
+        return ChartGeometry::compute($this->series ?? [], [
+            'type'     => $this->typeValue(),
+            'labels'   => is_array($labels) ? $labels : [],
+            'width'    => is_numeric($this->width) ? $this->width + 0 : null,
+            'height'   => is_numeric($this->height) ? $this->height + 0 : null,
+            'title'    => $this->titleText(),
+            'prefix'   => $this->prefix,
+            'suffix'   => $this->suffix,
+            'notation' => 'compact' === $this->notation ? 'compact' : 'standard',
+        ]);
     }
 
     /**
-     * Get the merged ApexCharts options.
+     * Get the view that represents the component.
      *
-     * Merges user-provided options with required base options.
-     *
-     * @since 2.0.0
-     *
-     * @return array<string, mixed> The merged options array.
+     * @since 1.0.0
      */
-    public function chartOptions(): array
-    {
-        $baseOptions = [
-            'chart' => [
-                'type'       => $this->chartType(),
-                'height'     => $this->chartHeight(),
-                'background' => 'transparent',
-                'animations' => $this->animationConfig(),
-            ],
-        ];
-
-        // Add width if specified
-        if (null !== $this->chartWidth()) {
-            $baseOptions['chart']['width'] = $this->chartWidth();
-        }
-
-        // Merge with user options (user options take precedence for nested values)
-        if (null !== $this->options) {
-            return $this->mergeOptions($baseOptions, $this->options);
-        }
-
-        return $baseOptions;
-    }
-
-    /**
-     * Get the chart series data.
-     *
-     * @since 2.0.0
-     *
-     * @return array<mixed> The series data.
-     */
-    public function chartSeries(): array
-    {
-        return $this->series ?? [];
-    }
-
-    /**
-     * Get the validated theme name.
-     *
-     * @since 2.0.0
-     *
-     * @return string|null The validated theme name or null.
-     */
-    public function chartTheme(): ?string
-    {
-        if (ChartThemes::isValidTheme($this->theme)) {
-            return $this->theme;
-        }
-
-        return null;
-    }
-
-    /**
-     * Get the theme configuration.
-     *
-     * Returns the full theme configuration array for the specified theme.
-     * If no theme is specified, returns an empty array.
-     *
-     * @since 2.0.0
-     *
-     * @return array<string, mixed> The theme configuration.
-     */
-    public function themeConfig(): array
-    {
-        $themeName = $this->chartTheme();
-
-        if (null === $themeName) {
-            return [];
-        }
-
-        return ChartThemes::get($themeName);
-    }
-
-    /**
-     * Check if the chart is using the glass theme.
-     *
-     * @since 2.0.0
-     *
-     * @return bool True if using glass theme.
-     */
-    public function isGlassTheme(): bool
-    {
-        return 'artisanpack-glass' === $this->chartTheme();
-    }
-
-    /**
-     * Get glass theme light mode overrides.
-     *
-     * @since 2.0.0
-     *
-     * @return array<string, mixed> Light mode overrides for glass theme.
-     */
-    public function glassLightOverrides(): array
-    {
-        return ChartThemes::getGlassLightOverrides();
-    }
-
-    /**
-     * Get glass theme dark mode overrides.
-     *
-     * @since 2.0.0
-     *
-     * @return array<string, mixed> Dark mode overrides for glass theme.
-     */
-    public function glassDarkOverrides(): array
-    {
-        return ChartThemes::getGlassDarkOverrides();
-    }
-
-    /**
-     * Get the glass effect CSS classes.
-     *
-     * @since 2.0.0
-     *
-     * @return string Space-separated CSS classes.
-     */
-    public function glassClasses(): string
-    {
-        return GlassHelper::getClasses($this->glass, $this->glassTint, $this->glassTintOpacity);
-    }
-
-    /**
-     * Get the glass effect inline styles including accessible text color.
-     *
-     * @since 2.0.0
-     *
-     * @return string Inline style string.
-     */
-    public function glassStyle(): string
-    {
-        return GlassHelper::getFullInlineStyle($this->glassTint);
-    }
-
-    /**
-     * Get all valid chart types.
-     *
-     * @since 2.0.0
-     *
-     * @return array<string> Array of valid chart types.
-     */
-    public static function getValidTypes(): array
-    {
-        return self::$validTypes;
-    }
-
-    public function render(): View|Closure|string
+    public function render(): View
     {
         return view('livewire-ui-components::components.chart');
     }
 
     /**
-     * Recursively merge options arrays.
+     * The 2.x ApexCharts `options`, when an app still passes them.
      *
-     * @since 2.0.0
-     *
-     * @param  array<string, mixed>  $base  Base options.
-     * @param  array<string, mixed>  $override  Override options.
-     *
-     * @return array<string, mixed> Merged options.
+     * @return array<string, mixed>
      */
-    protected function mergeOptions(array $base, array $override): array
+    private function legacyOptions(): array
     {
-        foreach ($override as $key => $value) {
-            if (is_array($value) && isset($base[$key]) && is_array($base[$key])) {
-                $base[$key] = $this->mergeOptions($base[$key], $value);
-            } else {
-                $base[$key] = $value;
-            }
-        }
+        $options = $this->attributes?->get('options');
 
-        return $base;
+        return is_array($options) ? $options : [];
     }
 }

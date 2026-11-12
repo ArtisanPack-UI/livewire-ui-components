@@ -7,8 +7,8 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 /*
- * The `artisanpack.upload` route the RichTextEditor and Markdown components
- * post images to. It only stores images, on an allowed disk, in a folder that
+ * The `artisanpack.upload` route the RichTextEditor component
+ * posts images to. It only stores images, on an allowed disk, in a folder that
  * stays inside the disk.
  */
 

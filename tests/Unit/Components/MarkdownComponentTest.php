@@ -2,231 +2,177 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
+use ArtisanPack\LivewireUiComponents\Support\Markdown\MarkdownRenderer;
+use Illuminate\Support\Facades\Blade;
+use Livewire\Component;
+use Livewire\Livewire;
 
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
-use ArtisanPack\LivewireUiComponents\View\Components\Markdown;
-use Error;
-use RuntimeException;
-
-/**
- * Comprehensive unit tests for the Markdown component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * Markdown (#65): the design-system markup contract. The HTML itself is
+ * MarkdownRenderer's (tests/Unit/Support/MarkdownRendererTest.php); the
+ * manifest parity check is in tests/Feature/DesignSystemParityTest.php.
  */
-class MarkdownComponentTest extends ComponentTestCase
+
+const MARKDOWN_SOURCE = "## Viewing checklist\n\nBring **photo ID** and proof of income.\n\n- [x] Confirm time with agent\n- [ ] Measure the living room\n\n> Viewings run 30 minutes.\n\n| Unit | Rent |\n|---|---:|\n| 2B | \$1,400 |\n";
+
+function markdownHtml(string $props = '', array $data = []): string
 {
-    protected string $componentClass = Markdown::class;
+    return Blade::render('<x-artisanpack-markdown :source="$source" '.$props.' />', ['source' => MARKDOWN_SOURCE, ...$data]);
+}
 
-    protected array $defaultProperties = [
-        'hintClass'      => 'fieldset-label',
-        'disk'           => null,
-        'folder'         => 'markdown',
-        'config'         => [],
-        'errorClass'     => 'text-error',
-        'omitError'      => false,
-        'firstErrorOnly' => false,
-    ];
+class MarkdownLivewireTestComponent extends Component
+{
+    public string $notes = "# Notes\n\n- [ ] Call";
 
-    protected array $requiredProperties = [];
-
-    public function test_markdown_string_properties(): void
+    public function render(): string
     {
-        $stringProperties = ['id', 'label', 'hint', 'hintClass', 'disk', 'folder', 'errorField', 'errorClass'];
-        $testValues       = ComponentDataFactory::sampleTexts();
-
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
-
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
-    }
-
-    public function test_markdown_boolean_properties(): void
-    {
-        $booleanProperties = ['omitError', 'firstErrorOnly'];
-
-        foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
-            $this->assertTrue($component->$property);
-
-            $component = $this->createComponent([$property => false]);
-            $this->assertFalse($component->$property);
-        }
-    }
-
-    public function test_markdown_array_properties(): void
-    {
-        $arrayProperties = ['config'];
-        $testArrays      = ComponentDataFactory::arrayData();
-
-        foreach ($arrayProperties as $property) {
-            foreach ($testArrays as $array) {
-                $component = $this->createComponent([$property => $array]);
-                $this->assertEquals($array, $component->$property);
-            }
-        }
-    }
-
-    public function test_markdown_model_name_method(): void
-    {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'modelName')) {
-            try {
-                $result = $component->modelName();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_markdown_error_field_name_method(): void
-    {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'errorFieldName')) {
-            try {
-                $result = $component->errorFieldName();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_markdown_setup_method(): void
-    {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'setup')) {
-            try {
-                $result = $component->setup();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_markdown_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
-
-    public function test_markdown_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'Markdown should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
-
-    public function test_markdown_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
-
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
-
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_markdown_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'Markdown rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
+        return <<<'BLADE'
+            <div>
+                <x-artisanpack-markdown wire:model.live.debounce.500ms="notes" mode="split" />
+            </div>
+            BLADE;
     }
 }
+
+test('preview mode renders the HTML in the prose root, with no script', function (): void {
+    $html = markdownHtml('class="extra"');
+    $dom  = designSystemDom($html);
+    $root = $dom->query('//body/div')->item(0);
+
+    expect($root->getAttribute('class'))->toBe('apui-markdown apui-prose extra')
+        ->and($root->getAttribute('data-mode'))->toBe('preview')
+        ->and($root->hasAttribute('x-data'))->toBeFalse()
+        ->and($html)->toContain(MarkdownRenderer::render(MARKDOWN_SOURCE))
+        ->and($dom->query('//h2')->item(0)->textContent)->toBe('Viewing checklist')
+        ->and($dom->query('//th[@data-align="end"]')->item(0)->textContent)->toBe('Rent');
+});
+
+test('task items are labelled, disabled checkboxes', function (): void {
+    $dom   = designSystemDom(markdownHtml());
+    $boxes = $dom->query('//li[@data-scope="markdown"][@data-part="task"]/label/input[@type="checkbox"]');
+
+    expect($boxes->length)->toBe(2)
+        ->and($boxes->item(0)->hasAttribute('disabled'))->toBeTrue()
+        ->and($boxes->item(0)->hasAttribute('checked'))->toBeTrue()
+        ->and($boxes->item(1)->hasAttribute('checked'))->toBeFalse()
+        ->and(trim($boxes->item(0)->parentNode->textContent))->toBe('Confirm time with agent');
+});
+
+test('raw HTML is escaped, or filtered with sanitize off', function (): void {
+    $source = '<b onclick="x()">b</b> <script>alert(1)</script> [x](javascript:alert(1))';
+
+    $safe = designSystemDom(markdownHtml('', ['source' => $source]));
+    expect($safe->query('//b | //script | //a')->length)->toBe(0)
+        ->and($safe->query('//body/div')->item(0)->textContent)->toContain('<b onclick="x()">b</b>');
+
+    $raw = designSystemDom(markdownHtml(':sanitize="false"', ['source' => $source]));
+    expect($raw->query('//b')->item(0)->attributes->length)->toBe(0)
+        ->and($raw->query('//script | //a')->length)->toBe(0);
+});
+
+test('split mode renders the tabs, the editor and the preview', function (): void {
+    $dom  = designSystemDom(markdownHtml('mode="split"'));
+    $root = $dom->query('//body/div')->item(0);
+
+    expect($root->getAttribute('class'))->toBe('apui-markdown')
+        ->and($root->getAttribute('data-mode'))->toBe('split')
+        ->and($root->getAttribute('x-data'))->toBe('{ view: "split", source: '.json_encode(MARKDOWN_SOURCE, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT).' }')
+        ->and($dom->query('//*[@role="tablist"]')->item(0)->getAttribute('aria-label'))->toBe('Markdown mode')
+        ->and(array_map(fn ($tab) => trim($tab->textContent), iterator_to_array($dom->query('//*[@role="tab"]'))))->toBe(['Write', 'Preview', 'Split'])
+        ->and($dom->query('//*[@role="tab"][@aria-selected="true"]')->item(0)->getAttribute('data-value'))->toBe('split');
+
+    $split = $dom->query('//*[@data-scope="markdown"][@data-part="split"]')->item(0);
+    expect($split->parentNode->hasAttribute('hidden'))->toBeFalse();
+
+    $textarea = $dom->query('.//*[@data-part="editor"]//textarea', $split)->item(0);
+    expect($textarea->getAttribute('aria-label'))->toBe('Markdown source')
+        ->and($textarea->textContent)->toBe(MARKDOWN_SOURCE)
+        ->and($textarea->getAttribute('x-bind:disabled'))->toBe("view !== 'split'")
+        ->and($textarea->getAttribute('x-on:input'))->toContain("\$dispatch('source-change'");
+
+    $preview = $dom->query('.//*[@data-part="preview"]', $split)->item(0);
+    expect($preview->getAttribute('class'))->toBe('apui-prose')
+        ->and($preview->getAttribute('role'))->toBe('region')
+        ->and($preview->getAttribute('aria-label'))->toBe('Rendered preview')
+        ->and($dom->query('.//h2', $preview)->item(0)->textContent)->toBe('Viewing checklist');
+
+    // The Write panel holds its own Textarea, hidden with its panel.
+    $ids = array_map(fn ($node) => $node->getAttribute('id'), iterator_to_array($dom->query('//textarea')));
+    expect($ids)->toHaveCount(2)
+        ->and($ids[0])->toEndWith('-write-source')
+        ->and($ids[1])->toEndWith('-split-source');
+});
+
+test('without wire:model, both Textareas share one Alpine source, so a plain form keeps edits across tabs', function (): void {
+    $source = "Say \"hi\" & <b>it's</b>\n";
+    $dom    = designSystemDom(Blade::render('<form><x-artisanpack-markdown :source="$source" name="notes" mode="write" /></form>', ['source' => $source]));
+    $root   = $dom->query('//*[contains(concat(" ", @class, " "), " apui-markdown ")]')->item(0);
+
+    // x-data parses as a JS object whose source is the Markdown, with no raw quote or tag to break the attribute.
+    $data = $root->getAttribute('x-data');
+    expect($data)->toStartWith('{ view: "write", source: "')
+        ->and($data)->not->toContain('<b>')
+        ->and(json_decode(substr($data, strlen('{ view: "write", source: '), -2)))->toBe($source);
+
+    $textareas = $dom->query('//textarea');
+    expect($textareas->length)->toBe(2);
+    foreach ($textareas as $textarea) {
+        expect($textarea->getAttribute('x-model'))->toBe('source')
+            ->and($textarea->getAttribute('name'))->toBe('notes')
+            ->and($textarea->textContent)->toBe($source);
+    }
+    expect($textareas->item(0)->getAttribute('x-bind:disabled'))->toBe("view !== 'write'")
+        ->and($textareas->item(1)->getAttribute('x-bind:disabled'))->toBe("view !== 'split'");
+});
+
+test('write mode opens on the Write tab', function (): void {
+    $dom = designSystemDom(markdownHtml('mode="write"'));
+
+    expect($dom->query('//*[@role="tab"][@aria-selected="true"]')->item(0)->getAttribute('data-value'))->toBe('write')
+        ->and($dom->query('//body/div')->item(0)->getAttribute('data-mode'))->toBe('write');
+});
+
+test('labels and part classes', function (): void {
+    $dom = designSystemDom(markdownHtml(
+        'mode="split" tabs-label="Modo" write-label="Escribir" preview-label="Vista previa" split-label="Dividir" editor-label="Fuente" output-label="Vista" :classes="[ \'root\' => \'r\', \'editor\' => \'e\', \'preview\' => \'p\', \'split\' => \'s\' ]"',
+    ));
+
+    expect($dom->query('//*[@role="tablist"]')->item(0)->getAttribute('aria-label'))->toBe('Modo')
+        ->and(array_map(fn ($tab) => trim($tab->textContent), iterator_to_array($dom->query('//*[@role="tab"]'))))->toBe(['Escribir', 'Vista previa', 'Dividir'])
+        ->and($dom->query('//textarea')->item(0)->getAttribute('aria-label'))->toBe('Fuente')
+        ->and($dom->query('//*[@data-part="preview"]')->item(0)->getAttribute('aria-label'))->toBe('Vista')
+        ->and($dom->query('//*[@data-part="preview"]')->item(0)->getAttribute('class'))->toBe('apui-prose p')
+        ->and($dom->query('//body/div')->item(0)->getAttribute('class'))->toBe('apui-markdown r')
+        ->and($dom->query('//*[@data-part="editor"]')->item(0)->getAttribute('class'))->toBe('e')
+        ->and($dom->query('//*[@data-part="split"]')->item(0)->getAttribute('class'))->toBe('s');
+});
+
+test('an unknown mode falls back to preview, and the 2.x EasyMDE attributes are dropped', function (): void {
+    $html = markdownHtml('mode="tabs" label="Content" hint="Help" disk="s3" folder="x" :config="[]"');
+    $root = designSystemDom($html)->query('//body/div')->item(0);
+
+    expect($root->getAttribute('data-mode'))->toBe('preview')
+        ->and($root->hasAttribute('label'))->toBeFalse()
+        ->and($root->hasAttribute('disk'))->toBeFalse()
+        ->and($html)->not->toContain('EasyMDE');
+});
+
+test('wire:model binds the source and goes to the Textareas', function (): void {
+    $html = Livewire::test(MarkdownLivewireTestComponent::class)->html();
+    $dom  = designSystemDom($html);
+    $root = $dom->query('//*[contains(concat(" ", @class, " "), " apui-markdown ")]')->item(0);
+
+    expect($root->hasAttribute('wire:model.live.debounce.500ms'))->toBeFalse()
+        ->and($root->getAttribute('x-on:value-change'))->toContain('$wire.$commit()');
+
+    $textareas = $dom->query('//textarea');
+    expect($textareas->length)->toBe(2)
+        ->and($textareas->item(0)->getAttribute('wire:model.live.debounce.500ms'))->toBe('notes')
+        ->and($textareas->item(0)->hasAttribute('x-model'))->toBeFalse()
+        ->and($textareas->item(1)->hasAttribute('x-model'))->toBeFalse()
+        ->and($root->getAttribute('x-data'))->toBe('{ view: "split" }')
+        ->and($textareas->item(1)->textContent)->toBe("# Notes\n\n- [ ] Call")
+        ->and($dom->query('//*[@data-part="preview"]//h1')->item(0)->textContent)->toBe('Notes')
+        ->and($dom->query('//*[@data-part="tabs"]')->length)->toBe(0)
+        ->and($dom->query('//*[contains(@class, "apui-tabs")]')->item(0)->hasAttribute('wire:model.live.debounce.500ms'))->toBeFalse();
+});

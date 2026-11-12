@@ -1174,6 +1174,7 @@
 /* headless: ./components/stat.css left out */
 /* headless: ./components/kpi-card.css left out */
 /* headless: ./components/sparkline.css left out */
+/* headless: ./components/chart.css left out */
 /* headless: ./components/timeline.css left out */
 /* headless: ./components/diff.css left out */
 /* headless: ./components/badge.css left out */
@@ -1199,6 +1200,16 @@
 /* headless: ./components/image-gallery.css left out */
 /* headless: ./components/image-slider.css left out */
 /* headless: ./components/image-library.css left out */
+/* headless: ./components/icon.css left out */
+/* headless: ./components/swap.css left out */
+/* headless: ./components/carousel.css left out */
+/* headless: ./components/theme-toggle.css left out */
+/* headless: ./components/theme-preview.css left out */
+/* headless: ./components/calendar.css left out */
+/* headless: ./components/code.css left out */
+/* headless: ./components/clipboard.css left out */
+/* headless: ./components/kbd.css left out */
+/* headless: ./components/markdown.css left out */
 /*
  * Utilities. This layer sits above the components, so a utility wins over a
  * component rule of any specificity.

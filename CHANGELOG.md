@@ -25,6 +25,15 @@
   - Sparkline and Diff render on the server with no JavaScript (`Support\SparklineGeometry`, `Support\DiffBuilder`), so `wire:poll` redraws them.
   - Every built-in string is a `*-label` prop defaulting through `__()`.
 - The prebuilt assets and the Lucide icon set are rebuilt from the design system for these components.
+- Chart, Calendar and the Utility wave on the design system (#63 to #65 in design-system, D-045 to D-055):
+  - New: `<x-artisanpack-clipboard>` (button, icon and copy-field variants, announced in a live region), the stateless `<x-artisanpack-calendar>` that `<livewire:artisanpack-calendar>` renders, and `@apuiThemeScript`, which applies the stored theme before first paint.
+  - Chart and Calendar render on the server (`Support\ChartGeometry`, `Support\CalendarModel`) from the same math as React and Vue; Chart is an SVG with keyboard-reachable marks, tooltips and a `tabular` data table.
+  - Markdown renders with `league/commonmark` (now a dependency), with raw HTML escaped and unsafe links dropped; `mode="write"` and `mode="split"` add the editor tabs.
+  - Swap, Kbd, Code, Icon, Carousel and ThemeToggle are rebuilt on the design-system markup; ThemePreview is a Blade card picker.
+  - Every built-in string defaults through `__()` and can be overridden: as props on Code, Clipboard, Carousel, Markdown, ThemeToggle and ThemePreview (`*-label`, plus `label`, and Clipboard's and Code's `copied-message` and `error-message`), and as a `labels` array on Calendar and Kbd (Kbd's names the symbol keys for screen readers).
+  - Chart accepts ApexCharts-style points (`[ 'x' => …, 'y' => … ]`, `[ x, y ]`), whose `x` fills the labels when none are given, and a `null` `series`; its numbers round exactly as the React and Vue charts do. `<livewire:artisanpack-calendar>` accepts an explicit `null` for `view` and `events`.
+  - Markdown with `mode="write"` or `"split"` works in a plain form: `name` reaches the editor, and its tabs share one value, so the latest source is posted once.
+  - A ThemeToggle bound with `wire:model` applies the server's value on load, when it differs from the stored choice, and whenever the server changes it.
 
 ### Changed
 - **Breaking:** `<x-artisanpack-toast>` is now the design-system Toast rendered on its own: a static toast (`title`, `description`, `color`, `variant`, `surface`, `icon`, `actions`, `hideClose`, `closeLabel`, `classes`) whose close button dispatches `open-change`. The toaster that 2.x rendered with `<x-artisanpack-toast />` is `<x-artisanpack-toaster />`; its `position`, `color`, `colorAdjustment`, `duration` and glass props are gone.
@@ -54,6 +63,13 @@
 - **Breaking:** the `tooltip`, `tooltip-left`, `tooltip-right`, `tooltip-bottom` and `tooltip-position` props are gone. Wrap the control in `<x-artisanpack-tooltip content="…">`.
 - **Breaking:** on Table, `class` and other attributes land on the root `<div>`, not the `<table>`. `compact` sets `density="compact"`, and `with-pagination` is `paginated`. An empty table always shows the empty state, and `selectable` and `expandable` can be combined.
 - **Breaking:** Heading's `level` defaults to 2 (was 1).
+- **Breaking:** Chart's default `type` is now `bar` (2.x: `line`), and a bar chart draws only the first series; add `type="line"` to keep 2.x charts with several series.
+- `artisanpack:generate-theme --preview` no longer prints a preview URL or route instructions, because the `/artisanpack/theme-preview` page was removed; it prints a notice pointing to #142. The interactive mode no longer asks for a preview URL.
+- **Breaking:** Chart no longer uses ApexCharts. `options` is ignored except for its categories, labels and title; `pie` becomes `donut`; `width` and `height` are viewBox units; the theme, animation and glass props and the `chart-update*` events are gone.
+- **Breaking:** Markdown renders by default. The EasyMDE editor and its image uploads are gone; use `mode="write"` or `mode="split"` for an editor bound with `wire:model`.
+- **Breaking:** Code is read-only (no Ace editor); use `<x-artisanpack-code-editor>` to edit code. Icon's `label` is now the accessible name, not visible text, and the default size is 16px.
+- **Breaking:** ThemeToggle writes `data-theme` on `<html>` and stores the choice under `apui-theme` (the `mary-theme` and `mary-class` keys are no longer read). The `theme-changed` events become `value-change`; the default is the segmented control (`variant="icon"` for the 2.x button).
+- **Breaking:** Calendar's week start follows the locale unless `week-starts-on` or `sunday-start` is set, and it's no longer lazy by default. Carousel's `interval` defaults to 5000ms and it wraps only with `loop`.
 - ImageLibrary keeps the `WithMediaSync` contract (`wire:model`, `wire:library`, `:preview`); cropping runs in a design-system Dialog when Cropper.js is on the page.
 
 ### Fixed
@@ -77,6 +93,7 @@
 - Divider's (2.x `separator`) loading bar (`progress`, `target`): use Progress.
 - The PhotoSwipe hooks in ImageGallery and ImageSlider; ImageGallery has a built-in lightbox.
 - `resources/js/sparkline.js`, the diff2html Diff renderer and the `jfcherng/php-diff` dependency.
+- `Support\ChartThemes`, the EasyMDE Markdown editor and its upload query, and the `<livewire:theme-preview>` theme builder with its `/artisanpack/theme-preview` route.
 
 ---
 

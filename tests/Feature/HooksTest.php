@@ -184,18 +184,18 @@ class HooksTest extends TestCase
         Filter::add(
             'ap.livewireUiComponents.themeColors',
             function (array $themes) {
-                $themes['light']['label'] = 'Day';
-                $themes['dark']['theme']  = 'midnight';
+                $themes['light']['label']         = 'Day';
+                $themes['high-contrast']['label'] = 'Bold';
 
                 return $themes;
             },
         );
 
-        $toggle = new ThemeToggle;
+        $labels = (new ThemeToggle)->withAttributes([])->labels();
 
-        $this->assertEquals('Day', $toggle->light);
-        $this->assertEquals('midnight', $toggle->darkTheme);
-        $this->assertEquals('light', $toggle->lightTheme);
+        $this->assertEquals('Day', $labels['light']);
+        $this->assertEquals('Bold', $labels['high-contrast']);
+        $this->assertEquals('Dark', $labels['dark']);
     }
 
     #[Test]

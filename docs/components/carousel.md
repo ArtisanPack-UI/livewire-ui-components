@@ -4,262 +4,76 @@ title: Carousel Component
 
 # Carousel Component
 
-The Carousel component provides a slideshow for cycling through a series of images or content. It supports navigation arrows, indicators, autoplay, touch gestures for swiping, and customizable icons for navigation controls.
+Scroll-snapped slides with previous and next buttons and position dots, built on the ArtisanPack UI design system (`.apui-carousel`) and the behavior engine's carousel machine (`apuiCarousel`), the same one ImageSlider runs on. Several slides can show at once, with the next one peeking so people know there's more. The root is a region with `aria-roledescription="carousel"`.
 
 ## Basic Usage
 
-```php
-@php
-$slides = [
-    [
-        'image' => 'https://example.com/image1.jpg',
-        'title' => 'Slide 1',
-        'description' => 'This is the first slide'
-    ],
-    [
-        'image' => 'https://example.com/image2.jpg',
-        'title' => 'Slide 2',
-        'description' => 'This is the second slide'
-    ],
-    [
-        'image' => 'https://example.com/image3.jpg',
-        'title' => 'Slide 3',
-        'description' => 'This is the third slide'
-    ]
-];
-@endphp
-
-<x-artisanpack-carousel :slides="$slides" />
+```blade
+<x-artisanpack-carousel
+	:title="__( 'Featured properties' )"
+	:per-view="3"
+	:slides="[
+		[ 'image' => asset( 'photos/cedarwood.jpg' ), 'alt' => __( 'Cedarwood Estates from the street' ), 'title' => 'Cedarwood Estates', 'description' => __( 'United States, New York' ) ],
+		[ 'image' => asset( 'photos/lakeview.jpg' ), 'alt' => __( 'Lakeview Lofts from the lake' ), 'title' => 'Lakeview Lofts', 'description' => __( 'United States, Chicago' ) ],
+		[ 'image' => asset( 'photos/oaks.jpg' ), 'alt' => __( 'Tranquil Oaks garden' ), 'title' => 'Tranquil Oaks', 'description' => __( 'Canada, Toronto' ) ],
+		[ 'image' => asset( 'photos/golden.jpg' ), 'alt' => __( 'Golden Hour at sunset' ), 'title' => 'Golden Hour', 'description' => __( 'United States, Denver' ) ],
+	]"
+/>
 ```
 
-## Examples
+Each slide is a Card built from its `image`, `alt`, `title` and `description` (and `href`, which links the card). `title` puts a heading in a header with the previous and next buttons beside it; without a title, the buttons overlay the slides' edges. `per-view` shows that many slides at once, and each move shows one more; the dots mark the positions.
 
-### Carousel with Navigation Links
+## Custom slides, autoplay and binding
 
-```php
-@php
-$slides = [
-    [
-        'image' => 'https://example.com/image1.jpg',
-        'title' => 'Product Showcase',
-        'description' => 'Check out our latest products',
-        'url' => '/products',
-        'urlText' => 'View Products'
-    ],
-    [
-        'image' => 'https://example.com/image2.jpg',
-        'title' => 'Special Offers',
-        'description' => 'Limited time discounts',
-        'url' => '/offers',
-        'urlText' => 'See Offers'
-    ]
-];
-@endphp
+Render each slide yourself with `@scope('slide', $slide)`; `$loop->index` is its index. `autoplay` advances every `interval` ms and always shows a pause button; it pauses while the pointer or focus is on the carousel and starts paused when the person prefers reduced motion. `wire:model` binds the position shown (0-based), and the widget dispatches `index-change`.
 
-<x-artisanpack-carousel :slides="$slides" />
-```
-
-### Carousel without Indicators
-
-```php
-<x-artisanpack-carousel :slides="$slides" :withoutIndicators="true" />
-```
-
-### Carousel without Navigation Arrows
-
-```php
-<x-artisanpack-carousel :slides="$slides" :withoutArrows="true" />
-```
-
-### Autoplay Carousel
-
-```php
-<x-artisanpack-carousel :slides="$slides" :autoplay="true" :interval="5000" />
-```
-
-### Carousel with Custom Content
-
-```php
-<x-artisanpack-carousel :slides="$slides">
-    <x-slot:content>
-        @php($slide)
-        <div class="absolute inset-0 flex items-center justify-center bg-black/50">
-            <div class="text-center text-white">
-                <h2 class="text-3xl font-bold">{{ $slide['title'] }}</h2>
-                <p class="mt-2">{{ $slide['description'] }}</p>
-                @if(isset($slide['url']))
-                    <a href="{{ $slide['url'] }}" class="mt-4 btn btn-primary">
-                        {{ $slide['urlText'] ?? 'Learn More' }}
-                    </a>
-                @endif
-            </div>
-        </div>
-    </x-slot:content>
+```blade
+<x-artisanpack-carousel wire:model.live="note" :label="__( 'Customer notes' )" :slides="$quotes" autoplay loop>
+	@scope( 'slide', $quote )
+		<x-artisanpack-card>
+			<x-artisanpack-text size="lg">{{ $quote['text'] }}</x-artisanpack-text>
+			<x-artisanpack-text size="sm" tone="muted">{{ $quote['author'] }}</x-artisanpack-text>
+		</x-artisanpack-card>
+	@endscope
 </x-artisanpack-carousel>
 ```
-
-### Carousel with Custom Styling
-
-```php
-<x-artisanpack-carousel :slides="$slides" class="h-96 rounded-none" />
-```
-
-## Icon Customization
-
-The Carousel component allows you to customize the navigation arrows and dot indicators using either icon names or raw SVG content. This provides complete flexibility over the appearance of carousel controls.
-
-### Custom Icon Names
-
-You can use any Heroicon name for the navigation arrows and dot indicators:
-
-```php
-<x-artisanpack-carousel 
-    :slides="$slides" 
-    nextArrow="o-arrow-right"
-    previousArrow="o-arrow-left"
-    dots="o-star"
-/>
-```
-
-### Raw SVG Icons
-
-For complete control over the icon appearance, you can provide raw SVG content:
-
-```php
-<x-artisanpack-carousel 
-    :slides="$slides"
-    nextArrow="<svg viewBox='0 0 24 24' fill='currentColor'><path d='M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z'/></svg>"
-    previousArrow="<svg viewBox='0 0 24 24' fill='currentColor'><path d='M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z'/></svg>"
-    dots="<svg viewBox='0 0 8 8' fill='currentColor'><circle cx='4' cy='4' r='3'/></svg>"
-/>
-```
-
-### Mixed Usage
-
-You can also mix icon names and raw SVG content as needed:
-
-```php
-<x-artisanpack-carousel 
-    :slides="$slides"
-    nextArrow="<svg viewBox='0 0 24 24' stroke='currentColor' fill='none'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 18l6-6-6-6'/></svg>"
-    previousArrow="<svg viewBox='0 0 24 24' stroke='currentColor' fill='none'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M15 18l-6-6 6-6'/></svg>"
-    dots="o-stop-circle"
-/>
-```
-
-### Default Behavior
-
-When no custom icons are specified, the carousel uses default chevron icons for navigation arrows and CSS-styled dots for indicators:
-
-- **Default Next Arrow**: `o-chevron-right`
-- **Default Previous Arrow**: `o-chevron-left` 
-- **Default Dots**: CSS-styled circular buttons
-
-This ensures complete backward compatibility with existing implementations.
 
 ## Props
 
 | Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `slides` | array | - | Array of slide data (required) |
-| `id` | string\|null | `null` | Optional ID for the carousel element |
-| `withoutIndicators` | boolean\|null | `false` | Whether to hide the slide indicators |
-| `withoutArrows` | boolean\|null | `false` | Whether to hide the navigation arrows |
-| `autoplay` | boolean\|null | `false` | Whether to automatically advance slides |
-| `interval` | int\|null | `2000` | Time between slides in milliseconds when autoplay is enabled |
-| `nextArrow` | mixed\|null | `null` | Custom icon for the next arrow (icon name or raw SVG) |
-| `previousArrow` | mixed\|null | `null` | Custom icon for the previous arrow (icon name or raw SVG) |
-| `dots` | mixed\|null | `null` | Custom icon for the dot indicators (icon name or raw SVG) |
-| `ariaLabel` | string\|null | `null` | Accessible label for the carousel (overrides default) |
-| `ariaLabelledBy` | string\|null | `null` | ID of element that labels the carousel |
-| `respectsReducedMotion` | boolean\|null | `true` | Whether to respect user's reduced motion preference |
+|---|---|---|---|
+| `slides` | array | `[]` | The slides, in order. |
+| `per-view` | int | `1` | Slides in view at once. Above 1 the next slide peeks. |
+| `index` | int | `0` | The position shown; `wire:model` binds it. |
+| `loop` | bool | `false` | Wraps from the last position to the first. |
+| `autoplay` | bool | `false` | Advances on its own, with a pause button. |
+| `interval` | int | `5000` | Milliseconds between slides while autoplay runs (at least 1000). |
+| `title` | string | `null` | The header's heading. It names the region unless `label` is set. |
+| `heading-level` | int | `3` | The title's heading level, 2 to 6. |
+| `label` | string | the title, else `__( 'Carousel' )` | Names the region. |
+| `previous-label` | string | `__( 'Previous slide' )` | The previous button's name. |
+| `next-label` | string | `__( 'Next slide' )` | The next button's name. |
+| `indicator-label` | string | `__( 'Go to slide :index' )` | A dot's name; `{index}` is replaced. |
+| `slide-label` | string | `__( ':index of :count' )` | A slide's name. |
+| `play-label` | string | `__( 'Start slide rotation' )` | The autoplay button while paused. |
+| `pause-label` | string | `__( 'Stop slide rotation' )` | The autoplay button while playing. |
+| `classes` | array | `[]` | Extra classes per part: `root`, `header`, `title`, `viewport`, `itemGroup`, `item`, `prevTrigger`, `nextTrigger`, `indicatorGroup`, `indicator`, `autoplayTrigger`. |
 
-## Slots
+Every other attribute lands on the root.
 
-| Slot | Description |
-|------|-------------|
-| `content` | Custom content for each slide, receives the current slide data as a parameter |
+## Upgrading from 2.x
 
-## Slide Format
-
-Each slide in the `slides` array can have the following properties:
-
-```php
-[
-    'image' => 'https://example.com/image.jpg', // URL of the image to display (required)
-    'alt' => 'Descriptive alt text for the image', // Alt text for accessibility (recommended)
-    'title' => 'Slide Title', // Title text to display
-    'description' => 'Slide description text', // Description text to display
-    'url' => '/some-page', // URL to navigate to when the slide is clicked
-    'urlText' => 'Learn More' // Text for the button that links to the URL
-]
-```
-
-**Note**: If no `alt` text is provided, the component will fallback to using the `title` property, or "Slide image" as a default. For optimal accessibility, always provide descriptive alt text.
-
-## Styling
-
-The Carousel component uses a combination of Tailwind CSS and Alpine.js for styling and interactivity. You can customize the appearance by:
-
-1. Adding custom classes via the `class` attribute
-2. Customizing the slide content using the `content` slot
-3. Styling individual slides through the slide data
-
-### Default Classes
-
-- `h-64` - Default height for the carousel
-- `rounded-box` - Rounded corners
-- `overflow-hidden` - Ensures content doesn't overflow the container
+- Slides keep their `image`, `alt`, `title` and `description` keys and now render as Cards. `url` links the card; `urlText` is ignored.
+- The `content` scoped slot is now `@scope('slide', $slide)`.
+- `aria-label` still works; prefer `label`.
+- `without-arrows`, `without-indicators`, `next-arrow`, `previous-arrow`, `dots`, `aria-labelled-by` and `respects-reduced-motion` are accepted and ignored: the buttons and dots always show, and autoplay always respects reduced motion.
+- `interval` now defaults to 5000ms (was 2000ms), and the carousel no longer wraps unless you set `loop`.
+- Slides scroll rather than fade.
 
 ## Accessibility
 
-The Carousel component includes comprehensive accessibility features to ensure it's usable by all users:
-
-### ARIA Support
-- Uses `role="region"` with proper labeling for the main carousel container
-- Implements `aria-live="polite"` to announce slide changes to screen readers
-- Provides `aria-current="true"` for the active slide
-- Labels all interactive elements with descriptive `aria-label` attributes
-
-### Keyboard Navigation
-- **Arrow Keys**: Use Left/Right arrow keys to navigate between slides
-- **Home/End Keys**: Jump to first/last slide
-- **Tab Navigation**: All interactive elements are keyboard accessible
-- **Focus Management**: Clear visual focus indicators on all controls
-
-### Screen Reader Support
-- Images include meaningful alt text (uses slide 'alt', 'title', or defaults)
-- Slide position announced ("Slide X of Y")
-- Navigation buttons clearly labeled ("Previous slide", "Next slide")
-- Indicator buttons labeled ("Go to slide X")
-
-### Motion and Animation
-- Respects `prefers-reduced-motion` setting
-- Disables autoplay when users prefer reduced motion
-- Maintains functionality without relying on animations
-
-### Implementation Guidelines
-To ensure your carousel is fully accessible:
-
-1. **Always provide alt text for images**:
-```php
-$slides = [
-    [
-        'image' => 'path/to/image.jpg',
-        'alt' => 'Descriptive text about the image content',
-        'title' => 'Slide Title'
-    ]
-];
-```
-
-2. **Add a descriptive label for the carousel**:
-```php
-<x-artisanpack-carousel :slides="$slides" aria-label="Product showcase carousel" />
-```
-
-3. **Test with keyboard navigation and screen readers** to ensure proper functionality.
-
-## Related Components
-
-- [ImageGallery](Image-Gallery) - Grid display of images
-- [ImageLibrary](Image-Library) - Image management component
+- A region with `aria-roledescription="carousel"` and a translatable name; each slide is a group with `aria-roledescription="slide"`, named "2 of 6", and slides out of view are hidden from assistive technology.
+- The track is a polite live region (off while autoplay runs), so moves are announced.
+- The previous and next buttons and the dots have translatable names; the dot shown carries `aria-current`. ArrowLeft and ArrowRight on the dots follow the text direction; Home and End go to the first and last position.
+- Autoplay always has a visible pause button, stops while the pointer or focus is on the carousel, and never starts on its own under reduced motion (WCAG 2.2.2).
+- In right-to-left pages the buttons' chevrons mirror and the next slide peeks on the left.

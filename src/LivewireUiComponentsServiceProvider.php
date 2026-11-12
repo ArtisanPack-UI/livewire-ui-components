@@ -25,6 +25,7 @@ use ArtisanPack\LivewireUiComponents\Console\Commands\GenerateThemeCss;
 use ArtisanPack\LivewireUiComponents\Console\Commands\LivewireUiComponentsBootcampCommand;
 use ArtisanPack\LivewireUiComponents\Console\Commands\LivewireUiComponentsInstallCommand;
 use ArtisanPack\LivewireUiComponents\Support\DesignSystemAssets;
+use ArtisanPack\LivewireUiComponents\Support\ThemeScript;
 use ArtisanPack\LivewireUiComponents\Theming\DesignTokens;
 use ArtisanPack\LivewireUiComponents\Theming\GlassSurface;
 use ArtisanPack\LivewireUiComponents\Theming\PresetGenerator;
@@ -60,6 +61,7 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         'breadcrumbs'             => View\Components\Breadcrumbs::class,
         'breadcrumbs-item'        => View\Components\BreadcrumbsItem::class,
         'button'                  => View\Components\Button::class,
+        'calendar'                => View\Components\CalendarGrid::class, // The markup; <livewire:artisanpack-calendar> keeps state.
         'card'                    => View\Components\Card::class,
         'carousel'                => View\Components\Carousel::class,
         'chart'                   => View\Components\Chart::class,
@@ -67,6 +69,7 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         'checkbox-group'          => View\Components\CheckboxGroup::class,
         'choices'                 => View\Components\Choices::class,
         'choices-offline'         => View\Components\ChoicesOffline::class,
+        'clipboard'               => View\Components\Clipboard::class,
         'code'                    => View\Components\Code::class,
         'code-editor'             => View\Components\CodeEditor::class,
         'collapse'                => View\Components\Collapse::class,
@@ -151,6 +154,7 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         'tags'                    => View\Components\Tags::class,
         'text'                    => View\Components\Text::class,
         'textarea'                => View\Components\Textarea::class,
+        'theme-preview'           => View\Components\ThemePreview::class,
         'theme-toggle'            => View\Components\ThemeToggle::class,
         'timeline'                => View\Components\Timeline::class,
         'timeline-item'           => View\Components\TimelineItem::class,
@@ -173,7 +177,6 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
     protected array $livewireComponents = [
         'calendar'            => View\Components\Calendar::class,
         'event-modal-content' => View\Components\EventModalContent::class,
-        'theme-preview'       => View\Components\ThemePreview::class,
     ];
 
     /**
@@ -332,6 +335,15 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
             'artisanpackScripts',
             function () {
                 return '<?php echo app(\\'.DesignSystemAssets::class.'::class)->scripts(); ?>';
+            },
+        );
+
+        // @apuiThemeScript in <head>: applies the stored theme before first paint (#65).
+        // @apuiThemeScript([ 'storageKey' => 'site-theme', 'default' => 'dark' ]) changes the key and default.
+        Blade::directive(
+            'apuiThemeScript',
+            function ($expression) {
+                return '<?php echo \\'.ThemeScript::class.'::tag('.('' !== trim((string) $expression) ? $expression : '[]').'); ?>';
             },
         );
     }

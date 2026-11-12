@@ -153,17 +153,15 @@ Many components share common props and slots:
 |-----------|-------------|---------------|
 | [Avatar](avatar) | User avatar/profile image | [Avatar docs](avatar) |
 | [Badge](badge) | Small status indicator | [Badge docs](badge) |
-| [Calendar](calendar) | Calendar display | [Calendar docs](calendar) |
-| [CalendarEnhanced](calendar-enhanced) | Enhanced calendar with events and views | [CalendarEnhanced docs](calendar-enhanced) |
+| [Calendar](calendar) | Events on a month grid, a week, a day or an agenda list, with a details Dialog | [Calendar docs](calendar) |
 | [Chart](chart) | Data visualization charts | [Chart docs](chart) |
-| [Code](code) | Code display with syntax highlighting | [Code docs](code) |
+| [Code](code) | Read-only code block with copy, line numbers and highlighted lines, or inline code | [Code docs](code) |
 | [Diff](diff) | Text difference display | [Diff docs](diff) |
-| [EventModalContent](event-modal-content) | Calendar event modal content | [EventModalContent docs](event-modal-content) |
 | [Heading](heading) | Styled heading text | [Heading docs](heading) |
 | [ImageGallery](image-gallery) | Image gallery display | [ImageGallery docs](image-gallery) |
 | [ImageLibrary](image-library) | Image library/picker | [ImageLibrary docs](image-library) |
 | [ImageSlider](image-slider) | Image slider/carousel component | [ImageSlider docs](image-slider) |
-| [Kbd](kbd) | Keyboard key display | [Kbd docs](kbd) |
+| [Kbd](kbd) | A keyboard key or shortcut, spelled for the platform | [Kbd docs](kbd) |
 | [Link](link) | An inline or standalone link, or a button styled as one | [Link docs](link) |
 | [ListItem](list-item) | A row in a List: leading, title, description, trailing | [ListItem docs](list-item) |
 | [Markdown](markdown) | Markdown content display | [Markdown docs](markdown) |
@@ -204,10 +202,12 @@ Many components share common props and slots:
 | Component | Description | Documentation |
 |-----------|-------------|---------------|
 | [Carousel](carousel) | Image/content carousel | [Carousel docs](carousel) |
+| [Clipboard](clipboard) | Copies a value with an announced confirmation | [Clipboard docs](clipboard) |
 | [Header](header) | Page header with actions | [Header docs](header) |
 | [Icon](icon) | SVG icon display | [Icon docs](icon) |
 | [Swap](swap) | Element that swaps content on interaction | [Swap docs](swap) |
-| [ThemeToggle](theme-toggle) | Light/dark theme toggle | [ThemeToggle docs](theme-toggle) |
+| [ThemePreview](theme-preview) | Selectable cards with a live miniature of each theme or preset | [ThemePreview docs](theme-preview) |
+| [ThemeToggle](theme-toggle) | Light, dark, high contrast or system, applied before first paint | [ThemeToggle docs](theme-toggle) |
 
 ## Component Composition
 

@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use ArtisanPack\LivewireUiComponents\Support\RichTextHtml;
-use ArtisanPack\LivewireUiComponents\View\Components\Markdown;
 use ArtisanPack\LivewireUiComponents\View\Components\RichTextEditor;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\MessageBag;
@@ -147,9 +146,4 @@ test('uploads leave the disk to the route unless one is set', function (): void 
     expect((new RichTextEditor)->uploadFields())->toBe(['folder' => 'editor'])
         ->and((new RichTextEditor(disk: 's3', folder: 'posts'))->uploadFields())->toBe(['folder' => 'posts', 'disk' => 's3'])
         ->and((new RichTextEditor(disk: '', folder: null))->uploadFields())->toBe(['folder' => 'editor']);
-});
-
-test('the markdown editor leaves out an unset disk from its upload URL', function (): void {
-    expect((new Markdown)->uploadQuery())->toBe('folder=markdown')
-        ->and((new Markdown(disk: 's3'))->uploadQuery())->toBe('disk=s3&folder=markdown');
 });

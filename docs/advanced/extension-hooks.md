@@ -17,7 +17,7 @@ This package fires a small set of cross-cutting hooks — powered by [`artisanpa
 | `ap.livewireUiComponents.iconAlias` | filter | `Icon::icon()` | `(string $iconName)` |
 | `ap.livewireUiComponents.toastDispatched` | action | `Toast` trait `toast()` and `flashToast()` | `(string $color, string $title, array $options)` |
 | `ap.livewireUiComponents.tableColumns` | filter | `Table::__construct()` | `(array $columns, string $context)` — context is the table's `id` or `'default'` |
-| `ap.livewireUiComponents.themeColors` | filter | `ThemeToggle::__construct()` | `(array $themes)` — `['light' => ['label','theme','class'], 'dark' => [...]]` |
+| `ap.livewireUiComponents.themeColors` | filter | `ThemeToggle::labels()` | `(array $themes)` — `['light' => ['label' => …], 'dark' => […], 'high-contrast' => […], 'system' => […]]` |
 | `ap.livewireUiComponents.modalWillOpen` | action | `Support\ModalBridge::willOpen()` | `(string $modalId)` |
 | `ap.livewireUiComponents.modalWillClose` | action | `Support\ModalBridge::willClose()` | `(string $modalId)` |
 | `ap.livewireUiComponents.spotlightCommands` | filter | `artisanpack.spotlight` route handler | `(array $commands, ?\Illuminate\Contracts\Auth\Authenticatable $user)` |
@@ -70,11 +70,11 @@ Filter::add('ap.livewireUiComponents.tableColumns', function (array $columns, st
 
 ## Customizing the Theme Toggle
 
-Use `themeColors` to change the labels, daisyUI theme keys, or CSS classes exposed by `<x-artisanpack-theme-toggle>`:
+Use `themeColors` to rename the choices `<x-artisanpack-theme-toggle>` offers everywhere at once. The themes themselves are the design-system tokens' `light`, `dark` and `high-contrast` (`data-theme`), so 3.0 no longer takes daisyUI theme keys or CSS classes here:
 
 ```php
 Filter::add('ap.livewireUiComponents.themeColors', function (array $themes) {
-    $themes['dark']['theme'] = 'midnight';
+    $themes['dark']['label'] = __( 'Night' );
 
     return $themes;
 });

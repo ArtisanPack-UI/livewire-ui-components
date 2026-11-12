@@ -4,124 +4,74 @@ title: Icon Component
 
 # Icon Component
 
-The Icon component provides an easy way to display SVG icons in your application. It supports Heroicons out of the box and can be extended to use custom icons.
+One icon from the design-system icon registry (`.apui-icon`): a Lucide glyph drawn at 14, 16, 20 or 24px in `currentColor`, plain or on a soft-colored tile. Icons are decorative unless they have a `label`, and directional icons (arrows, chevrons) mirror in right-to-left pages.
 
 ## Basic Usage
 
-```php
-<x-artisanpack-icon name="o-home" />
+```blade
+<x-artisanpack-icon name="house" />
+<x-artisanpack-icon name="house" size="xl" />
+<x-artisanpack-icon name="circle-alert" color="error" :label="__( 'Payment failed' )" />
 ```
 
-## Examples
+`name` is a Lucide name in kebab-case from the registry (`house`, `arrow-right`, `circle-alert`). `size` is `sm`, `md` (the default), `lg` or `xl`. `color` draws the icon in a color's text tone; unset, it takes the color of the text around it.
 
-### Icon Variants
+## Tiles
 
-```php
-<!-- Outline style (o-) -->
-<x-artisanpack-icon name="o-user" />
+`variant="tile"` sets the icon on a soft-colored rounded square (32, 40, 48 or 56px for `sm` to `xl`). It is neutral unless you give it a `color`.
 
-<!-- Solid style (s-) -->
-<x-artisanpack-icon name="s-user" />
-
-<!-- Mini style (m-) -->
-<x-artisanpack-icon name="m-user" />
+```blade
+<x-artisanpack-icon name="wallet" variant="tile" color="primary" />
+<x-artisanpack-icon name="trending-up" variant="tile" color="success" size="lg" />
 ```
 
-### Custom Sizing
+## Your own icons
 
-```php
-<!-- Default size (w-5 h-5) -->
-<x-artisanpack-icon name="o-bell" />
+Put an `<svg>` in the slot to draw an icon that isn't registered. Keep it on a 24px grid and draw it in `currentColor`; it takes the same size.
 
-<!-- Small icon -->
-<x-artisanpack-icon name="o-bell" class="w-4 h-4" />
-
-<!-- Large icon -->
-<x-artisanpack-icon name="o-bell" class="w-8 h-8" />
+```blade
+<x-artisanpack-icon variant="tile" :label="__( 'Spreadsheet' )">
+	<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+		<rect width="18" height="18" x="3" y="3" rx="2" />
+		<path d="M3 9h18M3 15h18M9 3v18" />
+	</svg>
+</x-artisanpack-icon>
 ```
 
-### Icon with Label
+To use a name everywhere, register it once, for example in a service provider. Only register trusted, static SVG shapes, never user input:
 
 ```php
-<x-artisanpack-icon name="o-envelope" label="Messages" />
+use ArtisanPack\LivewireUiComponents\Support\IconRegistry;
 
-<!-- With custom styling -->
-<x-artisanpack-icon name="o-envelope" label="Messages" class="w-6 h-6 text-primary" />
+IconRegistry::register( [ 'send' => '<path d="m22 2-7 20-4-9-9-4Z" /><path d="M22 2 11 13" />' ] );
+IconRegistry::registerDirectional( [ 'send' ] ); // Mirror it in RTL.
 ```
 
-### Icon with Custom Color
-
-```php
-<x-artisanpack-icon name="o-exclamation-triangle" class="text-warning" />
-<x-artisanpack-icon name="o-check-circle" class="text-success" />
-<x-artisanpack-icon name="o-x-circle" class="text-error" />
-<x-artisanpack-icon name="o-information-circle" class="text-info" />
-```
-
-### Using Custom Icons
-
-```php
-<!-- Using a custom icon with dot notation -->
-<x-artisanpack-icon name="custom.icon-name" />
-```
-
-### Icon in Button
-
-```php
-<x-artisanpack-button>
-    <x-artisanpack-icon name="o-plus" class="mr-2" />
-    Add Item
-</x-artisanpack-button>
-
-<!-- Icon-only button -->
-<x-artisanpack-button circle>
-    <x-artisanpack-icon name="o-trash" />
-</x-artisanpack-button>
-```
+The `registered_icons` config key does the same.
 
 ## Props
 
 | Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `name` | string | - | The name of the icon to display (required) |
-| `id` | string\|null | `null` | Optional ID for the icon element |
-| `label` | string\|null | `null` | Optional text label to display next to the icon |
+|---|---|---|---|
+| `name` | string | `null` | A registered icon name. The slot overrides it. |
+| `variant` | string | `plain` | `plain` or `tile`. |
+| `size` | string | `md` | `sm` (14px), `md` (16px), `lg` (20px) or `xl` (24px). |
+| `color` | string | `null` | `primary`, `secondary`, `accent`, `neutral`, `success`, `warning`, `error` or `info`. |
+| `label` | string | `null` | The accessible name. Without it the icon is hidden from assistive technology. |
+| `mirror` | bool | auto | Flips the icon in RTL. Unset, arrows and chevrons (and names registered as directional) mirror. |
+| `classes` | array | `[]` | Extra classes per part: `root`, `svg`. |
 
-## Icon Naming Convention
+Every other attribute lands on the root `<span>`.
 
-The Icon component supports the following naming conventions:
+## Upgrading from 2.x
 
-1. **Heroicons** (default): Use the prefix followed by the icon name
-   - `o-` for outline style (e.g., `o-home`)
-   - `s-` for solid style (e.g., `s-home`)
-   - `m-` for mini style (e.g., `m-home`)
-
-2. **Custom Icons**: Use dot notation to reference custom icons
-   - Example: `custom.icon-name` will be converted to `custom-icon-name`
-
-## Styling
-
-The Icon component has a default size of `w-5 h-5` (1.25rem × 1.25rem). You can customize the appearance by:
-
-1. Adding size classes: `w-{size} h-{size}`
-2. Adding color classes: `text-{color}`
-3. Adding other utility classes for opacity, transitions, etc.
-
-### Default Classes
-
-- `inline` - Makes the icon display inline with text
-- `w-5 h-5` - Default size (can be overridden)
+- `label` used to print visible text beside the icon. It is now the icon's accessible name, and nothing is shown. Put visible text next to the icon yourself.
+- Heroicon (`o-home`, `s-home`) and Font Awesome (`fas.user`) names still render through blade-icons, and the `ap.livewireUiComponents.iconAlias` filter still maps them. Prefer the registry's Lucide names: they render the same in Blade, React and Vue.
+- The icon no longer defaults to `w-5 h-5`: use `size`. Tailwind size classes on the component still work.
+- `id` lands on the root as a plain attribute; `uuid` is gone.
 
 ## Accessibility
 
-When using icons that convey meaning (rather than just decoration), it's important to provide appropriate accessibility features:
-
-- Use the `label` prop to provide a text alternative for screen readers
-- For decorative icons, no label is necessary
-- When using icons in interactive elements like buttons, ensure the button has accessible text
-
-## Related Components
-
-- [Button](Button) - Interactive button element
-- [Alert](Alert) - Alert messages
-- [Toast](Toast) - Toast notifications
+- Decorative icons are `aria-hidden`. With a `label` the root is `role="img"` with `aria-label`; label any icon that carries meaning on its own, and leave it decorative next to text that says the same thing.
+- Plain icons take the surrounding text color, so they meet its contrast. Colored icons use the color's text tone (4.5:1); a tile's foreground meets 3:1 against its fill, and tiles get an edge in high contrast.
+- Directional icons mirror in RTL; trends, clocks and external-link icons never do.

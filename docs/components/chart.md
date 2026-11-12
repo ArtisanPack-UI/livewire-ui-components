@@ -4,431 +4,100 @@ title: Chart Component
 
 # Chart Component
 
-The Chart component provides a powerful wrapper for ApexCharts, allowing you to easily create interactive, animated charts in your Laravel application with support for theming, glass effects, and real-time updates.
-
-> **Note:** In version 2.0, the Chart component was migrated from Chart.js to ApexCharts. If you're upgrading from 1.x, see the [Chart Migration Guide](Migration-Chart).
-
-## Installation
-
-The Chart component requires ApexCharts. Install it via npm:
-
-```bash
-npm install apexcharts
-```
-
-Then import it in your JavaScript:
-
-```javascript
-import ApexCharts from 'apexcharts';
-window.ApexCharts = ApexCharts;
-```
+A bar, line, area or donut chart in a Card, built on the ArtisanPack UI design system (`.apui-card.apui-chart`). It's drawn on the server as inline SVG, with the same geometry React and Vue draw: no chart library, so Livewire updates and `wire:poll` redraw it. A small Alpine component from the design system (`apuiChart`) opens the tooltip when a mark is hovered or focused.
 
 ## Basic Usage
 
 ```blade
 <x-artisanpack-chart
-    type="line"
-    :series="$series"
-    :options="$options"
+	type="bar"
+	:title="__( 'Weekly revenue' )"
+	:description="__( 'The Grove at Greenfield · best week labeled' )"
+	:labels="[ 'W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8', 'W9', 'W10' ]"
+	:series="[ [ 'name' => __( 'Revenue' ), 'data' => [ 4100, 6000, 8200, 10000, 4000, 8000, 4000, 8000, 6000, 4000 ] ] ]"
+	prefix="$"
+	notation="compact"
 />
 ```
 
-## Livewire Component Example
+`series` is a list of `[ 'name' => …, 'data' => [ … ] ]`, or a plain array of values for one series named by the title. `data` lines up with `labels`; anything that isn't a number is a gap. The first series' best value is labeled in the plot.
 
-```php
-class ChartExample extends Component
-{
-    public array $series = [];
-    public array $options = [];
+## Lines and areas
 
-    public function mount()
-    {
-        $this->series = [
-            [
-                'name' => 'Sales',
-                'data' => [30, 40, 35, 50, 49, 60, 70],
-            ],
-        ];
-
-        $this->options = [
-            'xaxis' => [
-                'categories' => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-            ],
-        ];
-    }
-
-    public function render()
-    {
-        return view('livewire.chart-example');
-    }
-}
-```
-
-```blade
-<div>
-    <x-artisanpack-chart
-        type="line"
-        :series="$series"
-        :options="$options"
-        height="350"
-    />
-</div>
-```
-
-## Chart Types
-
-The component supports all ApexCharts chart types:
-
-### Line Chart
+Two or more series get a legend in the header and take `--apui-chart-1` to `--apui-chart-6` in order. Keep the order stable when filters change, so a series keeps its color. The `actions` slot holds header controls.
 
 ```blade
 <x-artisanpack-chart
-    type="line"
-    :series="[
-        ['name' => 'Sales', 'data' => [30, 40, 35, 50, 49, 60, 70]]
-    ]"
-    :options="[
-        'xaxis' => ['categories' => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul']]
-    ]"
-/>
+	type="area"
+	:title="__( 'Analytic' )"
+	:description="__( 'Sales estimation vs target' )"
+	:labels="$quarters"
+	:series="[ [ 'name' => __( 'Sales' ), 'data' => $sales ], [ 'name' => __( 'Target' ), 'data' => $targets ] ]"
+	prefix="$"
+	notation="compact"
+	:width="1000"
+	:height="260"
+	wire:poll.30s
+>
+	<x-slot:actions>
+		<x-artisanpack-select wire:model.live="range" :label="__( 'Range' )" :options="[ [ 'value' => '2y', 'label' => __( 'Two years' ) ], [ 'value' => '1y', 'label' => __( 'One year' ) ] ]" size="sm" />
+	</x-slot:actions>
+</x-artisanpack-chart>
 ```
 
-### Area Chart
+`line` draws the lines alone; `area` adds a soft fill under each. Hovering or focusing a category shows a crosshair, a dot on each series and a tooltip with every series' value.
+
+## Donut and the data table
 
 ```blade
 <x-artisanpack-chart
-    type="area"
-    :series="[
-        ['name' => 'Revenue', 'data' => [31, 40, 28, 51, 42, 109, 100]]
-    ]"
-    :options="[
-        'xaxis' => ['categories' => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul']],
-        'fill' => ['type' => 'gradient']
-    ]"
+	type="donut"
+	:title="__( 'Active listings' )"
+	:description="__( 'By country' )"
+	:labels="[ __( 'United States' ), __( 'Mexico' ), __( 'Canada' ), __( 'Other' ) ]"
+	:series="[ 1240, 990, 723, 260 ]"
+	tabular
 />
 ```
 
-### Bar Chart
+The donut draws the first series' positive values as slices, and its legend lists every slice's share. `tabular` adds the data as a table under the plot, for any type.
 
-```blade
-<x-artisanpack-chart
-    type="bar"
-    :series="[
-        ['name' => 'Sales', 'data' => [44, 55, 57, 56, 61, 58, 63]]
-    ]"
-    :options="[
-        'xaxis' => ['categories' => ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']],
-        'plotOptions' => ['bar' => ['horizontal' => false, 'columnWidth' => '55%']]
-    ]"
-/>
-```
-
-### Pie/Donut Chart
-
-```blade
-{{-- Pie Chart --}}
-<x-artisanpack-chart
-    type="pie"
-    :series="[44, 55, 13, 43, 22]"
-    :options="[
-        'labels' => ['Team A', 'Team B', 'Team C', 'Team D', 'Team E']
-    ]"
-/>
-
-{{-- Donut Chart --}}
-<x-artisanpack-chart
-    type="donut"
-    :series="[44, 55, 41, 17, 15]"
-    :options="[
-        'labels' => ['Apple', 'Mango', 'Orange', 'Watermelon', 'Grapes']
-    ]"
-/>
-```
-
-### Radial Bar Chart
-
-```blade
-<x-artisanpack-chart
-    type="radialBar"
-    :series="[70, 55, 40]"
-    :options="[
-        'labels' => ['Progress', 'Sales', 'Growth'],
-        'plotOptions' => [
-            'radialBar' => [
-                'dataLabels' => [
-                    'total' => ['show' => true, 'label' => 'Total']
-                ]
-            ]
-        ]
-    ]"
-/>
-```
-
-### Heatmap
-
-```blade
-<x-artisanpack-chart
-    type="heatmap"
-    :series="$heatmapSeries"
-    :options="[
-        'plotOptions' => [
-            'heatmap' => ['colorScale' => ['ranges' => [
-                ['from' => 0, 'to' => 50, 'color' => '#00A100'],
-                ['from' => 51, 'to' => 100, 'color' => '#128FD9']
-            ]]]
-        ]
-    ]"
-/>
-```
-
-## Theming
-
-The component includes built-in themes that automatically adapt to light/dark mode:
-
-### Available Themes
-
-```blade
-{{-- Light theme --}}
-<x-artisanpack-chart theme="artisanpack-light" ... />
-
-{{-- Dark theme --}}
-<x-artisanpack-chart theme="artisanpack-dark" ... />
-
-{{-- Glass theme (for glass effect containers) --}}
-<x-artisanpack-chart theme="artisanpack-glass" ... />
-```
-
-### Glass Effect
-
-Combine with glass effects for modern UI:
-
-```blade
-<x-artisanpack-chart
-    type="area"
-    :series="$series"
-    :options="$options"
-    glass="frosted"
-    glass-tint="blue-500"
-    glass-tint-opacity="40"
-    theme="artisanpack-glass"
-/>
-```
-
-## Animation Configuration
-
-Control chart animations for smooth transitions:
-
-```blade
-<x-artisanpack-chart
-    type="line"
-    :series="$series"
-    :options="$options"
-    :animated="true"
-    :animation-speed="800"
-    animation-easing="easeinout"
-    :dynamic-animation="true"
-    :dynamic-animation-speed="350"
-/>
-```
-
-### Animation Props
+## Props
 
 | Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| animated | bool | true | Enable/disable initial animations |
-| animationSpeed | int | 800 | Initial animation duration in ms |
-| animationEasing | string | 'easeinout' | Easing function (linear, easein, easeout, easeinout) |
-| dynamicAnimation | bool | true | Enable animations on data updates |
-| dynamicAnimationSpeed | int | 350 | Update animation duration in ms |
+|---|---|---|---|
+| `type` | string | `bar` | `bar`, `line`, `area` or `donut`. A bar chart draws the first series. |
+| `series` | array\|null | `[]` | `[ [ 'name' => …, 'data' => [ … ] ] ]`, or a plain array of values. A `data` entry may also be a point, `[ 'x' => …, 'y' => … ]` or `[ x, y ]`. |
+| `labels` | array | `null` | The categories: x-axis labels, or the donut's slices. Unset, the points' `x` values fill them. |
+| `title` | string | `null` | The heading. It names the plot and the table, so every chart needs one. |
+| `description` | string | `null` | Supporting text under the title. |
+| `actions` | string | `null` | Header controls; the `actions` slot replaces it. |
+| `tabular` | bool | `false` | Shows the data table under the plot. `show-table` works too. |
+| `prefix` | string | `null` | Printed before every value, such as `$`. |
+| `suffix` | string | `null` | Printed after every value, such as `%`. |
+| `notation` | string | `standard` | `standard` (12,500) or `compact` ($12.5k; the axis shares the unit of its largest value). |
+| `width` | int | `520` | The plot's viewBox width. The plot scales to its container; this sets its aspect ratio and how large the axis text reads. The donut is always 160. |
+| `height` | int | `220` | The plot's viewBox height. |
+| `classes` | array | `[]` | Extra classes per part: `root`, `header`, `title`, `description`, `actions`, `legend`, `swatch`, `body`, `plot`, `grid`, `axis`, `mark`, `line`, `area`, `point`, `crosshair`, `dot`, `value`, `tooltip`, `table`. |
 
-## Real-Time Updates
+Every other attribute lands on the root.
 
-The Chart component supports multiple methods for real-time data updates.
+## Upgrading from 2.x
 
-### Using wire:poll
+- The Chart no longer uses ApexCharts: remove `apexcharts` from your `package.json` and the `ApexCharts` import or global from your JavaScript. The design-system Alpine plugin (`apuiBehavior`) is all the Chart needs.
+- `series` and `labels` keep ApexCharts' shape. When `labels` or `title` aren't set, `options.xaxis.categories`, `options.labels` and `options.title.text` still fill them; every other `options` key is ignored.
+- ApexCharts-style points still work: a `data` entry may be `[ 'x' => 'Jan', 'y' => 3 ]` or `[ 'Jan', 3 ]`. The `y` is the value, and when `labels` (and the `options` fallbacks) aren't set, the first pointed series' `x` values become the labels, printed as given (pass `labels` to format dates or timestamps).
+- **The default `type` is now `bar`, not `line`.** A chart that relied on the 2.x default and has two or more series now draws only the first one, as bars, since a bar chart draws a single series. Add `type="line"` to keep the 2.x look and every series.
+- `type` takes `bar`, `line`, `area` or `donut`; the other ApexCharts types fall back to `bar`. `pie` becomes `donut`.
+- `series` may be `null` (2.x's default): it draws an empty chart instead of failing.
+- `theme`, `animated`, `animation-speed`, `animation-easing`, `dynamic-animation`, `dynamic-animation-speed`, `glass`, `glass-tint` and `glass-tint-opacity` are gone, and so is `ChartThemes`. Colors come from the theme's `--apui-chart-1` to `--apui-chart-6`, in light, dark and high contrast.
+- `height` and `width` are the plot's viewBox size, not CSS lengths: the plot fills its container's width.
+- The `chart-update`, `chart-update-series` and `chart-append-data` events are gone: the chart renders on the server, so change the component's properties (or use `wire:poll`) and it redraws.
+- Grouped and stacked bars, pie, radial bar, heatmap and the other ApexCharts types aren't available.
 
-```blade
-{{-- Updates every 5 seconds --}}
-<x-artisanpack-chart
-    wire:poll.5s
-    type="line"
-    :series="$series"
-    :options="$options"
-/>
-```
+## Accessibility
 
-### Using Livewire Events
-
-Dispatch events from your Livewire component to update charts:
-
-```php
-// Full update (series and options)
-$this->dispatch('chart-update', [
-    'chartId' => 'my-chart',
-    'series' => $newSeries,
-    'options' => $newOptions,
-    'animate' => true,
-]);
-
-// Series-only update (more efficient)
-$this->dispatch('chart-update-series', [
-    'chartId' => 'my-chart',
-    'series' => $newSeries,
-    'animate' => true,
-]);
-
-// Append data (for streaming)
-$this->dispatch('chart-append-data', [
-    'chartId' => 'my-chart',
-    'data' => [['data' => [newDataPoint]]],
-]);
-```
-
-```blade
-<x-artisanpack-chart
-    id="my-chart"
-    type="line"
-    :series="$series"
-    :options="$options"
-/>
-```
-
-### Live Dashboard Example
-
-```php
-class LiveDashboard extends Component
-{
-    public array $series = [];
-    public array $options = [];
-
-    public function mount()
-    {
-        $this->refreshData();
-    }
-
-    public function refreshData()
-    {
-        // Query data with both dates and counts
-        $data = User::query()
-            ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
-            ->groupBy('date')
-            ->orderBy('date')
-            ->limit(7)
-            ->get();
-
-        // Extract dates for x-axis categories and counts for series data
-        $dates = $data->pluck('date')->map(fn ($date) => Carbon::parse($date)->format('M d'))->toArray();
-        $counts = $data->pluck('count')->toArray();
-
-        // Set series data
-        $this->series = [
-            [
-                'name' => 'Active Users',
-                'data' => $counts,
-            ],
-        ];
-
-        // Set options with x-axis categories
-        $this->options = [
-            'xaxis' => [
-                'categories' => $dates,
-            ],
-        ];
-    }
-
-    public function render()
-    {
-        return view('livewire.live-dashboard');
-    }
-}
-```
-
-```blade
-<div>
-    <x-artisanpack-chart
-        wire:poll.10s="refreshData"
-        type="area"
-        :series="$series"
-        :options="$options"
-        :dynamic-animation-speed="500"
-    />
-</div>
-```
-
-## Props Reference
-
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| id | string | null | Unique identifier for the chart |
-| type | string | 'line' | Chart type (line, area, bar, pie, donut, radialBar, heatmap, scatter, bubble, candlestick, boxPlot, radar, polarArea, rangeBar, rangeArea, treemap) |
-| series | array | [] | Chart series data |
-| options | array | null | ApexCharts options object |
-| height | string\|int | 350 | Chart height |
-| width | string\|int | null | Chart width (auto if null) |
-| theme | string | null | Theme name (artisanpack-light, artisanpack-dark, artisanpack-glass) |
-| animated | bool | true | Enable animations |
-| animationSpeed | int | 800 | Initial animation speed (ms) |
-| animationEasing | string | 'easeinout' | Animation easing function |
-| dynamicAnimation | bool | true | Enable update animations |
-| dynamicAnimationSpeed | int | 350 | Update animation speed (ms) |
-| glass | string | null | Glass effect variant (frosted, transparent, liquid) |
-| glassTint | string | null | Glass tint color (Tailwind color or hex) |
-| glassTintOpacity | int | null | Glass tint opacity (0-100) |
-
-## Customization
-
-### Custom Colors
-
-```blade
-<x-artisanpack-chart
-    type="bar"
-    :series="$series"
-    :options="[
-        'colors' => ['#3b82f6', '#ef4444', '#10b981', '#f59e0b'],
-        'xaxis' => ['categories' => $categories]
-    ]"
-/>
-```
-
-### Toolbar and Zoom
-
-```blade
-<x-artisanpack-chart
-    type="line"
-    :series="$series"
-    :options="[
-        'chart' => [
-            'toolbar' => ['show' => true],
-            'zoom' => ['enabled' => true]
-        ]
-    ]"
-/>
-```
-
-### Data Labels
-
-```blade
-<x-artisanpack-chart
-    type="bar"
-    :series="$series"
-    :options="[
-        'dataLabels' => ['enabled' => true],
-        'plotOptions' => ['bar' => ['dataLabels' => ['position' => 'top']]]
-    ]"
-/>
-```
-
-## Notes
-
-- The component requires ApexCharts to be loaded globally (`window.ApexCharts`)
-- Charts automatically respond to theme changes (light/dark mode)
-- Use `wire:poll` for simple polling updates
-- Use Livewire events for more control over updates
-- The `chart-update-series` event is more efficient than full updates for real-time data
-- All ApexCharts configuration options are supported via the `options` prop
-
-## See Also
-
-- [Sparkline Component](Sparkline) - Lightweight inline charts
-- [Stat Component](Stat) - Display statistics with optional sparklines
-- [ApexCharts Documentation](https://apexcharts.com/docs/)
+- Every chart has a title that names the plot (`role="group"`) and the table, and a legend for two or more series.
+- Every mark is focusable, with the category and its values as its accessible name. The tooltip opens on hover and keyboard focus, and Escape closes it. The tooltip is hidden from assistive technology, since the mark's name says the same.
+- Light-mode `--apui-chart-2`, `-4` and `-6` sit under 3:1, so the values are always reachable as text: in the tooltip, the labeled value and the table (`tabular`). Don't rely on color alone.
+- The plot stays left to right in right-to-left layouts; the header and legend mirror.

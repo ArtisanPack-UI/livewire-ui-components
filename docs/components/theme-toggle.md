@@ -4,167 +4,94 @@ title: ThemeToggle Component
 
 # ThemeToggle Component
 
-The ThemeToggle component provides a user interface element for switching between light and dark themes. It's a specialized version of the Swap component designed specifically for theme switching.
+Lets people choose light, dark, high contrast or system, built on the ArtisanPack UI design system (`.apui-theme-toggle`). A choice sets `data-theme` on `<html>`, the attribute the design tokens switch themes on, and persists in `localStorage`. System follows the operating system's `prefers-color-scheme` live.
 
 ## Basic Usage
 
-```php
+Put the head snippet in your layout's `<head>`, before the stylesheets, so the stored choice applies before first paint and the page never flashes the wrong theme:
+
+```blade
+<head>
+    @apuiThemeScript
+    @artisanpackStyles
+    …
+</head>
+```
+
+Then put the toggle anywhere:
+
+```blade
 <x-artisanpack-theme-toggle />
 ```
 
-## Examples
+`@apuiThemeScript([ 'storageKey' => 'site-theme', 'default' => 'dark' ])` changes the storage key and the choice without a stored one. Pass the same `storage-key` to the toggles. With Vite's CSP nonce set (`Vite::useCspNonce()`), the script carries it.
 
-### Basic Theme Toggle
+## Variants
 
-```php
+```blade
+{{-- Every choice on the segmented track (the default) --}}
 <x-artisanpack-theme-toggle />
+
+{{-- Icons only: each name stays, visually hidden, as the radio's accessible name --}}
+<x-artisanpack-theme-toggle icon-only :choices="[ 'light', 'dark', 'system' ]" />
+
+{{-- One button that switches light and dark, for a top bar --}}
+<x-artisanpack-theme-toggle variant="icon" size="sm" />
+
+{{-- A Theme button that opens the choices, with System last --}}
+<x-artisanpack-theme-toggle variant="menu" size="sm" />
 ```
 
-### Theme Toggle with Custom Icons
+## Saving the choice with the account
 
-```php
-<x-artisanpack-theme-toggle>
-    <x-slot:light-icon>
-        <x-artisanpack-icon name="heroicon-o-sun" class="w-6 h-6" />
-    </x-slot:light-icon>
-    
-    <x-slot:dark-icon>
-        <x-artisanpack-icon name="heroicon-o-moon" class="w-6 h-6" />
-    </x-slot:dark-icon>
-</x-artisanpack-theme-toggle>
+`wire:model` binds the choice to a Livewire property, so you can store it with the person's settings. The toggle still applies and stores it in the browser.
+
+```blade
+<x-artisanpack-theme-toggle variant="menu" wire:model.live="theme" />
 ```
 
-### Theme Toggle with Text
-
-```php
-<x-artisanpack-theme-toggle>
-    <x-slot:light-icon>
-        <div class="flex items-center">
-            <x-artisanpack-icon name="heroicon-o-sun" class="w-5 h-5 mr-2" />
-            Light Mode
-        </div>
-    </x-slot:light-icon>
-    
-    <x-slot:dark-icon>
-        <div class="flex items-center">
-            <x-artisanpack-icon name="heroicon-o-moon" class="w-5 h-5 mr-2" />
-            Dark Mode
-        </div>
-    </x-slot:dark-icon>
-</x-artisanpack-theme-toggle>
-```
-
-### Theme Toggle with Custom Styling
-
-```php
-<x-artisanpack-theme-toggle class="p-2 bg-base-200 rounded-full">
-    <x-slot:light-icon>
-        <x-artisanpack-icon name="heroicon-o-sun" class="w-6 h-6 text-yellow-500" />
-    </x-slot:light-icon>
-    
-    <x-slot:dark-icon>
-        <x-artisanpack-icon name="heroicon-o-moon" class="w-6 h-6 text-blue-400" />
-    </x-slot:dark-icon>
-</x-artisanpack-theme-toggle>
-```
-
-### Theme Toggle in Navigation
-
-```php
-<nav class="navbar bg-base-100">
-    <div class="flex-1">
-        <a class="btn btn-ghost normal-case text-xl">My App</a>
-    </div>
-    <div class="flex-none">
-        <ul class="menu menu-horizontal px-1">
-            <li><a>Home</a></li>
-            <li><a>About</a></li>
-            <li><a>Contact</a></li>
-            <li>
-                <x-artisanpack-theme-toggle />
-            </li>
-        </ul>
-    </div>
-</nav>
-```
-
-### Theme Toggle with Custom Transition Effect
-
-```php
-<x-artisanpack-theme-toggle effect="rotate" />
-```
-
-### Theme Toggle with System Theme Detection
-
-```php
-<x-artisanpack-theme-toggle detect-system-theme />
-```
+Without `wire:model` or `value`, the toggle shows the stored choice, else System. A choice dispatches `value-change` (`{ value }`) from the root, and every toggle on the page, and in other tabs, follows it.
 
 ## Props
 
 | Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `effect` | string | `null` | The transition effect to use (`rotate`, `flip`, `fade`) |
-| `detectSystemTheme` | boolean | `false` | Whether to detect and use the system's preferred color scheme |
-| `storageKey` | string | `'theme'` | The key used to store the theme preference in localStorage |
-| `id` | string | `null` | Optional ID for the theme toggle element |
+|---|---|---|---|
+| `value` | string | — | `light`, `dark`, `high-contrast` or `system`. `wire:model` binds it instead. |
+| `variant` | string | `segmented` | `segmented`, `icon` or `menu`. |
+| `size` | string | `md` | `sm` or `md`. |
+| `choices` | array | all four | The choices segmented and menu offer, always in the order light, dark, high contrast, system. Keep high contrast offered. |
+| `icon-only` | bool | `false` | Segmented shows only the icons. |
+| `label` | string | `__( 'Theme' )` | Names the radio group and the menu; the menu trigger's text. |
+| `light-label` | string | `__( 'Light' )` | |
+| `dark-label` | string | `__( 'Dark' )` | |
+| `high-contrast-label` | string | `__( 'High contrast' )` | |
+| `system-label` | string | `__( 'System' )` | The system choice in the segmented control. |
+| `match-system-label` | string | `__( 'Match system' )` | The system choice in the menu. |
+| `switch-to-light-label` | string | `__( 'Switch to light theme' )` | The icon button's name while it switches to light. |
+| `switch-to-dark-label` | string | `__( 'Switch to dark theme' )` | The icon button's name while it switches to dark. |
+| `persist` | bool | `true` | Stores the choice in `localStorage`. |
+| `storage-key` | string | `apui-theme` | The `localStorage` key. |
+| `classes` | array | `[]` | Extra classes per part: `root`, `list`, `option`, `button`, `trigger`, `menu`, `item`. |
 
-## Slots
+Every other attribute lands on the root. The `ap.livewireUiComponents.themeColors` filter renames the choices everywhere at once (see [extension hooks](../advanced/extension-hooks)).
 
-| Slot | Description |
-|------|-------------|
-| `light-icon` | Content to show when the theme is light (and clicking will switch to dark) |
-| `dark-icon` | Content to show when the theme is dark (and clicking will switch to light) |
+## Applying a theme from JavaScript
 
-## Behavior
+Without a bundler, the prebuilt behavior script registers `apuiThemeToggle`. With one, `applyTheme( 'dark' )`, `readThemeChoice()` and `themeScript()` come from `@artisanpack-ui/behavior`.
 
-The ThemeToggle component:
+## Upgrading from 2.x
 
-1. Toggles between light and dark themes when clicked
-2. Applies the selected theme to the document by changing the `data-theme` attribute
-3. Stores the user's preference in localStorage for persistence across page loads
-4. Can detect the system's preferred color scheme when `detectSystemTheme` is enabled
-5. Uses smooth transition effects when switching between themes
-
-## Styling
-
-The ThemeToggle component uses the Swap component under the hood, which provides a clean and consistent appearance. You can customize the appearance by:
-
-1. Using the provided props (`effect`)
-2. Adding custom classes via the `class` attribute
-3. Customizing the light and dark icons through the slots
-
-### Default Classes
-
-- The toggle has appropriate sizing for use in navigation bars and other UI elements
-- Transition effects are smooth and provide visual feedback when switching themes
-- Default icons are clear and recognizable as representing light and dark modes
+- Add `@apuiThemeScript` to `<head>`. The toggle's own inline script, which read `mary-theme` and `mary-class`, is gone, and the stored choice now lives under `apui-theme` (the old keys aren't read).
+- The toggle sets the tokens' `data-theme` (`light`, `dark`, `high-contrast`) and no longer writes `class` on `<html>`. `light-theme`, `dark-theme`, `light-class`, `dark-class` and `with-label` are removed and ignored.
+- `light` and `dark` still work, as `light-label` and `dark-label`.
+- The swap icon is now the `icon` variant; the default is the segmented control, which offers high contrast and System too.
+- The `mary-toggle-theme` window event is gone; call `applyTheme()` instead. `theme-changed` and `theme-changed-class` are replaced by `value-change`.
+- The `themeColors` filter's payload is `{ light: { label }, dark: { label }, 'high-contrast': { label }, system: { label } }`.
 
 ## Accessibility
 
-The ThemeToggle component follows accessibility best practices:
-
-- Uses appropriate ARIA attributes to indicate its purpose and current state
-- Maintains proper focus management
-- Supports keyboard interaction
-
-For better accessibility:
-
-1. Consider adding a visually hidden label that explains the purpose of the toggle
-2. Ensure sufficient contrast for the toggle in both light and dark modes
-3. If using custom icons, make sure they clearly represent light and dark themes
-
-## Implementation Details
-
-The ThemeToggle component:
-
-1. Uses Alpine.js to handle the theme switching logic
-2. Modifies the `data-theme` attribute on the `<html>` element
-3. Stores the user's preference in localStorage using the key specified in the `storageKey` prop
-4. Initializes with the stored preference or the system preference if `detectSystemTheme` is enabled
-
-## Related Components
-
-- [Swap](Swap) - The underlying component used for toggling between states
-- [Toggle](Toggle) - Form control for boolean values
-- [Icon](Icon) - Component for displaying SVG icons
+- Segmented is a `role="radiogroup"` named by `label`, with a `role="radio"` per choice and `aria-checked`. Only the checked choice is in the Tab order; the arrow keys move and apply, following the text direction (in right-to-left pages ArrowLeft moves to the next choice), and Home and End go to the ends.
+- Every choice keeps its name, also when only icons show.
+- The icon button's name says what it does next, and changes with the theme.
+- The menu's choices are `menuitemradio` with `aria-checked`; the trigger shows the current choice's icon.
+- Storage is guarded: a private window or blocked storage falls back to the default, without errors.

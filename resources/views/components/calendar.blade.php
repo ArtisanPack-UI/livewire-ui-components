@@ -1,172 +1,192 @@
+{{--
+    Calendar (#64). Markup contract: design-system wave 7, Calendar.
+    Rendered on the server from CalendarModel, the port of behavior's
+    calendarModel, so the days, labels and event order match React and Vue.
+    The controls dispatch view-change, date-change, event-click and create;
+    the Livewire Calendar answers them. Each event is a button that dispatches
+    event-click, or a link with a safe href, named by its title, category and
+    full date and time, never by its tint. Alpine (apuiCalendar) adds the arrow
+    keys, which follow the text direction (D-004).
+--}}
+@php
+    $model   = $model();
+    $labels  = $model['labels'];
+    $id      = $baseId();
+    $titleId = $id . '-title';
+    $bodyId  = $id . '-body';
+    $tabId   = static fn ( string $view ): string => $id . '-tab-' . $view;
+@endphp
 <div
-    x-data="calendar(@js($events))"
-    class="w-full"
+    {{ $attributes->except( [ 'id' ] )->class( $rootClasses( 'apui-calendar' ) ) }}
+    id="{{ $id }}"
+    data-view="{{ $model['view'] }}"
+    x-data="apuiCalendar()"
 >
-    <div class="bg-white dark:bg-base-200 border border-stroke dark:border-base-300 rounded-lg p-4">
-        {{--
-            Islands Architecture
-
-            The Calendar uses Islands to separate header and grid updates:
-            - Header island: Navigation buttons, title, view selector
-            - Grid island: The calendar grid with weeks/days
-
-            The @island directive creates a div with wire:key for DOM isolation.
-            This is compatible with both Livewire 3 and Livewire 4:
-            - Livewire 4+: Optimized partial updates per-island
-            - Livewire 3: Standard rendering with wire:key isolation (still functional)
-
-            The directive outputs: <div wire:key="island-{name}" data-island="{name}">
-        --}}
-
-        {{-- Header Island --}}
-        @island('calendar-header')
-        <div class="mb-[30px] flex items-center justify-between rounded-lg border border-stroke dark:border-base-300 bg-gray-2 dark:bg-base-200 py-3 pr-4 pl-[30px]">
-            <div class="flex items-center space-x-2">
-                <button wire:click="goToPreviousPeriod" type="button" class="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-base-300 transition-colors duration-200 ease-in-out text-dark dark:text-white">
-                    <x-artisanpack-icon name="o-chevron-left" class="w-4 h-4" />
-                </button>
-                <button wire:click="goToNextPeriod" type="button" class="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-base-300 transition-colors duration-200 ease-in-out text-dark dark:text-white">
-                    <x-artisanpack-icon name="o-chevron-right" class="w-4 h-4" />
-                </button>
-                <button wire:click="goToToday" type="button" class="px-3 py-1 rounded-md hover:bg-gray-100 dark:hover:bg-base-300 transition-colors duration-200 ease-in-out text-dark dark:text-white">
-                    {{ __( 'Today' ) }}
-                </button>
-            </div>
-            <p class="text-base font-semibold text-dark dark:text-white sm:text-xl">
-                {{ $headerText }}
-            </p>
-            <div class="relative z-20 inline-flex rounded-[5px] bg-white dark:bg-base-100 text-dark dark:text-white">
-                <x-artisanpack-select
-                    :options="[
-						['label' => __( 'Day' ), 'value' => 'day'],
-						['label' => __( 'Week' ), 'value' => 'week'],
-						['label' => __( 'Month' ), 'value' => 'month'],
-						['label' => __( 'Year' ), 'value' => 'year']
-					]"
-                    placeholder=""
-                    :aria-label="__( 'Calendar view' )"
-                    wire:model.live="view"
-                    class="w-40"
-                />
-            </div>
-        </div>
-        @endisland
-
-        {{-- Calendar Grid Island --}}
-        @island('calendar-grid')
-        <div class="w-full max-w-full bg-white dark:bg-neutral overflow-x-auto rounded-lg shadow-sm">
-            <table class="w-full">
-                <thead>
-                <tr class="rounded-t-lg {{ 'custom' === $colorScheme ? 'bg-custom' : 'bg-' . $colorScheme . ' text-white' }}">
-                    @foreach ($this->weekdays as $weekday)
-                        <th class="h-[60px] w-10 p-2 text-xs lg:w-28 xl:text-base 2xl:w-40 {{ $loop->first ? 'rounded-tl-lg' : '' }} {{ $loop->last ? 'rounded-tr-lg' : '' }}">
-                            <span class="hidden lg:block">{{ $weekday->format('l') }}</span>
-                            <span class="hidden md:block lg:hidden">{{ $weekday->format('D') }}</span>
-                            <span class="block md:hidden">{{ substr($weekday->format('D'), 0, 1) }}</span>
-                        </th>
-                    @endforeach
-                </tr>
-                </thead>
-                <tbody>
-                @foreach ($this->weeks as $week)
-                    <tr class="h-20 text-center align-top">
-                        @foreach ($week as $day)
-                            @php
-                                $isToday          = $day->date->isToday();
-								$isCurrentMonth   = $day->date->isSameMonth($gridStartsAt);
-								$isWeekend        = $day->date->isWeekend() && $weekendHighlight;
-
-								$cellClasses = 'ease hover:bg-gray-2 dark:hover:bg-base-200 relative h-28 w-10 cursor-pointer border border-stroke dark:border-base-300 pt-0.5 pb-2 px-3 transition duration-500 md:h-[125px] lg:w-28 2xl:w-40';
-								if ( ! $isCurrentMonth ) {
-									$cellClasses .= ' bg-gray-1 dark:bg-base-300/50';
-								} elseif ( $isWeekend ) {
-									$cellClasses .= ' bg-gray-1/50 dark:bg-base-300/30';
-								}
-                            @endphp
-                            <td class="{{ $cellClasses }}">
-                                <div class="text-left text-sm font-medium {{ ! $isCurrentMonth ? 'text-dark/40 dark:text-white/40' : 'text-dark dark:text-white' }}">
-                                    @if($isToday)
-                                        @php
-                                            $todayClasses = 'inline-flex items-center justify-center w-7 h-7 rounded-full ';
-											if ( 'custom' === $colorScheme ) {
-												$todayClasses .= 'bg-custom';
-											} else {
-												$todayClasses .= 'bg-' . $colorScheme . ' text-white';
-											}
-                                        @endphp
-                                        <span class="{{ $todayClasses }}">{{ $day->date->day }}</span>
-                                    @else
-                                        <span class="inline-block mb-2">{{ $day->date->day }}</span>
-                                    @endif
-                                </div>
-                                <div class="mt-2 space-y-1 overflow-y-auto max-h-[80px]">
-                                    @foreach ($day->events as $event)
-                                        @php
-                                            $eventColorScheme = $event['colorScheme'] ?? 'primary';
-											$eventClasses     = 'group relative z-10 rounded-sm border-l-[3px] bg-base-300 dark:bg-base-300 px-[24px] py-[6px] text-left mb-1 transition-transform duration-200 ease-in-out hover:scale-[1.02]';
-											$eventStyles      = '';
-
-											if ( 'custom' === $eventColorScheme && ! empty( $event['customColor'] ) ) {
-												$eventStyles = "border-color: {$event['customColor']};";
-											} else {
-												$eventClasses .= match ( $eventColorScheme ) {
-													'secondary' => ' border-secondary',
-													'accent'    => ' border-accent',
-													default     => ' border-primary',
-												};
-											}
-
-											$tooltip    = $event['title'] ?? $event['label'];
-											if ( ! empty( $event['start_time'] ) ) {
-												$tooltip = $event['start_time'] . ' - ' . $tooltip;
-											}
-											$isMultiDay = isset( $event['is_multiday'] ) && $event['is_multiday'];
-                                        @endphp
-                                        <div class="{{ $eventClasses }}" @if(!empty($eventStyles)) style="{{ $eventStyles }}" @endif title="{{ $tooltip }}" data-event-id="{{ $event['id'] }}">
-                                            <span class="event-name text-sm font-medium text-dark dark:text-white block">{{ $event['label'] }}</span>
-                                            <span class="time text-sm text-base-content">
-													@if($isMultiDay && isset($event['start_date']) && isset($event['end_date']))
-                                                    {{ $event['start_date'] }} - {{ $event['end_date'] }}
-                                                @elseif(!empty($event['start_time']))
-                                                    {{ $event['start_time'] }}@if(!empty($event['end_time'])) - {{ $event['end_time'] }}@endif
-                                                @endif
-												</span>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </td>
-                        @endforeach
-                    </tr>
+    <div data-scope="calendar" data-part="toolbar"{{ $partClass( 'toolbar' ) }}>
+        <x-artisanpack-button
+            variant="outline"
+            color="neutral"
+            size="sm"
+            data-scope="calendar"
+            data-part="today-trigger"
+            :class="$classes['todayTrigger'] ?? null"
+            x-on:click="$dispatch('date-change', {{ $js( $model['today'] ) }})"
+        >{{ $labels['today'] }}</x-artisanpack-button>
+        <x-artisanpack-button
+            variant="ghost"
+            color="neutral"
+            size="sm"
+            icon-only
+            leading-icon="chevron-left"
+            :aria-label="$labels['previous']"
+            data-scope="calendar"
+            data-part="previous-trigger"
+            :class="$classes['previousTrigger'] ?? null"
+            x-on:click="$dispatch('date-change', {{ $js( $model['previousDate'] ) }})"
+        />
+        <x-artisanpack-button
+            variant="ghost"
+            color="neutral"
+            size="sm"
+            icon-only
+            leading-icon="chevron-right"
+            :aria-label="$labels['next']"
+            data-scope="calendar"
+            data-part="next-trigger"
+            :class="$classes['nextTrigger'] ?? null"
+            x-on:click="$dispatch('date-change', {{ $js( $model['nextDate'] ) }})"
+        />
+        <h2 data-scope="calendar" data-part="title" id="{{ $titleId }}" aria-live="polite"{{ $partClass( 'title' ) }}>{{ $model['title'] }}</h2>
+        <div class="apui-tabs{{ isset( $classes['viewTabs'] ) ? ' ' . $classes['viewTabs'] : '' }}" data-variant="segmented" data-size="sm" data-scope="calendar" data-part="view-tabs">
+            <div data-scope="tabs" data-part="list" role="tablist" aria-label="{{ $labels['views'] }}" x-on:keydown="tabsKeydown($event)">
+                @foreach ( \ArtisanPack\LivewireUiComponents\Support\CalendarModel::VIEWS as $option )
+                    <button
+                        type="button"
+                        data-scope="tabs"
+                        data-part="trigger"
+                        role="tab"
+                        id="{{ $tabId( $option ) }}"
+                        aria-selected="{{ $option === $model['view'] ? 'true' : 'false' }}"
+                        aria-controls="{{ $bodyId }}"
+                        tabindex="{{ $option === $model['view'] ? '0' : '-1' }}"
+                        @if ( $option === $model['view'] ) data-selected @endif
+                        x-on:click="$dispatch('view-change', {{ $js( $option ) }})"
+                    >{{ $labels[ $option ] }}</button>
                 @endforeach
-                </tbody>
-            </table>
+            </div>
         </div>
-        @endisland
+        @if ( $creatable )
+            <x-artisanpack-button
+                size="sm"
+                leading-icon="plus"
+                data-scope="calendar"
+                data-part="create-trigger"
+                :class="$classes['createTrigger'] ?? null"
+                x-on:click="$dispatch('create', {{ $js( $model['date'] ) }})"
+            >{{ $labels['newEvent'] }}</x-artisanpack-button>
+        @endif
     </div>
-
-    {{-- Event Details Modal --}}
-    <x-artisanpack-modal wire:model="eventModal" title="Event Details" class="calendar-event-modal">
-        <livewire:dynamic-component :component="$eventView" />
-    </x-artisanpack-modal>
+    <div data-scope="calendar" data-part="body" id="{{ $bodyId }}" role="tabpanel" aria-labelledby="{{ $tabId( $model['view'] ) }}"{{ $partClass( 'body' ) }}>
+        @if ( 'agenda' === $model['view'] )
+            @if ( [] === $model['agenda'] )
+                <x-artisanpack-empty-state size="sm" icon="calendar" :title="$labels['empty']" />
+            @else
+                <ul data-scope="calendar" data-part="grid" aria-labelledby="{{ $titleId }}"{{ $partClass( 'grid' ) }}>
+                    @foreach ( $model['agenda'] as $agendaDay )
+                        <li data-scope="calendar" data-part="row" data-date="{{ $agendaDay['date'] }}" @if ( $agendaDay['today'] ) data-today @endif wire:key="{{ $id }}-{{ $agendaDay['date'] }}"{{ $partClass( 'row' ) }}>
+                            <h3 data-scope="calendar" data-part="weekday" id="{{ $id }}-{{ $agendaDay['date'] }}" @if ( $agendaDay['today'] ) data-today @endif{{ $partClass( 'weekday' ) }}>{{ $agendaDay['label'] }}</h3>
+                            <ul data-scope="calendar" data-part="cell" aria-labelledby="{{ $id }}-{{ $agendaDay['date'] }}"{{ $partClass( 'cell' ) }}>
+                                @foreach ( $agendaDay['events'] as $item )
+                                    <li wire:key="{{ $id }}-{{ $item['key'] }}">
+                                        @php
+                                            $time           = $item['range'];
+                                            $eventHrefValue = $eventHref( $item['href'] );
+                                            $eventTag       = null !== $eventHrefValue ? 'a' : 'button';
+                                        @endphp
+                                        <{{ $eventTag }}
+                                            @if ( 'a' === $eventTag ) href="{{ $eventHrefValue }}" @else type="button" @endif
+                                            data-scope="calendar"
+                                            data-part="event"
+                                            data-color="{{ $item['color'] }}"
+                                            data-event-key="{{ $item['eventKey'] }}"
+                                            @if ( 'button' === $eventTag && $details ) aria-haspopup="dialog" @endif
+                                            @if ( 'button' === $eventTag ) x-on:click="$dispatch('event-click', {{ $js( $item['event'] ) }})" @endif
+                                            wire:key="{{ $id }}-event-{{ $item['key'] }}"
+                                            {{ $partClass( 'event' ) }}
+                                        >@if ( '' !== $time )<span data-scope="calendar" data-part="event-time"{{ $partClass( 'eventTime' ) }}>{{ $time }}</span>@endif<span data-scope="calendar" data-part="event-title"{{ $partClass( 'eventTitle' ) }}>{{ $item['title'] }}</span><span class="apui-sr-only">, {{ $item['context'] }}</span></{{ $eventTag }}>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
+        @else
+            <div data-scope="calendar" data-part="grid" role="grid" aria-labelledby="{{ $titleId }}" x-on:keydown="gridKeydown($event)"{{ $partClass( 'grid' ) }}>
+                <div data-scope="calendar" data-part="row" role="row"{{ $partClass( 'row' ) }}>
+                    @foreach ( $model['weekdays'] as $weekday )
+                        <div data-scope="calendar" data-part="weekday" role="columnheader" @if ( $weekday['today'] ) data-today @endif{{ $partClass( 'weekday' ) }}>{{ $weekday['short'] }}@if ( null !== $weekday['day'] ) <span data-scope="calendar" data-part="date"{{ $partClass( 'date' ) }}>{{ $weekday['day'] }}</span>@endif</div>
+                    @endforeach
+                </div>
+                @foreach ( $model['rows'] as $row )
+                    <div data-scope="calendar" data-part="row" role="row"{{ $partClass( 'row' ) }}>
+                        @foreach ( $row as $day )
+                            <div
+                                data-scope="calendar"
+                                data-part="cell"
+                                role="gridcell"
+                                id="{{ $id }}-{{ $day['date'] }}"
+                                data-date="{{ $day['date'] }}"
+                                tabindex="{{ $day['focus'] ? '0' : '-1' }}"
+                                @if ( $day['outside'] ) data-outside @endif
+                                @if ( $day['today'] ) data-today aria-current="date" @endif
+                                wire:key="{{ $id }}-{{ $day['date'] }}"
+                                {{ $partClass( 'cell' ) }}
+                            >
+                                <span class="apui-sr-only">{{ $day['label'] }}</span>
+                                @if ( 'month' === $model['view'] )
+                                    <span data-scope="calendar" data-part="date" aria-hidden="true"{{ $partClass( 'date' ) }}>{{ $day['day'] }}</span>
+                                @endif
+                                @foreach ( $day['events'] as $item )
+                                    @php
+                                        $time           = 'month' === $model['view'] ? $item['time'] : $item['range'];
+                                        $eventHrefValue = $eventHref( $item['href'] );
+                                        $eventTag       = null !== $eventHrefValue ? 'a' : 'button';
+                                    @endphp
+                                    <{{ $eventTag }}
+                                        @if ( 'a' === $eventTag ) href="{{ $eventHrefValue }}" @else type="button" @endif
+                                        data-scope="calendar"
+                                        data-part="event"
+                                        data-color="{{ $item['color'] }}"
+                                        data-event-key="{{ $item['eventKey'] }}"
+                                        @if ( 'button' === $eventTag && $details ) aria-haspopup="dialog" @endif
+                                        @if ( 'button' === $eventTag ) x-on:click="$dispatch('event-click', {{ $js( $item['event'] ) }})" @endif
+                                        wire:key="{{ $id }}-event-{{ $item['key'] }}"
+                                        {{ $partClass( 'event' ) }}
+                                    >@if ( '' !== $time )<span data-scope="calendar" data-part="event-time"{{ $partClass( 'eventTime' ) }}>{{ $time }}</span>@endif<span data-scope="calendar" data-part="event-title"{{ $partClass( 'eventTitle' ) }}>{{ $item['title'] }}</span><span class="apui-sr-only">, {{ $item['context'] }}</span></{{ $eventTag }}>
+                                @endforeach
+                                @if ( $day['more'] > 0 )
+                                    <button
+                                        type="button"
+                                        data-scope="calendar"
+                                        data-part="more"
+                                        aria-label="{{ $day['moreLabel'] }}"
+                                        x-on:click="$dispatch('date-change', {{ $js( $day['date'] ) }}); $dispatch('view-change', 'day')"
+                                        {{ $partClass( 'more' ) }}
+                                    >{{ $day['moreText'] }}</button>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+                @endforeach
+            </div>
+        @endif
+    </div>
+    @if ( [] !== $model['legend'] )
+        <ul data-scope="calendar" data-part="legend" aria-label="{{ $labels['legend'] }}"{{ $partClass( 'legend' ) }}>
+            @foreach ( $model['legend'] as $entry )
+                <li data-scope="calendar" data-part="legend-item" data-color="{{ $entry['color'] }}"{{ $partClass( 'legendItem' ) }}>{{ $entry['category'] }}</li>
+            @endforeach
+        </ul>
+    @endif
 </div>
-
-<script>
-    function calendar(events) {
-        return {
-            allEvents: events,
-            init() {
-                this.applyCustomColors();
-
-                this.$el.addEventListener('click', (e) => {
-                    const eventEl = e.target.closest('[data-event-id]');
-                    if (eventEl && eventEl.dataset.eventId) {
-                        this.$wire.loadEventModal(eventEl.dataset.eventId);
-                    }
-                });
-            },
-            applyCustomColors() {
-                {!! $customColorScript !!}
-            }
-        }
-    }
-</script>
