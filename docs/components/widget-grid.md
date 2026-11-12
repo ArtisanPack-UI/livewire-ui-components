@@ -4,6 +4,8 @@ title: WidgetGrid Component
 
 # WidgetGrid Component
 
+> **Deprecated in 3.0.** Use [Grid](grid), built on the design system. `widget-grid` now renders a Grid: `cols` is `columns`, `gap` keeps its default of 6, and the grid reflows by `min-item-width` (default 14rem) instead of Tailwind breakpoints. This component is removed in a later major release.
+
 The WidgetGrid component provides a responsive grid helper optimized for dashboard layouts. It works seamlessly with KPI cards, stats, and other widget components to create clean, responsive dashboard interfaces.
 
 **Note:** This component was added in version 2.0.0.

@@ -1,89 +1,45 @@
-<div wire:key="{{ $uuid }}">
-    <div
-        {{ $attributes->class([
-                "flex justify-start items-center gap-4 px-3",
-                "hover:bg-base-200" => !$noHover,
-                "cursor-pointer" => $link
-            ])
-        }}
-    >
-
-        @if($link && ($shouldShowIcon() || data_get($item, $avatar) || !is_string($avatar)))
-            <div>
-                <a href="{{ $link }}" wire:navigate>
+{{--
+    ListItem (#58). Markup contract: design-system wave, ListItem.
+    An li inside a list, a div on its own, with the leading, title, description
+    and trailing parts. With href the title is a link and with interactive a
+    button; either covers the row (data-interactive). selected sets
+    data-selected and aria-current on that control. Named slots override the
+    props. The deprecated 2.x item, value, sub-value and avatar attributes fill
+    the row when the props are empty.
+--}}
+@php
+    $rootTag      = $inList ? 'li' : 'div';
+    $titleTag     = $titleTag();
+    $href         = $linkHref();
+    $isControl    = 'span' !== $titleTag;
+    $legacyAvatar = $legacyValue( 'avatar', 'avatar' );
+    $legacyTitle  = $legacyValue( 'value', 'name' );
+    $legacyDesc   = $legacyValue( 'sub-value', null );
+    $leadingSlot  = isset( $leading ) && $filled( $leading ) ? $leading : null;
+    $trailingSlot = isset( $trailing ) && $trailing instanceof \Illuminate\View\ComponentSlot && $filled( $trailing ) ? $trailing : null;
+    $titleSlot    = isset( $title ) && $title instanceof \Illuminate\View\ComponentSlot && $filled( $title ) ? $title : null;
+    $descSlot     = isset( $description ) && $description instanceof \Illuminate\View\ComponentSlot && $filled( $description ) ? $description : null;
+    $titleContent = $titleSlot ?? ( $filled( $title ) ? $title : ( $legacyTitle ?? ( isset( $slot ) && $filled( $slot ) ? $slot : '' ) ) );
+    $descContent  = $descSlot ?? ( $filled( $description ) ? $description : $legacyDesc );
+    $trailContent = $trailingSlot ?? ( $filled( $trailing ) ? $trailing : null );
+    $hasLeading   = null !== $leadingSlot || $filled( $leadingIcon ) || null !== $legacyAvatar;
+    $navigates    = 'a' === $titleTag && ! $disabled && $navigate && \ArtisanPack\LivewireUiComponents\Support\SafeUrl::navigable( $href );
+    $attributes   = $attributes->except( \ArtisanPack\LivewireUiComponents\View\Components\ListItem::LEGACY_ATTRIBUTES );
+@endphp
+<{{ $rootTag }}
+    {{ $attributes->class( $rootClasses( 'apui-list-item' ) ) }}
+    @if ( $isControl ) data-interactive @endif
+    @if ( $selected ) data-selected @endif
+    @if ( $disabled ) data-disabled aria-disabled="true" @endif
+>@if ( $hasLeading )<span data-scope="list-item" data-part="leading"{{ $partClass( 'leading' ) }}>@if ( null !== $leadingSlot ){{ $content( $leadingSlot ) }}@elseif ( $filled( $leadingIcon ) ){{ $iconSvg( $leadingIcon ) }}@else<x-artisanpack-avatar :src="$legacyAvatar" :name="$legacyTitle" />@endif</span>@endif<{{ $titleTag }}
+        data-scope="list-item"
+        data-part="title"{{ $partClass( 'title' ) }}
+        @if ( 'a' === $titleTag )
+            @if ( $disabled ) role="link" aria-disabled="true" @else href="{{ $href }}" @endif
+            @if ( $navigates ) wire:navigate @endif
+        @elseif ( 'button' === $titleTag )
+            type="button"
+            @if ( $disabled ) disabled @endif
         @endif
-
-        <!-- ICON (NEW) -->
-        @if($shouldShowIcon())
-            <div class="py-3 flex-shrink-0">
-                @if($iconSlot)
-                    {{ $iconSlot }}
-                @elseif($getIcon())
-                    <x-svg :name="$getIcon()" class="{{ $iconClass }}" />
-                @endif
-            </div>
-        @endif
-
-        <!-- AVATAR -->
-        @if(data_get($item, $avatar))
-            <div class="py-3">
-                <div class="avatar">
-                    <div class="w-11 rounded-full">
-                        <img src="{{ data_get($item, $avatar) }}" />
-                    </div>
-                </div>
-            </div>
-        @endif
-
-        @if(!is_string($avatar))
-            <div {{ $avatar->attributes->class(["py-3"]) }}>
-                {{ $avatar }}
-            </div>
-        @endif
-
-
-        @if($link && ($shouldShowIcon() || data_get($item, $avatar) || !is_string($avatar)))
-                </a>
-            </div>
-        @endif
-
-        <!-- CONTENT -->
-        <div class="flex-1 overflow-hidden whitespace-nowrap text-ellipsis truncate w-0 mary-hideable">
-            @if($link)
-                <a href="{{ $link }}" wire:navigate>
-            @endif
-
-            <div class="py-3">
-                <div @if(!is_string($value)) {{ $value->attributes->class(["font-semibold truncate"]) }} @else class="font-semibold truncate" @endif>
-                    {{ is_string($value) ? data_get($item, $value) : $value }}
-                </div>
-
-                <div @if(!is_string($subValue))  {{ $subValue->attributes->class(["text-base-content/50 text-sm truncate"]) }} @else class="text-base-content/50 text-sm truncate" @endif>
-                    {{ is_string($subValue) ? data_get($item, $subValue) : $subValue }}
-                </div>
-            </div>
-
-            @if($link)
-                </a>
-            @endif
-        </div>
-
-        <!-- ACTION -->
-        @if($actions)
-            @if($link && !Str::of($actions)->contains([':click', '@click' , 'href']))
-                <a href="{{ $link }}" wire:navigate>
-            @endif
-                <div {{ $actions->attributes->class(["py-3 flex items-center gap-3 mary-hideable"]) }}>
-                        {{ $actions }}
-                </div>
-
-            @if($link && !Str::of($actions)->contains([':click', '@click' , 'href']))
-                </a>
-            @endif
-        @endif
-    </div>
-
-    @if(!$noSeparator)
-        <hr class="border-t-[length:var(--border)] border-base-content/10"/>
-    @endif
-</div>
+        @if ( $isControl && $selected ) aria-current="true" @endif
+    >{{ $content( $titleContent ) }}</{{ $titleTag }}>@if ( $filled( $descContent ) )<span data-scope="list-item" data-part="description"{{ $partClass( 'description' ) }}>{{ $content( $descContent ) }}</span>@endif @if ( null !== $trailContent )<span data-scope="list-item" data-part="trailing"{{ $partClass( 'trailing' ) }}>{{ $content( $trailContent ) }}</span>@endif</{{ $rootTag }}>

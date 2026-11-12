@@ -2,157 +2,90 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
+use Illuminate\Support\Facades\Blade;
 
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
-use ArtisanPack\LivewireUiComponents\View\Components\Progress;
-use Error;
-use RuntimeException;
-
-/**
- * Comprehensive unit tests for the Progress component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * Progress (#60): the root is the progressbar. The manifest parity check is
+ * in tests/Feature/DesignSystemParityTest.php.
  */
-class ProgressComponentTest extends ComponentTestCase
+
+function progressRoot(DOMXPath $dom): DOMElement
 {
-    protected string $componentClass = Progress::class;
-
-    protected array $defaultProperties = [
-        'value'         => 0,
-        'max'           => 100,
-        'indeterminate' => false,
-    ];
-
-    protected array $requiredProperties = [];
-
-    public function test_progress_string_properties(): void
-    {
-        $stringProperties = ['id'];
-        $testValues       = ComponentDataFactory::sampleTexts();
-
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
-
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
-    }
-
-    public function test_progress_boolean_properties(): void
-    {
-        $booleanProperties = ['indeterminate'];
-
-        foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
-            $this->assertTrue($component->$property);
-
-            $component = $this->createComponent([$property => false]);
-            $this->assertFalse($component->$property);
-        }
-    }
-
-    public function test_progress_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
-
-    public function test_progress_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'Progress should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
-
-    public function test_progress_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
-
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
-
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_progress_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'Progress rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
+    return $dom->query('//div[contains(@class, "apui-progress")]')->item(0);
 }
+
+test('a labeled bar renders the progressbar, head and track', function (): void {
+    $dom  = designSystemDom(Blade::render('<x-artisanpack-progress id="up" :value="64" label="Uploading 12 photos" value-text="8 of 12" />'));
+    $root = progressRoot($dom);
+
+    $parts = [];
+    foreach ($dom->query('//*[@data-scope="progress"]') as $element) {
+        $parts[] = $element->getAttribute('data-part');
+    }
+
+    expect($parts)->toBe(['root', 'head', 'label', 'value', 'track', 'bar'])
+        ->and($root->getAttribute('role'))->toBe('progressbar')
+        ->and($root->getAttribute('aria-valuemin'))->toBe('0')
+        ->and($root->getAttribute('aria-valuemax'))->toBe('100')
+        ->and($root->getAttribute('aria-valuenow'))->toBe('64')
+        ->and($root->getAttribute('aria-valuetext'))->toBe('8 of 12')
+        ->and($root->getAttribute('aria-labelledby'))->toBe('up-label')
+        ->and($root->getAttribute('data-size'))->toBe('md')
+        ->and($root->getAttribute('data-color'))->toBe('primary')
+        ->and($dom->query('//*[@id="up-label"]')->item(0)->textContent)->toBe('Uploading 12 photos')
+        ->and($dom->query('//*[@data-part="value"]')->item(0)->textContent)->toBe('8 of 12')
+        ->and($dom->query('//*[@data-part="bar"]')->item(0)->getAttribute('style'))->toBe('--apui-_v: 64%');
+});
+
+test('a labeled bar without valueText shows the percentage; an unlabeled one has no head', function (): void {
+    expect(designSystemDom(Blade::render('<x-artisanpack-progress :value="3" :max="8" label="Steps" />'))->query('//*[@data-part="value"]')->item(0)->textContent)->toBe('38%');
+
+    $dom = designSystemDom(Blade::render('<x-artisanpack-progress :value="40" aria-label="Profile" />'));
+    expect($dom->query('//*[@data-part="head"]'))->toHaveCount(0)
+        ->and(progressRoot($dom)->getAttribute('aria-label'))->toBe('Profile')
+        ->and(progressRoot($dom)->hasAttribute('aria-labelledby'))->toBeFalse()
+        ->and(progressRoot($dom)->hasAttribute('aria-valuetext'))->toBeFalse();
+});
+
+test('the value is clamped', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-progress :value="150" />'));
+
+    expect(progressRoot($dom)->getAttribute('aria-valuenow'))->toBe('100')
+        ->and($dom->query('//*[@data-part="bar"]')->item(0)->getAttribute('style'))->toBe('--apui-_v: 100%');
+});
+
+test('indeterminate leaves out aria-valuenow and the width', function (): void {
+    $dom  = designSystemDom(Blade::render('<x-artisanpack-progress indeterminate label="Preparing export" />'));
+    $root = progressRoot($dom);
+
+    expect($root->hasAttribute('data-indeterminate'))->toBeTrue()
+        ->and($root->hasAttribute('aria-valuenow'))->toBeFalse()
+        ->and($dom->query('//*[@data-part="value"]'))->toHaveCount(0)
+        ->and($dom->query('//*[@data-part="bar"]')->item(0)->hasAttribute('style'))->toBeFalse();
+});
+
+test('segmented renders one bar per segment, the done ones marked', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-progress segmented :value="3" :max="5" />'));
+
+    expect(progressRoot($dom)->hasAttribute('data-segmented'))->toBeTrue()
+        ->and(progressRoot($dom)->getAttribute('aria-valuemax'))->toBe('5')
+        ->and($dom->query('//*[@data-part="bar"]'))->toHaveCount(5)
+        ->and($dom->query('//*[@data-part="bar"][@data-done]'))->toHaveCount(3);
+});
+
+test('size, color and classes render', function (): void {
+    $dom  = designSystemDom(Blade::render('<x-artisanpack-progress size="lg" color="warning" class="w-full" :classes="[\'bar\' => \'b\']" />'));
+    $root = progressRoot($dom);
+
+    expect($root->getAttribute('data-size'))->toBe('lg')
+        ->and($root->getAttribute('data-color'))->toBe('warning')
+        ->and($root->getAttribute('class'))->toBe('apui-progress w-full')
+        ->and($dom->query('//*[@data-part="bar"]')->item(0)->getAttribute('class'))->toBe('b');
+});
+
+test('an author id lands on the root unchanged', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-progress id="upload" :value="40" />'));
+
+    expect($dom->query('//*[@data-part="root"][@id="upload"]'))->toHaveCount(1)
+        ->and($dom->query('//*[@id="upload-root"]'))->toHaveCount(0);
+});

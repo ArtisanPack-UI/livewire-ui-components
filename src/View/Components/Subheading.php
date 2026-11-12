@@ -1,109 +1,53 @@
 <?php
 
-declare(strict_types=1);
 /**
  * Subheading Component
  *
- * A component for displaying subheadings with customizable styling options.
+ * Deprecated alias of the design-system Text with size lead (#58): a 2.x
+ * subheading was a paragraph under a heading, not a heading.
  *
  * @author     Jacob Martella
- * @copyright  2023 Jacob Martella
+ * @copyright  2026 Jacob Martella
  * @license    MIT
  *
- * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
+ * @link       https://github.com/ArtisanPack-UI/livewire-ui-components
  * @since      1.0.0
+ * @deprecated 3.0.0 Use <x-artisanpack-text size="lead">.
  */
 
-namespace ArtisanPack\LivewireUiComponents\View\Components;
+declare(strict_types=1);
 
-use Illuminate\Contracts\View\View;
+namespace ArtisanPack\LivewireUiComponents\View\Components;
 
 /**
  * Subheading Component Class
  *
- * Provides a customizable subheading component with support for styling options.
+ * Renders `.apui-text` with size lead, the same markup as
+ * `<x-artisanpack-text size="lead">`.
  *
- * @since 1.0.0
+ * @since      1.0.0
+ * @deprecated 3.0.0 Use <x-artisanpack-text size="lead">.
  */
-class Subheading extends BaseComponent
+class Subheading extends Text
 {
     /**
-     * Unique identifier for the subheading instance.
+     * Creates the component.
      *
-     * @since 1.0.0
-     */
-    public string $uuid;
-
-    /**
-     * Constructor for the Subheading component.
+     * @since 3.0.0
      *
-     * @param  string|null  $id  Optional ID for the subheading.
-     * @param  string|null  $size  Custom size class. Defaults to text-lg.
-     * @param  string|null  $color  Text color class.
-     * @param  bool|null  $semibold  Whether to use semibold font weight.
-     * @param  bool|null  $bold  Whether to use bold font weight.
-     * @param  bool|null  $center  Whether to center align the subheading.
-     * @param  bool|null  $muted  Whether to use muted text color.
-     *
-     * @since 1.0.0
+     * @param  string  $as  The element: p, span or div.
+     * @param  string  $size  The Text size, lead by default.
+     * @param  string  $tone  The Text tone.
+     * @param  string  $weight  The Text weight.
+     * @param  array<string, string>  $classes  Extra classes: `root`.
      */
     public function __construct(
-        public ?string $id = null,
-        public ?string $size = null,
-        public ?string $color = null,
-        public ?bool $semibold = false,
-        public ?bool $bold = false,
-        public ?bool $center = false,
-        public ?bool $muted = false,
+        string $as = 'p',
+        string $size = 'lead',
+        string $tone = 'default',
+        string $weight = 'regular',
+        array $classes = [],
     ) {
-        $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
-    }
-
-    /**
-     * Get the font weight class based on component properties.
-     *
-     * @return string The font weight class.
-     *
-     * @since 1.0.0
-     */
-    public function fontWeightClass(): string
-    {
-        if ($this->bold) {
-            return 'font-bold';
-        }
-
-        if ($this->semibold) {
-            return 'font-semibold';
-        }
-
-        return 'font-medium'; // Default to medium
-    }
-
-    /**
-     * Get the text color class based on component properties.
-     *
-     * @return string The text color class.
-     *
-     * @since 1.0.0
-     */
-    public function colorClass(): string
-    {
-        if ($this->color) {
-            return $this->color;
-        }
-
-        return $this->muted ? 'text-base-content/70' : 'text-base-content';
-    }
-
-    /**
-     * Renders the subheading component.
-     *
-     * @return View The rendered component.
-     *
-     * @since 1.0.0
-     */
-    public function render(): View
-    {
-        return view('livewire-ui-components::components.subheading');
+        parent::__construct(as: $as, size: $size, tone: $tone, weight: $weight, classes: $classes);
     }
 }

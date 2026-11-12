@@ -4,114 +4,50 @@ title: Badge Component
 
 # Badge Component
 
-The Badge component displays a small count, label, or status indicator with flexible color customization options.
+A small, non-interactive label for a status, category or count, built on the ArtisanPack UI design system (`.apui-badge`). The text is always there; a dot or an icon can lead it.
 
 ## Basic Usage
 
 ```blade
-<x-artisanpack-badge value="New" />
+<x-artisanpack-badge color="success">{{ __( 'Paid' ) }}</x-artisanpack-badge>
+<x-artisanpack-badge color="info" variant="solid">{{ __( 'New' ) }}</x-artisanpack-badge>
+<x-artisanpack-badge color="warning" variant="outline">{{ __( 'Pending' ) }}</x-artisanpack-badge>
+<x-artisanpack-badge color="error" variant="ghost" dot>{{ __( 'Overdue' ) }}</x-artisanpack-badge>
 ```
 
-## Color System
+Use the same color for the same status everywhere. `soft` is the default; `solid` is for counts and emphasis, `outline` and `ghost` for quieter labels.
 
-### Predefined Variants
-
-Use predefined color variants for consistent theming:
+## Dot, icon and size
 
 ```blade
-<x-artisanpack-badge value="Primary" color="primary" />
-<x-artisanpack-badge value="Secondary" color="secondary" />
-<x-artisanpack-badge value="Accent" color="accent" />
-<x-artisanpack-badge value="Info" color="info" />
-<x-artisanpack-badge value="Success" color="success" />
-<x-artisanpack-badge value="Warning" color="warning" />
-<x-artisanpack-badge value="Error" color="error" />
+<x-artisanpack-badge color="success" dot>{{ __( 'Active' ) }}</x-artisanpack-badge>
+<x-artisanpack-badge color="success" leading-icon="arrow-right" size="sm">+11.01%</x-artisanpack-badge>
+<x-artisanpack-badge color="primary" size="lg">{{ __( 'Pro' ) }}</x-artisanpack-badge>
 ```
 
-### Tailwind Color Palette
-
-Use any Tailwind color with intensity levels:
-
-```blade
-<x-artisanpack-badge value="Red 500" color="red-500" />
-<x-artisanpack-badge value="Blue 600" color="blue-600" />
-<x-artisanpack-badge value="Green 400" color="green-400" />
-<x-artisanpack-badge value="Purple 700" color="purple-700" />
-<x-artisanpack-badge value="Yellow 300" color="yellow-300" />
-```
-
-### Custom Hex Colors
-
-Use custom hex color codes:
-
-```blade
-<x-artisanpack-badge value="Custom" color="#ff6b6b" />
-<x-artisanpack-badge value="Brand" color="#4ecdc4" />
-<x-artisanpack-badge value="Special" color="#ffe66d" />
-```
-
-### Color Adjustments
-
-Fine-tune the background appearance with color adjustments:
-
-```blade
-<!-- Lighter background -->
-<x-artisanpack-badge value="Lighter" color="blue-500" color-adjustment="lighter" />
-
-<!-- Darker background -->
-<x-artisanpack-badge value="Darker" color="blue-500" color-adjustment="darker" />
-
-<!-- Transparent background -->
-<x-artisanpack-badge value="Transparent" color="blue-500" color-adjustment="transparent" />
-
-<!-- Subtle background -->
-<x-artisanpack-badge value="Subtle" color="blue-500" color-adjustment="subtle" />
-```
-
-## With Different Sizes
-
-```blade
-<x-artisanpack-badge value="Large" class="badge-lg" />
-<x-artisanpack-badge value="Medium" class="badge-md" />
-<x-artisanpack-badge value="Small" class="badge-sm" />
-<x-artisanpack-badge value="Extra Small" class="badge-xs" />
-```
-
-## With Outline
-
-```blade
-<x-artisanpack-badge value="Outline" class="badge-outline" />
-<x-artisanpack-badge value="Primary Outline" class="badge-primary badge-outline" />
-```
-
-## With Custom Content
-
-```blade
-<x-artisanpack-badge class="badge-primary">
-    <div class="flex items-center gap-1">
-        <x-artisanpack-icon name="o-check-circle" class="w-3 h-3" />
-        <span>Verified</span>
-    </div>
-</x-artisanpack-badge>
-```
+The dot and the icon are decorative. Arrow and chevron icons mirror in right-to-left layouts. The `icon` slot overrides `leading-icon`.
 
 ## Props
 
-| Name | Type | Default | Description |
-|------|------|---------|-------------|
-| id | string | null | Optional identifier for the badge |
-| value | string | null | Text content to display in the badge |
-| color | string | null | Color variant, Tailwind color (e.g., 'red-500'), or hex code (e.g., '#ff0000') |
-| color-adjustment | string | null | Background adjustment: 'lighter', 'darker', 'transparent', or 'subtle' |
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `variant` | `solid` · `soft` · `outline` · `ghost` | `soft` | Visual treatment. Emitted as `data-variant`. |
+| `color` | `primary` · `secondary` · `accent` · `neutral` · `success` · `warning` · `error` · `info` | `neutral` | Semantic color. Emitted as `data-color`. |
+| `size` | `sm` · `md` · `lg` | `md` | Height: 18, 20 or 24px. Emitted as `data-size`. |
+| `dot` | bool | `false` | A decorative dot before the label. |
+| `leading-icon` | string | none | An icon name before the label. |
+| `classes` | array | `[]` | Extra classes per part: `root`, `dot`, `icon`, `label`. |
 
-## CSS Classes
+Every other attribute lands on the root.
 
-The component accepts all standard HTML attributes, including CSS classes. The component uses DaisyUI's badge classes for styling. Here are some of the available classes:
+## Upgrading from 2.x
 
-- `badge-neutral`: Default style
-- `badge-primary`, `badge-secondary`, `badge-accent`: Brand colors
-- `badge-info`, `badge-success`, `badge-warning`, `badge-error`: State colors
-- `badge-outline`: Outlined style
-- `badge-lg`, `badge-md`, `badge-sm`, `badge-xs`: Size variations
+- Put the text in the slot. `value` still renders as the label when the slot is empty, but is deprecated.
+- `color` takes the eight semantic names only. Tailwind names and hex codes fall back to `neutral`: set a one-off color through `classes` or a custom property instead.
+- `color-adjustment`, `glass`, `glass-tint` and `glass-tint-opacity` are gone.
 
-You can combine these classes to create different badge styles.
+## Accessibility
+
+- Never interactive: use a Button or a filter chip for an action.
+- The label is always present; the dot and the icon are `aria-hidden`, so color is never the only signal.
+- In high contrast, soft badges gain an edge; in forced colors every badge keeps one.

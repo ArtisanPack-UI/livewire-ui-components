@@ -136,9 +136,9 @@ CSV export works without any additional dependencies.
 
 Some components require additional JavaScript packages and configuration.
 
-### Charts & Sparklines
+### Charts
 
-The Chart and Sparkline components require ApexCharts:
+The Chart component requires ApexCharts:
 
 ```bash
 npm install apexcharts
@@ -149,12 +149,9 @@ Then add to your `resources/js/app.js`:
 ```javascript
 import ApexCharts from 'apexcharts';
 window.ApexCharts = ApexCharts;
-
-// Import sparkline Alpine component
-import '../../vendor/artisanpack-ui/livewire-ui-components/resources/js/sparkline.js';
 ```
 
-**Note:** For symlinked package development, use the path above. For production installations via Composer, the path would be different and you may need to adjust based on your setup.
+`<x-artisanpack-sparkline>` is drawn on the server as inline SVG and needs no library or script. See [Sparkline](docs/components/sparkline.md).
 
 ### Date Pickers
 

@@ -1,115 +1,101 @@
 <?php
 
-declare(strict_types=1);
 /**
  * Heading Component
  *
- * A component for displaying headings with customizable styling options.
+ * The design-system Heading (#58): a title from the type scale, with the
+ * semantic level and the visual size set apart.
  *
  * @author     Jacob Martella
- * @copyright  2023 Jacob Martella
+ * @copyright  2026 Jacob Martella
  * @license    MIT
  *
- * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
+ * @link       https://github.com/ArtisanPack-UI/livewire-ui-components
  * @since      1.0.0
  */
 
+declare(strict_types=1);
+
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
+use ArtisanPack\LivewireUiComponents\View\Concerns\RendersDesignSystemParts;
 use Illuminate\Contracts\View\View;
 
 /**
  * Heading Component Class
  *
- * Provides a customizable heading component with support for different heading levels and styling options.
+ * Renders `.apui-heading` on h1–h6 with data-level and data-size, and the
+ * eyebrow part just before it. Every attribute lands on the heading.
  *
  * @since 1.0.0
  */
 class Heading extends BaseComponent
 {
+    use RendersDesignSystemParts;
+
     /**
-     * Constructor for the Heading component.
+     * Creates the component.
      *
-     * @param  string|null  $id  Optional ID for the heading.
-     * @param  string|null  $level  Heading level (1-6). Defaults to 1 (h1).
-     * @param  string|null  $size  Custom size class. If not provided, defaults based on level.
-     * @param  string|null  $color  Text color class.
-     * @param  bool|null  $semibold  Whether to use semibold font weight.
-     * @param  bool|null  $bold  Whether to use bold font weight.
-     * @param  bool|null  $extrabold  Whether to use extra bold font weight.
-     * @param  bool|null  $center  Whether to center align the heading.
+     * @since 3.0.0
      *
-     * @since 1.0.0
+     * @param  int|string  $level  The semantic level, 1–6: renders h1–h6. Emitted as data-level.
+     * @param  int|string|null  $size  The visual size, 1–6. Defaults to level. Emitted as data-size.
+     * @param  string|null  $eyebrow  A short section label before the heading. An `eyebrow` slot overrides it.
+     * @param  array<string, string>  $classes  Extra classes per part.
      */
     public function __construct(
-        public ?string $id = null,
-        public ?string $level = '1',
-        public ?string $size = null,
-        public ?string $color = null,
-        public ?bool $semibold = false,
-        public ?bool $bold = false,
-        public ?bool $extrabold = false,
-        public ?bool $center = false,
-        public string $uuid = '',
-    ) {
-        // Set uuid if not provided or empty
-        if (empty($this->uuid)) {
-            $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
-        }
-    }
+        public int|string $level = '2',
+        public int|string|null $size = null,
+        public ?string $eyebrow = null,
+        public array $classes = [],
+    ) {}
 
     /**
-     * Get the appropriate size class based on heading level.
+     * A level or size as 1–6, or null when it's out of range.
      *
-     * @return string The size class.
+     * @since 3.0.0
      *
-     * @since 1.0.0
+     * @param  int|string|null  $value  The value.
+     *
+     * @return int|null The step.
      */
-    public function sizeClass(): string
+    public static function step(int|string|null $value): ?int
     {
-        if ($this->size) {
-            return $this->size;
+        if (null === $value || '' === $value || ! is_numeric($value)) {
+            return null;
         }
 
-        return match ($this->level) {
-            '1'     => 'text-4xl',
-            '2'     => 'text-3xl',
-            '3'     => 'text-2xl',
-            '4'     => 'text-xl',
-            '5'     => 'text-lg',
-            '6'     => 'text-base',
-            default => 'text-4xl',
-        };
+        $step = (int) $value;
+
+        return $step >= 1 && $step <= 6 ? $step : null;
     }
 
     /**
-     * Get the font weight class based on component properties.
+     * The semantic level, falling back to 2.
      *
-     * @return string The font weight class.
+     * @since 3.0.0
      *
-     * @since 1.0.0
+     * @return int The level.
      */
-    public function fontWeightClass(): string
+    public function levelValue(): int
     {
-        if ($this->extrabold) {
-            return 'font-extrabold';
-        }
-
-        if ($this->bold) {
-            return 'font-bold';
-        }
-
-        if ($this->semibold) {
-            return 'font-semibold';
-        }
-
-        return 'font-bold'; // Default to bold
+        return self::step($this->level) ?? 2;
     }
 
     /**
-     * Renders the heading component.
+     * The visual size, falling back to the level.
      *
-     * @return View The rendered component.
+     * @since 3.0.0
+     *
+     * @return int The size.
+     */
+    public function sizeValue(): int
+    {
+        return self::step($this->size) ?? $this->levelValue();
+    }
+
+    /**
+     * Get the view that represents the component.
      *
      * @since 1.0.0
      */

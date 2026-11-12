@@ -1,72 +1,28 @@
-<main @class(["w-full mx-auto", "max-w-screen-2xl" => !$fullWidth])>
-   <div @class([
-       "drawer lg:drawer-open",
-       "drawer-end" => $sidebar?->attributes['right'],
-       "max-sm:drawer-end" => $sidebar?->attributes['right-mobile'],
-   ])>
-       <input id="{{ $sidebar?->attributes['drawer'] }}" type="checkbox" class="drawer-toggle" />
-       <div {{ $content->attributes->class(["drawer-content w-full mx-auto p-5 lg:px-10 lg:py-5"]) }}>
-           {{-- MAIN CONTENT  --}}
-           {{ $content }}
-       </div>
-
-       {{-- SIDEBAR  --}}
-       @if($sidebar)
-           <div
-               x-data="{
-                   collapsed: {{ session('artisanpack-sidebar-collapsed', 'false') }},
-                   collapseText: '{{ $collapseText }}',
-                   toggle() {
-                       this.collapsed = !this.collapsed;
-                       fetch('{{ $url }}?collapsed=' + this.collapsed);
-                       this.$dispatch('sidebar-toggled', this.collapsed);
-                   }
-               }"
-
-               @menu-sub-clicked="if(collapsed) { toggle() }"
-               @class(["drawer-side z-20 lg:z-auto", "top-0 lg:top-[65px] lg:h-[calc(100vh-65px)]" => $withNav])
-           >
-               <label for="{{ $sidebar?->attributes['drawer'] }}" aria-label="close sidebar" class="drawer-overlay"></label>
-
-               {{-- SIDEBAR CONTENT  --}}
-               <div
-                   :class="collapsed
-                       ? '!w-[62px] [&>*_summary::after]:!hidden [&_.mary-hideable]:!hidden [&_.display-when-collapsed]:!block [&_.hidden-when-collapsed]:!hidden'
-                       : '!w-[270px] [&>*_summary::after]:!block [&_.mary-hideable]:!block [&_.hidden-when-collapsed]:!block [&_.display-when-collapsed]:!hidden'"
-
-                   {{
-                       $sidebar->attributes->class([
-                           "flex flex-col !transition-all !duration-100 ease-out overflow-x-hidden overflow-y-auto h-screen",
-                           "w-[62px] [&>*_summary::after]:hidden [&_.mary-hideable]:hidden [&_.display-when-collapsed]:block [&_.hidden-when-collapsed]:hidden" => session('mary-sidebar-collapsed') == 'true',
-                           "w-[270px] [&>*_summary::after]:block [&_.mary-hideable]:block [&_.hidden-when-collapsed]:block [&_.display-when-collapsed]:hidden" => session('mary-sidebar-collapsed') != 'true',
-                           "lg:h-[calc(100vh-65px)]" => $withNav
-                       ])
-                    }}
-               >
-                   <div class="flex flex-col flex-1">
-                       {{ $sidebar }}
-                   </div>
-
-                    {{-- SIDEBAR COLLAPSE  --}}
-                   @if($sidebar->attributes['collapsible'])
-                   <x-artisanpack-menu class="hidden lg:block">
-                       <x-artisanpack-menu-item
-                           @click="toggle"
-                           icon="{{ $sidebar->attributes['collapse-icon'] ?? $collapseIcon }}"
-                           title="{{ $sidebar->attributes['collapse-text'] ?? $collapseText }}" />
-                   </x-artisanpack-menu>
-                   @endif
-               </div>
-           </div>
-       @endif
-       {{-- END SIDEBAR --}}
-
-   </div>
-</main>
-
-{{-- FOOTER  --}}
-@if($footer)
-   <footer {{ $footer?->attributes->class(["mx-auto w-full", "max-w-screen-2xl" => !$fullWidth ]) }}>
-       {{ $footer }}
-   </footer>
-@endif
+{{--
+    Main (deprecated 3.0.0): the 2.x frame on the design-system AppShell. The
+    `content` slot is the content, the `sidebar` slot the sidebar (its
+    `collapsible` and `collapse-text` attributes still apply), and the 2.x
+    `footer` slot, a page footer, follows the content. `$content` here is the
+    slot, so this view never calls the parts helper of that name.
+--}}
+@php
+    $sidebarAttributes = $sidebar instanceof \Illuminate\View\ComponentSlot ? $sidebar->attributes : new \Illuminate\View\ComponentAttributeBag();
+    $isCollapsible     = $collapsible || $sidebarAttributes->has( 'collapsible' );
+    $collapseName      = $sidebarAttributes->get( 'collapse-text' ) ?? $collapseText;
+    $legacyContent     = $content instanceof \Illuminate\View\ComponentSlot ? $content : ( $slot ?? '' );
+    $pageFooter        = $footer instanceof \Illuminate\View\ComponentSlot || ( is_string( $footer ) && '' !== $footer ) ? $footer : null;
+@endphp
+<x-artisanpack-app-shell
+    {{ $attributes }}
+    :collapsed="$collapsed"
+    :collapsible="$isCollapsible"
+    :collapse-label="$collapseName"
+>
+    @if ( $sidebar instanceof \Illuminate\View\ComponentSlot || ( is_string( $sidebar ) && '' !== $sidebar ) )
+        <x-slot:sidebar>{{ $sidebar }}</x-slot:sidebar>
+    @endif
+    {{ $legacyContent }}
+    @if ( null !== $pageFooter )
+        <footer>{{ $pageFooter }}</footer>
+    @endif
+</x-artisanpack-app-shell>

@@ -1,84 +1,149 @@
 <?php
 
-declare(strict_types=1);
 /**
- * ListItem
+ * ListItem Component
  *
- * This file contains the ListItem class for the ArtisanPack UI Livewire UI Components package.
+ * The design-system ListItem (#58): a row with leading, title, description
+ * and trailing parts.
  *
  * @author     Jacob Martella
- * @copyright  2023 Jacob Martella
+ * @copyright  2026 Jacob Martella
  * @license    MIT
  *
- * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
- * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
+ * @link       https://github.com/ArtisanPack-UI/livewire-ui-components
  * @since      1.0.0
  */
 
+declare(strict_types=1);
+
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
-use Closure;
+use ArtisanPack\LivewireUiComponents\Support\SafeUrl;
+use ArtisanPack\LivewireUiComponents\View\Concerns\RendersDesignSystemParts;
 use Illuminate\Contracts\View\View;
 
 /**
- * ListItem Class
+ * ListItem Component Class
  *
- * Provides functionality for the ListItem component.
+ * Renders `.apui-list-item`: an li inside a list, a div on its own. With
+ * href or interactive the title is a link or a button that covers the row.
+ * Every attribute lands on the root, so wire:click on an interactive row
+ * runs when its button is pressed.
  *
  * @since 1.0.0
  */
 class ListItem extends BaseComponent
 {
-    public string $uuid;
+    use RendersDesignSystemParts;
 
+    /**
+     * The 2.x attributes that fill the row from an item, deprecated.
+     *
+     * @since 3.0.0
+     *
+     * @var list<string>
+     */
+    public const LEGACY_ATTRIBUTES = ['item', 'value', 'sub-value', 'subValue', 'avatar', 'link', 'no-separator', 'noSeparator', 'no-hover', 'noHover', 'icon', 'icon-type', 'iconType', 'icon-status', 'iconStatus', 'icon-class', 'iconClass', 'no-icon', 'noIcon'];
+
+    /**
+     * Whether the row renders inside a list, as an li.
+     *
+     * @since 3.0.0
+     */
+    public bool $inList;
+
+    /**
+     * Creates the component.
+     *
+     * @since 3.0.0
+     *
+     * @param  string|null  $title  The main text. A `title` slot overrides it.
+     * @param  string|null  $description  Secondary text. A `description` slot overrides it.
+     * @param  string|null  $href  Makes the title a link covering the row.
+     * @param  bool  $interactive  Without href, makes the title a button covering the row.
+     * @param  bool  $selected  Marks the current row: data-selected, aria-current on its control.
+     * @param  bool  $disabled  Dims the row and disables its control.
+     * @param  string|null  $leadingIcon  Icon name in the leading part. A `leading` slot overrides it.
+     * @param  string|null  $trailing  Short text at the end. A `trailing` slot overrides it.
+     * @param  bool  $navigate  Adds wire:navigate to an internal href (default true).
+     * @param  array<string, string>  $classes  Extra classes per part.
+     */
     public function __construct(
-        public object|array $item,
-        public ?string $id = null,
-        public string $avatar = 'avatar',
-        public string $value = 'name',
-        public ?string $subValue = '',
-        public ?bool $noSeparator = false,
-        public ?bool $noHover = false,
-        public ?string $link = null,
-
-        // New icon props
-        public ?string $icon = null,           // Custom icon name
-        public ?string $iconType = null,       // 'bullet', 'checkmark', 'arrow', 'dot'
-        public ?string $iconStatus = null,     // 'new', 'completed', 'error', 'warning', 'info'
-        public ?string $iconClass = 'w-4 h-4', // Icon classes
-        public ?bool $noIcon = false,          // Disable icon completely
-
-        // Slots
-        public mixed $actions = null,
-        public mixed $iconSlot = null,         // Custom icon slot
+        public ?string $title = null,
+        public ?string $description = null,
+        public ?string $href = null,
+        public bool $interactive = false,
+        public bool $selected = false,
+        public bool $disabled = false,
+        public ?string $leadingIcon = null,
+        public ?string $trailing = null,
+        public bool $navigate = true,
+        public array $classes = [],
     ) {
-        $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
+        $this->inList = null !== ItemList::current();
     }
 
-    public function getIcon(): ?string
+    /**
+     * The safe href, or null.
+     *
+     * @since 3.0.0
+     *
+     * @return string|null The href.
+     */
+    public function linkHref(): ?string
     {
-        // Priority: custom icon > iconType > iconStatus > null
-        if ($this->icon) {
-            return $this->icon;
-        }
+        $legacy = $this->attributes?->get('link');
 
-        if ($this->iconType) {
-            return config("livewire-ui-components.icons.list_item.{$this->iconType}");
-        }
-
-        if ($this->iconStatus) {
-            return config("livewire-ui-components.icons.list_item.status.{$this->iconStatus}");
-        }
-
-        return null;
+        return SafeUrl::href($this->href ?? (is_string($legacy) ? $legacy : null));
     }
 
-    public function shouldShowIcon(): bool
+    /**
+     * The title's element: a for a link, button for an interactive row,
+     * span otherwise.
+     *
+     * @since 3.0.0
+     *
+     * @return string The tag.
+     */
+    public function titleTag(): string
     {
-        return ! $this->noIcon && ($this->getIcon() || $this->iconSlot);
+        if (null !== $this->linkHref()) {
+            return 'a';
+        }
+
+        return $this->interactive ? 'button' : 'span';
     }
 
-    public function render(): View|Closure|string
+    /**
+     * A value from the deprecated 2.x `item` attribute, at the key the
+     * `value`, `sub-value` or `avatar` attribute names.
+     *
+     * @since 3.0.0
+     *
+     * @param  string  $attribute  value, sub-value or avatar.
+     * @param  string|null  $default  The key when the attribute isn't set.
+     *
+     * @return string|null The value.
+     */
+    public function legacyValue(string $attribute, ?string $default): ?string
+    {
+        $item = $this->attributes?->get('item');
+        if (null === $item) {
+            return null;
+        }
+
+        $key   = $this->attributes->get($attribute) ?? $this->attributes->get(lcfirst(str_replace('-', '', ucwords($attribute, '-')))) ?? $default;
+        $value = is_string($key) && '' !== $key ? data_get($item, $key) : null;
+
+        return is_scalar($value) && '' !== (string) $value ? (string) $value : null;
+    }
+
+    /**
+     * Get the view that represents the component.
+     *
+     * @since 1.0.0
+     */
+    public function render(): View
     {
         return view('livewire-ui-components::components.list-item');
     }

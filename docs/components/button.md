@@ -334,10 +334,8 @@ See the [Livewire 4 Features Migration Guide](migration-livewire-4-features) for
 | `responsive` | boolean | `false` | Whether the button label should be responsive |
 | `badge` | string | `null` | Badge text to display |
 | `badgeClasses` | string | `null` | CSS classes for the badge |
-| `tooltip` | string | `null` | Tooltip text |
-| `tooltipLeft` | string | `null` | Tooltip text (left position) |
-| `tooltipRight` | string | `null` | Tooltip text (right position) |
-| `tooltipBottom` | string | `null` | Tooltip text (bottom position) |
+
+The 2.x `tooltip`, `tooltip-left`, `tooltip-right` and `tooltip-bottom` props are gone in 3.0: wrap the button in a [Tooltip](tooltip).
 
 ## Slots
 

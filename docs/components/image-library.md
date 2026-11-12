@@ -4,288 +4,93 @@ title: ImageLibrary Component
 
 # ImageLibrary Component
 
-The ImageLibrary component provides a comprehensive solution for managing multiple images with features like uploading, cropping, reordering, and removing images. It's ideal for product galleries, article attachments, or any scenario where multiple image management is needed.
+A media manager, built on the ArtisanPack UI design system (`.apui-image-library`): search, a grid or list view, single or multiple selection, uploads, and a details panel with editable alt text. ImageLibrary is Livewire only (design-system decision D-003): it uploads through Livewire and syncs with the `WithMediaSync` trait. React and Vue apps use the `media-library` package's MediaModal and MediaGrid.
 
-## Basic Usage
+## With WithMediaSync
 
-```php
-<x-artisanpack-image-library 
-    wire:model="images" 
-    wire:library="productImages" 
-    label="Product Images"
-/>
-```
-
-## Examples
-
-### Basic Image Library
+`wire:model` names the uploads property and `wire:library` the library collection, as the trait expects; pass the collection as `preview`.
 
 ```php
-<x-artisanpack-image-library 
-    wire:model="images" 
-    wire:library="productImages" 
-    label="Product Images"
-/>
-```
-
-### Image Library with Hint
-
-```php
-<x-artisanpack-image-library 
-    wire:model="images" 
-    wire:library="productImages" 
-    label="Product Images"
-    hint="Upload up to 5 images. Recommended size: 1200x800px."
-/>
-```
-
-### Image Library with Custom Text
-
-```php
-<x-artisanpack-image-library 
-    wire:model="images" 
-    wire:library="productImages" 
-    label="Product Images"
-    addFilesText="Upload Images"
-    changeText="Replace"
-    cropText="Edit"
-    removeText="Delete"
-    cropTitleText="Edit Image"
-    cropCancelText="Discard"
-    cropSaveText="Apply Changes"
-/>
-```
-
-### Image Library with Custom Crop Configuration
-
-```php
-@php
-$cropConfig = [
-    'aspectRatio' => 16/9,
-    'viewMode' => 2,
-    'guides' => true,
-    'rotatable' => true,
-];
-@endphp
-
-<x-artisanpack-image-library 
-    wire:model="images" 
-    wire:library="productImages" 
-    label="Product Images"
-    :cropConfig="$cropConfig"
-/>
-```
-
-### Image Library with Hidden Progress Bar
-
-```php
-<x-artisanpack-image-library 
-    wire:model="images" 
-    wire:library="productImages" 
-    label="Product Images"
-    :hideProgress="true"
-/>
-```
-
-### Image Library with Hidden Errors
-
-```php
-<x-artisanpack-image-library 
-    wire:model="images" 
-    wire:library="productImages" 
-    label="Product Images"
-    :hideErrors="true"
-/>
-```
-
-### Image Library with Custom MIME Types
-
-```php
-<x-artisanpack-image-library 
-    wire:model="images" 
-    wire:library="productImages" 
-    label="Product Images"
-    accept="image/png, image/jpeg, image/gif"
-/>
-```
-
-### Image Library with Drag and Drop
-
-```php
-<x-artisanpack-image-library 
-    wire:model="images" 
-    wire:library="productImages" 
-    label="Product Images"
-    :with-drag-drop="true"
-/>
-```
-
-### Image Library with Custom Drag and Drop Text
-
-```php
-<x-artisanpack-image-library 
-    wire:model="images" 
-    wire:library="productImages" 
-    label="Product Images"
-    :with-drag-drop="true"
-    drag-drop-text="Drop your images here"
-    drag-drop-multiple-text="Drop {count} images here"
-/>
-```
-
-### Image Library with Custom Drag and Drop Styling
-
-```php
-<x-artisanpack-image-library 
-    wire:model="images" 
-    wire:library="productImages" 
-    label="Product Images"
-    :with-drag-drop="true"
-    drag-drop-text="Drop images to upload"
-    drag-drop-class="border-info bg-info/10"
-/>
-```
-
-## Livewire Component Integration
-
-To use the ImageLibrary component, you need to implement several methods in your Livewire component:
-
-```php
-<?php
-
-namespace App\Livewire;
-
-use Livewire\Component;
+use ArtisanPack\LivewireUiComponents\Traits\WithMediaSync;
 use Livewire\WithFileUploads;
-use Illuminate\Support\Collection;
 
-class ProductForm extends Component
+class EditListing extends Component
 {
     use WithFileUploads;
+    use WithMediaSync;
 
-    public $images = [];
-    public $productImages;
-    
-    public function mount($product = null)
+    public array $files = [];
+
+    public Collection $library;
+
+    public function save(): void
     {
-        if ($product) {
-            $this->productImages = $product->getMedia('images')->map(function ($media) {
-                return [
-                    'uuid' => $media->uuid,
-                    'url' => $media->getUrl(),
-                ];
-            });
-        } else {
-            $this->productImages = new Collection();
-        }
-    }
-    
-    // Required method to remove media
-    public function removeMedia($uuid, $model, $library, $url)
-    {
-        // Logic to remove the media with the given UUID
-        // Example: Media::where('uuid', $uuid)->delete();
-        
-        // Update the preview collection
-        $this->$library = $this->$library->filter(function ($item) use ($uuid) {
-            return $item['uuid'] !== $uuid;
-        });
-    }
-    
-    // Required method to refresh media order
-    public function refreshMediaOrder($order, $library)
-    {
-        // Logic to update the order of media items
-        // $order contains an array of UUIDs in the new order
-        
-        // Example: Update the order in your database
-    }
-    
-    // Required method to refresh media sources
-    public function refreshMediaSources($model, $library)
-    {
-        // Logic to refresh the media sources after uploads or changes
-        // This should update the preview collection with the latest media items
-        
-        // Example: Reload media from database and update the preview collection
-    }
-    
-    public function render()
-    {
-        return view('livewire.product-form');
+        $this->syncMedia( $this->listing );
     }
 }
+```
+
+```blade
+<x-artisanpack-image-library
+	wire:model="files"
+	wire:library="library"
+	:preview="$library"
+	:label="__( 'Listing photos' )"
+	:hint="__( 'PNG or JPEG, up to 10 MB.' )"
+	droppable
+/>
+```
+
+Upload adds files (or drop them on a `droppable` library); Replace swaps the active file; Remove asks for confirmation, then calls `removeMedia()`; dragging reorders through `refreshMediaOrder()` when SortableJS is on the page; Crop opens a crop dialog when Cropper.js is on the page (`crop-config` passes its options). Editing the alt text sets `library.<key>.alt`, which `syncMedia()` saves with the rest of the item.
+
+## Picking assets
+
+Without `wire:model` the library is read-only: no upload, replace or remove. Pass `assets` and listen for `insert` (and `selection-change`), both with `$event.detail.value`, a list of ids.
+
+```blade
+<x-artisanpack-image-library
+	:assets="$media->map( fn ( $item ) => [
+		'id'   => (string) $item->id,
+		'src'  => $item->url(),
+		'name' => $item->file_name,
+		'alt'  => $item->alt_text,
+		'size' => $item->humanFileSize(),
+	] )->all()"
+	selectable="single"
+	view="list"
+	x-on:insert="$wire.choose( $event.detail.value[0] )"
+/>
 ```
 
 ## Props
 
 | Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `id` | string\|null | `null` | Optional ID for the component |
-| `label` | string\|null | `null` | Optional label for the component |
-| `hint` | string\|null | `null` | Optional hint text displayed below the component |
-| `hideErrors` | boolean\|null | `false` | Whether to hide error messages |
-| `hideProgress` | boolean\|null | `false` | Whether to hide the progress bar |
-| `changeText` | string\|null | `"Change"` | Text for the change image tooltip |
-| `cropText` | string\|null | `"Crop"` | Text for the crop image tooltip |
-| `removeText` | string\|null | `"Remove"` | Text for the remove image tooltip |
-| `cropTitleText` | string\|null | `"Crop image"` | Title for the crop modal |
-| `cropCancelText` | string\|null | `"Cancel"` | Text for the cancel button in the crop modal |
-| `cropSaveText` | string\|null | `"Crop"` | Text for the save button in the crop modal |
-| `addFilesText` | string\|null | `"Add images"` | Text for the add files button |
-| `cropConfig` | array\|null | `[]` | Configuration options for the cropper |
-| `preview` | Collection | `new Collection()` | Collection of images to display in the preview area |
-| `withDragDrop` | boolean\|null | `false` | Whether to enable drag and drop functionality |
-| `dragDropText` | string\|null | `"Drop images here"` | Text displayed in the drag and drop overlay |
-| `dragDropMultipleText` | string\|null | `"Drop {count} images here"` | Text for multiple files with {count} placeholder |
-| `dragDropClass` | string\|null | `null` | Additional CSS classes for drag and drop styling |
+|---|---|---|---|
+| `assets` | array | `[]` | `[ 'id' => …, 'src' => …, 'name' => …, 'alt' => …, 'size' => …, 'width' => …, 'height' => …, 'type' => … ]`. |
+| `preview` | Collection | none | A WithMediaSync library collection (`uuid`, `url`, `path`, `alt`), used when `assets` is empty. |
+| `view` | string | `grid` | `grid` or `list`; the toolbar switches it. |
+| `selectable` | string | `multiple` | `single` or `multiple`. |
+| `accept` | string | `image/png, image/jpeg` | The file types uploads accept. |
+| `droppable` | bool | `false` | Files dropped on the library upload. |
+| `label` | string | `__( 'Media library' )` | Names the listbox. |
+| `hint` | string | none | Help text under the grid. |
+| `hide-errors` | bool | `false` | Hides validation errors for the library and its uploads. |
+| `hide-progress` | bool | `false` | Hides the upload progress bar. |
+| `crop-config` | array | `[]` | Cropper.js options, merged over the defaults. |
+| `classes` | array | `[]` | Extra classes per part: `root`, `main`, `toolbar`, `search`, `view`, `bulk`, `count`, `progress`, `grid`, `asset`, `thumb`, `check`, `type`, `name`, `meta`, `empty`, `hint`, `error`, `details`, `preview`, `title`, `metadata`, `actions`, `dropzone`. |
 
-## Wire Directives
+Every other attribute lands on the root.
 
-| Directive | Description |
-|-----------|-------------|
-| `wire:model` | The Livewire property to bind the uploaded files to |
-| `wire:library` | The Livewire property that contains the preview collection |
+## Upgrading from 2.x
 
-## Crop Configuration
-
-The `cropConfig` prop accepts an array of options for the Cropper.js library. Some common options include:
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `aspectRatio` | number | `null` | The aspect ratio of the crop box |
-| `viewMode` | number | `1` | The view mode of the cropper |
-| `guides` | boolean | `true` | Whether to show the grid lines in the crop box |
-| `rotatable` | boolean | `false` | Whether to allow rotation of the image |
-| `zoomable` | boolean | `true` | Whether to allow zooming of the image |
-
-For a complete list of options, refer to the [Cropper.js documentation](https://github.com/fengyuanchen/cropperjs#options).
-
-## Styling
-
-The ImageLibrary component uses a combination of DaisyUI and custom styling for a clean, modern appearance.
-
-### Default Classes
-
-- `fieldset` - Container for the component
-- `fieldset-legend` - Applied to the label
-- `fieldset-label` - Applied to the hint text
-- `border-[length:var(--border)] border-base-content/10 border-dotted rounded-lg` - Styling for the preview area
-- `progress progress-primary` - Styling for the progress bar
-- `btn btn-block` - Styling for the add files button
+- The `wire:model` / `wire:library` / `preview` contract with WithMediaSync is unchanged.
+- The layout is new: a toolbar, a selectable grid and a details panel replace the sortable list with per-image buttons. "Change" is now Replace in the details panel.
+- `change-text`, `crop-text`, `remove-text`, `crop-title-text`, `crop-cancel-text`, `crop-save-text`, `add-files-text` and `drag-drop-text` still override their strings. `with-drag-drop` still works but is deprecated: use `droppable`. `drag-drop-class` is deprecated: use `classes['dropzone']`. `drag-drop-multiple-text` is ignored.
+- `accept` is a prop now; as an attribute it still worked in 2.x and still does.
 
 ## Accessibility
 
-The ImageLibrary component follows accessibility best practices:
-
-- Uses semantic HTML with proper fieldset and legend elements
-- Provides clear visual feedback for actions
-- Includes proper labeling for interactive elements
-- Maintains focus management when opening and closing the crop modal
-- Supports keyboard navigation
-
-## Related Components
-
-- [ImageGallery](Image-Gallery) - Component for displaying images in a gallery format
-- [File](File) - Single file upload component
-- [Modal](Modal) - Used for the crop dialog
+- The grid is a listbox (`aria-multiselectable` with multiple selection); each asset is an option with `aria-selected`, named by its file name, and only one is in the Tab order.
+- Arrow keys move between assets (ArrowLeft and ArrowRight follow the text direction; Up and Down move a row), Home and End go to the ends, Space selects, Ctrl/Cmd+A selects every asset shown and Escape clears the selection.
+- The selection count is announced through a status region.
+- The alt text field is labelled and described in the details panel; Remove asks for confirmation.

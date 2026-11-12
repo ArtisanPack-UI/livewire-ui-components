@@ -4,561 +4,70 @@ title: Stat Component
 
 # Stat Component
 
-The Stat component displays key metrics or statistics in a visually appealing and structured format. It's ideal for dashboards, reports, and anywhere you need to highlight important numbers or data points.
+A single headline number with its label, its change and the context for it, built on the ArtisanPack UI design system (`.apui-stat`). The change is an arrow and text, never color alone.
 
 ## Basic Usage
 
-```php
-<x-artisanpack-stat 
-    title="Total Users"
-    value="2,543"
-    description="↗︎ 12% from last month"
-/>
-```
-
-## New Features
-
-The Stat component now supports:
-
-- **Size variants**: `xs`, `sm`, `md`, `lg`, `xl`
-- **Icon positioning**: `left`, `right`, `top`, `bottom`
-- **Title positioning**: `top`, `bottom`  
-- **Content alignment**: `left`, `center`, `right`
-
-## Examples
-
-### Basic Stat
-
-```php
-<x-artisanpack-stat 
-    title="Total Users"
-    value="2,543"
-    description="↗︎ 12% from last month"
-/>
-```
-
-### Stat with Icon
-
-```php
-<x-artisanpack-stat 
-    title="Total Users"
-    value="2,543"
-    description="↗︎ 12% from last month"
-    icon="heroicon-o-users"
-    color="text-primary"
-/>
-```
-
-### Different Sizes
-
-```php
-{{-- Extra Small --}}
-<x-artisanpack-stat 
-    size="xs"
-    title="Small Stat"
-    value="123"
-    icon="heroicon-o-users"
-/>
-
-{{-- Large --}}
-<x-artisanpack-stat 
-    size="lg"
-    title="Large Stat"
-    value="456"
-    icon="heroicon-o-currency-dollar"
-    color="text-success"
-/>
-
-{{-- Extra Large --}}
-<x-artisanpack-stat 
-    size="xl"
-    title="Extra Large"
-    value="789"
-    description="With description"
-    icon="heroicon-o-star"
-/>
-```
-
-### Icon Positioning
-
-```php
-{{-- Icon on Right --}}
-<x-artisanpack-stat 
-    icon-position="right"
-    title="Revenue"
-    value="$89,432"
-    icon="heroicon-o-currency-dollar"
-/>
-
-{{-- Icon on Top --}}
-<x-artisanpack-stat 
-    icon-position="top"
-    title="Users"
-    value="2,543"
-    icon="heroicon-o-users"
-/>
-
-{{-- Icon on Bottom --}}
-<x-artisanpack-stat 
-    icon-position="bottom"
-    title="Orders"
-    value="1,326"
-    icon="heroicon-o-shopping-cart"
-/>
-```
-
-### Content Alignment
-
-```php
-{{-- Center Aligned --}}
-<x-artisanpack-stat 
-    content-align="center"
-    title="Centered"
-    value="789"
-    icon="heroicon-o-star"
-/>
-
-{{-- Right Aligned --}}
-<x-artisanpack-stat 
-    content-align="right"
-    title="Right Aligned"
-    value="456"
-    description="Right side content"
-/>
-```
-
-### Title Positioning
-
-```php
-{{-- Title Below Value --}}
-<x-artisanpack-stat 
-    title-position="bottom"
-    title="Sales"
-    value="1,234"
-    icon="heroicon-o-shopping-cart"
-/>
-```
-
-### Multiple Stats in a Grid
-
-```php
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-    <x-artisanpack-stat
-        title="Total Users"
-        value="2,543"
-        description="↗︎ 12% from last month"
-        icon="heroicon-o-users"
-        color="text-primary"
-        size="md"
-    />
-    
-    <x-artisanpack-stat
-        title="Revenue"
-        value="$89,432"
-        description="↗︎ 8% from last month"
-        icon="heroicon-o-currency-dollar"
-        color="text-success"
-        size="md"
-    />
-    
-    <x-artisanpack-stat
-        title="Orders"
-        value="1,326"
-        description="↘︎ 3% from last month"
-        icon="heroicon-o-shopping-cart"
-        color="text-info"
-        size="md"
-    />
-</div>
-```
-
-### Advanced Combinations
-
-```php
-{{-- Large stat with icon on top and centered content --}}
+```blade
 <x-artisanpack-stat
-    size="lg"
-    icon-position="top"
-    content-align="center"
-    title="Featured Metric"
-    value="12,543"
-    description="With special highlighting"
-    icon="heroicon-o-star"
-    color="text-warning"
-/>
-
-{{-- Small stat with right-aligned icon and bottom title --}}
-<x-artisanpack-stat
-    size="sm"
-    icon-position="right"
-    title-position="bottom"
-    title="Compact View"
-    value="789"
-    icon="heroicon-o-chart-bar"
+	:label="__( 'Total revenue' )"
+	value="7,415,644"
+	icon="wallet"
+	color="info"
+	:change="-5.4"
+	:description="__( 'vs last month' )"
 />
 ```
 
-### Stat with Custom Colors
+`change` is a percentage: it shows as `5.4%` with a down arrow and sets the trend from its sign. For other changes, pass the text as `delta` and the direction as `trend`:
 
-```php
-<x-artisanpack-stat 
-    class="bg-primary text-primary-content"
-    title="Total Users"
-    value="2,543"
-    description="↗︎ 12% from last month"
-/>
+```blade
+<x-artisanpack-stat :label="__( 'Hours listened' )" value="34.6" delta="6.2 hrs" trend="up" :description="__( 'this week' )" size="sm" bare />
 ```
 
-### Stat with Trend Indicators
+## A row of stats
 
-Trend indicators automatically display percentage changes with appropriate colors and arrows:
+Put stats side by side with a layout component, and emphasize at most one:
 
-```php
-{{-- Positive trend (green with up arrow) --}}
-<x-artisanpack-stat
-    title="Conversion Rate"
-    value="3.2%"
-    :change="12.5"
-    icon="heroicon-o-trending-up"
-/>
-
-{{-- Negative trend (red with down arrow) --}}
-<x-artisanpack-stat
-    title="Bounce Rate"
-    value="42%"
-    :change="-8.3"
-    icon="heroicon-o-trending-down"
-/>
-
-{{-- Trend with custom label --}}
-<x-artisanpack-stat
-    title="Monthly Revenue"
-    value="$45,231"
-    :change="5.4"
-    change-label="vs last month"
-    icon="heroicon-o-currency-dollar"
-/>
+```blade
+<x-artisanpack-grid :columns="4">
+	<x-artisanpack-stat :label="__( 'Total income' )" value="$348,261" icon="wallet" color="primary" :change="10.9" :description="__( 'vs last month' )" emphasis />
+	<x-artisanpack-stat :label="__( 'Profit' )" value="$15,708.98" icon="trending-up" color="success" :change="8.1" :description="__( 'vs last month' )" />
+</x-artisanpack-grid>
 ```
-
-The `change` prop automatically:
-- Displays green text and up arrow for positive values
-- Displays red text and down arrow for negative values
-- Formats the value with a sign and percent symbol (e.g., "+12.5%" or "-8.3%")
-
-### Tooltips
-
-```php
-<x-artisanpack-stat
-    title="Active Users"
-    value="1,234"
-    tooltip="Users active in the last 24 hours"
-    icon="heroicon-o-users"
-/>
-
-<x-artisanpack-stat
-    title="Revenue"
-    value="$12,345"
-    tooltip-right="Monthly recurring revenue"
-    icon="heroicon-o-currency-dollar"
-/>
-```
-
-## Animated Value Transitions
-
-The Stat component supports smooth number-counting animations when values change. This is especially useful for dashboard widgets that update in real-time via Livewire.
-
-### Basic Animation
-
-Animation is enabled by default for numeric values:
-
-```php
-{{-- Values automatically animate when updated via Livewire --}}
-<x-artisanpack-stat
-    title="Active Users"
-    :value="$activeUsers"
-    icon="heroicon-o-users"
-/>
-```
-
-### Disabling Animation
-
-You can disable animation when needed:
-
-```php
-<x-artisanpack-stat
-    title="Status Code"
-    value="200"
-    :animate="false"
-/>
-```
-
-### Custom Animation Duration
-
-Adjust the animation duration (in milliseconds):
-
-```php
-{{-- Faster animation (500ms) --}}
-<x-artisanpack-stat
-    title="Quick Counter"
-    :value="$count"
-    :animate-duration="500"
-/>
-
-{{-- Slower animation (2000ms) --}}
-<x-artisanpack-stat
-    title="Gradual Update"
-    :value="$total"
-    :animate-duration="2000"
-/>
-```
-
-### Supported Value Formats
-
-The animation system automatically handles various numeric formats:
-
-```php
-{{-- Currency with commas and decimals --}}
-<x-artisanpack-stat title="Revenue" value="$1,234.56" />
-
-{{-- Percentages --}}
-<x-artisanpack-stat title="Conversion" value="45.5%" />
-
-{{-- Abbreviated numbers --}}
-<x-artisanpack-stat title="Users" value="2.5K" />
-<x-artisanpack-stat title="Views" value="1.2M" />
-<x-artisanpack-stat title="Value" value="3B" />
-
-{{-- Plain numbers with thousands separators --}}
-<x-artisanpack-stat title="Total" value="1,234,567" />
-
-{{-- Euro currency --}}
-<x-artisanpack-stat title="Price" value="€2.500,00" />
-```
-
-When a value has only a comma and no dot, the digits after it decide what it means. One or two digits make it a decimal separator: `12,5` is 12.5 and `2,50` is 2.5. Three digits make it a thousands separator: `12,345` is 12345. So `1,23` reads as 1.23. Write ambiguous amounts with both separators, such as `1.234,00` or `1,234.00`, to make them unambiguous.
-
-### Non-Numeric Values
-
-Values that cannot be parsed as numbers will display without animation:
-
-```php
-{{-- These will not animate (displayed as-is) --}}
-<x-artisanpack-stat title="Status" value="Active" />
-<x-artisanpack-stat title="Rating" value="★★★★☆" />
-```
-
-### Reduced Motion Support
-
-The animation automatically respects the user's `prefers-reduced-motion` preference. When reduced motion is enabled, values will update instantly without counting animation.
-
-### Animation with Other Features
-
-Animation works seamlessly with other Stat features:
-
-```php
-{{-- Animation with glass effect, sparkline, and trend indicator --}}
-<x-artisanpack-stat
-    title="Monthly Revenue"
-    :value="$revenue"
-    glass="frosted"
-    glass-tint="emerald-500"
-    :change="$revenueChange"
-    change-label="vs last month"
-    :sparkline-data="$sparklineData"
-    :animate-duration="1200"
-/>
-```
-
-## Embedded Sparklines
-
-The Stat component supports embedded sparkline charts to show historical data trends alongside your metrics.
-
-### Basic Sparkline
-
-```php
-<x-artisanpack-stat
-    title="Revenue"
-    value="$45,231"
-    :sparkline-data="[10, 15, 8, 20, 18, 25, 30, 28, 35]"
-/>
-```
-
-### Sparkline Types
-
-Choose from line, area, or bar chart types:
-
-```php
-{{-- Area sparkline --}}
-<x-artisanpack-stat
-    title="Revenue"
-    value="$45,231"
-    :change="12.5"
-    :sparkline-data="[10, 15, 8, 20, 18, 25, 30, 28, 35]"
-    sparkline-type="area"
-    sparkline-color="success"
-/>
-
-{{-- Line sparkline --}}
-<x-artisanpack-stat
-    title="Expenses"
-    value="$12,450"
-    :change="3.2"
-    :sparkline-data="[5, 8, 6, 10, 9, 12, 14, 13, 15]"
-    sparkline-type="line"
-    sparkline-color="error"
-/>
-
-{{-- Bar sparkline --}}
-<x-artisanpack-stat
-    title="Orders"
-    value="1,234"
-    :change="18.7"
-    :sparkline-data="[20, 15, 25, 18, 22, 30, 28, 32, 35]"
-    sparkline-type="bar"
-    sparkline-color="primary"
-/>
-```
-
-### Sparkline with Glass Effect
-
-Combine sparklines with glass morphism for modern dashboards:
-
-```php
-<x-artisanpack-stat
-    title="Revenue"
-    value="$45,231"
-    glass="frosted"
-    glass-tint="primary"
-    :change="12.5"
-    :sparkline-data="[10, 15, 8, 20, 18, 25, 30, 28, 35]"
-    sparkline-type="area"
-    sparkline-color="primary"
-/>
-```
-
-### Requirements
-
-Sparklines require ApexCharts. See the [Sparkline component documentation](sparkline) for installation instructions.
 
 ## Props
 
 | Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `id` | string | `null` | Optional ID for the stat element |
-| `value` | string | `null` | The main value or metric to display |
-| `icon` | string | `null` | Icon name to display (e.g., "heroicon-o-users") |
-| `color` | string | `''` | CSS color class for the icon |
-| `title` | string | `null` | The title or label for the stat |
-| `description` | string | `null` | Additional context or trend information |
-| `tooltip` | string | `null` | Tooltip text to display on hover |
-| `tooltip-left` | string | `null` | Tooltip text positioned to the left |
-| `tooltip-right` | string | `null` | Tooltip text positioned to the right |
-| `tooltip-bottom` | string | `null` | Tooltip text positioned at the bottom |
-| **Size & Position Props** | | | |
-| `size` | string | `'md'` | Component size: `xs`, `sm`, `md`, `lg`, `xl` |
-| `icon-position` | string | `'left'` | Icon position: `left`, `right`, `top`, `bottom` |
-| `title-position` | string | `'top'` | Title position relative to value: `top`, `bottom` |
-| `content-align` | string | `'left'` | Content alignment: `left`, `center`, `right` |
-| **Glass Effect Props** | | | |
-| `glass` | string | `null` | Glass variant (frosted, liquid, transparent) |
-| `glass-tint` | string | `null` | Glass tint color |
-| `glass-tint-opacity` | int | `null` | Glass tint opacity (0-100) |
-| **Trend Indicator Props** | | | |
-| `change` | float | `null` | Change percentage as number (e.g., 12.5 or -5.2). Automatically displays arrow and color based on sign. |
-| `change-label` | string | `null` | Optional label to show after the change percentage |
-| **Sparkline Props** | | | |
-| `sparkline-data` | array | `null` | Array of numeric values for embedded sparkline chart |
-| `sparkline-type` | string | `'line'` | Sparkline chart type (line, area, bar) |
-| `sparkline-color` | string | `null` | Sparkline color (primary, success, error, info, etc.) |
-| **Animation Props** | | | |
-| `animate` | bool | `true` | Enable/disable value animation |
-| `animate-duration` | int | `1000` | Animation duration in milliseconds |
-| `class` | string | `null` | Additional CSS classes to apply to the stat container |
+|---|---|---|---|
+| `label` | string | none | What the number measures. |
+| `value` | string | none | The number, already formatted. The default slot replaces it. |
+| `unit` | string | none | A unit after the value, smaller and muted. |
+| `icon` | string | none | A registry icon for the tile at the end of the label row. The `icon` slot replaces it. |
+| `delta` | string | none | The change as text. Takes precedence over `change`. |
+| `change` | float | none | The change as a percentage, shown with one decimal; sets `trend` from its sign. |
+| `trend` | string | none | `up`, `down` or `flat`. |
+| `description` | string | none | Context after the delta. |
+| `size` | string | `md` | `sm`, `md` or `lg`: the value's type style. |
+| `color` | string | `neutral` | Tints the icon tile and the emphasis fill: one of the eight semantic colors. |
+| `emphasis` | bool | `false` | A soft fill in `color`, for the one stat that matters. |
+| `bare` | bool | `false` | No container, for a stat inside a Card. |
+| `up-label` | string | `__( 'Increase' )` | Hidden text before an up delta. |
+| `down-label` | string | `__( 'Decrease' )` | Hidden text before a down delta. |
+| `flat-label` | string | `__( 'No change' )` | Hidden text before a flat delta. |
+| `classes` | array | `[]` | Extra classes per part: `root`, `top`, `label`, `icon`, `value`, `unit`, `foot`, `delta`, `description`. |
 
-## Behavior
+Every other attribute lands on the root.
 
-The Stat component:
+## Upgrading from 2.x
 
-1. Displays a structured view of a single metric or data point
-2. Can include visual indicators for trends (up/down arrows)
-3. Supports optional icons or images to provide visual context
-4. Can be grouped with other stats to create dashboards or summary views
-
-## Styling
-
-The Stat component uses DaisyUI's stat component under the hood, which provides a clean and consistent appearance. You can customize the appearance by:
-
-1. Adding custom classes to the component
-2. Styling individual slots with their own classes
-3. Using color utility classes for different states (success, error, etc.)
-
-### Default Classes
-
-- The stat container has a card-like appearance with padding and rounded corners
-- The title is displayed with reduced opacity
-- The value is displayed with larger, bold text
-- The description is displayed with reduced opacity
+- `title` still works, as `label`, and `change-label` as `description`.
+- `change` now shows without a sign (`5.4%`): the arrow and hidden text say the direction.
+- The tooltip, `icon-position`, `title-position`, `content-align`, glass, sparkline and count-up animation props are gone. Use Tooltip, Grid, Card's `surface` and KpiCard (for a sparkline).
+- `color` takes the eight semantic names only; it tints the icon tile, not the value.
 
 ## Accessibility
 
-The Stat component follows accessibility best practices:
-
-- Uses semantic HTML structure
-- Maintains proper color contrast for readability
-- Supports screen readers with appropriate text hierarchy
-
-For better accessibility:
-
-1. Ensure trend indicators (arrows) have appropriate text descriptions
-2. Maintain sufficient color contrast, especially when using custom colors
-3. Use clear, concise language for titles and descriptions
-
-## Migration Guide
-
-If you're upgrading from a previous version that used slot-based API, here's how to migrate:
-
-### Before (Slot-based)
-```php
-<x-artisanpack-stat>
-    <x-slot:figure>
-        <x-artisanpack-icon name="heroicon-o-users" class="w-8 h-8 text-primary" />
-    </x-slot:figure>
-    <x-slot:title>Total Users</x-slot:title>
-    <x-slot:value>2,543</x-slot:value>
-    <x-slot:description>↗︎ 12% from last month</x-slot:description>
-</x-artisanpack-stat>
-```
-
-### After (Prop-based)
-```php
-<x-artisanpack-stat
-    title="Total Users"
-    value="2,543"
-    description="↗︎ 12% from last month"
-    icon="heroicon-o-users"
-    color="text-primary"
-/>
-```
-
-### Benefits of the New API
-- **Cleaner syntax**: Props are more concise than slots
-- **Better IDE support**: Props have better autocomplete and type hints
-- **New features**: Size variants, positioning options, and alignment controls
-- **Backward compatibility**: Existing implementations continue to work
-- **Better performance**: Less template parsing overhead
-
-## Size Reference
-
-| Size | Use Case | Icon Size | Typical Context |
-|------|----------|-----------|-----------------|
-| `xs` | Compact dashboards, mobile views | 24x24px | Dense information layouts |
-| `sm` | Sidebar stats, small widgets | 28x28px | Secondary metrics |
-| `md` | Standard dashboard cards | 36x36px | Primary metrics (default) |
-| `lg` | Featured statistics, main KPIs | 44x44px | Hero sections, key metrics |
-| `xl` | Prominent displays, presentations | 56x56px | Executive dashboards |
-
-## Related Components
-
-- [Card](card) - Container for content with similar styling
-- [Progress](progress) - Visual indicator of progress
-- [Chart](chart) - More complex data visualization
+- The delta has visible text, an arrow, and hidden direction text (`up-label`, `down-label`, `flat-label`).
+- The value uses tabular figures; size carries the hierarchy, never bold.
+- The icon tile is decorative and hidden from assistive technology.

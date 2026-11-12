@@ -150,14 +150,13 @@ class HooksTest extends TestCase
             },
         );
 
-        $table = new Table(
+        $table = (new Table(
             headers: [['key' => 'name', 'label' => 'Name']],
             rows: [],
-            id: 'users-table',
-        );
+        ))->withAttributes(['id' => 'users-table']);
 
-        $this->assertCount(2, $table->headers);
-        $this->assertEquals('users-table', $table->headers[1]['label']);
+        $this->assertCount(2, $table->columns());
+        $this->assertEquals('users-table', $table->columns()[1]['label']);
     }
 
     #[Test]
@@ -174,7 +173,7 @@ class HooksTest extends TestCase
             },
         );
 
-        new Table(headers: [['key' => 'name']], rows: []);
+        (new Table(headers: [['key' => 'name']], rows: []))->withAttributes([])->columns();
 
         $this->assertEquals('default', $captured);
     }

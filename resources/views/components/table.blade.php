@@ -1,617 +1,297 @@
+{{--
+    Table (#62). Markup contract: design-system Data Display wave, Table.
+    The root frames the toolbar (title, toolbar content), the scroll part with
+    the native table, and the footer (footer content, the "Rows per page"
+    Select and Pagination). Sortable headers carry aria-sort and hold a sort
+    button; selectable rows a Checkbox and aria-selected, with a select-all box
+    that is mixed while some rows are selected; expandable rows an expand
+    button (aria-expanded, aria-controls) and a full-width expansion row.
+    Loading shows aria-hidden skeleton rows under aria-busy; no rows shows an
+    EmptyState. Selection and expansion run in Alpine; wire:model binds the
+    selection through $wire.entangle() (the expansion, for a 2.x expandable
+    table without selectable). Scoped slots: @scope('cell_<key>', $row),
+    @scope('header_<key>', $header), @scope('actions', $row) and
+    @scope('expansion', $row). Each is called inside a @foreach, which the
+    scope directive's $loop needs.
+--}}
 @php
-    // Virtual scroll configuration
-    $isVirtual = $virtualScroll && $getTotalRowCount() > 0;
-    $virtualStart = 0;
-    $virtualEnd = $isVirtual ? min(50 + $virtualBuffer * 2, $getTotalRowCount()) : $getTotalRowCount();
-    $visibleRows = $isVirtual ? $getVisibleRows($virtualStart, $virtualEnd) : $rows;
-    $totalRowCount = $getTotalRowCount();
+    $columns       = $visibleColumns();
+    $rowList       = $rowList();
+    $density       = $resolvedDensity();
+    $selected      = $selectedKeys();
+    $expandedList  = $expandedKeys();
+    $pageKeys      = $selectable ? array_values( array_map( fn ( $row ) => $selectionKey( $row ), $rowList ) ) : [];
+    $allState      = $selectAllState( $pageKeys, $selected );
+    $actionsSlot   = $__data['actions'] ?? null;
+    $expansionSlot = $__data['expansion'] ?? null;
+    $emptySlot     = $__data['empty'] ?? null;
+    $hasActions    = $actionsSlot instanceof \Closure || $filled( $actionsSlot );
+    $sortHandle    = $hasSortHandle();
+    $dragSort      = $isSortingEnabled();
+    $colspan       = count( $columns ) + ( $selectable ? 1 : 0 ) + ( $expandable ? 1 : 0 ) + ( $sortHandle ? 1 : 0 ) + ( $hasActions ? 1 : 0 );
+    $hasTitle      = $filled( $title );
+    $hasToolbar    = $hasTitle || $filled( $toolbar );
+    $legacyFooter  = $footerHoldsRows( $footer );
+    $hasFooterText = ! $legacyFooter && $filled( $footer );
+    $hasPagination = [] !== $pagination;
+    $paginator     = $rendersPaginator();
+    $hasFooter     = $hasFooterText || $hasPagination || $paginator;
+    $rowClick      = $listensForRowClick();
+    $setsSortBy    = $setsLivewireSortBy();
+    $titleId       = $partId( 'title' );
+    $sortableKeys  = [];
+    $tableName     = $filled( $label ) ? ' aria-label="' . e( $label ) . '"' : ( $hasTitle ? ' aria-labelledby="' . e( $titleId ) . '"' : '' );
+    $expansionModel = $modelBindsExpansion();
 @endphp
-
-<div x-data="{
-                selection: @entangle($attributes->wire('model')),
-                pageIds: {{ json_encode($getAllIds()) }},
-                isSelectable: {{ json_encode($selectable) }},
-                colspanSize: 0,
-
-                // Virtual scroll state
-                virtualScroll: {{ json_encode($virtualScroll) }},
-                virtualRowHeight: {{ $virtualRowHeight }},
-                virtualBuffer: {{ $virtualBuffer }},
-                totalRows: {{ $totalRowCount }},
-                scrollTop: 0,
-                containerHeight: 0,
-                visibleStartIndex: 0,
-                visibleEndIndex: {{ $virtualEnd }},
-                isScrolling: false,
-                scrollTimeout: null,
-
-                init() {
-                    this.colspanSize = $refs.headers.childElementCount
-
-                    if (this.isSelectable) {
-                        this.handleCheckAll()
-                    }
-
-                    // Initialize virtual scroll
-                    if (this.virtualScroll) {
-                        this.initVirtualScroll()
-                    }
-                },
-
-                // Virtual scroll methods
-                initVirtualScroll() {
-                    this.$nextTick(() => {
-                        if (this.$refs.virtualContainer) {
-                            this.containerHeight = this.$refs.virtualContainer.clientHeight || 400;
-                            this.calculateVisibleRange();
-                        }
-                    });
-                },
-                handleVirtualScroll(e) {
-                    if (!this.virtualScroll) return;
-                    this.scrollTop = e.target.scrollTop;
-
-                    // Throttle scroll updates
-                    if (!this.isScrolling) {
-                        this.isScrolling = true;
-                        this.calculateVisibleRange();
-
-                        clearTimeout(this.scrollTimeout);
-                        this.scrollTimeout = setTimeout(() => {
-                            this.isScrolling = false;
-                            this.calculateVisibleRange();
-                        }, 100);
-                    }
-                },
-                calculateVisibleRange() {
-                    const buffer = this.virtualBuffer;
-                    const start = Math.max(0, Math.floor(this.scrollTop / this.virtualRowHeight) - buffer);
-                    const visibleCount = Math.ceil(this.containerHeight / this.virtualRowHeight);
-                    const end = Math.min(this.totalRows, start + visibleCount + buffer * 2);
-
-                    // Only update if range changed significantly
-                    if (Math.abs(start - this.visibleStartIndex) > 5 || Math.abs(end - this.visibleEndIndex) > 5) {
-                        this.visibleStartIndex = start;
-                        this.visibleEndIndex = end;
-                    }
-                },
-                getTopSpacerHeight() {
-                    return this.visibleStartIndex * this.virtualRowHeight;
-                },
-                getBottomSpacerHeight() {
-                    return Math.max(0, (this.totalRows - this.visibleEndIndex) * this.virtualRowHeight);
-                },
-
-                isExpanded(key) {
-                    return this.selection.includes(key)
-                },
-                isPageFullSelected() {
-                    return this.pageIds.length && [...this.selection]
-                                .sort((a, b) => b - a)
-                                .toString()
-                                .includes([...this.pageIds].sort((a, b) => b - a).toString())
-                },
-                toggleCheck(checked, content) {
-                    this.$dispatch('row-selection', { row: content, selected: checked });
-                    this.handleCheckAll()
-                },
-                toggleCheckAll(checked) {
-                    this.$dispatch('row-selection-all', { selected: checked });
-                    checked ? this.pushIds() : this.removeIds()
-                },
-                toggleExpand(key) {
-                     this.selection.includes(key)
-                        ? this.selection = this.selection.filter(i => i !== key)
-                        : this.selection.push(key)
-                },
-                pushIds() {
-                    this.selection.push(...this.pageIds.filter(i => !this.selection.includes(i)))
-                },
-                removeIds() {
-                    this.selection =  this.selection.filter(i => !this.pageIds.includes(i) )
-                },
-                handleCheckAll() {
-                    this.$nextTick(() => {
-                            this.isPageFullSelected()
-                                ? this.$refs.mainCheckbox.checked = true
-                                : this.$refs.mainCheckbox.checked = false
-                        })
-                },
-
-                // Export functionality
-                exportable: {{ json_encode($exportable) }},
-                exportData: {{ json_encode($exportable ? $getExportData() : ['headers' => [], 'rows' => []]) }},
-                exportFilename: {{ json_encode($getExportFilename('csv')) }},
-                exportFormats: {{ json_encode($exportFormats) }},
-                supportsXlsx: {{ json_encode(\ArtisanPack\LivewireUiComponents\Support\TableExporter::supportsXlsx()) }},
-                supportsPdf: {{ json_encode(\ArtisanPack\LivewireUiComponents\Support\TableExporter::supportsPdf()) }},
-                tableId: {{ json_encode($id ?? $uuid) }},
-                isExporting: false,
-
-                exportToCSV() {
-                    if (!this.exportable || this.isExporting) return;
-
-                    this.isExporting = true;
-
-                    try {
-                        const csvContent = this.generateCSV();
-                        this.downloadCSV(csvContent, this.exportFilename);
-                        this.$dispatch('table-exported', { format: 'csv', filename: this.exportFilename });
-                    } catch (error) {
-                        console.error('Export failed:', error);
-                        this.$dispatch('table-export-error', { error: error.message });
-                    } finally {
-                        this.isExporting = false;
-                    }
-                },
-
-                exportToXlsx() {
-                    if (!this.exportable || this.isExporting || !this.supportsXlsx) return;
-
-                    this.isExporting = true;
-
-                    // Dispatch event to parent Livewire component for server-side XLSX generation
-                    this.$dispatch('table-export-request', { format: 'xlsx', tableId: this.tableId });
-
-                    // Reset exporting state after a delay (the actual download is handled server-side)
-                    setTimeout(() => {
-                        this.isExporting = false;
-                    }, 1000);
-                },
-
-                exportToPdf() {
-                    if (!this.exportable || this.isExporting || !this.supportsPdf) return;
-
-                    this.isExporting = true;
-
-                    // Dispatch event to parent Livewire component for server-side PDF generation
-                    this.$dispatch('table-export-request', { format: 'pdf', tableId: this.tableId });
-
-                    // Reset exporting state after a delay (the actual download is handled server-side)
-                    setTimeout(() => {
-                        this.isExporting = false;
-                    }, 1000);
-                },
-
-                generateCSV() {
-                    const { headers, rows } = this.exportData;
-                    const lines = [];
-
-                    // Add header row
-                    lines.push(headers.map(h => this.escapeCSVValue(h)).join(','));
-
-                    // Add data rows
-                    rows.forEach(row => {
-                        lines.push(row.map(cell => this.escapeCSVValue(cell)).join(','));
-                    });
-
-                    return lines.join('\n');
-                },
-
-                escapeCSVValue(value) {
-                    if (value === null || value === undefined) return '&quot;&quot;';
-
-                    const stringValue = String(value);
-                    const dq = '&quot;';
-
-                    // Check if value needs quoting (contains comma, quote, or newline)
-                    if (stringValue.includes(',') || stringValue.includes(dq) || stringValue.includes('\n') || stringValue.includes('\r')) {
-                        // Escape double quotes by doubling them
-                        return dq + stringValue.replace(new RegExp(dq, 'g'), dq + dq) + dq;
-                    }
-
-                    return stringValue;
-                },
-
-                downloadCSV(content, filename) {
-                    const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
-                    const url = URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-
-                    link.setAttribute('href', url);
-                    link.setAttribute('download', filename);
-                    link.style.visibility = 'hidden';
-
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-
-                    URL.revokeObjectURL(url);
-                }
-             }"
+<div
+    {{ $rootAttributes()->class( $rootClasses( 'apui-table' ) ) }}
+    data-surface="{{ in_array( $surface, [ 'default', 'glass' ], true ) ? $surface : 'default' }}"
+    @if ( null !== $density ) data-density="{{ $density }}" @endif
+    @if ( $stickyHeader ) data-sticky-header @endif
+    @if ( $loading ) aria-busy="true" @endif
+    x-data="{
+        selection: {{ $selectable ? $modelExpression( $selected ) : '[]' }},
+        expanded: {{ $expansionModel ? $modelExpression( $expandedList ) : ( json_encode( $expandedList, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP ) ?: '[]' ) }},
+        pageKeys: {{ json_encode( $pageKeys, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP ) ?: '[]' }},
+        has( list, key ) { return Array.isArray( list ) && list.some( ( item ) => String( item ) === String( key ) ) },
+        without( list, key ) { return ( Array.isArray( list ) ? list : [] ).filter( ( item ) => String( item ) !== String( key ) ) },
+        toggleRow( key, on ) { this.selection = on ? [ ...this.without( this.selection, key ), key ] : this.without( this.selection, key ) },
+        toggleAll( on ) { const rest = ( Array.isArray( this.selection ) ? this.selection : [] ).filter( ( item ) => ! this.has( this.pageKeys, item ) ); this.selection = on ? [ ...rest, ...this.pageKeys ] : rest },
+        allState() { const count = this.pageKeys.filter( ( key ) => this.has( this.selection, key ) ).length; return 0 === count ? 'unchecked' : ( count === this.pageKeys.length ? 'checked' : 'indeterminate' ) },
+        toggleExpanded( key ) { this.expanded = this.has( this.expanded, key ) ? this.without( this.expanded, key ) : [ ...( Array.isArray( this.expanded ) ? this.expanded : [] ), key ]; this.$dispatch( 'expanded-change', this.expanded ) },
+        sort( next ) { this.$dispatch( 'sort-change', next ){{ $setsSortBy ? '; this.$wire.set( \'sortBy\', next )' : '' }} },
+        rowClick( event, row ) { if ( event.target.closest( 'a, button, input, label, select, textarea' ) ) { return } this.$dispatch( 'row-click', row ) },
+    }"
 >
-    {{-- Export toolbar --}}
-    @if($exportable)
-        <div class="flex justify-end mb-2">
-            {{-- Show dropdown if multiple export formats are available --}}
-            <template x-if="(exportFormats.includes('csv') && ((supportsXlsx && exportFormats.includes('xlsx')) || (supportsPdf && exportFormats.includes('pdf')))) || ((supportsXlsx && exportFormats.includes('xlsx')) && (supportsPdf && exportFormats.includes('pdf')))">
-                <x-artisanpack-dropdown>
-                    <x-slot:trigger>
-                        <x-artisanpack-button
-                            type="button"
-                            variant="ghost"
-                            color="neutral"
-                            size="sm"
-                            leading-icon="o-arrow-down-tray"
-                            x-bind:disabled="isExporting"
-                        >
-                            <span x-show="!isExporting">{{ __('Export') }}</span>
-                            <span x-show="isExporting" x-cloak>{{ __('Exporting...') }}</span>
-                            <x-artisanpack-icon name="o-chevron-down" class="w-4 h-4 ml-1" />
-                        </x-artisanpack-button>
-                    </x-slot:trigger>
-
-                    <x-artisanpack-menu>
-                        <template x-if="exportFormats.includes('csv')">
-                            <x-artisanpack-menu-item
-                                icon="o-document-text"
-                                x-on:click="exportToCSV()"
-                            >
-                                {{ __('Export as CSV') }}
-                            </x-artisanpack-menu-item>
-                        </template>
-
-                        <template x-if="supportsXlsx && exportFormats.includes('xlsx')">
-                            <x-artisanpack-menu-item
-                                icon="o-table-cells"
-                                x-on:click="exportToXlsx()"
-                            >
-                                {{ __('Export as Excel') }}
-                            </x-artisanpack-menu-item>
-                        </template>
-
-                        <template x-if="supportsPdf && exportFormats.includes('pdf')">
-                            <x-artisanpack-menu-item
-                                icon="o-document"
-                                x-on:click="exportToPdf()"
-                            >
-                                {{ __('Export as PDF') }}
-                            </x-artisanpack-menu-item>
-                        </template>
-                    </x-artisanpack-menu>
-                </x-artisanpack-dropdown>
-            </template>
-
-            {{-- Show simple button if only one format is available --}}
-            <template x-if="exportFormats.includes('csv') && !((supportsXlsx && exportFormats.includes('xlsx')) || (supportsPdf && exportFormats.includes('pdf')))">
-                <x-artisanpack-button
-                    type="button"
-                    variant="ghost"
-                    color="neutral"
-                    size="sm"
-                    leading-icon="o-arrow-down-tray"
-                    x-on:click="exportToCSV()"
-                    x-bind:disabled="isExporting"
-                >
-                    <span x-show="!isExporting">{{ __('Export CSV') }}</span>
-                    <span x-show="isExporting" x-cloak>{{ __('Exporting...') }}</span>
-                </x-artisanpack-button>
-            </template>
-
-            {{-- Show simple Excel button if only xlsx is available --}}
-            <template x-if="!exportFormats.includes('csv') && (supportsXlsx && exportFormats.includes('xlsx')) && !(supportsPdf && exportFormats.includes('pdf'))">
-                <x-artisanpack-button
-                    type="button"
-                    variant="ghost"
-                    color="neutral"
-                    size="sm"
-                    leading-icon="o-table-cells"
-                    x-on:click="exportToXlsx()"
-                    x-bind:disabled="isExporting"
-                >
-                    <span x-show="!isExporting">{{ __('Export Excel') }}</span>
-                    <span x-show="isExporting" x-cloak>{{ __('Exporting...') }}</span>
-                </x-artisanpack-button>
-            </template>
-
-            {{-- Show simple PDF button if only pdf is available --}}
-            <template x-if="!exportFormats.includes('csv') && !(supportsXlsx && exportFormats.includes('xlsx')) && (supportsPdf && exportFormats.includes('pdf'))">
-                <x-artisanpack-button
-                    type="button"
-                    variant="ghost"
-                    color="neutral"
-                    size="sm"
-                    leading-icon="o-document"
-                    x-on:click="exportToPdf()"
-                    x-bind:disabled="isExporting"
-                >
-                    <span x-show="!isExporting">{{ __('Export PDF') }}</span>
-                    <span x-show="isExporting" x-cloak>{{ __('Exporting...') }}</span>
-                </x-artisanpack-button>
-            </template>
+    @if ( $hasToolbar )
+        <div data-scope="table" data-part="toolbar"{{ $partClass( 'toolbar' ) }}>
+            @if ( $hasTitle )
+                <h3 data-scope="table" data-part="title" id="{{ $titleId }}"{{ $partClass( 'title' ) }}>{{ $content( $title ) }}</h3>
+            @endif
+            @if ( $filled( $toolbar ) )
+                {{ $content( $toolbar ) }}
+            @endif
         </div>
     @endif
-
-    {{-- Virtual scroll container wrapper --}}
-    @if($isVirtual)
-    <div
-        x-ref="virtualContainer"
-        class="overflow-auto"
-        style="height: {{ $getVirtualContainerHeight() }};"
-        @scroll.throttle.50ms="handleVirtualScroll($event)"
-    >
-    @endif
-
-    <div class="{{ $containerClass }}" x-classes="overflow-x-auto">
-        <table
-            {{
-				$attributes
-					->whereDoesntStartWith('wire:model')
-					->class([
-						'table',
-						'table-zebra' => $striped,
-						'[&_tr:nth-child(4n+3)]:bg-base-200' => $striped && $expandable,
-						'cursor-pointer' => $attributes->hasAny(['@row-click', 'link'])
-					])
-			}}
-        >
-            <!-- HEADERS -->
-            <thead
-                @class([
-                    "text-base-content",
-                    "hidden" => $noHeaders,
-                    $headerGlassClasses() => $headerGlass,
-                ])
-                @if($headerGlassStyle())
-                    style="{{ $headerGlassStyle() }}"
-                @endif
-            >
-            <tr x-ref="headers">
-                <!-- CHECKALL -->
-                @if($selectable)
-                    <th class="w-1" wire:key="{{ $uuid }}-checkall-{{ implode(',', $getAllIds()) }}">
-                        <input
-                            id="checkAll-{{ $uuid }}"
-                            type="checkbox"
-                            class="checkbox checkbox-sm"
-                            x-ref="mainCheckbox"
-                            x-bind:disabled="pageIds.length === 0"
-                            @click="toggleCheckAll($el.checked)" />
-                    </th>
-                @endif
-
-                <!-- EXPAND EXTRA HEADER -->
-                @if($expandable)
-                    <th class="w-1"></th>
-                @endif
-
-                <!-- SORT HANDLE HEADER -->
-                @if($isSortingEnabled() && $sortHandle)
-                    <th class="w-1"></th>
-                @endif
-
-                @foreach($headers as $header)
-                    @php
-                        # SKIP THE HIDDEN COLUMN
-                        if($isHidden($header)) continue;
-
-                        # Scoped slot`s name like `user.city` are compiled to `user___city` through `@scope / @endscope`.
-                        # So we use current `$header` key  to find that slot on context.
-                        $temp_key = str_replace('.', '___', $header['key'])
-                    @endphp
-
-                    <th
-                        class="@if($isSortable($header)) cursor-pointer hover:bg-base-200 @endif {{ $header['class'] ?? ' ' }}"
-
-                        @if($sortBy && $isSortable($header))
-                            @click="$wire.set('sortBy', {column: '{{ $getSort($header)['column'] }}', direction: '{{ $getSort($header)['direction'] }}' })"
-                        @endif
-                    >
-                        {{ isset(${"header_".$temp_key}) ? ${"header_".$temp_key}($header) : $header['label'] }}
-
-                        @if($isSortable($header))
-                            <x-artisanpack-icon :name="$isSortedBy($header) ? $getSort($header)['direction'] == 'asc' ? 'o-chevron-down' : 'o-chevron-up' : 'o-chevron-up-down'"  class="size-3! mb-1 ms-1" />
-                        @endif
-                    </th>
-                @endforeach
-
-                <!-- ACTIONS (Just a empty column) -->
-                @if($actions)
-                    <th class="w-1"></th>
-                @endif
-            </tr>
-            </thead>
-
-            <!-- ROWS -->
-            <tbody
-                @if($isSortingEnabled())
-                    wire:sort="{{ $attributes->wire('sort')->value() ?: 'updateOrder' }}"
-                    @if($sortGroup)
-                        wire:sort:group="{{ $sortGroup }}"
+    <div data-scope="table" data-part="scroll"{{ $partClass( 'scroll' ) }}>
+        <table data-scope="table" data-part="table"{{ $partClass( 'table' ) }}{!! $tableName !!}>
+            <thead @if ( $headersHidden() ) class="apui-sr-only" @endif>
+                <tr>
+                    @if ( $selectable )
+                        <th data-scope="table" data-part="select" scope="col"{{ $partClass( 'select' ) }}>
+                            <x-artisanpack-checkbox
+                                :aria-label="$selectAllLabel"
+                                :checked="'checked' === $allState"
+                                :indeterminate="'indeterminate' === $allState"
+                                :disabled="[] === $pageKeys"
+                                x-effect="const state = allState(); $el.checked = 'checked' === state; $el.closest('.apui-checkbox').dataset.state = state"
+                                x-on:input="toggleAll( $el.checked )"
+                            />
+                        </th>
                     @endif
-                @endif
-            >
-                {{-- Top spacer for virtual scrolling --}}
-                @if($isVirtual)
-                    <tr x-show="virtualScroll" aria-hidden="true" class="virtual-spacer-top">
-                        <td colspan="999" :style="'height:' + getTopSpacerHeight() + 'px; padding:0; border:none;'"></td>
-                    </tr>
-                @endif
-
-            @foreach($visibleRows as $k => $row)
-                <tr
-                    wire:key="artisan-pack-table-row-{{ data_get($row, $keyBy) }}"
-                    @class([$rowClasses($row), "hover:bg-base-200" => !$noHover, "cursor-move" => $isSortingEnabled() && !$sortHandle])
-                    @if($isSortingEnabled())
-                        wire:sort:item="{{ $getSortableItemValue($row) }}"
+                    @if ( $expandable )
+                        <td data-shrink></td>
                     @endif
-                    @if($attributes->has('@row-click'))
-                        @click="$dispatch('row-click', {{ json_encode($row) }});"
+                    @if ( $sortHandle )
+                        <td data-shrink></td>
                     @endif
-                >
-                    <!-- CHECKBOX -->
-                    @if($selectable)
-                        <td class="w-1">
-                            <input
-                                id="checkbox-{{ $uuid }}-{{ $k }}"
-                                type="checkbox"
-                                class="checkbox checkbox-sm"
-                                value="{{ data_get($row, $selectableKey) }}"
-                                x-model{{ $selectableModifier() }}="selection"
-                                @click.stop="toggleCheck($el.checked, {{ json_encode($row) }})" />
-                        </td>
-                    @endif
-
-                    <!-- EXPAND ICON -->
-                    @if($expandable)
-                        <td class="w-1 pe-0 py-0">
-                            @if(data_get($row, $expandableCondition))
-                                <x-artisanpack-icon
-                                    name="o-chevron-down"
-                                    ::class="isExpanded({{ $getKeyValue($row, 'expandableKey') }}) || '-rotate-90 !text-current'"
-                                    class="cursor-pointer p-2 w-8 h-8 bg-base-300 rounded-lg"
-                                    @click="toggleExpand({{ $getKeyValue($row, 'expandableKey') }});" />
-                            @endif
-                        </td>
-                    @endif
-
-                    <!-- SORT HANDLE -->
-                    @if($isSortingEnabled() && $sortHandle)
-                        <td class="w-1 pe-0 py-0" wire:sort:handle>
-                            @if($sortHandleSlot)
-                                {{ $sortHandleSlot($row) }}
-                            @else
-                                <x-artisanpack-icon
-                                    name="o-bars-3"
-                                    class="cursor-move p-2 w-8 h-8 text-base-content/50 hover:text-base-content" />
-                            @endif
-                        </td>
-                    @endif
-
-                    <!--  ROW VALUES -->
-                    @foreach($headers as $header)
+                    @foreach ( $columns as $column )
                         @php
-                            # SKIP THE HIDDEN COLUMN
-                            if($isHidden($header)) continue;
-
-                            # Scoped slot`s name like `user.city` are compiled to `user___city` through `@scope / @endscope`.
-                            # So we use current `$header` key  to find that slot on context.
-                            $temp_key = str_replace('.', '___', $header['key'])
+                            $slotKey   = 'header_' . str_replace( '.', '___', (string) $column['key'] );
+                            $headerSlot = $__data[ $slotKey ] ?? null;
+                            $sorts     = $isSortable( $column );
+                            $headClass = trim( ( $classes['headCell'] ?? '' ) . ' ' . ( is_string( $column['class'] ?? null ) ? $column['class'] : '' ) );
                         @endphp
-
-                            <!--  HAS CUSTOM SLOT ? -->
-                        @if(isset(${"cell_".$temp_key}))
-                            <td @class([$cellClasses($row, $header), "p-0" => $hasLink($header)])>
-                                @if($hasLink($header))
-                                    <a href="{{ $redirectLink($row) }}" wire:navigate class="block py-3 px-4">
-                                        @endif
-
-                                        {{ ${"cell_".$temp_key}($row)  }}
-
-                                        @if($hasLink($header))
-                                    </a>
-                                @endif
-                            </td>
-                        @else
-                            <td @class([$cellClasses($row, $header), "p-0" => $hasLink($header)])>
-                                @if($hasLink($header))
-                                    <a href="{{ $redirectLink($row) }}" wire:navigate class="block py-3 px-4">
-                                        @endif
-
-                                        {{ $format($row, data_get($row, $header['key']), $header) }}
-
-                                        @if($hasLink($header))
-                                    </a>
-                                @endif
-                            </td>
+                        <th data-scope="table" data-part="head-cell" scope="col"{!! $classAttribute( $headClass ) !!}@if ( $sorts ) aria-sort="{{ $ariaSort( $column ) }}"@endif @if ( $column['numeric'] ?? false ) data-numeric @endif>
+                            @if ( $sorts )
+                                <button type="button" data-scope="table" data-part="sort"{{ $partClass( 'sort' ) }} aria-label="{{ $fill( $sortLabel, [ 'column' => $columnName( $column ) ] ) }}" x-on:click="sort( {{ \Illuminate\Support\Js::from( $nextSort( $column ) ) }} )">@if ( $headerSlot instanceof \Closure ){{ $headerSlot( $column ) }}@else{{ $column['label'] ?? $column['key'] }}@endif{{ $iconSvg( $sortIcon( $column ) ) }}</button>
+                            @elseif ( $headerSlot instanceof \Closure )
+                                {{ $headerSlot( $column ) }}
+                            @else
+                                {{ $column['label'] ?? $column['key'] }}
+                            @endif
+                        </th>
+                    @endforeach
+                    @if ( $hasActions )
+                        <th data-scope="table" data-part="head-cell" scope="col" data-shrink{{ $partClass( 'headCell' ) }}><span class="apui-sr-only">{{ $actionsLabel }}</span></th>
+                    @endif
+                </tr>
+            </thead>
+            <tbody
+                @if ( $dragSort )
+                    wire:sort="{{ $sortMethod() }}"
+                    @if ( is_string( $legacy( 'sort-group' ) ) ) wire:sort:group="{{ $legacy( 'sort-group' ) }}" @endif
+                @endif
+            >
+                @if ( $loading )
+                    @foreach ( range( 1, 3 ) as $skeletonRow )
+                        <tr data-scope="table" data-part="row" aria-hidden="true"{{ $partClass( 'row' ) }}>
+                            @if ( $selectable )<td data-scope="table" data-part="select"{{ $partClass( 'select' ) }}></td>@endif
+                            @if ( $expandable )<td data-scope="table" data-part="cell" data-shrink{{ $partClass( 'cell' ) }}></td>@endif
+                            @if ( $sortHandle )<td data-scope="table" data-part="cell" data-shrink{{ $partClass( 'cell' ) }}></td>@endif
+                            @foreach ( $columns as $column )
+                                <td data-scope="table" data-part="cell"{{ $partClass( 'cell' ) }}><span class="apui-skeleton" data-shape="text" aria-hidden="true"></span></td>
+                            @endforeach
+                            @if ( $hasActions )<td data-scope="table" data-part="cell" data-shrink{{ $partClass( 'cell' ) }}></td>@endif
+                        </tr>
+                    @endforeach
+                @elseif ( [] === $rowList )
+                    <tr>
+                        <td data-empty colspan="{{ max( 1, $colspan ) }}">
+                            @if ( $filled( $emptySlot ) )
+                                {{ $content( $emptySlot ) }}
+                            @else
+                                <div class="apui-empty-state" data-variant="no-results" data-size="sm"><p data-scope="empty-state" data-part="title">{{ $emptyText }}</p></div>
+                            @endif
+                        </td>
+                    </tr>
+                @else
+                    @foreach ( $rowList as $index => $row )
+                        @php
+                            $thisKey    = $rowKey( $row );
+                            $selectKey  = $selectable ? $selectionKey( $row ) : null;
+                            $isSelected = $selectable && $hasKey( $selected, $selectKey );
+                            $expandKey  = $expandable ? $expansionKey( $row ) : null;
+                            $expands    = $expandable && $canExpand( $row );
+                            $isOpen     = $expands && $hasKey( $expandedList, $expandKey );
+                            $thisName   = $rowName( $row );
+                            $expansionId = $partId( 'expansion-' . $index );
+                            $selectJs   = \Illuminate\Support\Js::from( $selectKey );
+                            $expandJs   = \Illuminate\Support\Js::from( $expandKey );
+                        @endphp
+                        <tr
+                            data-scope="table"
+                            data-part="row"{!! $classAttribute( $rowClasses( $row ) ) !!}
+                            wire:key="{{ $baseId() }}-row-{{ is_scalar( $thisKey ) ? $thisKey : $index }}"
+                            @if ( $selectable ) aria-selected="{{ $isSelected ? 'true' : 'false' }}" x-bind:aria-selected="has( selection, {{ $selectJs }} ) ? 'true' : 'false'" @endif
+                            @if ( $dragSort ) wire:sort:item="{{ $getSortableItemValue( $row ) }}" @endif
+                            @if ( $rowClick ) data-clickable x-on:click="rowClick( $event, {{ \Illuminate\Support\Js::from( $row ) }} )" @endif
+                        >
+                            @if ( $selectable )
+                                <td data-scope="table" data-part="select"{{ $partClass( 'select' ) }}>
+                                    <x-artisanpack-checkbox
+                                        :aria-label="$fill( $selectRowLabel, [ 'row' => $thisName ] )"
+                                        :value="is_scalar( $selectKey ) ? (string) $selectKey : ''"
+                                        :checked="$isSelected"
+                                        x-bind:checked="has( selection, {{ $selectJs }} )"
+                                        x-on:input="toggleRow( {{ $selectJs }}, $el.checked )"
+                                    />
+                                </td>
+                            @endif
+                            @if ( $expandable )
+                                <td data-scope="table" data-part="cell" data-shrink{{ $partClass( 'cell' ) }}>
+                                    @if ( $expands )
+                                        <button
+                                            type="button"
+                                            data-scope="table"
+                                            data-part="expand-trigger"{{ $partClass( 'expandTrigger' ) }}
+                                            aria-label="{{ $fill( $expandLabel, [ 'row' => $thisName ] ) }}"
+                                            aria-expanded="{{ $isOpen ? 'true' : 'false' }}"
+                                            aria-controls="{{ $expansionId }}"
+                                            data-mirror
+                                            x-bind:aria-expanded="has( expanded, {{ $expandJs }} ) ? 'true' : 'false'"
+                                            x-on:click="toggleExpanded( {{ $expandJs }} )"
+                                        >{{ $iconSvg( 'chevron-right' ) }}</button>
+                                    @endif
+                                </td>
+                            @endif
+                            @if ( $sortHandle )
+                                <td data-scope="table" data-part="cell" data-shrink{{ $partClass( 'cell' ) }}>
+                                    <span data-drag-handle wire:sort:handle aria-hidden="true">{{ $iconSvg( 'grip-vertical' ) }}</span>
+                                </td>
+                            @endif
+                            @foreach ( $columns as $column )
+                                @php
+                                    $slotKey   = 'cell_' . str_replace( '.', '___', (string) $column['key'] );
+                                    $cellSlot  = $__data[ $slotKey ] ?? null;
+                                    $href      = $cellHref( $row, $column );
+                                    $secondary = is_string( $column['secondary'] ?? null ) ? data_get( $row, $column['secondary'] ) : null;
+                                @endphp
+                                <td data-scope="table" data-part="cell"{!! $classAttribute( $cellClasses( $row, $column ) ) !!}@if ( $column['numeric'] ?? false ) data-numeric @endif>
+                                    @if ( null !== $href )<a href="{{ $href }}" @if ( \ArtisanPack\LivewireUiComponents\Support\SafeUrl::navigable( $href ) ) wire:navigate @endif>@endif
+                                    @if ( $cellSlot instanceof \Closure )
+                                        {{ $cellSlot( $row ) }}
+                                    @elseif ( null !== $secondary && '' !== $secondary )
+                                        <span data-scope="table" data-part="primary"{{ $partClass( 'primary' ) }}>{{ $format( $row, data_get( $row, $column['key'] ), $column ) }}</span><span data-scope="table" data-part="secondary"{{ $partClass( 'secondary' ) }}>{{ $secondary }}</span>
+                                    @else
+                                        {{ $format( $row, data_get( $row, $column['key'] ), $column ) }}
+                                    @endif
+                                    @if ( null !== $href )</a>@endif
+                                </td>
+                            @endforeach
+                            @if ( $hasActions )
+                                <td data-scope="table" data-part="cell" data-shrink data-actions{{ $partClass( 'cell' ) }}>
+                                    @if ( $actionsSlot instanceof \Closure )
+                                        {{ $actionsSlot( $row ) }}
+                                    @else
+                                        {{ $content( $actionsSlot ) }}
+                                    @endif
+                                </td>
+                            @endif
+                        </tr>
+                        @if ( $expands )
+                            <tr
+                                data-scope="table"
+                                data-part="expansion"{{ $partClass( 'expansion' ) }}
+                                id="{{ $expansionId }}"
+                                wire:key="{{ $baseId() }}-expansion-{{ is_scalar( $thisKey ) ? $thisKey : $index }}"
+                                @if ( ! $isOpen ) hidden @endif
+                                x-bind:hidden="! has( expanded, {{ $expandJs }} )"
+                            >
+                                <td colspan="{{ $colspan }}">
+                                    @if ( $expansionSlot instanceof \Closure )
+                                        {{ $expansionSlot( $row ) }}
+                                    @endif
+                                </td>
+                            </tr>
                         @endif
                     @endforeach
-
-                    <!-- ACTIONS -->
-                    @if($actions)
-                        <td class="text-right py-0">{{ $actions($row) }}</td>
-                    @endif
-                </tr>
-
-                <!-- EXPANSION SLOT -->
-                @if($expandable)
-                    <tr wire:key="{{ $uuid }}-{{ $k }}--expand" class="!bg-inherit" :class="isExpanded({{ $getKeyValue($row, 'expandableKey') }}) || 'hidden'">
-                        <td :colspan="colspanSize">
-                            {{ $expansion($row) }}
-                        </td>
-                    </tr>
                 @endif
-            @endforeach
-
-            {{-- Bottom spacer for virtual scrolling --}}
-            @if($isVirtual)
-                <tr x-show="virtualScroll" aria-hidden="true" class="virtual-spacer-bottom">
-                    <td colspan="999" :style="'height:' + getBottomSpacerHeight() + 'px; padding:0; border:none;'"></td>
-                </tr>
-            @endif
             </tbody>
-
-            @php
-                $hasFooterSlot = isset($footer);
-                $hasInfiniteScroll = $isInfiniteScrollEnabled() && $hasMorePages;
-                $infiniteScrollColspan = collect($headers)->filter(fn($h) => !$isHidden($h))->count() + ($selectable ? 1 : 0) + ($expandable ? 1 : 0) + ($isSortingEnabled() && $sortHandle ? 1 : 0) + ($actions ? 1 : 0);
-            @endphp
-
-            <!-- FOOTER (combines footer slot and infinite scroll into single tfoot) -->
-            @if($hasFooterSlot || $hasInfiniteScroll)
-                <tfoot {{ $hasFooterSlot ? ($footer->attributes ?? '') : '' }}>
-                    {{-- Footer slot content --}}
-                    @if($hasFooterSlot)
-                        {{ $footer }}
-                    @endif
-
-                    {{-- Infinite scroll row (Livewire 4+) --}}
-                    @if($hasInfiniteScroll)
-                        <tr>
-                            <td colspan="{{ $infiniteScrollColspan }}">
-                                @if($infiniteScrollModifier === 'once')
-                                    <div wire:intersect.once="{{ $infiniteScrollMethod }}" class="py-4 text-center">
-                                @elseif($infiniteScrollModifier === 'half')
-                                    <div wire:intersect.half="{{ $infiniteScrollMethod }}" class="py-4 text-center">
-                                @elseif($infiniteScrollModifier === 'full')
-                                    <div wire:intersect.full="{{ $infiniteScrollMethod }}" class="py-4 text-center">
-                                @else
-                                    <div wire:intersect="{{ $infiniteScrollMethod }}" class="py-4 text-center">
-                                @endif
-                                    <span wire:loading.remove wire:target="{{ $infiniteScrollMethod }}" class="text-base-content/50">{{ $infiniteScrollText }}</span>
-                                    <x-artisanpack-loading wire:loading wire:target="{{ $infiniteScrollMethod }}" class="hidden" />
-                                </div>
-                            </td>
-                        </tr>
-                    @endif
-                </tfoot>
+            @if ( $legacyFooter )
+                <tfoot>{{ $footer }}</tfoot>
             @endif
         </table>
-
-        @if(count($rows) === 0)
-            @if($showEmptyText)
-                <div class="text-center py-4 text-base-content/50">
-                    {{ $emptyText }}
-                </div>
-            @endif
-            @if($empty)
-                <div class="text-center py-4 text-base-content/50">
-                    {{ $empty }}
-                </div>
-            @endif
+        @if ( $isInfiniteScrollEnabled() )
+            <div data-load-more {{ $getInfiniteScrollDirective() }}="{{ $infiniteScrollMethod() }}">
+                <span wire:loading.remove wire:target="{{ $infiniteScrollMethod() }}">{{ is_string( $legacy( 'infinite-scroll-text' ) ) ? $legacy( 'infinite-scroll-text' ) : __( 'Scroll for more' ) }}</span>
+                <span wire:loading wire:target="{{ $infiniteScrollMethod() }}">{{ __( 'Loading…' ) }}</span>
+            </div>
         @endif
     </div>
-
-    {{-- Close virtual scroll container --}}
-    @if($isVirtual)
-    </div>
-    @endif
-
-    <!-- Pagination -->
-    {{-- Pagination keeps to its spec; the "Rows per page" Select sits beside it here. --}}
-    @if($withPagination)
-        <div class="flex flex-wrap items-center justify-between gap-2 mt-4" data-table-pagination>
-            @if($perPage && $rows instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator && $rows->isNotEmpty())
+    @if ( $hasFooter )
+        <div data-scope="table" data-part="footer"{{ $partClass( 'footer' ) }}>
+            @if ( $hasFooterText )
+                <span>{{ $content( $footer ) }}</span>
+            @endif
+            @if ( $paginator && $perPage && $rows instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator && $rows->isNotEmpty() )
                 <x-artisanpack-select
                     size="sm"
                     placeholder=""
                     :label="__( 'Rows per page' )"
-                    :options="array_map( 'strval', $perPageValues ?? [] )"
+                    :options="array_map( 'strval', $perPageValues )"
                     :value="(string) $rows->perPage()"
                     wire:model.live="{{ $perPage }}"
                 />
             @endif
-            <x-artisanpack-pagination :rows="$rows" summary />
+            @if ( $paginator )
+                <x-artisanpack-pagination :rows="$rows" summary />
+            @elseif ( $hasPagination )
+                <x-artisanpack-pagination
+                    :page="(int) ( $pagination['page'] ?? 1 )"
+                    :page-count="isset( $pagination['pageCount'] ) ? (int) $pagination['pageCount'] : null"
+                    :total="isset( $pagination['total'] ) ? (int) $pagination['total'] : null"
+                    :per-page="(int) ( $pagination['perPage'] ?? 10 )"
+                    :siblings="(int) ( $pagination['siblings'] ?? 1 )"
+                    :summary="(bool) ( $pagination['summary'] ?? false )"
+                    :label="$pagination['label'] ?? null"
+                    :previous-label="$pagination['previousLabel'] ?? null"
+                    :next-label="$pagination['nextLabel'] ?? null"
+                    :page-label="$pagination['pageLabel'] ?? null"
+                    :summary-label="$pagination['summaryLabel'] ?? null"
+                    :classes="(array) ( $pagination['classes'] ?? [] )"
+                />
+            @endif
         </div>
     @endif
 </div>

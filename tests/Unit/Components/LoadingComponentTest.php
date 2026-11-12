@@ -2,212 +2,62 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
+use Illuminate\Support\Facades\Blade;
 
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
-use ArtisanPack\LivewireUiComponents\View\Components\Loading;
-use Error;
-use RuntimeException;
-
-/**
- * Comprehensive unit tests for the Loading component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * Loading (#60). The manifest parity check is in
+ * tests/Feature/DesignSystemParityTest.php.
  */
-class LoadingComponentTest extends ComponentTestCase
+
+function loadingRoot(DOMXPath $dom): DOMElement
 {
-    protected string $componentClass = Loading::class;
-
-    protected array $defaultProperties = [
-        'animated' => true,
-    ];
-
-    protected array $requiredProperties = [];
-
-    public function test_loading_string_properties(): void
-    {
-        $stringProperties = ['id', 'type', 'icon', 'customSvg'];
-        $testValues       = ComponentDataFactory::sampleTexts();
-
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
-
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
-    }
-
-    public function test_loading_boolean_properties(): void
-    {
-        $booleanProperties = ['animated'];
-
-        foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
-            $this->assertTrue($component->$property);
-
-            $component = $this->createComponent([$property => false]);
-            $this->assertFalse($component->$property);
-        }
-    }
-
-    public function test_loading_get_loading_type_method(): void
-    {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'getLoadingType')) {
-            try {
-                $result = $component->getLoadingType();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_loading_get_loading_icon_method(): void
-    {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'getLoadingIcon')) {
-            try {
-                $result = $component->getLoadingIcon();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_loading_should_use_svg_method(): void
-    {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'shouldUseSvg')) {
-            try {
-                $result = $component->shouldUseSvg();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_loading_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
-
-    public function test_loading_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'Loading should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
-
-    public function test_loading_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
-
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
-
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_loading_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'Loading rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
+    return $dom->query('//span[contains(@class, "apui-loading")]')->item(0);
 }
+
+test('the default renders a status with a spinner and a hidden label', function (): void {
+    $dom   = designSystemDom(Blade::render('<x-artisanpack-loading />'));
+    $root  = loadingRoot($dom);
+    $label = $dom->query('//*[@data-part="label"]')->item(0);
+
+    expect($root->getAttribute('role'))->toBe('status')
+        ->and($root->getAttribute('data-variant'))->toBe('spinner')
+        ->and($root->getAttribute('data-size'))->toBe('md')
+        ->and($root->getAttribute('data-color'))->toBe('primary')
+        ->and($root->getAttribute('style'))->toBe('--apui-_delay: 300ms')
+        ->and($root->hasAttribute('data-overlay'))->toBeFalse()
+        ->and($dom->query('//*[@data-part="indicator"][@aria-hidden="true"]'))->toHaveCount(1)
+        ->and($dom->query('//*[@data-part="indicator"]/span'))->toHaveCount(0)
+        ->and($label->getAttribute('class'))->toBe('apui-sr-only')
+        ->and($label->textContent)->toBe('Loading');
+});
+
+test('dots render three spans', function (): void {
+    expect(designSystemDom(Blade::render('<x-artisanpack-loading variant="dots" />'))->query('//*[@data-part="indicator"]/span'))->toHaveCount(3);
+});
+
+test('the default slot is visible text', function (): void {
+    $label = designSystemDom(Blade::render('<x-artisanpack-loading>Saving changes…</x-artisanpack-loading>'))->query('//*[@data-part="label"]')->item(0);
+
+    expect($label->hasAttribute('class'))->toBeFalse()
+        ->and($label->textContent)->toBe('Saving changes…');
+});
+
+test('the label is translated by default and can be set', function (): void {
+    app('translator')->addLines(['*.Loading' => 'Chargement'], 'fr');
+    app()->setLocale('fr');
+    expect(designSystemDom(Blade::render('<x-artisanpack-loading />'))->query('//*[@data-part="label"]')->item(0)->textContent)->toBe('Chargement');
+    app()->setLocale('en');
+
+    expect(designSystemDom(Blade::render('<x-artisanpack-loading label="Fetching" />'))->query('//*[@data-part="label"]')->item(0)->textContent)->toBe('Fetching');
+});
+
+test('overlay, delay, size, color and attributes render on the root', function (): void {
+    $root = loadingRoot(designSystemDom(Blade::render('<x-artisanpack-loading overlay :delay="0" size="lg" color="success" class="extra" style="color: red" wire:loading />')));
+
+    expect($root->hasAttribute('data-overlay'))->toBeTrue()
+        ->and($root->getAttribute('style'))->toBe('--apui-_delay: 0ms; color: red')
+        ->and($root->getAttribute('data-size'))->toBe('lg')
+        ->and($root->getAttribute('data-color'))->toBe('success')
+        ->and($root->getAttribute('class'))->toBe('apui-loading extra')
+        ->and($root->hasAttribute('wire:loading'))->toBeTrue();
+});

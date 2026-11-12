@@ -388,6 +388,7 @@
     --apui-border-muted: var(--apui-gray-150);
     --apui-border-default: var(--apui-gray-500);
     --apui-border-strong: var(--apui-gray-700);
+    --apui-border-soft-edge-width: 0;
     --apui-focus-ring-color: var(--apui-steel-600);
     --apui-focus-ring-offset-color: var(--apui-surface-default);
     --apui-state-hover: oklch(20% 0.01 250 / 0.05);
@@ -488,6 +489,7 @@
     --apui-border-muted: var(--apui-gray-850);
     --apui-border-default: var(--apui-gray-500);
     --apui-border-strong: var(--apui-gray-300);
+    --apui-border-soft-edge-width: 0;
     --apui-focus-ring-color: var(--apui-steel-300);
     --apui-focus-ring-offset-color: var(--apui-surface-default);
     --apui-state-hover: oklch(100% 0 0 / 0.06);
@@ -588,6 +590,7 @@
     --apui-border-muted: var(--apui-gray-700);
     --apui-border-default: var(--apui-gray-1000);
     --apui-border-strong: var(--apui-gray-1000);
+    --apui-border-soft-edge-width: 1px;
     --apui-focus-ring-color: var(--apui-steel-800);
     --apui-focus-ring-offset-color: var(--apui-surface-default);
     --apui-state-hover: oklch(0% 0 0 / 0.08);
@@ -1138,6 +1141,9 @@
 /* headless: ./components/checkbox.css left out */
 /* headless: ./components/card.css left out */
 /* headless: ./components/dialog.css left out */
+/* headless: ./components/drawer.css left out */
+/* headless: ./components/popover.css left out */
+/* headless: ./components/tooltip.css left out */
 /* headless: ./components/dropdown-menu.css left out */
 /* headless: ./components/toast.css left out */
 /* headless: ./components/tabs.css left out */
@@ -1162,8 +1168,37 @@
 /* headless: ./components/link.css left out */
 /* headless: ./components/breadcrumbs.css left out */
 /* headless: ./components/pagination.css left out */
+/* headless: ./components/table.css left out */
 /* headless: ./components/steps.css left out */
 /* headless: ./components/spotlight.css left out */
+/* headless: ./components/stat.css left out */
+/* headless: ./components/kpi-card.css left out */
+/* headless: ./components/sparkline.css left out */
+/* headless: ./components/timeline.css left out */
+/* headless: ./components/diff.css left out */
+/* headless: ./components/badge.css left out */
+/* headless: ./components/avatar.css left out */
+/* headless: ./components/heading.css left out */
+/* headless: ./components/text.css left out */
+/* headless: ./components/list-item.css left out */
+/* headless: ./components/user-menu.css left out */
+/* headless: ./components/alert.css left out */
+/* headless: ./components/loading.css left out */
+/* headless: ./components/progress.css left out */
+/* headless: ./components/progress-radial.css left out */
+/* headless: ./components/skeleton.css left out */
+/* headless: ./components/empty-state.css left out */
+/* headless: ./components/streamable-content.css left out */
+/* headless: ./components/accordion.css left out */
+/* headless: ./components/collapse.css left out */
+/* headless: ./components/app-shell.css left out */
+/* headless: ./components/page-header.css left out */
+/* headless: ./components/divider.css left out */
+/* headless: ./components/grid.css left out */
+/* headless: ./components/stack.css left out */
+/* headless: ./components/image-gallery.css left out */
+/* headless: ./components/image-slider.css left out */
+/* headless: ./components/image-library.css left out */
 /*
  * Utilities. This layer sits above the components, so a utility wins over a
  * component rule of any specificity.

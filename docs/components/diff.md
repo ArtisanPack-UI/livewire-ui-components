@@ -4,162 +4,57 @@ title: Diff Component
 
 # Diff Component
 
-The Diff component provides a visual way to display differences between two text strings, similar to how Git shows file differences. It's useful for comparing code, configuration files, or any text-based content.
+Shows the changes between two versions of a text, built on the ArtisanPack UI design system (`.apui-diff`): unified or side by side, with hunks of context around each change and the changed words marked. It's computed on the server, with the same rows React and Vue render: no diff library and no script.
 
 ## Basic Usage
 
-```php
-<x-artisanpack-diff 
-    old="This is the original text."
-    new="This is the modified text."
+```blade
+<x-artisanpack-diff
+	:old-content="$previous->body"
+	:new-content="$listing->body"
+	file-name="listings/grove-greenfield.json"
 />
 ```
 
-## Examples
+## Split view and header controls
 
-### Basic Text Comparison
+The `actions` slot sits at the end of the header, for a copy button or a view switch:
 
-```php
-<x-artisanpack-diff 
-    old="This is the original text."
-    new="This is the modified text with some changes."
-/>
-```
-
-### Code Comparison
-
-```php
-@php
-$oldCode = <<<'CODE'
-function hello() {
-    console.log("Hello, world!");
-}
-CODE;
-
-$newCode = <<<'CODE'
-function hello(name) {
-    console.log(`Hello, ${name}!`);
-    return name;
-}
-CODE;
-@endphp
-
-<x-artisanpack-diff 
-    :old="$oldCode"
-    :new="$newCode"
-    fileName="hello.js"
-/>
-```
-
-### JSON Comparison
-
-```php
-@php
-$oldJson = <<<'JSON'
-{
-    "name": "John Doe",
-    "age": 30,
-    "email": "john@example.com"
-}
-JSON;
-
-$newJson = <<<'JSON'
-{
-    "name": "John Doe",
-    "age": 31,
-    "email": "john.doe@example.com",
-    "address": {
-        "city": "New York",
-        "country": "USA"
-    }
-}
-JSON;
-@endphp
-
-<x-artisanpack-diff 
-    :old="$oldJson"
-    :new="$newJson"
-    fileName="user.json"
-/>
-```
-
-### Unified View
-
-```php
-<x-artisanpack-diff 
-    old="This is the original text."
-    new="This is the modified text."
-    :config="['outputFormat' => 'line-by-line']"
-/>
-```
-
-### With Custom Configuration
-
-```php
-<x-artisanpack-diff 
-    old="This is the original text."
-    new="This is the modified text."
-    :config="[
-        'outputFormat' => 'line-by-line',
-        'matching' => 'words',
-        'synchronisedScroll' => false,
-        'highlight' => true,
-        'renderNothingWhenEmpty' => false
-    ]"
-/>
+```blade
+<x-artisanpack-diff :old-content="$v3" :new-content="$v4" :file-name="__( 'Version 3 → Version 4' )" :view="$view">
+	<x-slot:actions>
+		<x-artisanpack-button size="xs" variant="ghost" wire:click="toggleView">
+			{{ 'split' === $view ? __( 'Unified' ) : __( 'Split' ) }}
+		</x-artisanpack-button>
+	</x-slot:actions>
+</x-artisanpack-diff>
 ```
 
 ## Props
 
 | Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `id` | string\|null | `null` | Optional ID for the diff element |
-| `old` | string | `''` | The original text |
-| `new` | string | `''` | The new text to compare against the original |
-| `fileName` | string | `'payload.json'` | The name of the file being compared |
-| `config` | array\|null | `[]` | Additional configuration options for the diff display |
+|---|---|---|---|
+| `old-content` | string | none | The earlier version. |
+| `new-content` | string | none | The later version. |
+| `file-name` | string | none | What changed, at the start of the header. |
+| `view` | string | `unified` | `unified` or `split`. |
+| `word-level` | bool | `true` | Marks the changed words inside a changed line. |
+| `context` | int | `3` | Unchanged lines kept around each change. |
+| `counts-label` | string | `__( '{additions} additions, {deletions} deletions' )` | The counts' text for screen readers. |
+| `empty-label` | string | `__( 'No changes' )` | Shown when the versions are the same. |
+| `actions` | string | none | Header controls. The `actions` slot replaces it. |
+| `classes` | array | `[]` | Extra classes per part: `root`, `header`, `icon`, `file`, `counts`, `actions`, `table`, `hunk`, `line`, `lineNumber`, `sign`, `code`, `ins`, `del`. |
 
-## Configuration Options
+Every other attribute lands on the root.
 
-The `config` prop accepts an array of options that control how the diff is displayed. Here are the available options:
+## Upgrading from 2.x
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `drawFileList` | boolean | `false` | Whether to show a file list |
-| `matching` | string | `'lines'` | The matching method (`'lines'` or `'words'`) |
-| `outputFormat` | string | `'side-by-side'` | The output format (`'side-by-side'` or `'line-by-line'`) |
-| `synchronisedScroll` | boolean | `true` | Whether to synchronize scrolling between old and new |
-| `fileContentToggle` | boolean | `false` | Whether to show a toggle for file content |
-| `highlight` | boolean | - | Whether to highlight changes |
-| `renderNothingWhenEmpty` | boolean | - | Whether to render nothing when there are no differences |
-
-## Styling
-
-The Diff component uses the Diff2HtmlUI JavaScript library with custom styling to match your application's theme. The component applies several Tailwind CSS classes to customize the appearance of the diff display.
-
-### Default Classes
-
-The component applies the following CSS classes to the diff display:
-
-- `!text-xs` - Sets the text size to extra small
-- `!bg-base-100` - Sets the background color for headers
-- `!border-dashed !border-[length:var(--border)]` - Adds a dashed border
-- `!bg-red-50` - Background color for deleted lines
-- `!bg-green-50` - Background color for inserted lines
-- `!whitespace-pre-wrap` - Preserves whitespace and wraps text
-- `!w-auto` - Sets the width to auto for code lines
+- `old` and `new` still work, as `old-content` and `new-content`.
+- The Diff no longer uses diff2html or `jfcherng/php-diff`: remove the diff2html script and styles from your layout. `config` is gone; use `view`, `word-level` and `context`.
+- The 2.x default was side by side; the default is now `unified`.
 
 ## Accessibility
 
-The Diff component follows accessibility best practices:
-
-- Uses semantic HTML for the diff display
-- Provides clear visual indicators for additions and deletions
-- Maintains appropriate color contrast for readability
-- Preserves text structure for screen readers
-
-## Related Components
-
-- [Code](Code) - Code editor with syntax highlighting
-- [Markdown](Markdown) - Markdown editor and renderer
-- [Editor](Editor) - Rich text editor
+- Every changed line has a `+` or `−` sign, and changed words are `ins` and `del` elements: color is never the only signal.
+- The counts are read as words; the visible `+3 −2` is hidden from screen readers.
+- The header mirrors in right-to-left layouts; the code stays left to right.

@@ -1,77 +1,39 @@
+{{--
+    KpiCard (#61). Markup contract: design-system wave 5, KpiCard.
+    A Card built from Stat: the top row (label, period, icon tile), the row
+    (value and foot beside a Sparkline) and the target (a Progress and its
+    text). The label, value and delta parts share Stat's styles. The period
+    slot holds a control, such as a Select.
+--}}
 @php
-    $baseClasses = [
-        'kpi-card rounded-lg p-5 flex flex-col',
-        'bg-base-100' => !$glass,
-    ];
-    $inlineStyles = [];
-
-    // Handle glass effect
-    if ($glass) {
-        $baseClasses[] = $glassClasses();
-        $computedGlassStyle = $glassStyle();
-        if ($computedGlassStyle) {
-            $inlineStyles[] = $computedGlassStyle;
-        }
-    }
-
-    // Merge inline styles
-    if (!empty($inlineStyles)) {
-        $attributes = $attributes->merge(['style' => implode(' ', $inlineStyles)]);
-    }
-
-    // Merge wire:key and classes into attributes
-    $attributes = $attributes->merge(['wire:key' => $uuid])->class($baseClasses);
+    $metric     = $metric();
+    $points     = $sparklineData();
+    $target     = $targetData();
+    $attributes = $attributes->except( \ArtisanPack\LivewireUiComponents\View\Components\KpiCard::DEPRECATED_ATTRIBUTES );
+    $hasPeriod  = $filled( $period );
 @endphp
-
-<div {{ $attributes }}>
-    {{-- Header: Icon + Title --}}
-    @if($icon || $title)
-        <div class="flex items-center gap-2 mb-3">
-            @if($icon)
-                <div class="text-base-content/60">
-                    <x-artisanpack-icon :name="$icon" class="w-5 h-5" />
-                </div>
-            @endif
-            @if($title)
-                <span class="text-sm text-base-content/60 font-medium">{{ $title }}</span>
+<div
+    {{ $attributes->class( $rootClasses( 'apui-card apui-kpi-card' ) ) }}
+    data-color="{{ $metric['color'] }}"
+>
+    @if ( null !== $metric['label'] || $hasPeriod || null !== $metric['icon'] )
+        <div data-scope="kpi-card" data-part="top"{{ $partClass( 'top' ) }}>@if ( null !== $metric['label'] )<span data-scope="kpi-card" data-part="label"{{ $partClass( 'label' ) }}>{{ $metric['label'] }}</span>@endif @if ( $hasPeriod )<div data-scope="kpi-card" data-part="period"{{ $partClass( 'period' ) }}>{{ $content( $period ) }}</div>@endif @if ( null !== $metric['icon'] )<span data-scope="kpi-card" data-part="icon" aria-hidden="true"{{ $partClass( 'icon' ) }}>{{ $iconSvg( $metric['icon'] ) }}</span>@endif</div>
+    @endif
+    <div data-scope="kpi-card" data-part="row"{{ $partClass( 'row' ) }}>
+        <div data-scope="kpi-card" data-part="summary"{{ $partClass( 'summary' ) }}>
+            <span data-scope="kpi-card" data-part="value"{{ $partClass( 'value' ) }}>{{ $metric['value'] }}@if ( null !== $metric['unit'] )<span data-scope="kpi-card" data-part="unit"{{ $partClass( 'unit' ) }}>{{ $metric['unit'] }}</span>@endif</span>
+            @if ( null !== $metric['delta'] || null !== $metric['description'] )
+                <span data-scope="kpi-card" data-part="foot"{{ $partClass( 'foot' ) }}>@if ( null !== $metric['delta'] )<span data-scope="kpi-card" data-part="delta"{{ $partClass( 'delta' ) }}@if ( null !== $metric['trend'] ) data-trend="{{ $metric['trend'] }}"@endif>@if ( null !== $metric['trendLabel'] )<span class="apui-sr-only">{{ $metric['trendLabel'] }} </span>@endif{{-- --}}@if ( null !== $metric['trendIcon'] ){{ $iconSvg( $metric['trendIcon'] ) }}@endif{{ $metric['delta'] }}</span>@endif @if ( null !== $metric['description'] )<span data-scope="kpi-card" data-part="description"{{ $partClass( 'description' ) }}>{{ $metric['description'] }}</span>@endif</span>
             @endif
         </div>
-    @endif
-
-    {{-- Value --}}
-    <div class="text-3xl font-bold">
-        {{ $value ?? $slot }}
+        @if ( [] !== \ArtisanPack\LivewireUiComponents\Support\SparklineGeometry::values( $points ) )
+            <x-artisanpack-sparkline :data="$points" variant="area" :width="96" :height="36" :label="$sparklineLabel" data-scope="kpi-card" data-part="sparkline" :class="$classes['sparkline'] ?? null" />
+        @endif
     </div>
-
-    {{-- Trend Indicator --}}
-    @if($hasChange())
-        <div class="flex items-center gap-1 mt-2 {{ $changeColorClasses() }} text-sm">
-            <x-artisanpack-icon :name="$changeIcon()" class="w-4 h-4" />
-            <span class="font-medium">{{ $formattedChange() }}</span>
-            @if($changeLabel)
-                <span class="text-base-content/50">{{ $changeLabel }}</span>
-            @endif
-        </div>
-    @endif
-
-    {{-- Sparkline --}}
-    @if($hasSparkline())
-        <div class="mt-auto pt-4 overflow-hidden">
-            <x-artisanpack-sparkline
-                :data="$sparklineData"
-                :type="$sparklineType"
-                :color="$sparklineColor"
-                :height="48"
-                width="100%"
-                class="w-full block"
-            />
-        </div>
-    @endif
-
-    {{-- Footer Slot --}}
-    @if($footer)
-        <div @if($footer instanceof \Illuminate\View\ComponentSlot && $footer->attributes){{ $footer->attributes->class(['border-t border-base-content/10 mt-4 pt-3']) }}@else class="border-t border-base-content/10 mt-4 pt-3"@endif>
-            {{ $footer }}
+    @if ( null !== $target )
+        <div data-scope="kpi-card" data-part="target"{{ $partClass( 'target' ) }}>
+            <x-artisanpack-progress :value="$target['value']" :max="$target['max']" size="sm" :color="'neutral' === $metric['color'] ? null : $metric['color']" :aria-label="$target['label'] ?? $target['text']" />
+            <div data-scope="kpi-card" data-part="targetText"{{ $partClass( 'targetText' ) }}>@if ( null !== $target['label'] )<span>{{ $target['label'] }}</span>@endif<span>{{ $target['text'] }}</span></div>
         </div>
     @endif
 </div>
