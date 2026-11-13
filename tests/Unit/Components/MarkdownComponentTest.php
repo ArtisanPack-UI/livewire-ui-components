@@ -219,7 +219,9 @@ test('wire:model binds the source and goes to the Textareas', function (): void 
     expect($root->hasAttribute('wire:model.live.debounce.500ms'))->toBeFalse()
         ->and($handler)->toContain('const from = view;')
         ->and($handler)->toContain("document.getElementById(\"{$prefix}\" + from + '-source')")
-        ->and($handler)->toContain('if (input) $wire.$set("notes", input.value, false); $wire.$commit()')
+        ->and($handler)->toContain('if (input) $wire.$set("notes", input.value, false); if (\'write\' !== view) $wire.$commit()')
+        // The set runs on every switch, Split to Write included: only the commit waits for a preview.
+        ->and($handler)->not->toContain("if ('write' !== view && ")
         ->and(strpos($handler, '$wire.$set('))->toBeLessThan(strpos($handler, '$wire.$commit()'))
         ->and($dom->query('//*[@data-part="preview"][@x-html]')->length)->toBe(0);
 

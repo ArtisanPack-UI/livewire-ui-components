@@ -2612,6 +2612,136 @@
           ]
         }
       }
+    },
+    {
+      "name": "line, subnormal values keep a finite 1e-10 axis",
+      "series": [
+        {
+          "name": "Rate",
+          "data": [1e-310, 5e-324]
+        }
+      ],
+      "options": {
+        "type": "line",
+        "labels": ["A", "B"]
+      },
+      "expected": {
+        "type": "line",
+        "width": 520,
+        "height": 220,
+        "left": "40.0",
+        "right": "512.0",
+        "tickX": "32.0",
+        "labelY": "214.0",
+        "ticks": [
+          {
+            "y": "196.0",
+            "textY": "200.0",
+            "label": "0"
+          },
+          {
+            "y": "12.0",
+            "textY": "16.0",
+            "label": "0.0000000001"
+          }
+        ],
+        "categories": [
+          {
+            "x": "40.0",
+            "label": "A"
+          },
+          {
+            "x": "512.0",
+            "label": "B"
+          }
+        ],
+        "legend": [],
+        "marks": [
+          {
+            "index": 0,
+            "series": 1,
+            "shape": "rect",
+            "d": "",
+            "x": "40.0",
+            "y": "12.0",
+            "width": "236.0",
+            "height": "184.0",
+            "title": "A",
+            "body": "0",
+            "label": "A: 0",
+            "anchorX": "40.0",
+            "anchorY": "196.0"
+          },
+          {
+            "index": 1,
+            "series": 1,
+            "shape": "rect",
+            "d": "",
+            "x": "276.0",
+            "y": "12.0",
+            "width": "236.0",
+            "height": "184.0",
+            "title": "B",
+            "body": "0",
+            "label": "B: 0",
+            "anchorX": "512.0",
+            "anchorY": "196.0"
+          }
+        ],
+        "lines": [
+          {
+            "series": 1,
+            "d": "M40.0,196.0 L512.0,196.0"
+          }
+        ],
+        "areas": [],
+        "points": [
+          {
+            "index": 0,
+            "x": "40.0",
+            "top": "12.0",
+            "bottom": "196.0",
+            "dots": [
+              {
+                "series": 1,
+                "cx": "40.0",
+                "cy": "196.0"
+              }
+            ]
+          },
+          {
+            "index": 1,
+            "x": "512.0",
+            "top": "12.0",
+            "bottom": "196.0",
+            "dots": [
+              {
+                "series": 1,
+                "cx": "512.0",
+                "cy": "196.0"
+              }
+            ]
+          }
+        ],
+        "value": {
+          "x": "40.0",
+          "y": "186.0",
+          "text": "0"
+        },
+        "table": {
+          "columns": ["", "Rate"],
+          "rows": [
+            {
+              "label": "A",
+              "cells": ["0"]
+            },
+            {
+              "label": "B",
+              "cells": ["0"]
+            }
+          ]
+        }
+      }
     }
   ],
   "ticks": [
@@ -2684,6 +2814,16 @@
       "min": 0,
       "max": 3e-10,
       "expected": [0, 1e-10, 2e-10, 3e-10]
+    },
+    {
+      "min": 0,
+      "max": 1e-310,
+      "expected": [0, 1e-10]
+    },
+    {
+      "min": -5e-324,
+      "max": 5e-324,
+      "expected": [-1e-10, 0, 1e-10]
     }
   ],
   "values": [
@@ -2875,6 +3015,15 @@
         "suffix": ""
       },
       "expected": "$2,500,000,000,000,000,000,000.0B"
+    },
+    {
+      "value": 1e-310,
+      "options": {
+        "notation": "standard",
+        "prefix": "",
+        "suffix": ""
+      },
+      "expected": "0"
     }
   ],
   "tickLabels": [

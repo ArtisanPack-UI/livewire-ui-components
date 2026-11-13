@@ -323,8 +323,9 @@ class Markdown extends BaseComponent
     /**
      * The Alpine handler for the tabs' value-change: follows the tab and,
      * with `wire:model`, sends the source so the preview catches up. The
-     * Textarea that was showing is read first, so an edit a debounced
-     * `wire:model` hasn't set yet goes with it.
+     * Textarea that was showing is read on every switch (Split to Write
+     * too), so an edit a debounced `wire:model` hasn't set yet isn't lost;
+     * only a switch to a tab that shows the preview commits.
      *
      * @since 3.0.0
      *
@@ -335,10 +336,10 @@ class Markdown extends BaseComponent
         $handler = "if (\$event.target.matches('.apui-tabs')) { const from = view; view = \$event.detail.value";
         $model   = $this->modelName();
         if (null !== $model) {
-            $handler .= "; if ('write' !== view && \$el.closest('[wire\\\\:id]')) {"
+            $handler .= "; if (\$el.closest('[wire\\\\:id]')) {"
                 ." const input = 'preview' === from ? null : document.getElementById(".self::js($this->baseId().'-')." + from + '-source');"
                 .' if (input) $wire.$set('.self::js($model).', input.value, false);'
-                .' $wire.$commit() }';
+                ." if ('write' !== view) \$wire.\$commit() }";
         }
 
         return $handler.' }';

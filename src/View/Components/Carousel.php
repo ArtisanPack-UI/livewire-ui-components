@@ -88,7 +88,7 @@ class Carousel extends BaseComponent
      *
      * @var list<string>
      */
-    protected array $idIgnore = ['index', 'label', 'previousLabel', 'nextLabel', 'indicatorLabel', 'slideLabel', 'playLabel', 'pauseLabel', 'ariaLabel'];
+    protected array $idIgnore = ['slides', 'index', 'label', 'previousLabel', 'nextLabel', 'indicatorLabel', 'slideLabel', 'playLabel', 'pauseLabel', 'ariaLabel'];
 
     /**
      * Create a new component instance.

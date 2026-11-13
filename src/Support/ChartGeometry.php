@@ -127,7 +127,8 @@ final class ChartGeometry
         if ($high == $low) {
             $high = $low + 1;
         }
-        $step   = max(self::MIN_STEP, self::niceNumber(self::niceNumber((float) ($high - $low), false) / self::TICK_COUNT, true));
+        $range  = max(self::MIN_STEP, (float) ($high - $low));
+        $step   = max(self::MIN_STEP, self::niceNumber(self::niceNumber($range, false) / self::TICK_COUNT, true));
         $digits = max(0, -self::exponentOf($step));
         $start  = self::roundTo(floor($low / $step) * $step, $digits);
         $end    = self::roundTo(ceil($high / $step) * $step, $digits);
@@ -758,13 +759,13 @@ final class ChartGeometry
     }
 
     /**
-     * 10 to a whole power, dividing for negative powers as the TypeScript
-     * does. Parsed from `1e…` so powers past `PHP_INT_MAX` (1e19 and up) are
-     * the nearest double, as in JavaScript, not a product of rounded floats.
+     * 10 to a whole power, parsed from `1e…` as the TypeScript does: the
+     * nearest double for any power, so powers past `PHP_INT_MAX` aren't a
+     * product of rounded floats, and subnormal powers (1e-309) aren't `1 / INF`.
      */
     private static function pow10(int $exponent): float
     {
-        return $exponent >= 0 ? (float) ('1e'.$exponent) : 1 / (float) ('1e'.-$exponent);
+        return (float) ('1e'.$exponent);
     }
 
     /**

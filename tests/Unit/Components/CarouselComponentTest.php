@@ -191,6 +191,18 @@ test('the root key changes with the slide count and options, so Livewire remount
         ->and($key('loop'))->not->toBe($key(''))
         ->and($key('wire:key="mine"'))->toStartWith('mine-4-');
 
+    // Without an id the base id doesn't hash the slides, so reordering keeps the root
+    // (and the keyed slides' state); adding or removing a slide still remounts it.
+    $withIds  = array_map(static fn (array $slide, int $i): array => $slide + ['id' => "s{$i}"], carouselSlides(), range(1, 4));
+    $rootKey  = static function (array $slides): string {
+        // Each Livewire render is its own request, so forget this request's ids.
+        app()->forgetInstance(\ArtisanPack\LivewireUiComponents\Support\RenderedIds::class);
+
+        return carouselDom('', $slides)->query('//div[@data-part="root"]')->item(0)->getAttribute('wire:key');
+    };
+    expect($rootKey(array_reverse($withIds)))->toBe($rootKey($withIds))
+        ->and($rootKey(array_slice($withIds, 0, 3)))->not->toBe($rootKey($withIds));
+
     $html = Blade::render('<x-artisanpack-carousel :slides="$slides" wire:key="mine" />', ['slides' => carouselSlides()]);
     $open = substr($html, (int) strpos($html, '<div'), (int) strpos($html, '>') + 1);
     expect(substr_count($open, 'wire:key='))->toBe(1);
