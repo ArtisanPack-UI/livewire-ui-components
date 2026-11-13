@@ -4,8 +4,16 @@
     server-rendered id, so Livewire's morph keeps the panel (D-015). The closed
     panel still renders, hidden. `class` lands on the panel; every other
     attribute lands on the apuiDialog element, where open-change is dispatched.
+    The deprecated `modal` alias's 2.x `subtitle` and `actions` slots are the
+    description and footer.
 --}}
 @php
+    if ( ! $filled( $description ) && isset( $subtitle ) && $filled( $subtitle ) ) {
+        $description = $subtitle;
+    }
+    if ( ! $filled( $footer ) && isset( $actions ) && $filled( $actions ) ) {
+        $footer = $actions;
+    }
     $baseId         = $baseId();
     $isOpen         = $isOpen();
     $state          = $isOpen ? 'open' : 'closed';
