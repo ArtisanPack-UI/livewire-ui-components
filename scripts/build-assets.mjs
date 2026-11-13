@@ -86,7 +86,7 @@ function fail(message) {
  * Resolves the directory of each design-system package.
  *
  * @param {string | null} from
- * @returns {{ origin: string, checkout: string | null, css: string, behavior: string, tokens: string }}
+ * @returns {{ origin: string, checkout: string | null, css: string, behavior: string, tokens: string, codemods: string }}
  */
 function resolveSources(from) {
   const checkout = from ?? process.env.DESIGN_SYSTEM_PATH ?? null;
@@ -103,6 +103,7 @@ function resolveSources(from) {
       css: join(root, 'packages', 'css'),
       behavior: join(root, 'packages', 'behavior'),
       tokens: join(root, 'packages', 'tokens'),
+      codemods: join(root, 'packages', 'codemods'),
     };
   }
 
@@ -120,6 +121,7 @@ function resolveSources(from) {
     css: join(modules, 'css'),
     behavior: join(modules, 'behavior'),
     tokens: join(modules, 'tokens'),
+    codemods: join(modules, 'codemods'),
   };
 }
 
@@ -239,6 +241,13 @@ function collect(sources) {
 
   // The token map Theming\DesignTokens reads, so PHP needs no Node.
   outputs.set('resources/design-system/tokens.php', readRequired(join(sources.tokens, 'generated', 'tokens.php')));
+
+  // The 2.x to 3.0 rules artisanpack:upgrade-ui applies (design-system #67, D-056).
+  // From node_modules the package is optional: without it the committed copy stands.
+  const upgradeRules = join(sources.codemods, 'generated', 'upgrade-rules.php');
+  if (sources.checkout || existsSync(upgradeRules)) {
+    outputs.set('resources/design-system/upgrade-rules.php', readRequired(upgradeRules));
+  }
 
   // The generator parity fixtures aren't in the npm package, only in a checkout.
   if (sources.checkout) {
