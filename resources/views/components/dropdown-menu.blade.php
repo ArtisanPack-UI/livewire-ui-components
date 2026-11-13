@@ -5,14 +5,43 @@
     wire:key (D-015). `class` lands on the panel; every other attribute lands on
     the apuiDropdownMenu element, where open-change, select and checked-change
     are dispatched.
+    The deprecated `dropdown` alias's 2.x `trigger` slot: when it holds its own
+    control (usually a button), it renders inside a wrapper trigger, since a
+    button can't nest inside a button; clicks and keys on that control bubble
+    to the wrapper's handlers. Text or an icon alone goes inside the default
+    trigger button, so it stays reachable by keyboard.
 --}}
 @php
-    $baseId = $baseId();
-    $isOpen = $isOpen();
-    $state  = $isOpen ? 'open' : 'closed';
-    $align  = in_array( $align, [ 'start', 'center', 'end' ], true ) ? $align : 'start';
+    $baseId      = $baseId();
+    $isOpen      = $isOpen();
+    $state       = $isOpen ? 'open' : 'closed';
+    $align       = in_array( $align, [ 'start', 'center', 'end' ], true ) ? $align : 'start';
+    $triggerSlot = isset( $trigger ) && $trigger instanceof \Illuminate\Contracts\Support\Htmlable && $filled( $trigger ) ? $trigger : null;
+    // Only a slot with its own focusable control needs the wrapper trigger.
+    $triggerHasControl = null !== $triggerSlot
+        && 1 === preg_match( '/<(button|input|select|textarea|summary)\b|<a\b[^>]*\bhref\s*=|\btabindex\s*=\s*["\']?(?!-)\d|\bcontenteditable\b/i', $triggerSlot->toHtml() );
+    if ( null !== $triggerSlot && ! $triggerHasControl ) {
+        $label       = $triggerSlot;
+        $triggerSlot = null;
+    }
 @endphp
 <div {{ $hostAttributes() }} id="{{ $baseId }}" x-data="{{ $alpineData() }}" style="display: contents">
+    @if ( null !== $triggerSlot )
+    <span
+        id="{{ $partId( 'trigger' ) }}"
+        data-scope="dropdown-menu"
+        data-part="trigger"
+        data-legacy-trigger
+        tabindex="-1"
+        style="display: inline-flex"
+        aria-haspopup="menu"
+        aria-expanded="{{ $isOpen ? 'true' : 'false' }}"
+        aria-controls="{{ $partId( 'content' ) }}"
+        data-state="{{ $state }}"
+        {{ $partClass( 'trigger' ) }}
+        x-apui:trigger
+    >{{ $triggerSlot }}</span>
+    @else
     <x-artisanpack-button
         variant="outline"
         color="neutral"
@@ -27,6 +56,7 @@
         :data-state="$state"
         x-apui:trigger=""
     >{{ $content( $label ?? '' ) }}</x-artisanpack-button>
+    @endif
     @if ( $portal )<template x-teleport="body">@endif
     <div data-scope="dropdown-menu" data-part="positioner" id="{{ $partId( 'positioner' ) }}"{{ $partClass( 'positioner' ) }} x-apui:positioner>
         <div

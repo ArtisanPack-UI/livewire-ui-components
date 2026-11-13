@@ -2,199 +2,55 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
+use Illuminate\Support\Facades\Blade;
 
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
-use ArtisanPack\LivewireUiComponents\View\Components\Group;
-use Error;
-use RuntimeException;
-
-/**
- * Comprehensive unit tests for the Group component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * group (#145) is a deprecated alias of radio-group with variant segmented:
+ * the 2.x joined buttons.
  */
-class GroupComponentTest extends ComponentTestCase
-{
-    protected string $componentClass = Group::class;
 
-    protected array $defaultProperties = [
-        'hintClass'      => 'fieldset-label',
-        'optionValue'    => 'id',
-        'optionLabel'    => 'name',
-        'options'        => [],
-        'errorClass'     => 'text-error',
-        'omitError'      => false,
-        'firstErrorOnly' => false,
-    ];
+$legacyOptions = "[ [ 'id' => 'day', 'name' => 'Day' ], [ 'id' => 'week', 'name' => 'Week' ], [ 'id' => 'month', 'name' => 'Month', 'disabled' => true ] ]";
 
-    protected array $requiredProperties = [];
+test('renders a horizontal segmented radio group', function () use ($legacyOptions): void {
+    $dom  = designSystemDom(Blade::render('<x-artisanpack-group id="range" label="Range" wire:model="range" :options="'.$legacyOptions.'" />'));
+    $root = $dom->query('//fieldset')->item(0);
 
-    public function test_group_string_properties(): void
-    {
-        $stringProperties = ['id', 'label', 'hint', 'hintClass', 'optionValue', 'optionLabel', 'errorField', 'errorClass'];
-        $testValues       = ComponentDataFactory::sampleTexts();
-
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
-
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
+    $values = [];
+    foreach ($dom->query('//input') as $input) {
+        $values[] = $input->getAttribute('value');
+        expect($input->getAttribute('type'))->toBe('radio')
+            ->and($input->getAttribute('name'))->toBe('range')
+            ->and($input->getAttribute('wire:model'))->toBe('range');
     }
 
-    public function test_group_boolean_properties(): void
-    {
-        $booleanProperties = ['omitError', 'firstErrorOnly'];
+    expect($root->getAttribute('class'))->toBe('apui-radio-group')
+        ->and($root->getAttribute('id'))->toBe('range')
+        ->and($root->getAttribute('data-variant'))->toBe('segmented')
+        ->and($root->getAttribute('data-orientation'))->toBe('horizontal')
+        ->and(trim($dom->query('//legend')->item(0)->textContent))->toBe('Range')
+        ->and($values)->toBe(['day', 'week', 'month'])
+        ->and(trim($dom->query('//*[@data-part="item-text"]')->item(2)->textContent))->toBe('Month')
+        ->and($dom->query('//input[@value="month"]')->item(0)->hasAttribute('disabled'))->toBeTrue();
+});
 
-        foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
-            $this->assertTrue($component->$property);
+test('reads custom option keys through option-value and option-label', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-group option-value="key" option-label="title" :options="[ [ \'key\' => \'a\', \'title\' => \'Alpha\' ] ]" />'));
 
-            $component = $this->createComponent([$property => false]);
-            $this->assertFalse($component->$property);
-        }
+    expect($dom->query('//input')->item(0)->getAttribute('value'))->toBe('a')
+        ->and(trim($dom->query('//*[@data-part="item-text"]')->item(0)->textContent))->toBe('Alpha');
+});
+
+test('hint-class and error-class become part classes', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-group hint="H" error="Pick one." hint-class="my-hint" error-class="my-error" :options="[ \'A\' ]" />'));
+
+    expect($dom->query('//*[@data-part="hint"]')->item(0)->getAttribute('class'))->toBe('my-hint')
+        ->and($dom->query('//*[@data-part="error"]')->item(0)->getAttribute('class'))->toBe('my-error');
+});
+
+test('removed 2.x props do not leak as HTML attributes', function (): void {
+    $html = Blade::render('<x-artisanpack-group hint-class="h" error-class="e" option-value="id" option-label="name" omit-error first-error-only error-field="range" :options="[ \'A\' ]" />');
+
+    foreach (['hint-class', 'error-class', 'option-value', 'option-label', 'omit-error', 'first-error-only', 'error-field'] as $attribute) {
+        expect($html)->not->toContain($attribute);
     }
-
-    public function test_group_model_name_method(): void
-    {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'modelName')) {
-            try {
-                $result = $component->modelName();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_group_error_field_name_method(): void
-    {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'errorFieldName')) {
-            try {
-                $result = $component->errorFieldName();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_group_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
-
-    public function test_group_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'Group should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
-
-    public function test_group_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
-
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
-
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_group_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'Group rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
-}
+});
