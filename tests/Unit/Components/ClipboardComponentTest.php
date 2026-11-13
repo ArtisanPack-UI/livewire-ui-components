@@ -31,11 +31,29 @@ test('renders an outline copy button and an empty live region', function (): voi
         ->and($button->getAttribute('data-variant'))->toBe('outline')
         ->and($button->getAttribute('data-color'))->toBe('neutral')
         ->and($button->getAttribute('value'))->toBe(CLIPBOARD_URL)
-        ->and($button->getAttribute('x-on:click'))->toContain("\$dispatch( 'copy', \$el.value )")
+        ->and($button->getAttribute('x-on:click'))->toStartWith('const value = $el.value; if ( await copy( value ) )')
+        ->and($button->getAttribute('x-on:click'))->toContain("\$dispatch( 'copied', value )")
+        ->and($button->getAttribute('x-on:click'))->not->toContain("'copy'")
         ->and($button->getAttribute('x-on:click'))->toContain("\$dispatch( 'error' )")
         ->and($dom->query('.//*[@data-part="icon"][@aria-hidden="true"]/svg', $button))->toHaveCount(1)
         ->and(trim($dom->query('.//*[@data-part="label"]', $button)->item(0)->textContent))->toBe('Copy')
         ->and(trim($dom->query('//*[@data-part="tooltip"][@role="status"]')->item(0)->textContent))->toBe('');
+});
+
+test('gives the button and icon variants the value to copy by hand after a failure', function (): void {
+    foreach (['button', 'icon'] as $variant) {
+        $dom      = clipboardDom('variant="'.$variant.'" :classes="[\'field\' => \'f\']"');
+        $template = $dom->query('//template[@x-if="null !== manual"]')->item(0);
+
+        expect($template)->not->toBeNull()
+            ->and($dom->query('//span[@data-part="field"][not(ancestor::template)]'))->toHaveCount(0);
+
+        $html = $template->ownerDocument->saveHTML($template);
+        expect($html)->toContain('data-part="field" class="f"')
+            ->and($html)->toContain('data-part="value" x-text="manual"');
+    }
+
+    expect(clipboardDom('variant="field"')->query('//template'))->toHaveCount(0);
 });
 
 test('names the icon button through its label', function (): void {

@@ -25,8 +25,9 @@ use Livewire\Component;
  *
  * The body of the Livewire Calendar's details Dialog (#64): the event's
  * category as a soft Badge and its description. The Calendar mounts it with
- * the event, keyed by it; a 2.x replacement (`event-view`) can still listen
- * for `loadEventModal` instead.
+ * the event and its own id, keyed by the event; a 2.x replacement
+ * (`event-view`) can still listen for `loadEventModal` instead, which
+ * carries `selectedEvent` and the sending `calendarId`.
  *
  * @since 1.0.0
  * @since 3.0.0 Mounted with the event; design-system markup.
@@ -41,27 +42,42 @@ class EventModalContent extends Component
     public ?array $event = null;
 
     /**
+     * The id of the Calendar this belongs to; null takes any calendar's event.
+     *
+     * @since 3.0.0
+     */
+    public ?string $calendarId = null;
+
+    /**
      * Mount the component with the event.
      *
      * @since 3.0.0
      *
      * @param  array<string, mixed>|null  $event  The event, with when, category, color and description.
+     * @param  string|null  $calendarId  The id of the Calendar this belongs to.
      */
-    public function mount(?array $event = null): void
+    public function mount(?array $event = null, ?string $calendarId = null): void
     {
-        $this->event = $event;
+        $this->event      = $event;
+        $this->calendarId = $calendarId;
     }
 
     /**
-     * Load event data into the modal.
+     * Load event data into the modal, unless it came from another calendar.
      *
      * @since 1.0.0
+     * @since 3.0.0 Takes the sending calendar's id.
      *
      * @param  array  $selectedEvent  The event data to display.
+     * @param  string|null  $calendarId  The id of the Calendar that sent it.
      */
     #[On('loadEventModal')]
-    public function loadEvent(array $selectedEvent): void
+    public function loadEvent(array $selectedEvent, ?string $calendarId = null): void
     {
+        if (null !== $this->calendarId && null !== $calendarId && $calendarId !== $this->calendarId) {
+            return;
+        }
+
         $this->event = $selectedEvent;
     }
 

@@ -25,7 +25,7 @@ Each slide is a Card built from its `image`, `alt`, `title` and `description` (a
 
 ## Custom slides, autoplay and binding
 
-Render each slide yourself with `@scope('slide', $slide)`; `$loop->index` is its index. `autoplay` advances every `interval` ms and always shows a pause button; it pauses while the pointer or focus is on the carousel and starts paused when the person prefers reduced motion. `wire:model` binds the position shown (0-based), and the widget dispatches `index-change`.
+Render each slide yourself with `@scope('slide', $slide)`; `$loop->index` is its index. Give each slide a unique `id` when the list can be reordered: it keys the slide, so a slide's own state (an input, a nested component) moves with it; without unique ids slides are keyed by position. When a Livewire update changes the number of slides (or `per-view`, `loop`, `autoplay`, `interval` or a label), the carousel remounts so it counts the new slides. `autoplay` advances every `interval` ms and always shows a pause button; it pauses while the pointer or focus is on the carousel and starts paused when the person prefers reduced motion. `wire:model` binds the position shown (0-based), and the widget dispatches `index-change`.
 
 ```blade
 <x-artisanpack-carousel wire:model.live="note" :label="__( 'Customer notes' )" :slides="$quotes" autoplay loop>
@@ -42,7 +42,7 @@ Render each slide yourself with `@scope('slide', $slide)`; `$loop->index` is its
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `slides` | array | `[]` | The slides, in order. |
+| `slides` | array | `[]` | The slides, in order. A unique `id` on every slide keys it. |
 | `per-view` | int | `1` | Slides in view at once. Above 1 the next slide peeks. |
 | `index` | int | `0` | The position shown; `wire:model` binds it. |
 | `loop` | bool | `false` | Wraps from the last position to the first. |
@@ -74,6 +74,7 @@ Every other attribute lands on the root.
 
 - A region with `aria-roledescription="carousel"` and a translatable name; each slide is a group with `aria-roledescription="slide"`, named "2 of 6", and slides out of view are hidden from assistive technology.
 - The track is a polite live region (off while autoplay runs), so moves are announced.
+- The autoplay button comes first in the Tab order, before the slides and their links, so rotation can be stopped before reaching the moving content; it still sits over the viewport's top start.
 - The previous and next buttons and the dots have translatable names; the dot shown carries `aria-current`. ArrowLeft and ArrowRight on the dots follow the text direction; Home and End go to the first and last position.
 - Autoplay always has a visible pause button, stops while the pointer or focus is on the carousel, and never starts on its own under reduced motion (WCAG 2.2.2).
 - In right-to-left pages the buttons' chevrons mirror and the next slide peeks on the left.

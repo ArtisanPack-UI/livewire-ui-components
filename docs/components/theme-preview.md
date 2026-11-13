@@ -44,12 +44,12 @@ A brand preset from `artisanpack:generate-preset` works the same way once its CS
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `options` | array | `[]` | The cards: `{ value, label, theme, preset, disabled }`. `theme` is `light`, `dark`, `high-contrast` or `system`; without it, a `value` that names a theme is used, else `light`. Options without a value are skipped. |
-| `value` | string | — | The chosen option's value. `wire:model` binds it instead. |
+| `value` | string | — | The chosen option's value. `wire:model` binds it instead (a null property checks nothing). |
 | `name` | string | — | The radios' name. Defaults to the `wire:model` property, else a generated one. |
 | `label` | string | `__( 'Theme' )` | Names the radio group. |
 | `classes` | array | `[]` | Extra classes per part: `root`, `card`, `frame`, `miniature`, `label`, `box`, `control`, `indicator`, `text`. |
 
-`class` lands on the root. Every other attribute, `wire:model` included, lands on every radio, so it binds natively.
+`class`, `aria-label` and `aria-labelledby` land on the root, the radio group. Every other attribute, `wire:model` included, lands on every radio, so it binds natively.
 
 ## Upgrading from 2.x
 

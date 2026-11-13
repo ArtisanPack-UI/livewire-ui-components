@@ -171,7 +171,7 @@
                                         data-scope="calendar"
                                         data-part="more"
                                         aria-label="{{ $day['moreLabel'] }}"
-                                        x-on:click="$dispatch('date-change', {{ $js( $day['date'] ) }}); $dispatch('view-change', 'day')"
+                                        x-on:click="moreFocus({{ $js( $day['date'] ) }}); $dispatch('date-change', {{ $js( $day['date'] ) }}); $dispatch('view-change', 'day')"
                                         {{ $partClass( 'more' ) }}
                                     >{{ $day['moreText'] }}</button>
                                 @endif

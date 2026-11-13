@@ -76,7 +76,7 @@ test('split mode renders the tabs, the editor and the preview', function (): voi
 
     expect($root->getAttribute('class'))->toBe('apui-markdown')
         ->and($root->getAttribute('data-mode'))->toBe('split')
-        ->and($root->getAttribute('x-data'))->toBe('{ view: "split", source: '.json_encode(MARKDOWN_SOURCE, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT).' }')
+        ->and($root->getAttribute('x-data'))->toBe('apuiMarkdown({ view: "split", source: '.json_encode(MARKDOWN_SOURCE, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT).', sanitize: true })')
         ->and($dom->query('//*[@role="tablist"]')->item(0)->getAttribute('aria-label'))->toBe('Markdown mode')
         ->and(array_map(fn ($tab) => trim($tab->textContent), iterator_to_array($dom->query('//*[@role="tab"]'))))->toBe(['Write', 'Preview', 'Split'])
         ->and($dom->query('//*[@role="tab"][@aria-selected="true"]')->item(0)->getAttribute('data-value'))->toBe('split');
@@ -105,14 +105,15 @@ test('split mode renders the tabs, the editor and the preview', function (): voi
 
 test('without wire:model, both Textareas share one Alpine source, so a plain form keeps edits across tabs', function (): void {
     $source = "Say \"hi\" & <b>it's</b>\n";
-    $dom    = designSystemDom(Blade::render('<form><x-artisanpack-markdown :source="$source" name="notes" mode="write" /></form>', ['source' => $source]));
+    $dom    = designSystemDom(Blade::render('<form><x-artisanpack-markdown :source="$source" name="notes" mode="write" :sanitize="false" /></form>', ['source' => $source]));
     $root   = $dom->query('//*[contains(concat(" ", @class, " "), " apui-markdown ")]')->item(0);
 
-    // x-data parses as a JS object whose source is the Markdown, with no raw quote or tag to break the attribute.
+    // x-data is apuiMarkdown with the Markdown as source, with no raw quote or tag to break the attribute.
     $data = $root->getAttribute('x-data');
-    expect($data)->toStartWith('{ view: "write", source: "')
+    expect($data)->toStartWith('apuiMarkdown({ view: "write", source: "')
+        ->and($data)->toEndWith(', sanitize: false })')
         ->and($data)->not->toContain('<b>')
-        ->and(json_decode(substr($data, strlen('{ view: "write", source: '), -2)))->toBe($source);
+        ->and(json_decode(substr($data, strlen('apuiMarkdown({ view: "write", source: '), -strlen(', sanitize: false })'))))->toBe($source);
 
     $textareas = $dom->query('//textarea');
     expect($textareas->length)->toBe(2);
@@ -121,8 +122,57 @@ test('without wire:model, both Textareas share one Alpine source, so a plain for
             ->and($textarea->getAttribute('name'))->toBe('notes')
             ->and($textarea->textContent)->toBe($source);
     }
-    expect($textareas->item(0)->getAttribute('x-bind:disabled'))->toBe("view !== 'write'")
-        ->and($textareas->item(1)->getAttribute('x-bind:disabled'))->toBe("view !== 'split'");
+    // Write's Textarea stays enabled on Preview, so the form posts the source on every tab.
+    expect($textareas->item(0)->getAttribute('x-bind:disabled'))->toBe("view === 'split'")
+        ->and($textareas->item(1)->getAttribute('x-bind:disabled'))->toBe("view !== 'split'")
+        ->and($textareas->item(0)->getAttribute('x-on:invalid'))->toBe("select('write')")
+        ->and($textareas->item(1)->hasAttribute('x-on:invalid'))->toBeFalse();
+
+    // The preview panels show the draft, rendered in the browser by apuiMarkdown.
+    $previews = $dom->query('//*[@data-scope="markdown"][@data-part="preview"]');
+    expect($previews->length)->toBe(2);
+    foreach ($previews as $preview) {
+        expect($preview->getAttribute('x-html'))->toBe('html');
+    }
+});
+
+test('native control attributes go to the Textareas, not the root', function (): void {
+    $html = Blade::render(
+        '<form><x-artisanpack-markdown source="" name="notes" mode="write" required disabled readonly placeholder="Notes…" maxlength="500" minlength="2" rows="6" autofocus data-test="root" /></form>',
+    );
+    $dom  = designSystemDom($html);
+    $root = $dom->query('//*[contains(concat(" ", @class, " "), " apui-markdown ")]')->item(0);
+
+    foreach (['name', 'required', 'disabled', 'readonly', 'placeholder', 'maxlength', 'minlength', 'rows', 'autofocus'] as $attribute) {
+        expect($root->hasAttribute($attribute))->toBeFalse($attribute);
+    }
+    expect($root->getAttribute('data-test'))->toBe('root');
+
+    $textareas = $dom->query('//textarea');
+    expect($textareas->length)->toBe(2);
+    foreach ($textareas as $textarea) {
+        expect($textarea->getAttribute('name'))->toBe('notes')
+            ->and($textarea->hasAttribute('required'))->toBeTrue()
+            ->and($textarea->hasAttribute('disabled'))->toBeTrue()
+            ->and($textarea->hasAttribute('readonly'))->toBeTrue()
+            ->and($textarea->getAttribute('placeholder'))->toBe('Notes…')
+            ->and($textarea->getAttribute('maxlength'))->toBe('500')
+            ->and($textarea->getAttribute('minlength'))->toBe('2')
+            ->and($textarea->getAttribute('rows'))->toBe('6')
+            // Disabled stays disabled on every tab.
+            ->and($textarea->getAttribute('x-bind:disabled'))->toBe('true');
+    }
+});
+
+test('without native control attributes the Textareas are enabled and twelve rows', function (): void {
+    $dom = designSystemDom(markdownHtml('mode="write" :disabled="false"'));
+
+    foreach ($dom->query('//textarea') as $textarea) {
+        expect($textarea->hasAttribute('disabled'))->toBeFalse()
+            ->and($textarea->hasAttribute('required'))->toBeFalse()
+            ->and($textarea->getAttribute('rows'))->toBe('12')
+            ->and($textarea->getAttribute('x-bind:disabled'))->not->toBe('true');
+    }
 });
 
 test('write mode opens on the Write tab', function (): void {
@@ -162,8 +212,16 @@ test('wire:model binds the source and goes to the Textareas', function (): void 
     $dom  = designSystemDom($html);
     $root = $dom->query('//*[contains(concat(" ", @class, " "), " apui-markdown ")]')->item(0);
 
+    // Switching tabs sets the model from the Textarea that was showing before
+    // committing, so an edit a debounced wire:model holds back goes with it.
+    $handler = $root->getAttribute('x-on:value-change');
+    $prefix  = substr($dom->query('//textarea')->item(0)->getAttribute('id'), 0, -strlen('write-source'));
     expect($root->hasAttribute('wire:model.live.debounce.500ms'))->toBeFalse()
-        ->and($root->getAttribute('x-on:value-change'))->toContain('$wire.$commit()');
+        ->and($handler)->toContain('const from = view;')
+        ->and($handler)->toContain("document.getElementById(\"{$prefix}\" + from + '-source')")
+        ->and($handler)->toContain('if (input) $wire.$set("notes", input.value, false); $wire.$commit()')
+        ->and(strpos($handler, '$wire.$set('))->toBeLessThan(strpos($handler, '$wire.$commit()'))
+        ->and($dom->query('//*[@data-part="preview"][@x-html]')->length)->toBe(0);
 
     $textareas = $dom->query('//textarea');
     expect($textareas->length)->toBe(2)

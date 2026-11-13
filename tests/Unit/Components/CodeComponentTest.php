@@ -46,7 +46,8 @@ test('renders the header, a labeled LTR region and one span per line', function 
     $copy = $dom->query('//button[@data-part="copy"]')->item(0);
     expect($copy->getAttribute('class'))->toBe('apui-button')
         ->and($copy->getAttribute('data-size'))->toBe('xs')
-        ->and($copy->getAttribute('x-on:click'))->toBe('copyCode()')
+        ->and($copy->getAttribute('x-on:click'))->toBe('copy( $el.value )')
+        ->and($copy->getAttribute('value'))->toBe(CODE_SNIPPET)
         ->and(trim($dom->query('.//*[@data-part="label"]', $copy)->item(0)->textContent))->toBe('Copy')
         ->and($dom->query('//*[@data-part="status"][@role="status"]'))->toHaveCount(1);
 
@@ -64,6 +65,13 @@ test('renders the header, a labeled LTR region and one span per line', function 
     expect($texts)->toBe(['const a = 1;', '', '  return a;'])
         ->and($numbers)->toBe(['1', '2', '3'])
         ->and($highlights)->toBe([false, false, true]);
+});
+
+test('copies the exact source and keeps newlines between the lines in the pre', function (): void {
+    $dom = codeDom('', "a\r\nb\n\nc\n");
+
+    expect($dom->query('//button[@data-part="copy"]')->item(0)->getAttribute('value'))->toBe("a\r\nb\n\nc\n")
+        ->and($dom->query('//pre/code')->item(0)->textContent)->toBe("a\nb\n\nc");
 });
 
 test('names the region by label, file name, language, then Code', function (): void {

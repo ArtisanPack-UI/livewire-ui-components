@@ -2,8 +2,11 @@
     Code (#65). Markup contract: design-system Code. A block: the header
     (file, language badge, copy button and its hidden live region) and the
     labeled, focusable pre with one span per line (data-n, data-highlight).
-    Inline: a code element. The copy button runs on apuiClipboard and copies
-    the rendered lines. The header mirrors in RTL; the code stays LTR (D-004).
+    Inline: a code element. Newlines separate the line spans, so the pre's
+    text reads line by line. The copy button runs on apuiClipboard and copies
+    its value, the exact source (a final newline and \r included); a value
+    Livewire changes clears a stale "Copied". The header mirrors in RTL; the
+    code stays LTR (D-004).
 --}}
 @php
     $source      = $source( $slot ?? null );
@@ -38,8 +41,9 @@
                     data-color="neutral"
                     data-size="xs"
                     data-state="idle"
+                    value="{!! str_replace( "\r", '&#13;', e( $source ) ) !!}"
                     x-bind:data-state="status"
-                    x-on:click="copyCode()"
+                    x-on:click="copy( $el.value )"
                 >
                     <span data-scope="button" data-part="icon" aria-hidden="true" x-html="icon">{{ $iconSvg( 'copy' ) }}</span>
                     <span data-scope="button" data-part="label" x-text="label">{{ $copyLabel }}</span>
@@ -48,6 +52,6 @@
             @endif
         </div>
     @endif
-    <pre data-scope="code" data-part="pre" role="region" aria-label="{{ $regionLabel() }}" tabindex="0"{{ $partClass( 'pre' ) }}><code>@foreach ( $lines( $source ) as $index => $line )<span data-scope="code" data-part="line" data-n="{{ $index + 1 }}"@if ( isset( $highlighted[ $index + 1 ] ) ) data-highlight @endif{{ $partClass( 'line' ) }}>{{ $line }}</span>@endforeach</code></pre>
+    <pre data-scope="code" data-part="pre" role="region" aria-label="{{ $regionLabel() }}" tabindex="0"{{ $partClass( 'pre' ) }}><code>@foreach ( $lines( $source ) as $index => $line )<span data-scope="code" data-part="line" data-n="{{ $index + 1 }}"@if ( isset( $highlighted[ $index + 1 ] ) ) data-highlight @endif{{ $partClass( 'line' ) }}>{{ $line }}</span>@unless ( $loop->last ){{ "\n" }}@endunless@endforeach</code></pre>
 </div>
 @endif

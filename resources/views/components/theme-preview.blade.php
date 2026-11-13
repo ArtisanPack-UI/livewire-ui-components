@@ -2,9 +2,10 @@
     ThemePreview (#65, Livewire only, D-003). Markup contract: design-system
     ThemePreview. A role=radiogroup of .apui-theme-card labels: the frame with a
     decorative miniature that carries data-theme and data-preset, so the real
-    tokens draw it, then the native radio and the option's name. `class` lands on
-    the root; every other attribute (wire:model) lands on every radio, so it binds
-    natively and the platform supplies roving focus and arrow keys.
+    tokens draw it, then the native radio and the option's name. `class`,
+    aria-label and aria-labelledby land on the root; every other attribute
+    (wire:model) lands on every radio, so it binds natively and the platform
+    supplies roving focus and arrow keys.
 --}}
 @php
     $baseId   = $baseId();
@@ -17,7 +18,7 @@
     data-scope="theme-preview"
     data-part="root"
     role="radiogroup"
-    aria-label="{{ $label }}"
+    {{ $groupLabelAttributes() }}
 >
     @foreach ( $cards() as $index => $card )
         @php
@@ -46,7 +47,7 @@
             </span>
             <span data-scope="theme-preview" data-part="label"{{ $partClass( 'label' ) }}>
                 <span data-scope="theme-preview" data-part="box"{{ $partClass( 'box' ) }}>
-                    <input {{ $attributes->except( [ 'class', 'id', 'name', 'value' ] ) }}
+                    <input {{ $attributes->except( [ 'class', 'id', 'name', 'value', 'aria-label', 'aria-labelledby' ] ) }}
                         type="radio"
                         data-scope="theme-preview"
                         data-part="control"

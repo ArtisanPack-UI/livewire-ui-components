@@ -179,6 +179,68 @@ test('the Livewire component answers the grid events', function (): void {
     $html = Livewire::test(Calendar::class, ['events' => calendarEvents()])->html();
 
     expect($html)->toContain('x-on:view-change="$wire.setView( $event.detail )"')
-        ->and($html)->toContain('x-on:date-change="$wire.setDate( $event.detail )"')
+        ->and($html)->toContain('$wire.setDate( $event.detail )')
         ->and($html)->toContain('x-on:event-click=');
+});
+
+test('previous and next step from the server date, so each quick click moves a period', function (): void {
+    $calendar = Livewire::test(Calendar::class, ['events' => calendarEvents(), 'date' => '2026-11-07', 'locale' => 'en-US']);
+    $dom      = designSystemDom($calendar->html());
+    $root     = $dom->query('//*[@*[name()="x-on:date-change"]]')->item(0);
+    $handler  = $root->getAttribute('x-on:date-change');
+
+    expect($handler)->toContain("closest( '[data-part=next-trigger]' ) ? \$wire.goToNextPeriod()")
+        ->and($handler)->toContain("closest( '[data-part=previous-trigger]' ) ? \$wire.goToPreviousPeriod()")
+        ->and($dom->query('//button[@data-part="next-trigger"][@*[name()="x-on:click"]]')->length)->toBe(1)
+        ->and($dom->query('//button[@data-part="previous-trigger"][@*[name()="x-on:click"]]')->length)->toBe(1);
+
+    $calendar->call('goToNextPeriod')
+        ->call('goToNextPeriod')
+        ->assertSet('date', '2027-01-07')
+        ->call('goToPreviousPeriod')
+        ->call('goToPreviousPeriod')
+        ->call('goToPreviousPeriod')
+        ->assertSet('date', '2026-10-07');
+});
+
+test('+N more moves focus to the day it opens', function (): void {
+    $more = calendarDom()->query('//*[@data-part="more"]')->item(0);
+
+    expect($more->getAttribute('x-on:click'))->toStartWith("moreFocus('2026-11-12');");
+});
+
+test('the details child remounts when the same event changes', function (): void {
+    $events   = calendarEvents();
+    $calendar = Livewire::test(Calendar::class, ['events' => $events, 'date' => '2026-11-07', 'locale' => 'en-US'])
+        ->call('openEvent', '1');
+    $first = $calendar->get('selectedKey');
+
+    $calendar->call('openEvent', '1')->assertSet('selectedKey', $first);
+
+    $events[0]['description'] = 'Moved to Tuesday.';
+    $calendar->set('events', $events)->call('openEvent', '1');
+
+    expect($calendar->get('selectedKey'))->toStartWith('1-')
+        ->and($calendar->get('selectedKey'))->not->toBe($first);
+});
+
+test('the details child only takes loadEventModal from its own calendar', function (): void {
+    Livewire::test(Calendar::class, ['events' => calendarEvents(), 'date' => '2026-11-07', 'locale' => 'en-US', 'id' => 'cal-a'])
+        ->call('openEvent', '1')
+        ->assertDispatched('loadEventModal', calendarId: 'cal-a')
+        ->assertSeeHtml('cal-a-details')
+        ->assertSee('Weekly sync.');
+
+    $child = Livewire::test(EventModalContent::class, ['event' => ['title' => 'Mine'], 'calendarId' => 'cal-a']);
+
+    $child->dispatch('loadEventModal', selectedEvent: ['title' => 'Theirs'], calendarId: 'cal-b')
+        ->assertSet('event.title', 'Mine')
+        ->dispatch('loadEventModal', selectedEvent: ['title' => 'Updated'], calendarId: 'cal-a')
+        ->assertSet('event.title', 'Updated')
+        ->dispatch('loadEventModal', selectedEvent: ['title' => 'Legacy'])
+        ->assertSet('event.title', 'Legacy');
+
+    Livewire::test(EventModalContent::class, ['event' => ['title' => 'Unscoped']])
+        ->dispatch('loadEventModal', selectedEvent: ['title' => 'Any'], calendarId: 'cal-b')
+        ->assertSet('event.title', 'Any');
 });

@@ -5,6 +5,8 @@ declare(strict_types=1);
 use ArtisanPack\LivewireUiComponents\Support\ThemeScript;
 use ArtisanPack\LivewireUiComponents\View\Components\ThemeToggle;
 use Illuminate\Support\Facades\Blade;
+use Livewire\Component;
+use Livewire\Livewire;
 
 /*
  * ThemeToggle (#65): segmented radios, the icon button and the menu, the
@@ -130,6 +132,21 @@ test('only wire:model marks the value as bound', function (): void {
         ->and($plain)->not->toContain('bound');
 });
 
+test('a bound property that is not a choice renders system, not value', function (): void {
+    $component = Livewire::test(new class extends Component {
+        public ?string $theme = null;
+
+        public function render(): string
+        {
+            return <<<'BLADE'
+                <div><x-artisanpack-theme-toggle wire:model="theme" value="dark" /></div>
+                BLADE;
+        }
+    });
+
+    expect(designSystemDom($component->html())->query('//*[@role="radio"][@aria-checked="true"]')->item(0)->getAttribute('data-value'))->toBe('system');
+});
+
 test('it matches its manifest', function (): void {
     expect('ThemeToggle')->toMatchManifest([
         'ignoreEffects'  => ['matchSystemLabel', 'switchToLightLabel', 'switchToDarkLabel'],
@@ -141,8 +158,9 @@ test('the head snippet is the one behavior ships', function (): void {
     expect(ThemeScript::source())->toBe(
         '(function(){try{var c=null;try{c=localStorage.getItem("apui-theme")}catch(e){}'
         .'if(["light","dark","high-contrast","system"].indexOf(c)<0)c="system";'
+        .'var d=document.documentElement;d.setAttribute("data-theme-choice",c);'
         .'if(c==="system")c=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";'
-        .'document.documentElement.setAttribute("data-theme",c)}catch(e){}})();',
+        .'d.setAttribute("data-theme",c)}catch(e){}})();',
     )
         ->and(ThemeScript::source('</script>', 'dark'))->toContain('getItem("\\u003c/script>")')
         ->and(ThemeScript::source('k', 'dark'))->toContain('c="dark";')

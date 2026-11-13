@@ -5,9 +5,14 @@
     write. Write and split modes: the design-system Tabs (Write, Preview,
     Split) over the Textarea. The panels render on the server, so the Write
     and Split panels each hold a Textarea bound to the same wire:model, or,
-    without one, to the root's Alpine `source` (x-model), so an edit in one
-    panel shows in the other; the hidden one is disabled, so a form posts
-    the source once. Typing dispatches source-change.
+    without one, to apuiMarkdown's `source` (x-model), so an edit in one
+    panel shows in the other. One Textarea is enabled at a time (Write's on
+    Write and Preview, Split's on Split), so a form posts the source once
+    whichever tab is selected; an invalid one opens Write. Without
+    wire:model the preview panels show apuiMarkdown's `html`, the draft
+    rendered in the browser. Native control attributes (name, required,
+    disabled, placeholder, maxlength, rows…) go to the Textareas. Typing
+    dispatches source-change.
 --}}
 @php
     $html    = $html();
@@ -15,6 +20,9 @@
     $baseId  = $baseId();
     $text    = $sourceText();
     $control = $controlAttributes();
+    $props   = $controlProps();
+    $local   = $bindsLocally();
+    $locks   = [ 'write' => $disabledBinding( 'write' ), 'split' => $disabledBinding( 'split' ) ];
 @endphp
 @if ( ! $editing() )
     <div {{ $rootAttributes()->class( $rootClasses( 'apui-markdown apui-prose' ) ) }} data-mode="preview">{{ $html }}</div>
@@ -38,10 +46,15 @@
                                 :id="$baseId . '-' . $tab . '-source'"
                                 :aria-label="$editorLabel"
                                 dir="auto"
-                                :rows="12"
+                                :rows="$props['rows']"
+                                :disabled="$props['disabled']"
+                                :readonly="$props['readonly']"
+                                :required="$props['required']"
+                                :placeholder="$props['placeholder']"
                                 :value="$text"
-                                x-bind:disabled="view !== '{{ $tab }}'"
-                                :x-model="$bindsLocally() ? 'source' : null"
+                                x-bind:disabled="{{ $locks[ $tab ] }}"
+                                :x-model="$local ? 'source' : null"
+                                :x-on:invalid="'write' === $tab ? 'select(\'write\')' : null"
                                 x-on:input="$dispatch('source-change', { value: $event.target.value })"
                             />
                         </div>
@@ -53,6 +66,7 @@
                             class="apui-prose{{ $filled( $classes['preview'] ?? null ) ? ' ' . $classes['preview'] : '' }}"
                             role="region"
                             aria-label="{{ $outputLabel }}"
+                            @if ( $local ) x-html="html" @endif
                         >{{ $html }}</div>
                         @if ( 'split' === $tab )</div>@endif
                     @endif

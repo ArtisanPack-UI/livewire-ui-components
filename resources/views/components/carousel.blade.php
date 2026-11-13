@@ -8,7 +8,12 @@
     peek), so the carousel lays out before Alpine starts. Slides and dots are
     named per index; every part has a stable, server-rendered id (D-015).
     Each slide is a Card unless @scope('slide', $slide) renders it ($loop->index
-    is its index).
+    is its index). A slide's id keys it (wire:key) when every slide has a
+    distinct one, so reordered slides keep their own state. The autoplay
+    button is the root's first child, first in the Tab order; CSS places it
+    over the viewport. The root's wire:key carries the slide count and the
+    machine's options, so Livewire remounts the carousel when they change
+    (Alpine reads them once).
     `class` lands on the root with the other attributes; `wire:model` binds
     the position shown.
 --}}
@@ -18,6 +23,7 @@
     $pages     = $pageCount();
     $current   = $currentIndex();
     $slideSlot = $__data['slide'] ?? null;
+    $slideKeys = $slideKeys();
     $hasTitle  = $filled( $title );
     $userStyle = trim( (string) $attributes->get( 'style', '' ) );
     $navProps  = [
@@ -36,9 +42,22 @@
     aria-label="{{ $text( 'label' ) }}"
     data-orientation="horizontal"
     style="{{ $layoutStyle() }}{{ '' !== $userStyle ? '; ' . rtrim( $userStyle, '; ' ) : '' }}"
+    wire:key="{{ $morphKey() }}"
     x-data="{{ $alpineData() }}"
     x-apui:root
 >
+    @if ( $autoplay )
+        {{-- First in the Tab order, before the rotating slides; CSS places it over the viewport. --}}
+        <button
+            type="button"
+            data-scope="carousel"
+            data-part="autoplay-trigger"
+            id="{{ $partId( 'autoplay-trigger' ) }}"
+            aria-label="{{ $text( 'pause' ) }}"
+            {{ $partClass( 'autoplayTrigger' ) }}
+            x-apui:autoplay-trigger
+        ><template x-if="playing">{{ $iconSvg( 'pause' ) }}</template><template x-if="! playing">{{ $iconSvg( 'play' ) }}</template></button>
+    @endif
     @if ( $hasTitle )
         <div data-scope="carousel" data-part="header" id="{{ $partId( 'header' ) }}"{{ $partClass( 'header' ) }}>
             <h{{ $headingLevel }} data-scope="carousel" data-part="title" id="{{ $partId( 'title' ) }}"{{ $partClass( 'title' ) }}>{{ $title }}</h{{ $headingLevel }}>
@@ -59,7 +78,7 @@
                     aria-roledescription="slide"
                     aria-label="{{ $format( 'slide', $i ) }}"
                     @if ( $inView( $i ) ) data-inview @else aria-hidden="true" @endif
-                    wire:key="{{ $baseId }}-item-{{ $i }}"
+                    wire:key="{{ $baseId }}-item-{{ $slideKeys[ $i ] }}"
                     {{ $partClass( 'item' ) }}
                     x-apui:item="{ index: {{ $i }} }"
                 >
@@ -81,17 +100,6 @@
         @unless ( $hasTitle )
             @include( 'livewire-ui-components::components.partials.carousel-triggers' )
         @endunless
-        @if ( $autoplay )
-            <button
-                type="button"
-                data-scope="carousel"
-                data-part="autoplay-trigger"
-                id="{{ $partId( 'autoplay-trigger' ) }}"
-                aria-label="{{ $text( 'pause' ) }}"
-                {{ $partClass( 'autoplayTrigger' ) }}
-                x-apui:autoplay-trigger
-            ><template x-if="playing">{{ $iconSvg( 'pause' ) }}</template><template x-if="! playing">{{ $iconSvg( 'play' ) }}</template></button>
-        @endif
     </div>
     @if ( $pages > 1 )
         <div data-scope="carousel" data-part="indicator-group" id="{{ $partId( 'indicator-group' ) }}"{{ $partClass( 'indicatorGroup' ) }} x-apui:indicator-group>

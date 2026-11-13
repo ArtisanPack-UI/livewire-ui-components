@@ -108,6 +108,38 @@ test('the bound property is checked in a Livewire component', function (): void 
     expect(designSystemDom($component->html())->query('//input[@checked]')->item(0)->getAttribute('value'))->toBe('light');
 });
 
+test('a null bound property checks nothing, even with a value', function (): void {
+    $component = Livewire::test(new class extends Component {
+        public ?string $theme = null;
+
+        public function render(): string
+        {
+            return <<<'BLADE'
+                <div><x-artisanpack-theme-preview wire:model="theme" value="dark" :options="[ [ 'value' => 'light', 'label' => 'Light' ], [ 'value' => 'dark', 'label' => 'Dark' ] ]" /></div>
+                BLADE;
+        }
+    });
+
+    $dom = designSystemDom($component->html());
+
+    expect($dom->query('//input[@checked]'))->toHaveCount(0)
+        ->and($dom->query('//label[@data-state="checked"]'))->toHaveCount(0);
+});
+
+test('aria-label and aria-labelledby name the radio group, not the radios', function (): void {
+    $labelled = themePreviewDom('aria-label="Appearance"');
+
+    expect($labelled->query('//div[@role="radiogroup"]')->item(0)->getAttribute('aria-label'))->toBe('Appearance')
+        ->and($labelled->query('//input[@aria-label or @aria-labelledby]'))->toHaveCount(0);
+
+    $byId  = themePreviewDom('aria-labelledby="appearance-heading"');
+    $group = $byId->query('//div[@role="radiogroup"]')->item(0);
+
+    expect($group->getAttribute('aria-labelledby'))->toBe('appearance-heading')
+        ->and($group->hasAttribute('aria-label'))->toBeFalse()
+        ->and($byId->query('//input[@aria-label or @aria-labelledby]'))->toHaveCount(0);
+});
+
 test('cards() normalizes the options', function (): void {
     $cards = (new ThemePreview(options: [['value' => 'system', 'label' => 'Auto'], ['value' => 7], 'nope']))->cards();
 

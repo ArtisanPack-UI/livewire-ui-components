@@ -31,8 +31,8 @@ Each event is an array (or an object with `toArray()`):
 | Key | Description |
 |---|---|
 | `id` | A stable id. The list index when unset. |
-| `start` | `2026-11-24` for an all-day event, `2026-11-02T09:00` for a timed one. A `Z` or an offset (or a `DateTime`/Carbon) is converted to `time-zone`. |
-| `end` | Optional. Inclusive for dates; a timed event ending at `00:00` ends the day before. Multi-day events show on every day. |
+| `start` | `2026-11-24` for an all-day event, `2026-11-02T09:00` for a timed one. A `Z` or an offset (or a `DateTime`/Carbon) is converted to `time-zone`. An event whose `start` doesn't parse (an impossible date, time or offset) is skipped. |
+| `end` | Optional. Inclusive for dates; a timed event ending at `00:00` shows up to the day before, and its text still says it ends at 00:00 on the next day. Multi-day events show on every day. |
 | `title` | The text on the event. |
 | `color` | A soft tint: `primary` (default), `secondary`, `accent`, `success`, `warning`, `error`, `info` or `neutral`. Tint by category. |
 | `allDay` | All day even when `start` has a time. |
@@ -40,7 +40,7 @@ Each event is an array (or an object with `toArray()`):
 | `description` | Shown in the details Dialog. |
 | `href` | Makes the event a link instead of a button. |
 
-Events on a day sort all-day first, then by start time, then as given. A month cell shows `max-events` (2) and folds the rest into a "+N more" button that opens that day.
+Events on a day sort all-day first, then by start time, then as given. A month cell shows `max-events` (2) and folds the rest into a "+N more" button that opens that day and moves focus to it.
 
 ## Views
 
@@ -68,7 +68,7 @@ Set `:details="false"` on the x-tag unless you open a dialog on `event-click`: w
 
 ## Event details
 
-The Livewire component opens a clicked event in a Dialog: its title, when it is, then its category as a soft Badge and its description. The body is an internal child component; `event-view` names another Livewire component to use instead. It's mounted with the event (`mount( array $event )`), with `when`, `category`, `color` and `description` filled in, and the 2.x `loadEventModal` event is still dispatched.
+The Livewire component opens a clicked event in a Dialog: its title, when it is, then its category as a soft Badge and its description. The body is an internal child component; `event-view` names another Livewire component to use instead. It's mounted with the event (`mount( array $event )`), with `when`, `category`, `color` and `description` filled in, and keyed by the event's id and details, so reopening an event that changed mounts it again. The 2.x `loadEventModal` event is still dispatched, with `selectedEvent` and the sending calendar's `calendarId`: the internal child ignores events from other calendars on the page, and a custom listener can compare `calendarId` too.
 
 ## Props
 
@@ -79,7 +79,7 @@ The Livewire component opens a clicked event in a Dialog: its title, when it is,
 | `today` | string | the current date in `time-zone` | The date marked as today. |
 | `events` | array | `[]` | The events. |
 | `week-starts-on` | int | the locale's | The first day of the week, 0 (Sunday) to 6. |
-| `locale` | string | the app locale | BCP 47 locale for names and the first day of the week. Times show as 24-hour `HH:mm`. |
+| `locale` | string | the app locale | BCP 47 locale for names and the first day of the week. Times show as 24-hour `HH:mm`. Localized month and day names need PHP's `intl` extension; without it they're in English, and the first day of the week comes from a built-in copy of CLDR's week data (Monday for `en-GB` and most of Europe). |
 | `time-zone` | string | `UTC` | For today and zoned times. |
 | `max-events` | int | `2` | Events a month cell shows before "+N more". |
 | `creatable` | bool | `false` | Shows the New event button (`create`). |
@@ -96,7 +96,7 @@ The Livewire component opens a clicked event in a Dialog: its title, when it is,
 - `sunday-start` still works: `true` is `week-starts-on="0"`, `false` is `1`. Without either, the week follows the locale.
 - `view="year"` falls back to `month`. `months`, `color-scheme`, `custom-color`, `weekend-highlight` and `config` are ignored: tint events with `color`.
 - 2.x events still work: `date` (start), `range` (`[start, end]`), `time` (`[start, end]` times on the date), `label` (title) and `colorScheme` (color). `customColor` is ignored.
-- `goToNextPeriod()`, `goToPreviousPeriod()`, `goToToday()` and `loadEventModal( $id )` still work; the new actions are `setView()`, `setDate()` and `openEvent()`.
+- `goToNextPeriod()`, `goToPreviousPeriod()`, `goToToday()` and `loadEventModal( $id )` still work; the new actions are `setView()`, `setDate()` and `openEvent()`. The Livewire component's previous and next buttons call `goToPreviousPeriod()` and `goToNextPeriod()`, so quick repeated clicks each move a period.
 - A custom `event-view` component now receives the event in `mount()`; `loadEventModal` is still dispatched for components that listen for it.
 
 ## Accessibility

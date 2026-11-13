@@ -74,6 +74,34 @@ test('small values keep their digits and the compact unit steps up after roundin
         ->and(ChartGeometry::formatTicks([0, 0.001, 0.002]))->toBe(['0', '0.001', '0.002']);
 });
 
+test('any range gets a finite axis with distinct ends, never hanging or dividing by zero', function (): void {
+    $tiny = ChartGeometry::compute([['name' => 'A', 'data' => [1e-60, -1e-300]]], ['type' => 'area']);
+
+    expect(ChartGeometry::ticks(0, PHP_FLOAT_MAX))->toBe([0, 2.0e299, 4.0e299, 6.0e299, 8.0e299, 1.0e300])
+        ->and(ChartGeometry::ticks(-INF, INF))->toBe([-1.0e300, -5.0e299, 0, 5.0e299, 1.0e300])
+        ->and(ChartGeometry::ticks(0, 1e-60))->toBe([0, 1.0e-10])
+        ->and(ChartGeometry::ticks(NAN, NAN))->toBe([0, 0.2, 0.4, 0.6, 0.8, 1])
+        ->and(array_column($tiny['ticks'], 'label'))->toBe(['-0.0000000001', '0', '0.0000000001'])
+        ->and(json_encode($tiny))->not->toMatch('/NaN|Infinity/');
+});
+
+test('values from 1e21 up print in full, as the TypeScript does', function (): void {
+    expect(ChartGeometry::formatValue(2.5e21))->toBe('2,500,000,000,000,000,000,000')
+        ->and(ChartGeometry::formatValue(-1e21, ['notation' => 'compact']))->toBe('-1,000,000,000,000.0B');
+});
+
+test('a viewBox that leaves no room inside the padding falls back to the default', function (): void {
+    $size = static function (mixed $width, mixed $height): array {
+        $geometry = ChartGeometry::compute([1, 2], ['width' => $width, 'height' => $height]);
+
+        return [$geometry['width'], $geometry['height']];
+    };
+
+    expect($size(48, 36))->toBe([520, 220])
+        ->and($size(49, 37))->toBe([49, 37])
+        ->and($size(INF, NAN))->toBe([520, 220]);
+});
+
 test('the geometry draws the spec preview grid and labels the best week', function (): void {
     $vector   = chartVectors()['geometry'][0];
     $geometry = ChartGeometry::compute($vector['series'], $vector['options']);
@@ -170,6 +198,16 @@ test('2.x ApexCharts props are dropped, options fill labels and title, show-tabl
         ->and($dom->query('//*[@data-part="axis" and @text-anchor="middle"]')->item(1)->textContent)->toBe('Tue')
         ->and($dom->query('//table'))->toHaveCount(1)
         ->and(file_get_contents(dirname(__DIR__, 3).'/resources/views/components/chart.blade.php'))->not->toContain('ApexCharts');
+});
+
+test('empty options.xaxis.categories fall through to options.labels', function (): void {
+    $dom = chartDom(
+        'type="line" title="Visits" :series="[ [ \'name\' => \'Visits\', \'data\' => [ 3, 5 ] ] ]" :options="$options"',
+        ['options' => ['xaxis' => ['categories' => []], 'labels' => ['Mon', 'Tue']]],
+    );
+
+    expect($dom->query('//*[@data-part="axis" and @text-anchor="middle"]')->item(1)->textContent)->toBe('Tue')
+        ->and($dom->query('//*[@data-part="mark"]')->item(0)->getAttribute('aria-label'))->toBe('Mon: 3');
 });
 
 test('takes a viewBox size, part classes and falls back to a bar chart', function (): void {

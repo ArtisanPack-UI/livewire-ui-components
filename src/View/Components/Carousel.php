@@ -353,7 +353,54 @@ class Carousel extends BaseComponent
      */
     public function rootAttributes(): ComponentAttributeBag
     {
-        return $this->attributes->whereDoesntStartWith('wire:model')->except(['id', 'style', ...self::IGNORED_ATTRIBUTES]);
+        return $this->attributes->whereDoesntStartWith('wire:model')->except(['id', 'style', 'wire:key', ...self::IGNORED_ATTRIBUTES]);
+    }
+
+    /**
+     * Each slide's wire:key suffix: its `id` when every slide has a distinct
+     * scalar one, so reordered slides keep their own state; else its index.
+     * Matches the React and Vue carousels' keys.
+     *
+     * @since 3.0.0
+     *
+     * @return list<string> One key per slide.
+     */
+    public function slideKeys(): array
+    {
+        $ids = [];
+        foreach ($this->slides as $slide) {
+            $id    = is_array($slide) ? ($slide['id'] ?? null) : (is_object($slide) ? ($slide->id ?? null) : null);
+            $ids[] = (is_string($id) && '' !== $id) || is_int($id) || is_float($id) ? (string) $id : null;
+        }
+
+        if ([] !== $ids && ! in_array(null, $ids, true) && count(array_unique($ids)) === count($ids)) {
+            return array_map(static fn (string $id): string => 'id-'.$id, $ids);
+        }
+
+        return array_map('strval', array_keys($this->slides));
+    }
+
+    /**
+     * The root's wire:key: the caller's (else the base id) plus the slide count
+     * and a hash of the machine's options. Alpine reads `apuiCarousel({ … })`
+     * once, so when a Livewire update changes the count (or perView, loop,
+     * autoplay, the interval or the labels) the new key makes Livewire replace
+     * the root and Alpine start a carousel that knows it. The index isn't in
+     * it: moving doesn't remount.
+     *
+     * @since 3.0.0
+     */
+    public function morphKey(): string
+    {
+        $labels = [];
+        foreach (['label', 'previous', 'next', 'indicator', 'slide', 'play', 'pause'] as $name) {
+            $labels[] = $this->text($name);
+        }
+
+        $options = (string) json_encode([$this->perView, $this->loop, $this->autoplay, $this->interval, $labels]);
+        $base    = $this->attributes->get('wire:key');
+
+        return sprintf('%s-%d-%s', is_scalar($base) && '' !== (string) $base ? (string) $base : $this->baseId(), count($this->slides), hash('crc32b', $options));
     }
 
     /**

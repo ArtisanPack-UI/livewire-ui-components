@@ -330,7 +330,8 @@ class ThemeToggle extends BaseComponent
     }
 
     /**
-     * The choice set from outside: the bound property, else `value`.
+     * The choice set from outside: the bound property (none when it isn't a
+     * choice), else `value` when nothing is bound.
      *
      * @since 3.0.0
      *
@@ -338,13 +339,12 @@ class ThemeToggle extends BaseComponent
      */
     private function explicitValue(): ?string
     {
-        $model = $this->modelName();
-        if (null !== $model) {
-            $component = $this->livewireComponent();
-            $bound     = null !== $component ? data_get($component, $model) : null;
-            if (ThemeScript::isChoice($bound)) {
-                return $bound;
-            }
+        $model     = $this->modelName();
+        $component = null !== $model ? $this->livewireComponent() : null;
+        if (null !== $component) {
+            $bound = data_get($component, $model);
+
+            return ThemeScript::isChoice($bound) ? $bound : null;
         }
 
         return ThemeScript::isChoice($this->value) ? $this->value : null;

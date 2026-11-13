@@ -162,7 +162,8 @@ class Calendar extends Component
     public ?array $selectedEvent = null;
 
     /**
-     * The selected event's key, which keys the details child.
+     * The selected event's key plus a hash of its details, which keys the
+     * details child, so an event that changed under the same id remounts it.
      *
      * @since 3.0.0
      */
@@ -266,10 +267,11 @@ class Calendar extends Component
         foreach (CalendarModel::normalizeEvents($this->events ?? [], CalendarModel::timeZone($this->timeZone)) as $item) {
             if ($item['eventKey'] === $key) {
                 $this->selectedEvent = $this->detailsFor($item);
-                $this->selectedKey   = $key;
+                $this->selectedKey   = $key.'-'.substr(md5((string) json_encode($this->selectedEvent, JSON_PARTIAL_OUTPUT_ON_ERROR)), 0, 8);
                 $this->eventModal    = true;
-                // 2.x event views listen for loadEventModal.
-                $this->dispatch('loadEventModal', selectedEvent: $this->selectedEvent);
+                // 2.x event views listen for loadEventModal; calendarId lets
+                // the default details child ignore other calendars' events.
+                $this->dispatch('loadEventModal', selectedEvent: $this->selectedEvent, calendarId: $this->calendarId);
 
                 return;
             }
@@ -347,7 +349,18 @@ class Calendar extends Component
      */
     public function detailsComponent(): string
     {
-        return 'event-modal-content' === $this->eventView ? EventModalContent::class : $this->eventView;
+        return $this->usesDefaultDetails() ? EventModalContent::class : $this->eventView;
+    }
+
+    /**
+     * Whether the details Dialog renders the internal EventModalContent,
+     * which also takes the calendar's id.
+     *
+     * @since 3.0.0
+     */
+    public function usesDefaultDetails(): bool
+    {
+        return 'event-modal-content' === $this->eventView;
     }
 
     /**

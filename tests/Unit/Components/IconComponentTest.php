@@ -45,6 +45,25 @@ test('a label makes it a named image', function (): void {
         ->and($root->hasAttribute('aria-hidden'))->toBeFalse();
 });
 
+test('a caller aria-label or aria-labelledby names it and keeps it exposed', function (): void {
+    $root = static fn (string $attributes): DOMElement => iconDom('<x-artisanpack-icon name="circle-alert" '.$attributes.' />')
+        ->query('//span[@data-part="root"]')->item(0);
+
+    $byLabel = $root('aria-label="Error"');
+    expect($byLabel->getAttribute('aria-label'))->toBe('Error')
+        ->and($byLabel->getAttribute('role'))->toBe('img')
+        ->and($byLabel->hasAttribute('aria-hidden'))->toBeFalse();
+
+    $byId = $root('aria-labelledby="msg"');
+    expect($byId->getAttribute('aria-labelledby'))->toBe('msg')
+        ->and($byId->getAttribute('role'))->toBe('img')
+        ->and($byId->hasAttribute('aria-hidden'))->toBeFalse();
+
+    expect($root('label="Payment failed" aria-label="Error"')->getAttribute('aria-label'))->toBe('Payment failed')
+        ->and($root('aria-label="Error" role="presentation"')->getAttribute('role'))->toBe('presentation')
+        ->and($root('aria-hidden="false"')->getAttribute('aria-hidden'))->toBe('true');
+});
+
 test('size, color and the tile variant write their data attributes', function (string $size): void {
     $root = iconDom('<x-artisanpack-icon name="wallet" variant="tile" color="success" size="'.$size.'" />')
         ->query('//span[@data-part="root"]')->item(0);
@@ -104,6 +123,15 @@ test('classes reach the root and the svg', function (): void {
 
     expect($dom->query('//span[@class="apui-icon r"]'))->toHaveCount(1)
         ->and($dom->query('//svg[@class="s"]'))->toHaveCount(1);
+});
+
+test('classes.svg reaches a 2.x blade-icons fallback too', function (): void {
+    $svg = iconDom('<x-artisanpack-icon name="o-user" :classes="[ \'svg\' => \'s\' ]" />')
+        ->query('//span[@data-part="root"]/svg')->item(0);
+
+    expect($svg)->not->toBeNull()
+        ->and(explode(' ', (string) $svg->getAttribute('class')))->toContain('s')
+        ->and($svg->getAttribute('data-part'))->toBe('svg');
 });
 
 test('the iconAlias filter still maps 2.x names for blade-icons', function (): void {

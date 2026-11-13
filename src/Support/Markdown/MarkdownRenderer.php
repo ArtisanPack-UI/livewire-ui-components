@@ -46,10 +46,31 @@ use League\CommonMark\Util\RegexHelper;
  * - with `sanitize` off, keep allowlisted raw HTML ({@see MarkdownHtml})
  *   instead of escaping it. Script-capable markup never renders.
  *
+ * Untrusted source can't make the work unbounded: blocks nest at most
+ * {@see self::MAX_NESTING} deep (deeper lines stay text) and a paragraph,
+ * heading or cell keeps at most {@see self::MAX_DELIMITERS} emphasis
+ * delimiter runs (the rest stay literal). `renderMarkdown` applies the same
+ * limits (`MARKDOWN_MAX_NESTING`, `MARKDOWN_MAX_DELIMITERS`).
+ *
  * @since 3.0.0
  */
 final class MarkdownRenderer
 {
+    /**
+     * How deep blocks nest (commonmark's `max_nesting_level`): a block quote
+     * is one level, a list two.
+     *
+     * @since 3.0.0
+     */
+    public const MAX_NESTING = 100;
+
+    /**
+     * Delimiter runs per inline container (commonmark's `max_delimiters_per_line`).
+     *
+     * @since 3.0.0
+     */
+    public const MAX_DELIMITERS = 500;
+
     /**
      * One converter per sanitize setting.
      *
@@ -135,9 +156,11 @@ final class MarkdownRenderer
         }
 
         $environment = new Environment([
-            'html_input'         => $key,
-            'allow_unsafe_links' => false,
-            'table'              => [
+            'html_input'              => $key,
+            'allow_unsafe_links'      => false,
+            'max_nesting_level'       => self::MAX_NESTING,
+            'max_delimiters_per_line' => self::MAX_DELIMITERS,
+            'table'                   => [
                 'alignment_attributes' => [
                     'left'   => ['data-align' => 'start'],
                     'center' => ['data-align' => 'center'],

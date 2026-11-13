@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace ArtisanPack\LivewireUiComponents\Support\Markdown;
 
 use ArtisanPack\LivewireUiComponents\Support\SafeUrl;
+use League\CommonMark\Util\RegexHelper;
 
 /**
  * Filters raw HTML in Markdown with `sanitize` off: a port of
@@ -137,7 +138,8 @@ final class MarkdownHtml
 
             if ('href' === $attribute || 'src' === $attribute) {
                 $value = 'href' === $attribute ? SafeUrl::href($value) : SafeUrl::media($value);
-                if (null === $value) {
+                // Images take the same data: formats as Markdown images: PNG, GIF, JPEG and WebP.
+                if (null === $value || ('src' === $attribute && RegexHelper::isLinkPotentiallyUnsafe($value))) {
                     continue;
                 }
             }

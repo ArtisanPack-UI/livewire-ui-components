@@ -47,6 +47,24 @@ final class ChartGeometry
 
     public const COLORS = 6;
 
+    /**
+     * The largest magnitude the y axis spans. Values beyond it (up to
+     * `PHP_FLOAT_MAX`) draw at the limit, so the axis math never overflows to
+     * INF; the tooltip and table still print the value itself.
+     *
+     * @since 3.0.0
+     */
+    public const LIMIT = 1e300;
+
+    /**
+     * The finest step between y-axis ticks: the smallest the labels print
+     * (`MAX_DIGITS` decimals). A narrower range (all values within 1e-10 of
+     * zero, such as `1e-60`) gets this step, so the ticks stay distinct.
+     *
+     * @since 3.0.0
+     */
+    public const MIN_STEP = 1e-10;
+
     private const PAD_LEFT = 40;
 
     private const PAD_RIGHT = 8;
@@ -94,7 +112,9 @@ final class ChartGeometry
 
     /**
      * The y axis's values: nice steps from at or below the smallest value (or
-     * zero) to at or above the largest (or zero), about five intervals.
+     * zero) to at or above the largest (or zero), about five intervals. The
+     * range is clamped to `LIMIT` and the step is at least `MIN_STEP`, so any
+     * input gives a finite axis with distinct ends.
      *
      * @since 3.0.0
      *
@@ -102,12 +122,12 @@ final class ChartGeometry
      */
     public static function ticks(int|float $min, int|float $max): array
     {
-        $low  = min(0, $min);
-        $high = max(0, $max);
+        $low  = min(0, self::axisValue($min));
+        $high = max(0, self::axisValue($max));
         if ($high == $low) {
             $high = $low + 1;
         }
-        $step   = self::niceNumber(self::niceNumber((float) ($high - $low), false) / self::TICK_COUNT, true);
+        $step   = max(self::MIN_STEP, self::niceNumber(self::niceNumber((float) ($high - $low), false) / self::TICK_COUNT, true));
         $digits = max(0, -self::exponentOf($step));
         $start  = self::roundTo(floor($low / $step) * $step, $digits);
         $end    = self::roundTo(ceil($high / $step) * $step, $digits);
@@ -287,8 +307,8 @@ final class ChartGeometry
             return self::donut($all, $labels, $format);
         }
 
-        $width  = isset($options['width']) && $options['width'] > 0 ? $options['width'] : self::WIDTH;
-        $height = isset($options['height']) && $options['height'] > 0 ? $options['height'] : self::HEIGHT;
+        $width  = self::dimension($options['width'] ?? null, self::PAD_LEFT + self::PAD_RIGHT, self::WIDTH);
+        $height = self::dimension($options['height'] ?? null, self::PAD_TOP + self::PAD_BOTTOM, self::HEIGHT);
         $drawn  = 'bar' === $type ? array_slice($all, 0, 1) : $all;
         $count  = count($labels);
         foreach ($drawn as $entry) {
@@ -313,7 +333,7 @@ final class ChartGeometry
         $right      = $width - self::PAD_RIGHT;
         $top        = self::PAD_TOP;
         $bottom     = $height - self::PAD_BOTTOM;
-        $toY        = static fn (int|float $value): float => $top + (($high - $value) / ($high - $low)) * ($bottom - $top);
+        $toY        = static fn (int|float $value): float => $top + (($high - self::axisValue($value)) / ($high - $low)) * ($bottom - $top);
         $zero       = $toY(0);
         $plotWidth  = $right - $left;
 
@@ -717,11 +737,34 @@ final class ChartGeometry
     }
 
     /**
-     * 10 to a whole power, dividing for negative powers as the TypeScript does.
+     * A value as the y axis places it: within `LIMIT`, and NAN as 0.
+     */
+    private static function axisValue(int|float $value): int|float
+    {
+        if (is_nan((float) $value)) {
+            return 0;
+        }
+
+        return max(-self::LIMIT, min(self::LIMIT, $value));
+    }
+
+    /**
+     * A viewBox size: `$value` if it's a finite number above `$padding`,
+     * else `$fallback`.
+     */
+    private static function dimension(mixed $value, int $padding, int $fallback): int|float
+    {
+        return (is_int($value) || is_float($value)) && is_finite((float) $value) && $value > $padding ? $value : $fallback;
+    }
+
+    /**
+     * 10 to a whole power, dividing for negative powers as the TypeScript
+     * does. Parsed from `1e…` so powers past `PHP_INT_MAX` (1e19 and up) are
+     * the nearest double, as in JavaScript, not a product of rounded floats.
      */
     private static function pow10(int $exponent): float
     {
-        return $exponent >= 0 ? (float) (10 ** $exponent) : 1 / (float) (10 ** -$exponent);
+        return $exponent >= 0 ? (float) ('1e'.$exponent) : 1 / (float) ('1e'.-$exponent);
     }
 
     /**

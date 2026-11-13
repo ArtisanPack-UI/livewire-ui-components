@@ -3,8 +3,10 @@
     with no spec. label.apui-swap holds the native checkbox (control) over the
     on and off contents; its CSS swaps them on the native :checked, so
     wire:model binds and swaps with no script. `class` lands on the root;
-    every other attribute lands on the checkbox. On change, Alpine writes
-    data-state back from the input. The 2.x true and false slots still work.
+    every other attribute lands on the checkbox. On change, and after its
+    form resets (the browser restores the checkbox without a change event),
+    Alpine writes data-state back from the input. The 2.x true and false
+    slots still work.
 --}}
 @php
     $onSlot  = $on ?? $true ?? null;
@@ -26,6 +28,7 @@
         @if ( $filled( $label ) ) aria-label="{{ $label }}" @endif
         x-data
         x-on:change="$el.closest('.apui-swap').dataset.state = $el.checked ? 'checked' : 'unchecked'"
+        x-on:reset.window="if ( $event.target === $el.form ) setTimeout( () => $el.closest('.apui-swap').dataset.state = $el.checked ? 'checked' : 'unchecked' )"
         @if ( $checked ) checked @endif
         @if ( $disabled ) disabled @endif
     />

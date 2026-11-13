@@ -24,7 +24,7 @@ Then put the toggle anywhere:
 <x-artisanpack-theme-toggle />
 ```
 
-`@apuiThemeScript([ 'storageKey' => 'site-theme', 'default' => 'dark' ])` changes the storage key and the choice without a stored one. Pass the same `storage-key` to the toggles. With Vite's CSP nonce set (`Vite::useCspNonce()`), the script carries it.
+`@apuiThemeScript([ 'storageKey' => 'site-theme', 'default' => 'dark' ])` changes the storage key and the choice without a stored one; toggles with nothing stored start on that default too (the script records it as `data-theme-choice` on `<html>`). Pass the same `storage-key` to the toggles. With Vite's CSP nonce set (`Vite::useCspNonce()`), the script carries it.
 
 ## Variants
 
@@ -50,7 +50,7 @@ Then put the toggle anywhere:
 <x-artisanpack-theme-toggle variant="menu" wire:model.live="theme" />
 ```
 
-Without `wire:model` or `value`, the toggle shows the stored choice, else System. A choice dispatches `value-change` (`{ value }`) from the root, and every toggle on the page, and in other tabs, follows it.
+Without `wire:model` or `value`, the toggle shows the stored choice, else the one `@apuiThemeScript` applied, else System (applied only when nothing has set `data-theme` yet). A plain `value` only sets what the toggle shows; it never changes the page on load. A choice dispatches `value-change` (`{ value }`) from the root, and every toggle on the page follows it, as do toggles in other tabs, except ones bound with `wire:model` or with `:persist="false"`.
 
 ## Props
 

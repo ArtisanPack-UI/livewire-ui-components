@@ -176,11 +176,26 @@ class Icon extends BaseComponent
             return new HtmlString('');
         }
 
+        // The svg part's class (classes.svg) joins any class the icon set gives.
+        $class = $extra['class'] ?? null;
+        unset($extra['class']);
+        if (null !== $class) {
+            $merged   = 0;
+            $fallback = (string) preg_replace_callback(
+                '/^(\s*<svg\b[^>]*?\sclass=)(["\'])(.*?)\2/s',
+                static fn (array $match): string => $match[1].$match[2].trim($match[3].' '.e($class)).$match[2],
+                $fallback,
+                1,
+                $merged,
+            );
+            if (0 === $merged) {
+                $extra['class'] = $class;
+            }
+        }
+
         $attributes = '';
         foreach ($extra as $key => $value) {
-            if ('class' !== $key) {
-                $attributes .= ' '.$key.'="'.e($value).'"';
-            }
+            $attributes .= ' '.$key.'="'.e($value).'"';
         }
 
         return new HtmlString((string) preg_replace('/^\s*<svg\b/', '<svg'.$attributes, $fallback, 1));

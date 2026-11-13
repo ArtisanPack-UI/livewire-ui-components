@@ -38,7 +38,11 @@ use Illuminate\View\ComponentAttributeBag;
  * Split) over a Textarea. `wire:model` on the component binds the source: it
  * goes to the Textarea, and `source` defaults to the bound property, so a
  * Livewire update redraws the preview. Switching to Preview or Split sends a
- * deferred `wire:model` first. The 2.x EasyMDE editor (config, uploads,
+ * deferred `wire:model` first. Without `wire:model` (a plain form) the
+ * Textareas share Alpine state and `apuiMarkdown` renders the draft with the
+ * behavior package's `renderMarkdown`, so Preview and Split show it. Native
+ * control attributes (`name`, `required`, `disabled`, `placeholder`,
+ * `maxlength`, `rows`, …) go to the Textareas, not the root. The 2.x EasyMDE editor (config, uploads,
  * label, hint and the error props) is gone.
  *
  * @since 1.0.0
@@ -69,6 +73,28 @@ class Markdown extends BaseComponent
      * @var list<string>
      */
     public const MODES = ['preview', 'write', 'split'];
+
+    /**
+     * Native attributes that go to the Textareas' control, not the root,
+     * besides `wire:model`.
+     *
+     * @since 3.0.0
+     *
+     * @var list<string>
+     */
+    public const CONTROL_ATTRIBUTES = [
+        'name', 'maxlength', 'minlength', 'autofocus', 'autocomplete', 'autocapitalize', 'spellcheck', 'form',
+        'inputmode', 'enterkeyhint', 'wrap', 'dirname',
+    ];
+
+    /**
+     * Native attributes that go to the Textareas as props.
+     *
+     * @since 3.0.0
+     *
+     * @var list<string>
+     */
+    public const CONTROL_PROPS = ['disabled', 'readonly', 'required', 'placeholder', 'rows'];
 
     /**
      * The prefix of generated ids.
@@ -194,14 +220,15 @@ class Markdown extends BaseComponent
     {
         return $this->attributes
             ->whereDoesntStartWith('wire:model')
-            ->except(['name', ...self::REMOVED_ATTRIBUTES]);
+            ->except([...self::CONTROL_ATTRIBUTES, ...self::CONTROL_PROPS, ...self::REMOVED_ATTRIBUTES]);
     }
 
     /**
-     * The attributes for the Textareas: `wire:model` (any modifiers) and
-     * `name`. The view reads them before rendering the Tabs, because Blade
-     * removes a child component's constructor parameter names (Tab's
-     * `name`) from the parent's `$attributes`.
+     * The attributes the Textareas pass to the native control: `wire:model`
+     * (any modifiers), `name` and the other {@see self::CONTROL_ATTRIBUTES}.
+     * The view reads them before rendering the Tabs, because Blade removes a
+     * child component's constructor parameter names (Tab's `name`) from the
+     * parent's `$attributes`.
      *
      * @since 3.0.0
      *
@@ -209,15 +236,40 @@ class Markdown extends BaseComponent
      */
     public function controlAttributes(): ComponentAttributeBag
     {
-        return $this->attributes->filter(fn ($value, $key) => str_starts_with($key, 'wire:model') || 'name' === $key);
+        return $this->attributes->filter(
+            fn ($value, $key) => str_starts_with($key, 'wire:model') || in_array($key, self::CONTROL_ATTRIBUTES, true),
+        );
+    }
+
+    /**
+     * The Textarea props given on the component: `disabled`, `readonly`,
+     * `required`, `placeholder` and `rows` (default 12). Read with
+     * {@see self::controlAttributes()}, before the Tabs render.
+     *
+     * @since 3.0.0
+     *
+     * @return array{disabled: bool, readonly: bool, required: bool, placeholder: string|null, rows: int} The props.
+     */
+    public function controlProps(): array
+    {
+        $placeholder = $this->attributes->get('placeholder');
+        $rows        = $this->attributes->get('rows');
+
+        return [
+            'disabled'    => $this->flag('disabled'),
+            'readonly'    => $this->flag('readonly'),
+            'required'    => $this->flag('required'),
+            'placeholder' => is_scalar($placeholder) && '' !== (string) $placeholder ? (string) $placeholder : null,
+            'rows'        => is_numeric($rows) && (int) $rows > 0 ? (int) $rows : 12,
+        ];
     }
 
     /**
      * The root's Alpine state in write and split modes: the selected tab,
-     * which disables the hidden Textarea so a form posts the source once.
-     * Without `wire:model` it also holds the one `source` both Textareas
-     * bind to, so an edit in one panel shows in the other and the form
-     * posts it whichever tab is selected.
+     * which decides which Textarea is enabled, so a form posts the source
+     * once. Without `wire:model` it's `apuiMarkdown` from the behavior
+     * package, which also holds the one `source` both Textareas bind to and
+     * renders it, so Preview and Split show the draft.
      *
      * @since 3.0.0
      *
@@ -227,15 +279,32 @@ class Markdown extends BaseComponent
     {
         $view = json_encode($this->modeValue());
         if ($this->bindsLocally()) {
-            $source = json_encode(
-                $this->sourceText(),
-                JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_INVALID_UTF8_SUBSTITUTE,
-            );
+            $source = self::js($this->sourceText());
 
-            return '{ view: '.$view.', source: '.$source.' }';
+            return 'apuiMarkdown({ view: '.$view.', source: '.$source.', sanitize: '.($this->sanitize ? 'true' : 'false').' })';
         }
 
         return '{ view: '.$view.' }';
+    }
+
+    /**
+     * The Textarea's disabled binding for a tab's panel. Write's Textarea
+     * stays enabled on Preview, so a form posts the source whichever tab is
+     * selected; Split's is enabled only on Split.
+     *
+     * @since 3.0.0
+     *
+     * @param  string  $tab  write or split.
+     *
+     * @return string The x-bind:disabled expression.
+     */
+    public function disabledBinding(string $tab): string
+    {
+        if ($this->flag('disabled')) {
+            return 'true';
+        }
+
+        return 'split' === $tab ? "view !== 'split'" : "view === 'split'";
     }
 
     /**
@@ -253,7 +322,9 @@ class Markdown extends BaseComponent
 
     /**
      * The Alpine handler for the tabs' value-change: follows the tab and,
-     * with `wire:model`, sends the source so the preview catches up.
+     * with `wire:model`, sends the source so the preview catches up. The
+     * Textarea that was showing is read first, so an edit a debounced
+     * `wire:model` hasn't set yet goes with it.
      *
      * @since 3.0.0
      *
@@ -261,9 +332,13 @@ class Markdown extends BaseComponent
      */
     public function tabChangeHandler(): string
     {
-        $handler = "if (\$event.target.matches('.apui-tabs')) { view = \$event.detail.value";
-        if (null !== $this->modelName()) {
-            $handler .= "; if ('write' !== view && \$el.closest('[wire\\\\:id]')) \$wire.\$commit()";
+        $handler = "if (\$event.target.matches('.apui-tabs')) { const from = view; view = \$event.detail.value";
+        $model   = $this->modelName();
+        if (null !== $model) {
+            $handler .= "; if ('write' !== view && \$el.closest('[wire\\\\:id]')) {"
+                ." const input = 'preview' === from ? null : document.getElementById(".self::js($this->baseId().'-')." + from + '-source');"
+                .' if (input) $wire.$set('.self::js($model).', input.value, false);'
+                .' $wire.$commit() }';
         }
 
         return $handler.' }';
@@ -277,5 +352,38 @@ class Markdown extends BaseComponent
     public function render(): View
     {
         return view('livewire-ui-components::components.markdown');
+    }
+
+    /**
+     * Whether a boolean attribute is on: present, and not `false` or `"false"`.
+     *
+     * @param  string  $key  The attribute.
+     *
+     * @return bool True when set.
+     */
+    private function flag(string $key): bool
+    {
+        if (! $this->attributes->has($key)) {
+            return false;
+        }
+
+        $value = $this->attributes->get($key);
+
+        return ! (false === $value || null === $value || (is_string($value) && in_array(strtolower($value), ['false', '0'], true)));
+    }
+
+    /**
+     * A value as a JavaScript literal safe inside an HTML attribute.
+     *
+     * @param  mixed  $value  The value.
+     *
+     * @return string The literal.
+     */
+    private static function js(mixed $value): string
+    {
+        return (string) json_encode(
+            $value,
+            JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_INVALID_UTF8_SUBSTITUTE,
+        );
     }
 }

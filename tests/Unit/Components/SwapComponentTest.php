@@ -46,6 +46,13 @@ test('wire:model and other attributes land on the checkbox; class on the root', 
         ->and($dom->query('//label[@name]'))->toHaveCount(0);
 });
 
+test('data-state follows the checkbox after a form reset, which fires no change', function (): void {
+    $input = designSystemDom(Blade::render('<form><x-artisanpack-swap label="Dark mode" /></form>'))->query('//input')->item(0);
+
+    expect($input->getAttribute('x-on:reset.window'))->toContain('$event.target === $el.form')
+        ->and($input->getAttribute('x-on:reset.window'))->toContain("dataset.state = \$el.checked ? 'checked' : 'unchecked'");
+});
+
 test('size and transition fall back to md and fade', function (): void {
     $root = swapDom('<x-artisanpack-swap label="x" size="huge" transition="spin" />')->query('//label')->item(0);
 

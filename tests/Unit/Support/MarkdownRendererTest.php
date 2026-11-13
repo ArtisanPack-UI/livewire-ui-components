@@ -88,3 +88,25 @@ test('the raw HTML filter rebuilds allowed tags and escapes the rest', function 
         ->and(MarkdownHtml::filter('<a href="?a=1&amp;b=2">a</a>'))->toBe('<a href="?a=1&amp;b=2">a</a>')
         ->and(MarkdownHtml::filter('<a href="java&Tab;script:x">a</a>'))->toBe('<a href="java&amp;Tab;script:x">a</a>');
 });
+
+test('raw HTML images keep only PNG, GIF, JPEG and WebP data URLs, as Markdown images do', function (): void {
+    expect(MarkdownHtml::filter('<img src="data:image/svg+xml;base64,PHN2Zz4=" alt="x">'))->toBe('<img alt="x">')
+        ->and(MarkdownHtml::filter('<img src="DATA:image/webp;base64,AA">'))->toBe('<img src="DATA:image/webp;base64,AA">')
+        ->and(MarkdownRenderer::render('![x](data:image/svg+xml;base64,PHN2Zz4=)'))->toBe("<p>x</p>\n");
+});
+
+test('it stops nesting blocks at the limit', function (bool $sanitize): void {
+    $quotes = MarkdownRenderer::render(str_repeat('> ', 10000).'text', $sanitize);
+    $lists  = MarkdownRenderer::render(str_repeat('- ', 10000).'text', $sanitize);
+
+    expect(substr_count($quotes, '<blockquote>'))->toBe(MarkdownRenderer::MAX_NESTING)
+        ->and($quotes)->toContain('<p>&gt; &gt; ')
+        ->and(substr_count($lists, '<ul>'))->toBe(intdiv(MarkdownRenderer::MAX_NESTING, 2));
+})->with([true, false]);
+
+test('it keeps delimiter runs past the limit literal', function (): void {
+    $html = MarkdownRenderer::render(str_repeat('*a* ', MarkdownRenderer::MAX_DELIMITERS));
+
+    expect(substr_count($html, '<em>'))->toBe(intdiv(MarkdownRenderer::MAX_DELIMITERS, 2))
+        ->and($html)->toEndWith("*a*</p>\n");
+});

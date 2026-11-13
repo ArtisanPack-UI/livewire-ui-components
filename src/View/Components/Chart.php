@@ -165,11 +165,16 @@ class Chart extends BaseComponent
     public function geometry(): array
     {
         $options = $this->legacyOptions();
-        $labels  = $this->labels ?? $options['xaxis']['categories'] ?? $options['labels'] ?? [];
+        $labels  = $this->labels ?? [];
+        foreach ([$options['xaxis']['categories'] ?? null, $options['labels'] ?? null] as $legacy) {
+            if ([] === $labels && is_array($legacy)) {
+                $labels = $legacy;
+            }
+        }
 
         return ChartGeometry::compute($this->series ?? [], [
             'type'     => $this->typeValue(),
-            'labels'   => is_array($labels) ? $labels : [],
+            'labels'   => $labels,
             'width'    => is_numeric($this->width) ? $this->width + 0 : null,
             'height'   => is_numeric($this->height) ? $this->height + 0 : null,
             'title'    => $this->titleText(),

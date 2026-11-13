@@ -76,6 +76,43 @@ final class CalendarModel
         'legend'   => 'Categories',
     ];
 
+    /**
+     * CLDR's first day of the week by region, 0 (Sunday) to 6, for the
+     * regions that don't start on Sunday: the table `@internationalized/date`
+     * falls back to. Used only without `ext-intl`.
+     *
+     * @since 3.0.0
+     */
+    private const WEEK_STARTS = [
+        '001' => 1, 'AD' => 1, 'AE' => 6, 'AF' => 6, 'AI' => 1, 'AL' => 1, 'AM' => 1, 'AN' => 1, 'AR' => 1, 'AT' => 1,
+        'AU'  => 1, 'AX' => 1, 'AZ' => 1, 'BA' => 1, 'BE' => 1, 'BG' => 1, 'BH' => 6, 'BM' => 1, 'BN' => 1, 'BY' => 1,
+        'CH'  => 1, 'CL' => 1, 'CM' => 1, 'CN' => 1, 'CR' => 1, 'CY' => 1, 'CZ' => 1, 'DE' => 1, 'DJ' => 6, 'DK' => 1,
+        'DZ'  => 6, 'EC' => 1, 'EE' => 1, 'EG' => 6, 'ES' => 1, 'FI' => 1, 'FJ' => 1, 'FO' => 1, 'FR' => 1, 'GB' => 1,
+        'GE'  => 1, 'GF' => 1, 'GP' => 1, 'GR' => 1, 'HR' => 1, 'HU' => 1, 'IE' => 1, 'IQ' => 6, 'IR' => 6, 'IS' => 1,
+        'IT'  => 1, 'JO' => 6, 'KG' => 1, 'KW' => 6, 'KZ' => 1, 'LB' => 1, 'LI' => 1, 'LK' => 1, 'LT' => 1, 'LU' => 1,
+        'LV'  => 1, 'LY' => 6, 'MC' => 1, 'MD' => 1, 'ME' => 1, 'MK' => 1, 'MN' => 1, 'MQ' => 1, 'MV' => 5, 'MY' => 1,
+        'NL'  => 1, 'NO' => 1, 'NZ' => 1, 'OM' => 6, 'PL' => 1, 'QA' => 6, 'RE' => 1, 'RO' => 1, 'RS' => 1, 'RU' => 1,
+        'SD'  => 6, 'SE' => 1, 'SI' => 1, 'SK' => 1, 'SM' => 1, 'SY' => 6, 'TJ' => 1, 'TM' => 1, 'TR' => 1, 'UA' => 1,
+        'UY'  => 1, 'UZ' => 1, 'VA' => 1, 'VN' => 1, 'XK' => 1,
+    ];
+
+    /**
+     * The region a bare language most likely means (CLDR likely subtags), for
+     * the week start without `ext-intl`.
+     *
+     * @since 3.0.0
+     */
+    private const LIKELY_REGIONS = [
+        'ar' => 'EG', 'az' => 'AZ', 'be' => 'BY', 'bg' => 'BG', 'bs' => 'BA', 'ca' => 'ES', 'cs' => 'CZ', 'cy' => 'GB',
+        'da' => 'DK', 'de' => 'DE', 'el' => 'GR', 'en' => 'US', 'es' => 'ES', 'et' => 'EE', 'eu' => 'ES', 'fa' => 'IR',
+        'fi' => 'FI', 'fo' => 'FO', 'fr' => 'FR', 'ga' => 'IE', 'gl' => 'ES', 'he' => 'IL', 'hi' => 'IN', 'hr' => 'HR',
+        'hu' => 'HU', 'hy' => 'AM', 'id' => 'ID', 'is' => 'IS', 'it' => 'IT', 'ja' => 'JP', 'ka' => 'GE', 'kk' => 'KZ',
+        'ko' => 'KR', 'ky' => 'KG', 'lb' => 'LU', 'lt' => 'LT', 'lv' => 'LV', 'mk' => 'MK', 'mn' => 'MN', 'ms' => 'MY',
+        'nb' => 'NO', 'nl' => 'NL', 'nn' => 'NO', 'no' => 'NO', 'pl' => 'PL', 'pt' => 'BR', 'ro' => 'RO', 'ru' => 'RU',
+        'sk' => 'SK', 'sl' => 'SI', 'sq' => 'AL', 'sr' => 'RS', 'sv' => 'SE', 'tg' => 'TJ', 'th' => 'TH', 'tk' => 'TM',
+        'tr' => 'TR', 'uk' => 'UA', 'uz' => 'UZ', 'vi' => 'VN', 'zh' => 'CN',
+    ];
+
     private const ISO = '/^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2})(?:\.\d+)?)?)?(Z|[+-]\d{2}:?\d{2})?$/';
 
     /**
@@ -126,17 +163,20 @@ final class CalendarModel
         $weekdayLong  = fn (DateTimeImmutable $day): string => self::format($day, $locale, 'EEEE', 'l');
 
         $when = function (array $item) use ($full, $labels): string {
-            $single = $item['start'] == $item['end'];
+            // A timed event ending at 00:00 is placed up to the day before but
+            // still ends on the next day, so the text names that day.
+            $end    = $item['whenEnd'];
+            $single = $item['start'] == $end;
             if ($item['allDay']) {
                 return $single
                     ? $full($item['start']).', '.$labels['allDay']
-                    : $full($item['start']).' – '.$full($item['end']).', '.$labels['allDay'];
+                    : $full($item['start']).' – '.$full($end).', '.$labels['allDay'];
             }
             if ($single) {
                 return $full($item['start']).', '.$item['startTime'].(null !== $item['endTime'] ? ' – '.$item['endTime'] : '');
             }
 
-            return $full($item['start']).', '.$item['startTime'].' – '.$full($item['end']).(null !== $item['endTime'] ? ', '.$item['endTime'] : '');
+            return $full($item['start']).', '.$item['startTime'].' – '.$full($end).(null !== $item['endTime'] ? ', '.$item['endTime'] : '');
         };
 
         $place = function (array $item, DateTimeImmutable $day) use ($when, $labels): array {
@@ -370,12 +410,43 @@ final class CalendarModel
         }
 
         if (! class_exists(IntlCalendar::class)) {
-            return 0;
+            return self::fallbackWeekStart($locale);
         }
 
-        $calendar = IntlCalendar::createInstance(null, str_replace('-', '_', $locale));
+        try {
+            $calendar = IntlCalendar::createInstance(null, str_replace('-', '_', $locale));
+        } catch (Throwable) {
+            $calendar = null;
+        }
 
-        return $calendar instanceof IntlCalendar ? ($calendar->getFirstDayOfWeek() + 6) % 7 : 0;
+        return $calendar instanceof IntlCalendar ? ($calendar->getFirstDayOfWeek() + 6) % 7 : self::fallbackWeekStart($locale);
+    }
+
+    /**
+     * The locale's first day of the week without `ext-intl`: CLDR's week data
+     * for the locale's region (the same table `@internationalized/date` falls
+     * back to), with the region a bare language most likely means. Sunday
+     * when neither is known.
+     *
+     * @since 3.0.0
+     */
+    public static function fallbackWeekStart(string $locale): int
+    {
+        $parts  = explode('-', str_replace('_', '-', $locale));
+        $region = null;
+        foreach (array_slice($parts, 1) as $part) {
+            if (1 === preg_match('/^(?:[A-Za-z]{2}|\d{3})$/', $part)) {
+                $region = strtoupper($part);
+
+                break;
+            }
+            if (1 === strlen($part)) {
+                break;
+            }
+        }
+        $region ??= self::LIKELY_REGIONS[strtolower($parts[0])] ?? null;
+
+        return null === $region ? 0 : (self::WEEK_STARTS[$region] ?? 0);
     }
 
     /**
@@ -423,7 +494,8 @@ final class CalendarModel
 
         $hour   = (int) $m[4];
         $minute = (int) $m[5];
-        if ($hour > 23 || $minute > 59) {
+        $second = (int) ($m[6] ?? 0);
+        if ($hour > 23 || $minute > 59 || $second > 59) {
             return null;
         }
 
@@ -431,9 +503,20 @@ final class CalendarModel
             return ['date' => $date, 'time' => sprintf('%02d:%02d', $hour, $minute)];
         }
 
-        $zone    = 'Z' === $m[7] ? '+00:00' : $m[7];
-        $instant = new DateTimeImmutable(sprintf('%04d-%02d-%02dT%02d:%02d:%02d%s', $m[1], $m[2], $m[3], $hour, $minute, (int) ($m[6] ?? 0), $zone));
-        $local   = $instant->setTimezone(new DateTimeZone($timeZone));
+        $zone = 'Z' === $m[7] ? '+00:00' : $m[7];
+        if ('Z' !== $m[7]) {
+            $digits = str_replace(':', '', substr($m[7], 1));
+            if ((int) substr($digits, 0, 2) > 23 || (int) substr($digits, 2, 2) > 59) {
+                return null;
+            }
+        }
+
+        try {
+            $instant = new DateTimeImmutable(sprintf('%04d-%02d-%02dT%02d:%02d:%02d%s', $m[1], $m[2], $m[3], $hour, $minute, $second, $zone));
+        } catch (Throwable) {
+            return null;
+        }
+        $local = $instant->setTimezone(new DateTimeZone($timeZone));
 
         return ['date' => self::day($local), 'time' => $local->format('H:i')];
     }
@@ -486,12 +569,10 @@ final class CalendarModel
             $parsedEnd = null === $endValue ? null : self::parseMoment($endValue, $timeZone);
             $allDay    = true === ($event['allDay'] ?? $event['all_day'] ?? false) || null === $start['time'];
             $end       = $parsedEnd ?? ['date' => $start['date'], 'time' => null];
-            $endDate   = $end['date'];
+            $endDate   = $end['date'] < $start['date'] ? $start['date'] : $end['date'];
+            $whenEnd   = $endDate;
             if (! $allDay && '00:00' === $end['time'] && $endDate > $start['date']) {
                 $endDate = $endDate->modify('-1 day');
-            }
-            if ($endDate < $start['date']) {
-                $endDate = $start['date'];
             }
 
             $id    = $event['id'] ?? null;
@@ -507,6 +588,7 @@ final class CalendarModel
                 'allDay'      => $allDay,
                 'start'       => $start['date'],
                 'end'         => $endDate,
+                'whenEnd'     => $whenEnd,
                 'startTime'   => $allDay ? null : $start['time'],
                 'endTime'     => $allDay || null === $parsedEnd ? null : $parsedEnd['time'],
                 'event'       => $event,

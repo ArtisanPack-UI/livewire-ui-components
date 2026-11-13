@@ -21,6 +21,7 @@ namespace ArtisanPack\LivewireUiComponents\View\Components;
 use ArtisanPack\LivewireUiComponents\View\Concerns\HasStablePartIds;
 use ArtisanPack\LivewireUiComponents\View\Concerns\RendersDesignSystemParts;
 use Illuminate\Contracts\View\View;
+use Illuminate\View\ComponentAttributeBag;
 
 /**
  * ThemePreview Component Class
@@ -28,8 +29,9 @@ use Illuminate\Contracts\View\View;
  * A `.apui-theme-preview` radio group of `.apui-theme-card` cards. Each card
  * is a label holding the frame, with a decorative miniature drawn by the real
  * tokens (it carries `data-theme` and `data-preset`), and a native radio with
- * the option's name. `class` lands on the root; every other attribute,
- * `wire:model` included, lands on every radio, so it binds natively. Replaces
+ * the option's name. `class`, `aria-label` and `aria-labelledby` land on
+ * the root; every other attribute, `wire:model` included, lands on every
+ * radio, so it binds natively. Replaces
  * the 2.x `<livewire:theme-preview>` theme builder tool.
  *
  * @since 2.0.0
@@ -124,8 +126,8 @@ class ThemePreview extends BaseComponent
     }
 
     /**
-     * The value the server renders checked: the bound Livewire property,
-     * else `value`.
+     * The value the server renders checked: the bound Livewire property
+     * (nothing when it's null), else `value` when nothing is bound.
      *
      * @since 3.0.0
      *
@@ -133,16 +135,41 @@ class ThemePreview extends BaseComponent
      */
     public function selectedValue(): ?string
     {
-        $model = $this->modelName();
-        if (null !== $model) {
-            $component = $this->livewireComponent();
-            $bound     = null !== $component ? data_get($component, $model) : null;
-            if (is_scalar($bound)) {
-                return (string) $bound;
-            }
+        $model     = $this->modelName();
+        $component = null !== $model ? $this->livewireComponent() : null;
+        if (null !== $component) {
+            $bound = data_get($component, $model);
+
+            return is_scalar($bound) ? (string) $bound : null;
         }
 
         return $this->value;
+    }
+
+    /**
+     * The radio group's name: `aria-labelledby` when set, plus `aria-label`
+     * (the attribute, else `label`) unless only `aria-labelledby` is set.
+     * Both stay off the radios, which their cards name.
+     *
+     * @since 3.0.0
+     *
+     * @return ComponentAttributeBag The attributes.
+     */
+    public function groupLabelAttributes(): ComponentAttributeBag
+    {
+        $labelledBy = $this->attributes->get('aria-labelledby');
+        $label      = $this->attributes->get('aria-label');
+        $names      = [];
+        if (is_string($labelledBy) && '' !== $labelledBy) {
+            $names['aria-labelledby'] = $labelledBy;
+        }
+        if (is_string($label) && '' !== $label) {
+            $names['aria-label'] = $label;
+        } elseif ([] === $names) {
+            $names['aria-label'] = (string) $this->label;
+        }
+
+        return new ComponentAttributeBag($names);
     }
 
     /**

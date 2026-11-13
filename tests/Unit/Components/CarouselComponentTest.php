@@ -144,3 +144,54 @@ test('every part keeps a stable id across renders', function (): void {
 
     expect($first)->toBe('tour-indicator-1')->and($second)->toBe($first);
 });
+
+test('a caller aria-label wins over the title; label wins over both', function (): void {
+    $name = static fn (string $props): string => carouselDom($props)->query('//div[@data-part="root"]')->item(0)->getAttribute('aria-label');
+
+    expect($name('title="Featured" aria-label="Homes for sale"'))->toBe('Homes for sale')
+        ->and($name('title="Featured" label="Picked" aria-label="Homes for sale"'))->toBe('Picked');
+});
+
+test('the autoplay button is the root\'s first child, first in the Tab order', function (): void {
+    $dom  = carouselDom('autoplay title="Featured"');
+    $root = $dom->query('//div[@data-part="root"]')->item(0);
+
+    $first = null;
+    foreach ($root->childNodes as $child) {
+        if ($child instanceof DOMElement) {
+            $first = $child;
+            break;
+        }
+    }
+
+    expect($first?->getAttribute('data-part'))->toBe('autoplay-trigger')
+        ->and($dom->query('.//*[@data-part="viewport"]//*[@data-part="autoplay-trigger"]', $root))->toHaveCount(0);
+});
+
+test('a unique slide id keys each slide; otherwise its position does', function (): void {
+    $keys = static fn (array $slides): array => array_map(
+        static fn (DOMElement $item): string => $item->getAttribute('wire:key'),
+        iterator_to_array(carouselDom('id="tour"', $slides)->query('//div[@data-part="item"]')),
+    );
+
+    expect($keys([['id' => 'b', 'title' => 'B'], ['id' => 7, 'title' => 'A']]))->toBe(['tour-item-id-b', 'tour-item-id-7'])
+        ->and($keys([['id' => 'x'], ['id' => 'x']]))->toBe(['tour-item-0', 'tour-item-1'])
+        ->and($keys([['id' => 'x'], ['title' => 'No id']]))->toBe(['tour-item-0', 'tour-item-1']);
+});
+
+test('the root key changes with the slide count and options, so Livewire remounts the carousel', function (): void {
+    $key = static fn (string $props, int $count = 4): string => carouselDom('id="tour" '.$props, carouselSlides($count))
+        ->query('//div[@data-part="root"]')->item(0)->getAttribute('wire:key');
+
+    expect($key(''))->toStartWith('tour-4-')
+        ->and($key('', 5))->toStartWith('tour-5-')
+        ->and($key(''))->toBe($key(''))
+        ->and($key(':index="2"'))->toBe($key(''))
+        ->and($key(':per-view="2"'))->not->toBe($key(''))
+        ->and($key('loop'))->not->toBe($key(''))
+        ->and($key('wire:key="mine"'))->toStartWith('mine-4-');
+
+    $html = Blade::render('<x-artisanpack-carousel :slides="$slides" wire:key="mine" />', ['slides' => carouselSlides()]);
+    $open = substr($html, (int) strpos($html, '<div'), (int) strpos($html, '>') + 1);
+    expect(substr_count($open, 'wire:key='))->toBe(1);
+});

@@ -22,7 +22,9 @@ use Throwable;
  * It reads the choice ThemeToggle stores in localStorage (guarded: blocked
  * storage falls back to the default), resolves `system` against
  * `prefers-color-scheme` and sets `data-theme` on `<html>`, the attribute the
- * tokens switch on. Put it in `<head>`, before the stylesheets.
+ * tokens switch on, and `data-theme-choice` to the choice behind it, so a
+ * toggle with nothing stored starts on the configured default. Put it in
+ * `<head>`, before the stylesheets.
  *
  * @since 3.0.0
  */
@@ -75,8 +77,9 @@ final class ThemeScript
 
         return '(function(){try{var c=null;try{c=localStorage.getItem('.$key.')}catch(e){}'
             .'if(["light","dark","high-contrast","system"].indexOf(c)<0)c='.$fallback.';'
+            .'var d=document.documentElement;d.setAttribute("data-theme-choice",c);'
             .'if(c==="system")c=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";'
-            .'document.documentElement.setAttribute("data-theme",c)}catch(e){}})();';
+            .'d.setAttribute("data-theme",c)}catch(e){}})();';
     }
 
     /**

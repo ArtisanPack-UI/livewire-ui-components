@@ -101,6 +101,26 @@ describe('month', function (): void {
             ->and($sunday['rows'])->toHaveCount(5);
     });
 
+    it('falls back to CLDR week data without ext-intl', function (): void {
+        expect(CalendarModel::fallbackWeekStart('en-US'))->toBe(0)
+            ->and(CalendarModel::fallbackWeekStart('en'))->toBe(0)
+            ->and(CalendarModel::fallbackWeekStart('en-GB'))->toBe(1)
+            ->and(CalendarModel::fallbackWeekStart('en_GB'))->toBe(1)
+            ->and(CalendarModel::fallbackWeekStart('de'))->toBe(1)
+            ->and(CalendarModel::fallbackWeekStart('fr-CA'))->toBe(0)
+            ->and(CalendarModel::fallbackWeekStart('sr-Latn-RS'))->toBe(1)
+            ->and(CalendarModel::fallbackWeekStart('zh-Hant-TW'))->toBe(0)
+            ->and(CalendarModel::fallbackWeekStart('ar-AE'))->toBe(6)
+            ->and(CalendarModel::fallbackWeekStart('dv-MV'))->toBe(5)
+            ->and(CalendarModel::fallbackWeekStart('xx'))->toBe(0);
+
+        foreach (['en-US', 'en-GB', 'de-DE', 'fr-FR', 'es-ES', 'pt-BR', 'ar-EG', 'fa-IR', 'ja-JP', 'nl', 'sv', 'pl', 'ru'] as $locale) {
+            if (class_exists(IntlCalendar::class)) {
+                expect(CalendarModel::fallbackWeekStart($locale))->toBe(CalendarModel::weekStart(null, $locale), $locale);
+            }
+        }
+    });
+
     it('constrains the day when moving a month', function (): void {
         $model = CalendarModel::build(calendarBase(['date' => '2027-01-31']));
 
@@ -179,6 +199,41 @@ describe('events', function (): void {
         ]));
 
         expect(array_map(static fn (array $e): string => $e['title'].'|'.$e['color'].'|'.$e['time'], $model['rows'][0][0]['events']))->toBe(['2.x|primary|', 'Zoned|primary|00:30']);
+    });
+
+    it('skips impossible seconds and offsets instead of throwing', function (): void {
+        expect(CalendarModel::parseMoment('2026-11-02T09:00:99Z', 'UTC'))->toBeNull()
+            ->and(CalendarModel::parseMoment('2026-11-02T09:00:60', 'UTC'))->toBeNull()
+            ->and(CalendarModel::parseMoment('2026-11-02T09:00+24:00', 'UTC'))->toBeNull()
+            ->and(CalendarModel::parseMoment('2026-11-02T09:00+05:60', 'UTC'))->toBeNull()
+            ->and(CalendarModel::parseMoment('2026-11-02T09:00:59+14:00', 'UTC')['time'])->toBe('19:00');
+
+        $model = CalendarModel::build(calendarBase([
+            'view'   => 'day',
+            'date'   => '2026-11-02',
+            'events' => [
+                ['start' => '2026-11-02T09:00:99Z', 'title' => 'Bad seconds'],
+                ['start' => '2026-11-02T10:00', 'end' => '2026-11-02T11:00:99Z', 'title' => 'Bad end'],
+                ['start' => '2026-11-02T12:00', 'title' => 'Good'],
+            ],
+        ]));
+
+        expect(array_column($model['rows'][0][0]['events'], 'title'))->toBe(['Bad end', 'Good'])
+            ->and($model['rows'][0][0]['events'][0]['range'])->toBe('10:00');
+    });
+
+    it('names the next day for a timed event ending at 00:00', function (): void {
+        $model = CalendarModel::build(calendarBase([
+            'view'   => 'week',
+            'date'   => '2026-11-02',
+            'events' => [['start' => '2026-11-04T09:00', 'end' => '2026-11-05T00:00', 'title' => 'Late']],
+        ]));
+        $late = $model['rows'][0][2]['events'][0];
+
+        expect($late['end'])->toBe('2026-11-04')
+            ->and($late['range'])->toBe('09:00 – 00:00')
+            ->and($late['when'])->toBe('Wednesday, November 4, 2026, 09:00 – Thursday, November 5, 2026, 00:00')
+            ->and($model['rows'][0][3]['events'])->toBe([]);
     });
 
     it('maps the 2.x range, time, label and colorScheme', function (): void {

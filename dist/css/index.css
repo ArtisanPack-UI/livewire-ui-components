@@ -15135,6 +15135,7 @@
  */
 @layer apui.components {
   .apui-carousel {
+    position: relative;
     display: grid;
     gap: 12px;
     min-inline-size: 0;
@@ -15278,14 +15279,21 @@
         var(--apui-focus-ring-color);
   }
 
-  /* The pause button: glass, at the viewport's top start (D-006). */
+  /*
+   * The pause button: glass, at the viewport's top start (D-006). It is the
+   * root's first child, so it comes first in the Tab order, before the
+   * rotating slides (WAI carousel pattern); its grid row (the viewport's: the
+   * second with a header) places it over the viewport. Above the slides'
+   * own raised controls, which follow it in the DOM.
+   */
   [data-scope='carousel'][data-part='autoplay-trigger'] {
     --apui-focus-ring-offset-color: transparent;
 
     position: absolute;
+    grid-row: 1;
     inset-block-start: 12px;
     inset-inline-start: 12px;
-    z-index: 1;
+    z-index: 2;
     display: grid;
     place-items: center;
     box-sizing: border-box;
@@ -15302,6 +15310,11 @@
     appearance: none;
     backdrop-filter: blur(var(--apui-surface-glass-blur))
       saturate(var(--apui-surface-glass-saturation));
+  }
+
+  .apui-carousel:has(> [data-part='header'])
+    > [data-scope='carousel'][data-part='autoplay-trigger'] {
+    grid-row: 2;
   }
 
   [data-scope='carousel'][data-part='autoplay-trigger'] > svg {
@@ -16212,9 +16225,14 @@
     outline-offset: calc(var(--apui-focus-ring-width) * -1);
   }
 
-  /* As wide as the longest line, so a highlight spans the scrolled width. */
+  /*
+   * As wide as the longest line, so a highlight spans the scrolled width. A
+   * column flexbox, so the newline text between line parts (which keeps the
+   * pre's text content line by line) adds no blank lines of its own.
+   */
   [data-scope='code'][data-part='pre'] > code {
-    display: inline-block;
+    display: inline-flex;
+    flex-direction: column;
     min-inline-size: 100%;
     font: inherit;
   }
@@ -16279,7 +16297,8 @@
  * `.apui-copy-field`) shows the value in a read-only box (parts field and
  * value) joined to an outline button. While copied the button reads "Copied"
  * in the success color. The tooltip is announced in every variant and shown
- * only for the icon button, whose label can't change. See
+ * only for the icon button, whose label can't change. After a failed copy the
+ * button and icon variants show the field too, to copy the value by hand. See
  * design/components/Clipboard.
  */
 @layer apui.components {
@@ -16348,6 +16367,17 @@
     margin-inline-start: calc(var(--apui-border-width) * -1);
     border-start-start-radius: 0;
     border-end-start-radius: 0;
+  }
+
+  /*
+   * After a failed copy the button and icon variants show the value too, in
+   * the field's box beside the button (selected), so it can be copied by hand.
+   */
+  .apui-clipboard:not([data-variant='field']) > [data-scope='clipboard'][data-part='field'] {
+    flex: 0 1 auto;
+    max-inline-size: 240px;
+    margin-inline-end: 8px;
+    border-radius: var(--apui-input-radius);
   }
 
   /* The live region: hidden, still announced. */

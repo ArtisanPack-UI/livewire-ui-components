@@ -29,13 +29,15 @@ Use a copy field for links, keys and IDs. Name each button after what it copies:
 
 ## Events
 
-The root dispatches `copy`, with the value as its detail, when the value reached the clipboard, and `error` when copying failed:
+The root dispatches `copied`, with the value written as its detail, when the value reached the clipboard, and `error` when copying failed. The success event is named apart from the browser's own `copy` event, which fires when someone copies text by hand, so a listener only runs for the component's copies:
 
 ```blade
-<x-artisanpack-clipboard :value="$url" x-on:copy="$wire.trackShare()" />
+<x-artisanpack-clipboard :value="$url" x-on:copied="$wire.trackShare()" />
 ```
 
-The copy uses the Clipboard API, with a fallback for pages where it's missing or blocked. The button copies its current value, so a value your Livewire component changes copies the new one.
+The copy uses the Clipboard API, with a fallback for pages where it's missing or blocked. The button copies its current value, so a value your Livewire component changes copies the new one, and a "Copied" left from the old value clears.
+
+If both ways of copying fail, the button and icon variants show the value beside the button, already selected, so it can be copied by hand with the keyboard; a copy that works, or a new value, hides it again.
 
 ## Props
 
@@ -57,4 +59,4 @@ Every other attribute lands on the root.
 
 - The result is announced in a `role=status` live region, success or failure: never a silent copy.
 - The label changes to "Copied"; the icon button's accessible name does too.
-- The value in a copy field reads left to right in every layout and stays selectable, so it can be copied by hand if copying fails.
+- The value in a copy field reads left to right in every layout and stays selectable, so it can be copied by hand if copying fails; the button and icon variants show it, selected, after a failure.
