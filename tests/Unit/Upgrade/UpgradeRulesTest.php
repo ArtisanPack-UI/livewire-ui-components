@@ -60,7 +60,7 @@ test('every rule writes a registered tag', function (): void {
 
     foreach (UpgradeRules::load()->components() as $name => $rule) {
         // `event-modal-content` is the Calendar's internal Livewire child, not a Blade tag.
-        if (null === upgradeTargetClass($rule['to']) && $rule['to'] !== $name) {
+        if (null === upgradeTargetClass($rule['to']) && 'event-modal-content' !== $name) {
             $missing[] = "{$name} → {$rule['to']}";
         }
 
@@ -80,7 +80,10 @@ test('every rule writes an attribute the 3.0 class takes', function (): void {
     foreach (UpgradeRules::load()->components() as $name => $rule) {
         $class = upgradeTargetClass($rule['to']);
 
+        // Only the Calendar's internal Livewire child has no Blade class.
         if (null === $class) {
+            expect($name)->toBe('event-modal-content');
+
             continue;
         }
 

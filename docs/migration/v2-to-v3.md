@@ -29,7 +29,7 @@ php artisan artisanpack:upgrade-ui
 | `--dry-run` | Show the changes as a diff without writing |
 | `--no-classes` | Leave raw DaisyUI classes out of the report |
 | `--json` | Print the report as JSON. It writes without asking, so pair it with `--dry-run` to only report |
-| `--force` | Write without asking |
+| `--force` | Write without asking. Required when the command can't ask, as in CI |
 
 ## What it rewrites
 
@@ -75,7 +75,7 @@ Raw DaisyUI classes are never rewritten: the right replacement depends on the el
 - Blade comments, `@verbatim` blocks and PHP.
 - Attributes built in PHP or passed through `$attributes`. The command flags tags that build their attributes with Blade, so you can check them.
 
-The command is safe to run again after you fix things by hand.
+You can run the command again after you fix things by hand: migrated markup has nothing left for it to rewrite. Preview a second run with `--dry-run` all the same.
 
 ## Where the rules come from
 

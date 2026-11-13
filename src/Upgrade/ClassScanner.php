@@ -23,12 +23,26 @@ namespace ArtisanPack\LivewireUiComponents\Upgrade;
 final class ClassScanner
 {
     /**
-     * Where class lists are written: `class="…"`, `:class="…"` and `@class([…])`.
+     * Class lists written as plain text: `class="…"`. A Blade echo inside the
+     * value may hold quotes of its own.
      */
-    private const SOURCES = [
-        '~(?:^|[\s<"\'(])(?::class|x-bind:class|class)\s*=\s*(?:"[^"]*"|\'[^\']*\')~',
+    private const LISTS = [
+        '~(?:^|[\s<"\'(])class\s*=\s*(?:"(?:\{\{.*?\}\}|[^"])*"|\'(?:\{\{.*?\}\}|[^\'])*\')~s',
+    ];
+
+    /**
+     * Class lists inside an expression, where only the string literals are
+     * classes: `:class="$on ? 'btn' : ''"` and `@class([…])`.
+     */
+    private const EXPRESSIONS = [
+        '~(?:^|[\s<"\'(])(?::class|x-bind:class)\s*=\s*(?:"[^"]*"|\'[^\']*\')~',
         '~@class\(\s*\[[\s\S]*?\]\s*\)~',
     ];
+
+    /**
+     * One class token, with a leading arbitrary variant (`[&:hover]:`) kept whole.
+     */
+    private const TOKEN = '~(?:\[[^\]\s"\'<>]+\]:)?[A-Za-z0-9_:!/.\[\]-]+~';
 
     /**
      * Creates the scanner.
@@ -52,7 +66,7 @@ final class ClassScanner
     {
         $classes  = $this->rules->classes();
         $patterns = $classes['patterns'] ?? [];
-        $name     = (string) preg_replace('/^(?:[a-z0-9-]+:)*!?/', '', $token);
+        $name     = (string) preg_replace('/^(?:(?:[a-z0-9-]+|\[[^\]]*\]):)*!?/', '', $token);
 
         if (1 !== preg_match('~^[a-z][a-z0-9/-]*$~', $name)) {
             return null;
@@ -92,18 +106,39 @@ final class ClassScanner
         $found    = [];
         $patterns = $this->rules->classes()['patterns'] ?? [];
 
-        foreach (self::SOURCES as $pattern) {
+        // Tokens keep their place in the file, so each is reported where it is.
+        $scan = function (string $text, int $start) use (&$found): void {
+            preg_match_all(self::TOKEN, $text, $tokens, PREG_OFFSET_CAPTURE);
+
+            foreach ($tokens[0] as [$token, $inner]) {
+                $kind = $this->classify($token);
+
+                if (null !== $kind) {
+                    $found[$start + $inner] = [$kind, $token];
+                }
+            }
+        };
+
+        foreach (self::LISTS as $pattern) {
             preg_match_all($pattern, $source, $matches, PREG_OFFSET_CAPTURE);
 
             foreach ($matches[0] as [$text, $offset]) {
-                preg_match_all('~[A-Za-z0-9_:!/.\[\]-]+~', $text, $tokens, PREG_OFFSET_CAPTURE);
+                $scan($text, $offset);
+            }
+        }
 
-                foreach ($tokens[0] as [$token, $inner]) {
-                    $kind = $this->classify($token);
+        foreach (self::EXPRESSIONS as $pattern) {
+            preg_match_all($pattern, $source, $matches, PREG_OFFSET_CAPTURE);
 
-                    if (null !== $kind) {
-                        $found[$offset + $inner] = [$kind, $token];
-                    }
+            foreach ($matches[0] as [$text, $offset]) {
+                // A bound attribute's value is the expression; its own quotes aren't a literal.
+                $from = 1 === preg_match('~^[\s<"\'(]*(?::class|x-bind:class)\s*=\s*["\']~', $text, $bound) ? strlen($bound[0]) : 0;
+                $body = $from > 0 ? substr($text, $from, -1) : $text;
+
+                preg_match_all('~\'[^\'\n]*\'|"[^"\n]*"~', $body, $literals, PREG_OFFSET_CAPTURE);
+
+                foreach ($literals[0] as [$literal, $inner]) {
+                    $scan(substr($literal, 1, -1), $offset + $from + $inner + 1);
                 }
             }
         }

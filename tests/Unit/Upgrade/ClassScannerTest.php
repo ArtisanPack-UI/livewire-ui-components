@@ -29,6 +29,9 @@ test('classifies class names', function (string $token, ?string $kind): void {
     ['flex', null],
     ['apui-button', null],
     ['buttons', null],
+    ['[&:hover]:btn', 'component'],
+    ['[&>*]:md:badge-sm', 'component'],
+    ['w-[120px]', null],
 ]);
 
 test('reports classes where they are, in class attributes only', function (): void {
@@ -50,4 +53,17 @@ test('reports classes where they are, in class attributes only', function (): vo
         ->and($findings[0]->column)->toBe(13)
         ->and($findings[0]->message)->toContain('DaisyUI class')
         ->and($findings[4]->message)->toContain('may be');
+});
+
+test('reads the string literals of an expression, and only those', function (): void {
+    $source = <<<'BLADE'
+    <i class="{{ $on ? "btn" : "btn-outline" }} [&:hover]:badge"></i>
+    <a :class="[$card, 'btn-primary' => $badge]" @class([$alert, 'alert-soft' => $tab])>Go</a>
+    BLADE;
+
+    $findings = (new ClassScanner(UpgradeRules::load()))->scan($source);
+
+    expect(array_map(fn (Finding $finding): string => "{$finding->line}:{$finding->column}:{$finding->member}", $findings))->toBe([
+        '1:21:btn', '1:29:btn-outline', '1:45:[&:hover]:badge', '2:21:btn-primary', '2:63:alert-soft',
+    ]);
 });

@@ -2297,6 +2297,7 @@ return [
 				'size'       => [
 					'kind' => 'rename',
 					'to'   => 'length',
+					'keep' => [ 'sm', 'md' ],
 					'note' => 'The number of cells.',
 				],
 				'numeric'    => [

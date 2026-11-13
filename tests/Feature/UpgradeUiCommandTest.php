@@ -137,6 +137,40 @@ test('asks before rewriting files', function (): void {
     expect(File::get($this->views.'/orders/index.blade.php'))->toContain('x-artisanpack-page-header');
 });
 
+test('refuses to write without --force when it cannot ask', function (): void {
+    $before = File::get($this->views.'/orders/index.blade.php');
+
+    $this->artisan('artisanpack:upgrade-ui', ['paths' => [$this->views], '--no-interaction' => true])
+        ->expectsOutputToContain('Pass --force to write the changes')
+        ->assertFailed();
+
+    expect(File::get($this->views.'/orders/index.blade.php'))->toBe($before);
+
+    $this->artisan('artisanpack:upgrade-ui', ['paths' => [$this->views], '--no-interaction' => true, '--dry-run' => true])
+        ->assertSuccessful();
+
+    $this->artisan('artisanpack:upgrade-ui', ['paths' => [$this->views], '--no-interaction' => true, '--force' => true])
+        ->assertSuccessful();
+
+    expect(File::get($this->views.'/orders/index.blade.php'))->toContain('x-artisanpack-page-header');
+});
+
+test('writes nothing when a file changes while it waits', function (): void {
+    $file = $this->views.'/orders/index.blade.php';
+
+    File::partialMock()->shouldReceive('get')->andReturnUsing(function (string $path) use ($file): string {
+        static $reads = 0;
+
+        // The second read of the file is the check before writing.
+        return $path === $file && ++$reads > 1 ? 'edited meanwhile' : (string) file_get_contents($path);
+    });
+    File::shouldReceive('put')->never();
+
+    $this->artisan('artisanpack:upgrade-ui', ['paths' => [$this->views], '--force' => true])
+        ->expectsOutputToContain('changed while the command ran')
+        ->assertFailed();
+});
+
 test('takes single files and skips the class report', function (): void {
     Artisan::call('artisanpack:upgrade-ui', ['paths' => [$this->views.'/orders/index.blade.php'], '--dry-run' => true, '--no-classes' => true]);
     $output = Artisan::output();

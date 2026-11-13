@@ -15,11 +15,11 @@ namespace ArtisanPack\LivewireUiComponents\Console\Commands;
 
 use ArtisanPack\LivewireUiComponents\Upgrade\BladeUpgrader;
 use ArtisanPack\LivewireUiComponents\Upgrade\Finding;
+use ArtisanPack\LivewireUiComponents\Upgrade\UnifiedDiff;
 use ArtisanPack\LivewireUiComponents\Upgrade\UpgradeResult;
 use ArtisanPack\LivewireUiComponents\Upgrade\UpgradeRules;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
-use Jfcherng\Diff\DiffHelper;
 use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Finder\Finder;
 
@@ -44,7 +44,7 @@ class UpgradeUiCommand extends Command
                             {--dry-run : Show the changes as a diff without writing any file}
                             {--no-classes : Do not report raw DaisyUI classes and theme references}
                             {--json : Print the report as JSON, without asking before writing}
-                            {--force : Write the changes without asking}';
+                            {--force : Write the changes without asking (required when the command cannot ask)}';
 
     /**
      * The console command description.
@@ -85,14 +85,34 @@ class UpgradeUiCommand extends Command
 
         $changed = array_filter($results, fn (UpgradeResult $result): bool => $result->changed());
 
-        if (! $dryRun && [] !== $changed && ! $json && ! $this->option('force') && $this->input->isInteractive()
-            && ! confirm(trans_choice(':count file will be rewritten. Commit your work first. Continue?|:count files will be rewritten. Commit your work first. Continue?', count($changed), ['count' => count($changed)]), true)) {
-            $this->line(__('Nothing was written. Use --dry-run to preview the changes.'));
+        if (! $dryRun && [] !== $changed && ! $json && ! $this->option('force')) {
+            // Rewriting files needs a yes: asked for, or given up front.
+            if (! $this->input->isInteractive()) {
+                $this->error(__('Nothing was written. Pass --force to write the changes, or --dry-run to preview them.'));
 
-            return self::SUCCESS;
+                return self::FAILURE;
+            }
+
+            if (! confirm(trans_choice(':count file will be rewritten. Commit your work first. Continue?|:count files will be rewritten. Commit your work first. Continue?', count($changed), ['count' => count($changed)]), true)) {
+                $this->line(__('Nothing was written. Use --dry-run to preview the changes.'));
+
+                return self::SUCCESS;
+            }
         }
 
         if (! $dryRun) {
+            // A file saved while the command waited would lose that edit, so nothing is written.
+            $stale = array_keys(array_filter($changed, fn (UpgradeResult $result, string $file): bool => ! File::exists($file) || File::get($file) !== $result->original, ARRAY_FILTER_USE_BOTH));
+
+            if ([] !== $stale) {
+                $this->error(__('Nothing was written: these files changed while the command ran. Run it again.'));
+                foreach ($stale as $file) {
+                    $this->line('  '.OutputFormatter::escape($this->relative($file)));
+                }
+
+                return self::FAILURE;
+            }
+
             foreach ($changed as $file => $result) {
                 File::put($file, $result->code);
             }
@@ -161,9 +181,7 @@ class UpgradeUiCommand extends Command
             $this->line("<comment>--- a/{$name}</comment>");
             $this->line("<comment>+++ b/{$name}</comment>");
 
-            $diff = DiffHelper::calculate($result->original, $result->code, 'Unified', ['context' => 2]);
-
-            foreach (explode("\n", rtrim($diff)) as $line) {
+            foreach (UnifiedDiff::lines($result->original, $result->code, 2) as $line) {
                 $escaped = OutputFormatter::escape($line);
 
                 $this->line(match (true) {

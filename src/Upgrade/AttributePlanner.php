@@ -48,6 +48,11 @@ final class AttributePlanner
 
         switch ($rule['kind']) {
             case 'rename':
+                // The name is still a 3.0 attribute with these values, so they stay (Pin `size`).
+                if ($literal && in_array($value['value'] ?? '', $rule['keep'] ?? [], true)) {
+                    return ['plan' => ['type' => 'none']];
+                }
+
                 $review = ($rule['review'] ?? false) ? ($rule['note'] ?? __('Check this change.')) : null;
 
                 if (! isset($rule['values'])) {

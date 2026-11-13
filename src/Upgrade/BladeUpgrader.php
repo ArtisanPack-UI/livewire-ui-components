@@ -101,7 +101,10 @@ final class BladeUpgrader
         $edits = $this->edits;
         $order = array_keys($edits);
 
-        usort($order, fn (int $a, int $b): int => [$edits[$b][0], $b] <=> [$edits[$a][0], $a]);
+        // Last edit first. Where two start at the same offset, the one that replaces text runs
+        // before an insertion, so the insertion still lands at the offset it was made for.
+        usort($order, fn (int $a, int $b): int => [$edits[$b][0], $edits[$b][1] - $edits[$b][0] > 0 ? 1 : 0, $b]
+            <=> [$edits[$a][0], $edits[$a][1] - $edits[$a][0] > 0 ? 1 : 0, $a]);
 
         $code = $this->source;
 

@@ -176,6 +176,17 @@ test('adds what a consolidated component needs', function (): void {
         ->toBe('<x-artisanpack-text size="lead">Lead</x-artisanpack-text>');
 });
 
+test('adds attributes when the first attribute is removed', function (): void {
+    expect(upgradeBlade('<x-artisanpack-choices-offline searchable :options="$tags" />')->code)
+        ->toBe('<x-artisanpack-combobox multiple :options="$tags" />');
+});
+
+test('leaves a value that already belongs to the 3.0 attribute', function (): void {
+    expect(upgradeBlade('<x-artisanpack-pin size="6" />')->code)->toBe('<x-artisanpack-pin length="6" />')
+        ->and(upgradeBlade('<x-artisanpack-pin :size="6" />')->code)->toBe('<x-artisanpack-pin :length="6" />')
+        ->and(upgradeBlade('<x-artisanpack-pin size="sm" :length="6" />')->changed())->toBeFalse();
+});
+
 test('leaves package-owned tags, other components and non-props alone', function (string $source): void {
     $result = upgradeBlade($source);
 
