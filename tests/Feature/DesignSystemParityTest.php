@@ -59,6 +59,14 @@ const DESIGN_SYSTEM_PARITY_OPTIONS = [
     'Diff'        => ['ignoreEffects' => ['emptyLabel']],
     'UserMenu'    => ['ignoreDeclared' => ['checked-change']],
     'Table'       => ['ignoreEffects' => ['emptyText', 'actionsLabel', 'paginated', 'perPage', 'perPageValues']],
+    // The Utility wave (#65). Markdown's sanitize only changes raw HTML, which the fixture
+    // has none of. ThemeToggle's menu composes DropdownMenu, whose events surface here, and
+    // its other labels show only in the variants the fixture doesn't render. Swap and
+    // Carousel keep their 2.x prop names as aliases.
+    'Markdown'    => ['ignoreEffects' => ['sanitize']],
+    'ThemeToggle' => ['ignoreEffects' => ['matchSystemLabel', 'switchToLightLabel', 'switchToDarkLabel'], 'ignoreDeclared' => ['open-change', 'select', 'checked-change']],
+    'Swap'        => ['ignoreDeclared' => ['trueIcon', 'falseIcon']],
+    'Carousel'    => ['ignoreDeclared' => ['wire:model', 'ariaLabel'], 'ignoreEffects' => ['playLabel', 'pauseLabel']],
 ];
 
 it('matches its manifest', function (string $component): void {

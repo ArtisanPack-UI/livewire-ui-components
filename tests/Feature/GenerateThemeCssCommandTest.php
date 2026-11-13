@@ -144,14 +144,28 @@ test('command exports theme with glass configuration in JSON', function (): void
     expect($jsonContent['glass'])->toHaveKey('tokens');
 });
 
-test('command generates preview URL when requested', function (): void {
+test('command explains that --preview was removed instead of printing a dead URL', function (): void {
+    config()->set('app.url', 'https://example.test');
+
     $this->artisan('artisanpack:generate-theme', [
         '--primary'   => 'blue',
         '--secondary' => 'slate',
         '--accent'    => 'amber',
         '--preview'   => true,
     ])
-        ->expectsOutputToContain('Theme Preview URL:')
+        ->expectsOutputToContain('The theme preview page was removed in 3.0')
+        ->expectsOutputToContain('livewire-ui-components/issues/142')
+        ->doesntExpectOutputToContain('/artisanpack/theme-preview')
+        ->doesntExpectOutputToContain('Route::get')
+        ->doesntExpectOutputToContain('Theme Preview URL:')
+        ->assertExitCode(0);
+});
+
+test('command prints no preview notice without --preview', function (): void {
+    $this->artisan('artisanpack:generate-theme', [
+        '--primary' => 'blue',
+    ])
+        ->doesntExpectOutputToContain('The theme preview page was removed in 3.0')
         ->assertExitCode(0);
 });
 
@@ -308,41 +322,3 @@ test('command handles all tailwind color names', function (): void {
             ->assertExitCode(0);
     }
 })->group('slow');
-
-test('preview URL includes all color parameters', function (): void {
-    config()->set('app.url', 'https://example.test');
-
-    $this->artisan('artisanpack:generate-theme', [
-        '--primary'   => 'blue',
-        '--secondary' => 'slate',
-        '--accent'    => 'amber',
-        '--preview'   => true,
-    ])
-        ->expectsOutputToContain('primary=blue')
-        ->assertExitCode(0);
-});
-
-test('preview URL includes glass preset when specified', function (): void {
-    config()->set('app.url', 'https://example.test');
-
-    $this->artisan('artisanpack:generate-theme', [
-        '--primary' => 'blue',
-        '--preset'  => 'glass-minimal',
-        '--preview' => true,
-    ])
-        ->expectsOutputToContain('preset=glass-minimal')
-        ->assertExitCode(0);
-});
-
-test('preview URL includes tint parameters when specified', function (): void {
-    config()->set('app.url', 'https://example.test');
-
-    $this->artisan('artisanpack:generate-theme', [
-        '--primary'        => 'blue',
-        '--tint-color'     => '#3b82f6',
-        '--tint-intensity' => '0.25',
-        '--preview'        => true,
-    ])
-        ->expectsOutputToContain('tint=')
-        ->assertExitCode(0);
-});

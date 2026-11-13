@@ -138,18 +138,7 @@ Some components require additional JavaScript packages and configuration.
 
 ### Charts
 
-The Chart component requires ApexCharts:
-
-```bash
-npm install apexcharts
-```
-
-Then add to your `resources/js/app.js`:
-
-```javascript
-import ApexCharts from 'apexcharts';
-window.ApexCharts = ApexCharts;
-```
+`<x-artisanpack-chart>` (bar, line, area and donut) is drawn on the server as inline SVG with no chart library; the design-system Alpine plugin opens its tooltips. See [Chart](docs/components/chart.md).
 
 `<x-artisanpack-sparkline>` is drawn on the server as inline SVG and needs no library or script. See [Sparkline](docs/components/sparkline.md).
 

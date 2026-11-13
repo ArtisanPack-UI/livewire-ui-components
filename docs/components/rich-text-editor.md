@@ -93,7 +93,7 @@ The component runs it inline on the content, with TinyMCE's own toolbar and menu
 | `limit-label` | string | `__( ':count / :max characters' )` | The footer's count with maxLength; :count and :max are numbers. |
 | `engine` | string | `tinymce` | `tinymce` (when loaded) or `native`. Livewire only. |
 | `config` | array | `[]` | Extra TinyMCE settings. Livewire only. |
-| `disk` · `folder` | string | the first `uploads.disks` entry · `editor` | Where TinyMCE image uploads go. Leave `disk` unset to use the first allowed disk; a set disk must be in the `uploads.disks` config, and only images are accepted (see [Markdown](markdown#image-uploads)). Livewire only. |
+| `disk` · `folder` | string | the first `uploads.disks` entry · `editor` | Where TinyMCE image uploads go. Leave `disk` unset to use the first allowed disk; a set disk must be in the `uploads.disks` config, and only images are accepted (JPG, PNG, GIF, WebP and AVIF by default, never SVG; see the `uploads` config). Livewire only. |
 | `error-field` | string | the `wire:model` name | The `$errors` key to read. |
 | `classes` | array | `[]` | Extra classes per part: `root`, `label`, `required`, `box`, `toolbar`, `button`, `divider`, `content`, `placeholder`, `footer`, `count`, `hint`, `error`. |
 

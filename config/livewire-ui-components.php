@@ -35,7 +35,7 @@ return [
     'route_prefix' => '',
 
     /**
-     * Image uploads from the RichTextEditor and Markdown components
+     * Image uploads from the RichTextEditor component
      * (the `artisanpack.upload` route).
      *
      *      disks    - Disks a component may store on. The first is the default.

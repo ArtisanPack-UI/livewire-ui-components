@@ -4,178 +4,69 @@ title: Code Component
 
 # Code Component
 
-The Code component provides a powerful code editor with syntax highlighting, autocompletion, and theme support. It's built on top of the Ace editor and integrates with Livewire for two-way data binding.
+Shows read-only code, built on the ArtisanPack UI design system (`.apui-code`): a block with a header (file name, language and a copy button), optional line numbers and highlighted lines, or inline code in running text. There's no syntax highlighting. For editable code, use [Code Editor](code-editor).
 
 ## Basic Usage
 
-```php
-<x-artisanpack-code wire:model="code" />
-```
-
-## Examples
-
-### Basic Code Editor
-
-```php
-<x-artisanpack-code 
-    wire:model="javascriptCode"
-    label="JavaScript Code"
-    hint="Write your JavaScript code here"
+```blade
+<x-artisanpack-code
+	:code="$snippet"
+	file-name="format-price.ts"
+	language="TypeScript"
+	numbered
+	:highlight="[ 3 ]"
 />
 ```
 
-### Different Programming Languages
+The code is shown as text, never as HTML. Instead of `code`, the content can go in the slot:
 
-```php
-<!-- PHP Code Editor -->
-<x-artisanpack-code 
-    wire:model="phpCode"
-    language="php"
-    label="PHP Code"
-/>
-
-<!-- HTML Code Editor -->
-<x-artisanpack-code 
-    wire:model="htmlCode"
-    language="html"
-    label="HTML Code"
-/>
-
-<!-- CSS Code Editor -->
-<x-artisanpack-code 
-    wire:model="cssCode"
-    language="css"
-    label="CSS Code"
-/>
+```blade
+<x-artisanpack-code language="Shell">
+composer require artisanpack-ui/livewire-ui-components
+</x-artisanpack-code>
 ```
 
-### Custom Height and Line Height
+## Copying
 
-```php
-<x-artisanpack-code 
-    wire:model="code"
-    height="400px"
-    lineHeight="1.8"
-/>
-```
+The copy button copies the code without the line numbers, reads "Copied" for two seconds and announces the result, or a failure, to screen readers. It runs on the shared `apuiClipboard` Alpine component, the same one [Clipboard](clipboard) uses. Hide it with `:copyable="false"`; the header goes away when there's no file name, language or copy button either.
 
-### Custom Themes
+## Inline
 
-```php
-<x-artisanpack-code 
-    wire:model="code"
-    lightTheme="xcode"
-    darkTheme="monokai"
-/>
-```
-
-### With Print Margin
-
-```php
-<x-artisanpack-code 
-    wire:model="code"
-    :printMargin="true"
-/>
-```
-
-### In a Form
-
-```php
-<form wire:submit.prevent="saveCode">
-    <x-artisanpack-code 
-        wire:model="code"
-        label="Code"
-        hint="Enter your code here"
-    />
-    
-    <div class="mt-4">
-        <x-artisanpack-button type="submit">Save Code</x-artisanpack-button>
-    </div>
-</form>
+```blade
+<p>
+	{{ __( 'Set' ) }} <x-artisanpack-code inline code='data-theme="dark"' /> {{ __( 'on any element to switch that region.' ) }}
+</p>
 ```
 
 ## Props
 
 | Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `id` | string\|null | `null` | Optional ID for the code editor element |
-| `label` | string\|null | `null` | Optional label for the code editor |
-| `hint` | string\|null | `''` | Optional hint text displayed below the editor |
-| `language` | string | `'javascript'` | Programming language for syntax highlighting |
-| `lightTheme` | string\|null | `'github_light_default'` | Theme to use in light mode |
-| `darkTheme` | string\|null | `'github_dark'` | Theme to use in dark mode |
-| `lightClass` | string\|null | `'light'` | CSS class for light mode |
-| `darkClass` | string\|null | `'dark'` | CSS class for dark mode |
-| `height` | string | `'200px'` | Height of the code editor |
-| `lineHeight` | string | `'2'` | Line height for the code editor |
-| `printMargin` | boolean | `false` | Whether to show the print margin |
+|---|---|---|---|
+| `code` | string | none | The code. The slot replaces it when empty. |
+| `language` | string | none | A badge in the header. Only a label: nothing is highlighted. |
+| `file-name` | string | none | The file name or a title such as "Terminal". |
+| `numbered` | bool | `false` | Shows line numbers. |
+| `highlight` | array | `[]` | Line numbers (1-based) to emphasize. Highlight a few lines to make a point. |
+| `inline` | bool | `false` | Inline code: a `code` element with no header. |
+| `copyable` | bool | `true` | Shows the copy button. |
+| `label` | string | the file name, the language, then `__( 'Code' )` | Names the scroll region. |
+| `copy-label` | string | `__( 'Copy' )` | The copy button's label. |
+| `copied-label` | string | `__( 'Copied' )` | The label after a copy. |
+| `copied-message` | string | `__( 'Copied to clipboard' )` | Announced after a copy. |
+| `error-message` | string | `__( "Couldn't copy. Select the text and copy it yourself." )` | Announced when the copy fails. |
+| `classes` | array | `[]` | Extra classes per part: `root`, `header`, `file`, `language`, `copy`, `status`, `pre`, `line`. |
 
-## Supported Languages
+Every other attribute lands on the root.
 
-The Code component supports a wide range of programming languages through Ace editor, including:
+## Upgrading from 2.x
 
-- JavaScript
-- PHP
-- HTML
-- CSS
-- Python
-- Ruby
-- Java
-- C/C++
-- C#
-- TypeScript
-- SQL
-- JSON
-- XML
-- Markdown
-- YAML
-- And many more
-
-To specify a language, use the `language` prop with the appropriate language identifier.
-
-## Supported Themes
-
-The Code component supports various themes through Ace editor. Some popular themes include:
-
-- github_light_default
-- github_dark
-- monokai
-- twilight
-- solarized_dark
-- solarized_light
-- tomorrow
-- tomorrow_night
-- xcode
-- textmate
-- chrome
-
-To specify themes, use the `lightTheme` and `darkTheme` props with the appropriate theme identifiers.
-
-## Styling
-
-The Code component uses the Ace editor with custom styling to match your application's theme. You can customize the appearance by:
-
-1. Using the provided props (`height`, `lineHeight`, etc.)
-2. Specifying custom themes via the `lightTheme` and `darkTheme` props
-3. Adding custom classes via the `class` attribute
-
-### Default Classes
-
-- `textarea` - Base textarea class from DaisyUI
-- `w-full` - Full width
-- `p-0` - No padding
+- 2.x Code was an Ace editor bound with `wire:model`. Use `<x-artisanpack-code-editor>` for editable code; Code is now read-only and takes `code`.
+- `hint`, `light-theme`, `dark-theme`, `light-class`, `dark-class`, `height`, `line-height` and `print-margin` are gone, and are left off the root. `label` now names the scroll region rather than showing a label above the editor.
+- `language` no longer defaults to `javascript`, and only shows as a badge.
 
 ## Accessibility
 
-The Code component follows accessibility best practices:
-
-- Provides proper labeling when a label is specified
-- Includes error messages for form validation
-- Supports keyboard navigation and shortcuts
-- Maintains appropriate color contrast in both light and dark themes
-
-## Related Components
-
-- [Textarea](Textarea) - Simple text area input
-- [Markdown](Markdown) - Markdown editor
-- [Editor](Editor) - Rich text editor
+- The block is a focusable `role=region` named by `label`, so keyboard users can scroll long lines. Code doesn't wrap.
+- Copying is announced in a live region, and so is a failure.
+- Line numbers are drawn by CSS, so selecting and copying the code leaves them out.
+- The header mirrors in right-to-left layouts; the code stays left to right.

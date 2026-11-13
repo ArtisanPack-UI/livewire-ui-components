@@ -4,604 +4,106 @@ title: Calendar Component
 
 # Calendar Component
 
-The Calendar component provides a flexible and customizable calendar display for your application. It features a responsive design with support for different views (day, week, month, year), color schemes, event display, and localization.
+Events on a month grid, a week, a day or an agenda list, built on the ArtisanPack UI design system (`.apui-calendar`). The toolbar has Today, previous and next, the title, view tabs and an optional New event button. The days, titles, labels and event order come from `Support\CalendarModel`, a PHP port of the date rules React and Vue use, so all three stacks render the same calendar. It's drawn on the server; Alpine only adds the arrow keys.
+
+There are two tags:
+
+- `<livewire:artisanpack-calendar>` is a full Livewire component. It keeps the view and date, re-renders on Today, previous, next, "+N more" and the view tabs, and opens a clicked event in a [Dialog](dialog).
+- `<x-artisanpack-calendar>` renders the same markup with no state of its own. Its controls dispatch browser events for your page or component to answer.
 
 ## Basic Usage
 
-```php
-<x-calendar />
-```
-
-## Examples
-
-### Basic Calendar
-
-```php
-<x-calendar />
-```
-
-### Calendar with Primary Color Scheme
-
-```php
-<x-calendar color-scheme="primary" />
-```
-
-### Calendar with Secondary Color Scheme
-
-```php
-<x-calendar color-scheme="secondary" />
-```
-
-### Calendar with Accent Color Scheme
-
-```php
-<x-calendar color-scheme="accent" />
-```
-
-### Calendar with Custom Color
-
-```php
-<x-calendar color-scheme="custom" custom-color="#8A2BE2" />
-```
-
-### Different Calendar Views
-
-```php
-<!-- Day View -->
-<x-calendar view="day" />
-
-<!-- Week View -->
-<x-calendar view="week" />
-
-<!-- Month View (default) -->
-<x-calendar view="month" />
-
-<!-- Year View -->
-<x-calendar view="year" />
-```
-
-### Multiple Month Calendar
-
-```php
-<x-calendar :months="3" />
-```
-
-### Calendar with Weekend Highlighting
-
-```php
-<x-calendar :weekendHighlight="true" />
-```
-
-### Calendar with Sunday as First Day of Week
-
-```php
-<x-calendar :sundayStart="true" />
-```
-
-### Calendar with Custom Locale
-
-```php
-<x-calendar locale="fr-FR" />
-```
-
-### Calendar with Events
-
-```php
-@php
-$events = [
-    [
-        'id' => 'meeting-1',
-        'date' => '2025-07-20',
-        'label' => 'Team Meeting',
-        'title' => 'Quarterly planning session',
-        'description' => 'Discuss Q3 goals and initiatives',
-        'start_time' => '10:00',
-        'end_time' => '11:30',
-        'colorScheme' => 'primary',
-    ],
-    [
-        'id' => 'conference-1',
-        'range' => ['2025-07-25', '2025-07-27'],
-        'label' => 'Conference',
-        'title' => 'Annual industry conference',
-        'description' => 'Networking and learning opportunities',
-        'start_time' => '09:00',
-        'end_time' => '17:00',
-        'colorScheme' => 'accent',
-    ],
-    [
-        'id' => 'custom-event',
-        'date' => '2025-07-15',
-        'label' => 'Custom Event',
-        'title' => 'Event with custom color',
-        'description' => 'This event uses a custom color',
-        'colorScheme' => 'custom',
-        'customColor' => '#FF5733',
-    ]
-];
-@endphp
-
-<x-calendar :events="$events" />
-```
-
-### Calendar with Custom Event Modal
-
-```php
-<x-calendar :events="$events">
-    <x-slot:eventModalContent>
-        {{-- 
-            You have access to the $selectedEvent variable here.
-            You can use it to display any event data.
-        --}}
-        <div>
-            <h3 class="text-2xl font-bold text-dark dark:text-white">{{ $selectedEvent['title'] }}</h3>
-            
-            @if(!empty($selectedEvent['description']))
-                <p class="mt-4 mb-4 text-base-content">{{ $selectedEvent['description'] }}</p>
-            @endif
-            
-            {{-- Custom fields and layout --}}
-            <div class="bg-gray-100 dark:bg-base-300 p-4 rounded-lg mt-4">
-                <p class="text-sm text-base-content">
-                    <span class="font-semibold">Location:</span> 
-                    {{ $selectedEvent['location'] ?? 'No location specified' }}
-                </p>
-                
-                <p class="text-sm text-base-content mt-2">
-                    <span class="font-semibold">Organizer:</span> 
-                    {{ $selectedEvent['organizer'] ?? 'No organizer specified' }}
-                </p>
-            </div>
-            
-            {{-- You can even add forms or buttons for event actions --}}
-            <div class="mt-6 flex space-x-3">
-                <button class="btn btn-primary">Edit Event</button>
-                <button class="btn btn-outline btn-error">Delete Event</button>
-            </div>
-        </div>
-    </x-slot:eventModalContent>
-</x-calendar>
-```
-
-### Calendar with Custom Configuration
-
-```php
-@php
-$config = [
-    'settings' => [
-        'selected' => [
-            'dates' => ['2025-07-10']
-        ],
-        'visibility' => [
-            'theme' => 'light'
-        ]
-    ]
-];
-@endphp
-
-<x-calendar :config="$config" />
-```
-
-## Props
-
-| Prop               | Type          | Default     | Description                                                        |
-|--------------------|---------------|-------------|--------------------------------------------------------------------|
-| `id`               | string\|null  | `null`      | Optional ID for the calendar element                               |
-| `months`           | int\|null     | `1`         | Number of months to display                                        |
-| `locale`           | string\|null  | `'en-EN'`   | Locale for the calendar                                            |
-| `weekendHighlight` | boolean\|null | `false`     | Whether to highlight weekends                                      |
-| `sundayStart`      | boolean\|null | `false`     | Whether the week starts on Sunday                                  |
-| `colorScheme`      | string\|null  | `'primary'` | Color scheme for the calendar (primary, secondary, accent, custom) |
-| `customColor`      | string\|null  | `null`      | Hex color code for custom color scheme                             |
-| `view`             | string\|null  | `'month'`   | Calendar view (day, week, month, year)                             |
-| `config`           | array\|null   | `[]`        | Additional configuration options                                   |
-| `events`           | array\|null   | `[]`        | Array of events to display on the calendar                         |
-
-## Event Format
-
-Events can be specified in two formats:
-
-### Single Date Event
-
-```php
-[
-    'id' => 'event-1',                  // Unique identifier for the event
-    'date' => '2025-07-15',             // Date in Y-m-d format
-    'label' => 'Meeting',               // Event label (displayed on calendar)
-    'title' => 'Team planning meeting', // Event title (displayed in popup)
-    'description' => 'Meeting details', // Event description (displayed in popup)
-    'start_time' => '14:00',            // Optional start time
-    'end_time' => '15:30',              // Optional end time
-    'colorScheme' => 'primary',         // Color scheme (primary, secondary, accent, custom)
-    'customColor' => '#FF5733',         // Custom color (when colorScheme is 'custom')
-    'css' => 'custom-class'             // Optional additional CSS classes
-]
-```
-
-### Date Range Event
-
-```php
-[
-    'id' => 'event-2',                  // Unique identifier for the event
-    'range' => ['2025-07-20', '2025-07-25'], // Start and end dates
-    'label' => 'Conference',            // Event label (displayed on calendar)
-    'title' => 'Annual conference',     // Event title (displayed in popup)
-    'description' => 'Conference details', // Event description (displayed in popup)
-    'start_time' => '09:00',            // Optional start time
-    'end_time' => '17:00',              // Optional end time
-    'colorScheme' => 'accent',          // Color scheme (primary, secondary, accent, custom)
-    'customColor' => null,              // Custom color (when colorScheme is 'custom')
-    'css' => 'custom-class'             // Optional additional CSS classes
-]
-```
-
-## Customizing the Event Modal
-
-The Calendar component provides two ways to customize the event modal that appears when a user clicks on an event:
-
-1. Using the `eventModalContent` slot for simple customizations
-2. Creating a custom Livewire component for more complex customizations
-
-### Method 1: Using the Event Modal Slot
-
-For simple customizations, you can use the `eventModalContent` slot:
-
-```php
-<x-calendar :events="$events">
-    <x-slot:eventModalContent>
-        {{-- Your custom modal content here --}}
-    </x-slot:eventModalContent>
-</x-calendar>
-```
-
-Within the `eventModalContent` slot, you have access to the `$selectedEvent` variable, which contains all the data for the currently selected event:
-
-```php
-<x-slot:eventModalContent>
-    <div>
-        <h3 class="text-2xl font-bold">{{ $selectedEvent['title'] }}</h3>
-        <p class="mt-4">{{ $selectedEvent['description'] }}</p>
-        
-        {{-- Access any custom fields you've added to your events --}}
-        @if(isset($selectedEvent['location']))
-            <p class="mt-2"><strong>Location:</strong> {{ $selectedEvent['location'] }}</p>
-        @endif
-    </div>
-</x-slot:eventModalContent>
-```
-
-### Method 2: Creating a Custom Livewire Component
-
-For more complex customizations, you can create a custom Livewire component that replaces the default `EventModalContent` component. This approach gives you more flexibility and allows you to add custom logic, methods, and properties.
-
-#### Step 1: Create a Custom Livewire Component
-
-Create a new Livewire component that will handle the event modal content:
-
-```php
-<?php
-
-namespace App\Livewire;
-
-use Livewire\Component;
-use Livewire\Attributes\On;
-use Illuminate\View\View;
-
-class CustomEventModal extends Component
-{
-    public ?array $event = null;
-    
-    // You can add additional properties here
-    public bool $isEditing = false;
-    public array $editableEvent = [];
-
-    #[On('loadEventModal')]
-    public function loadEvent(array $selectedEvent): void
-    {
-        $this->event = $selectedEvent;
-        $this->resetState();
-    }
-    
-    // You can add additional methods here
-    public function resetState(): void
-    {
-        $this->isEditing = false;
-        $this->editableEvent = [];
-    }
-    
-    public function startEditing(): void
-    {
-        $this->isEditing = true;
-        $this->editableEvent = $this->event;
-    }
-    
-    public function saveChanges(): void
-    {
-        // Handle saving changes to the event
-        $this->isEditing = false;
-        
-        // Emit an event to update the calendar
-        $this->dispatch('eventUpdated', event: $this->editableEvent);
-    }
-
-    public function render(): View
-    {
-        return view('livewire.custom-event-modal');
-    }
-}
-```
-
-#### Step 2: Create a Blade Template for Your Component
-
-Create a corresponding Blade template for your custom component:
-
-```php
-{{-- resources/views/livewire/custom-event-modal.blade.php --}}
-<div>
-    @if ($event)
-        <div>
-            @if ($isEditing)
-                {{-- Edit Mode --}}
-                <form wire:submit.prevent="saveChanges">
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium mb-1">Title</label>
-                        <input type="text" wire:model="editableEvent.title" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800">
-                    </div>
-                    
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium mb-1">Description</label>
-                        <textarea wire:model="editableEvent.description" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800" rows="3"></textarea>
-                    </div>
-                    
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium mb-1">Location</label>
-                        <input type="text" wire:model="editableEvent.location" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800">
-                    </div>
-                    
-                    <div class="flex space-x-3 mt-6">
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
-                        <button type="button" wire:click="resetState" class="btn btn-outline">Cancel</button>
-                    </div>
-                </form>
-            @else
-                {{-- View Mode --}}
-                <h3 class="text-2xl font-bold text-dark dark:text-white">{{ $event['title'] ?? $event['label'] }}</h3>
-                
-                @if (!empty($event['description']))
-                    <p class="mt-4 mb-4 text-base-content">{{ $event['description'] }}</p>
-                @endif
-                
-                <div class="bg-gray-100 dark:bg-base-300 p-4 rounded-lg mt-4">
-                    <div class="flex items-center space-x-2 text-base-content mb-2">
-                        <span class="font-semibold">Date:</span>
-                        @if (isset($event['range']))
-                            <span>{{ $event['start_date'] }} - {{ $event['end_date'] }}</span>
-                        @else
-                            <span>{{ date('j M Y', strtotime($event['date'])) }}</span>
-                        @endif
-                    </div>
-                    
-                    <div class="flex items-center space-x-2 text-base-content mb-2">
-                        <span class="font-semibold">Time:</span>
-                        @if (!empty($event['start_time']))
-                            <span>{{ $event['start_time'] }}@if (!empty($event['end_time'])) - {{ $event['end_time'] }}@endif</span>
-                        @else
-                            <span>All day</span>
-                        @endif
-                    </div>
-                    
-                    <div class="flex items-center space-x-2 text-base-content">
-                        <span class="font-semibold">Location:</span>
-                        <span>{{ $event['location'] ?? 'No location specified' }}</span>
-                    </div>
-                </div>
-                
-                <div class="mt-6 flex space-x-3">
-                    <button wire:click="startEditing" class="btn btn-primary">Edit Event</button>
-                    <button class="btn btn-outline btn-error">Delete Event</button>
-                </div>
-            @endif
-        </div>
-    @endif
-</div>
-```
-
-#### Step 3: Use Your Custom Component with the Calendar
-
-Pass your custom component's name to the Calendar component using the `eventView` parameter:
-
-```php
-<x-calendar 
-    :events="$events" 
-    eventView="custom-event-modal"
+```blade
+<livewire:artisanpack-calendar
+    :events="[
+        [ 'id' => 1, 'start' => '2026-11-02T09:00', 'end' => '2026-11-02T10:00', 'title' => __( 'Team meeting' ), 'color' => 'error', 'category' => __( 'Marketing' ) ],
+        [ 'id' => 2, 'start' => '2026-11-05', 'title' => __( 'Anna’s birthday' ), 'color' => 'accent', 'category' => __( 'People' ) ],
+        [ 'id' => 3, 'start' => '2026-11-12T11:00', 'title' => __( 'Viewing · Lakeview' ), 'color' => 'primary', 'category' => __( 'Viewings' ), 'description' => __( 'Meet the buyers at the lobby.' ) ],
+    ]"
+    :week-starts-on="1"
 />
 ```
 
-### Example: Custom Event Modal with Tabs
+## Events
 
-Here's an example of a more complex custom event modal with tabs:
+Each event is an array (or an object with `toArray()`):
 
-```php
-<x-calendar :events="$events">
-    <x-slot:eventModalContent>
-        <div x-data="{ activeTab: 'details' }">
-            {{-- Tabs --}}
-            <div class="border-b border-gray-200 dark:border-gray-700">
-                <nav class="flex space-x-8" aria-label="Tabs">
-                    <button 
-                        @click="activeTab = 'details'" 
-                        :class="{ 'border-primary text-primary': activeTab === 'details', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'details' }"
-                        class="py-4 px-1 border-b-2 font-medium text-sm"
-                    >
-                        Details
-                    </button>
-                    <button 
-                        @click="activeTab = 'attendees'" 
-                        :class="{ 'border-primary text-primary': activeTab === 'attendees', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'attendees' }"
-                        class="py-4 px-1 border-b-2 font-medium text-sm"
-                    >
-                        Attendees
-                    </button>
-                    <button 
-                        @click="activeTab = 'actions'" 
-                        :class="{ 'border-primary text-primary': activeTab === 'actions', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'actions' }"
-                        class="py-4 px-1 border-b-2 font-medium text-sm"
-                    >
-                        Actions
-                    </button>
-                </nav>
-            </div>
-            
-            {{-- Tab Content --}}
-            <div class="mt-4">
-                {{-- Details Tab --}}
-                <div x-show="activeTab === 'details'">
-                    <h3 class="text-2xl font-bold">{{ $selectedEvent['title'] }}</h3>
-                    <p class="mt-4">{{ $selectedEvent['description'] }}</p>
-                    
-                    <div class="mt-4 grid grid-cols-2 gap-4">
-                        <div>
-                            <h4 class="font-semibold">Date & Time</h4>
-                            <p>{{ $selectedEvent['start_date'] ?? date('j M', strtotime($selectedEvent['date'])) }}</p>
-                            <p>{{ $selectedEvent['start_time'] ?? 'All day' }}</p>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold">Location</h4>
-                            <p>{{ $selectedEvent['location'] ?? 'No location specified' }}</p>
-                        </div>
-                    </div>
-                </div>
-                
-                {{-- Attendees Tab --}}
-                <div x-show="activeTab === 'attendees'">
-                    <h3 class="text-xl font-semibold mb-4">Attendees</h3>
-                    @if(isset($selectedEvent['attendees']) && count($selectedEvent['attendees']) > 0)
-                        <ul class="divide-y divide-gray-200 dark:divide-gray-700">
-                            @foreach($selectedEvent['attendees'] as $attendee)
-                                <li class="py-3 flex items-center">
-                                    <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center mr-3">
-                                        {{ substr($attendee['name'], 0, 1) }}
-                                    </div>
-                                    <div>
-                                        <p class="font-medium">{{ $attendee['name'] }}</p>
-                                        <p class="text-sm text-gray-500">{{ $attendee['email'] }}</p>
-                                    </div>
-                                </li>
-                            @endforeach
-                        </ul>
-                    @else
-                        <p class="text-gray-500">No attendees for this event</p>
-                    @endif
-                </div>
-                
-                {{-- Actions Tab --}}
-                <div x-show="activeTab === 'actions'">
-                    <h3 class="text-xl font-semibold mb-4">Event Actions</h3>
-                    <div class="space-y-3">
-                        <button class="btn btn-primary w-full">Edit Event</button>
-                        <button class="btn btn-outline w-full">Duplicate Event</button>
-                        <button class="btn btn-outline btn-error w-full">Delete Event</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </x-slot:eventModalContent>
-</x-calendar>
+| Key | Description |
+|---|---|
+| `id` | A stable id. The list index when unset. |
+| `start` | `2026-11-24` for an all-day event, `2026-11-02T09:00` for a timed one. A `Z` or an offset (or a `DateTime`/Carbon) is converted to `time-zone`. An event whose `start` doesn't parse (an impossible date, time or offset) is skipped. |
+| `end` | Optional. Inclusive for dates; a timed event ending at `00:00` shows up to the day before, and its text still says it ends at 00:00 on the next day. Multi-day events show on every day. |
+| `title` | The text on the event. |
+| `color` | A soft tint: `primary` (default), `secondary`, `accent`, `success`, `warning`, `error`, `info` or `neutral`. Tint by category. |
+| `allDay` | All day even when `start` has a time. |
+| `category` | Shown in the legend under the calendar and in the event's accessible name. |
+| `description` | Shown in the details Dialog. |
+| `href` | Makes the event a link instead of a button. |
+
+Events on a day sort all-day first, then by start time, then as given. A month cell shows `max-events` (2) and folds the rest into a "+N more" button that opens that day and moves focus to it.
+
+## Views
+
+`view` is `month` (default), `week`, `day` or `agenda`. Previous and next move by a month (agenda too), a week or a day, keeping the day of the month where it exists. The agenda lists the month's days that have events, each with its date as a heading: it's the accessible list alternative to the grid.
+
+## With your own state
+
+`<x-artisanpack-calendar>` dispatches `view-change`, `date-change`, `event-click` and `create` (`$event.detail` holds the view, the `YYYY-MM-DD` date, the event as passed in, and the shown date). Inside your own Livewire component:
+
+```blade
+<x-artisanpack-calendar
+    :events="$events"
+    :view="$view"
+    :date="$date"
+    creatable
+    :details="false"
+    x-on:view-change="$wire.set( 'view', $event.detail )"
+    x-on:date-change="$wire.set( 'date', $event.detail )"
+    x-on:event-click="$wire.editEvent( $event.detail.id )"
+    x-on:create="$wire.createEvent( $event.detail )"
+/>
 ```
 
-### Understanding the EventModalContent Component
+Set `:details="false"` on the x-tag unless you open a dialog on `event-click`: with `details`, events announce that they open one (`aria-haspopup="dialog"`). The Livewire component opens it for you; `create` and `event-click` still bubble past it, so a parent can listen with `x-on:create`.
 
-The default `EventModalContent` component is a Livewire component that displays event details in the calendar modal. It:
+## Event details
 
-1. Listens for the `loadEventModal` event dispatched by the Calendar component
-2. Receives the selected event data and stores it in the `$event` property
-3. Renders a view that displays the event details
+The Livewire component opens a clicked event in a Dialog: its title, when it is, then its category as a soft Badge and its description. The body is an internal child component; `event-view` names another Livewire component to use instead. It's mounted with the event (`mount( array $event )`), with `when`, `category`, `color` and `description` filled in, and keyed by the event's id and details, so reopening an event that changed mounts it again. The 2.x `loadEventModal` event is still dispatched, with `selectedEvent` and the sending calendar's `calendarId`: the internal child ignores events from other calendars on the page, and a custom listener can compare `calendarId` too.
 
-When you create a custom component, you need to ensure it:
+## Props
 
-1. Has a public `$event` property to store the event data
-2. Listens for the `loadEventModal` event using the `#[On('loadEventModal')]` attribute
-3. Has a `loadEvent()` method that accepts the selected event data
-4. Renders a view that displays the event data
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `view` | string | `month` | `month`, `week`, `day` or `agenda`. |
+| `date` | string | today | The date the view shows, `YYYY-MM-DD`. |
+| `today` | string | the current date in `time-zone` | The date marked as today. |
+| `events` | array | `[]` | The events. |
+| `week-starts-on` | int | the locale's | The first day of the week, 0 (Sunday) to 6. |
+| `locale` | string | the app locale | BCP 47 locale for names and the first day of the week. Times show as 24-hour `HH:mm`. Localized month and day names need PHP's `intl` extension; without it they're in English, and the first day of the week comes from a built-in copy of CLDR's week data (Monday for `en-GB` and most of Europe). |
+| `time-zone` | string | `UTC` | For today and zoned times. |
+| `max-events` | int | `2` | Events a month cell shows before "+N more". |
+| `creatable` | bool | `false` | Shows the New event button (`create`). |
+| `details` | bool | `true` | Events open a details Dialog (the Livewire component) and carry `aria-haspopup="dialog"`. |
+| `labels` | array | | Built-in text: `today`, `previous`, `next`, `views`, `month`, `week`, `day`, `agenda`, `allDay`, `more` (`{count}`), `showMore` (`{count}`, `{date}`), `newEvent`, `empty`, `legend`. Defaults go through `__()`. |
+| `classes` | array | `[]` | Extra classes per part: `root`, `toolbar`, `todayTrigger`, `previousTrigger`, `nextTrigger`, `title`, `viewTabs`, `createTrigger`, `body`, `grid`, `row`, `weekday`, `cell`, `date`, `event`, `eventTime`, `eventTitle`, `more`, `legend`, `legendItem`. |
+| `event-view` | string | `event-modal-content` | Livewire component only: the details Dialog's body. |
+| `id` | string | generated | The root's id; parts are named after it. |
 
-## Color Schemes
+## Upgrading from 2.x
 
-The Calendar component supports four color schemes:
-
-1. **Primary** (`color-scheme="primary"`) - Uses your application's primary color
-2. **Secondary** (`color-scheme="secondary"`) - Uses your application's secondary color
-3. **Accent** (`color-scheme="accent"`) - Uses your application's accent color
-4. **Custom** (`color-scheme="custom" custom-color="#HEX"`) - Uses a custom color specified by the `custom-color` prop
-
-Each event can also have its own color scheme by specifying the `colorScheme` property in the event data.
-
-## Calendar Views
-
-The Calendar component supports four different views:
-
-1. **Day** (`view="day"`) - Shows a detailed view of a single day
-2. **Week** (`view="week"`) - Shows a week view with days as columns
-3. **Month** (`view="month"`) - Shows a traditional month calendar (default)
-4. **Year** (`view="year"`) - Shows a year overview with months
-
-Users can switch between views using the view selector in the calendar header.
-
-## Event Interactions
-
-Events on the calendar are interactive:
-
-- Hovering over an event shows a subtle scale animation
-- Clicking on an event displays a modal with detailed information
-- Events with the same color scheme are visually grouped
-
-## Responsive Behavior
-
-The calendar adapts to different screen sizes:
-
-- **Large screens**: Full day names, more detailed event information
-- **Medium screens**: Short day names (e.g., "Mon" instead of "Monday")
-- **Small screens**: Minimal day names (e.g., "M" instead of "Monday"), compact layout
-
-## Styling
-
-The Calendar component uses Tailwind CSS for styling. You can customize the appearance by:
-
-1. Using the provided props (`colorScheme`, `customColor`, etc.)
-2. Adding custom CSS classes via the `css` property in events
-3. Providing custom configuration via the `config` prop
-
-### Default Classes
-
-- Calendar container: `mx-auto px-4 lg:container`
-- Calendar header: `flex justify-between items-center p-4 border-b border-stroke dark:border-dark-3`
-- Weekdays: `grid grid-cols-7 text-center py-2 border-b border-stroke dark:border-dark-3`
-- Month grid: `grid grid-cols-7 gap-px`
-- Day cell: `p-1 h-24 sm:h-28 md:h-32 border border-stroke dark:border-dark-3`
-- Event: `rounded-md p-1 text-xs mb-1 truncate shadow-sm`
-
-## Methods
-
-The Calendar component includes several helper methods:
-
-| Method | Description |
-|--------|-------------|
-| `getContrastColor(string $hexColor)` | Determines appropriate text color (black or white) based on background color |
-| `addCss(string $config)` | Adds Tailwind CSS classes to the calendar configuration |
-| `popups()` | Generates HTML for event popups |
-| `customColorScript()` | Generates JavaScript for handling custom colors |
-| `setup()` | Sets up the calendar configuration |
+- The calendar is rebuilt on the design system: the DaisyUI and Tailwind classes, the custom color script and the islands are gone.
+- `<livewire:artisanpack-calendar>` no longer loads lazily: pass `lazy` to defer it. Its placeholder view is removed.
+- `sunday-start` still works: `true` is `week-starts-on="0"`, `false` is `1`. Without either, the week follows the locale.
+- `view="year"` falls back to `month`. `months`, `color-scheme`, `custom-color`, `weekend-highlight` and `config` are ignored: tint events with `color`.
+- 2.x events still work: `date` (start), `range` (`[start, end]`), `time` (`[start, end]` times on the date), `label` (title) and `colorScheme` (color). `customColor` is ignored.
+- `goToNextPeriod()`, `goToPreviousPeriod()`, `goToToday()` and `loadEventModal( $id )` still work; the new actions are `setView()`, `setDate()` and `openEvent()`. The Livewire component's previous and next buttons call `goToPreviousPeriod()` and `goToNextPeriod()`, so quick repeated clicks each move a period.
+- A custom `event-view` component now receives the event in `mount()`; `loadEventModal` is still dispatched for components that listen for it.
 
 ## Accessibility
 
-The Calendar component follows accessibility best practices:
-
-- Uses semantic HTML for calendar structure
-- Provides proper labeling for dates and events
-- Supports keyboard navigation
-- Includes appropriate ARIA attributes
-- Ensures sufficient color contrast for all color schemes
-
-## Related Components
-
-- [DatePicker](Datepicker) - Date selection input
-- [DateTime](Datetime) - Date and time selection input
+- The month, week and day are `role="grid"` named by the title, with rows, column headers and gridcells. The grid is one tab stop: the arrow keys move between days (left and right follow the text direction), up and down by a week, Home and End to the row's ends.
+- Each day is named by its full localized date; today has `aria-current="date"`.
+- Each event is a button or link named by its title, category and full date and time, never by its tint alone. The legend keeps the category key visible.
+- The view tabs are a tablist controlling the calendar body; the arrow keys move between them and Enter or Space chooses one. The title is a polite live region, so moving through dates is announced.
+- The agenda view is the accessible list alternative to the grid.
+- The previous and next chevrons mirror in right-to-left layouts.

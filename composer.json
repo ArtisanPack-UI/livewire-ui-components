@@ -42,7 +42,8 @@
         "owenvoke/blade-fontawesome": "^2.9|^3.0",
         "artisanpack-ui/core": "^1.0",
         "artisanpack-ui/hooks": "^1.2",
-        "artisanpack-ui/icons": "^2.0"
+        "artisanpack-ui/icons": "^2.0",
+        "league/commonmark": "^2.6"
     },
     "suggest": {
         "phpoffice/phpspreadsheet": "Required for XLSX/Excel export functionality in Table component (^2.0|^3.0)",

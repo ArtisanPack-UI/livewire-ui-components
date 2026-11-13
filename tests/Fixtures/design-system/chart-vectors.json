@@ -1,0 +1,3076 @@
+{
+  "geometry": [
+    {
+      "name": "bar, the spec's weekly revenue",
+      "series": [
+        {
+          "name": "Revenue",
+          "data": [4100, 6000, 8200, 10000, 4000, 8000, 4000, 8000, 6000, 4000]
+        }
+      ],
+      "options": {
+        "type": "bar",
+        "labels": ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8", "W9", "W10"],
+        "prefix": "$",
+        "notation": "compact"
+      },
+      "expected": {
+        "type": "bar",
+        "width": 520,
+        "height": 220,
+        "left": "40.0",
+        "right": "512.0",
+        "tickX": "32.0",
+        "labelY": "214.0",
+        "ticks": [
+          {
+            "y": "196.0",
+            "textY": "200.0",
+            "label": "$0k"
+          },
+          {
+            "y": "159.2",
+            "textY": "163.2",
+            "label": "$2k"
+          },
+          {
+            "y": "122.4",
+            "textY": "126.4",
+            "label": "$4k"
+          },
+          {
+            "y": "85.6",
+            "textY": "89.6",
+            "label": "$6k"
+          },
+          {
+            "y": "48.8",
+            "textY": "52.8",
+            "label": "$8k"
+          },
+          {
+            "y": "12.0",
+            "textY": "16.0",
+            "label": "$10k"
+          }
+        ],
+        "categories": [
+          {
+            "x": "63.6",
+            "label": "W1"
+          },
+          {
+            "x": "110.8",
+            "label": "W2"
+          },
+          {
+            "x": "158.0",
+            "label": "W3"
+          },
+          {
+            "x": "205.2",
+            "label": "W4"
+          },
+          {
+            "x": "252.4",
+            "label": "W5"
+          },
+          {
+            "x": "299.6",
+            "label": "W6"
+          },
+          {
+            "x": "346.8",
+            "label": "W7"
+          },
+          {
+            "x": "394.0",
+            "label": "W8"
+          },
+          {
+            "x": "441.2",
+            "label": "W9"
+          },
+          {
+            "x": "488.4",
+            "label": "W10"
+          }
+        ],
+        "legend": [],
+        "marks": [
+          {
+            "index": 0,
+            "series": 1,
+            "shape": "path",
+            "d": "M50.4,196.0 V124.6 Q50.4,120.6 54.4,120.6 H72.8 Q76.8,120.6 76.8,124.6 V196.0 Z",
+            "x": "50.4",
+            "y": "120.6",
+            "width": "26.4",
+            "height": "75.4",
+            "title": "W1",
+            "body": "$4.1k",
+            "label": "W1: $4.1k",
+            "anchorX": "63.6",
+            "anchorY": "120.6"
+          },
+          {
+            "index": 1,
+            "series": 1,
+            "shape": "path",
+            "d": "M97.6,196.0 V89.6 Q97.6,85.6 101.6,85.6 H120.0 Q124.0,85.6 124.0,89.6 V196.0 Z",
+            "x": "97.6",
+            "y": "85.6",
+            "width": "26.4",
+            "height": "110.4",
+            "title": "W2",
+            "body": "$6.0k",
+            "label": "W2: $6.0k",
+            "anchorX": "110.8",
+            "anchorY": "85.6"
+          },
+          {
+            "index": 2,
+            "series": 1,
+            "shape": "path",
+            "d": "M144.8,196.0 V49.1 Q144.8,45.1 148.8,45.1 H167.2 Q171.2,45.1 171.2,49.1 V196.0 Z",
+            "x": "144.8",
+            "y": "45.1",
+            "width": "26.4",
+            "height": "150.9",
+            "title": "W3",
+            "body": "$8.2k",
+            "label": "W3: $8.2k",
+            "anchorX": "158.0",
+            "anchorY": "45.1"
+          },
+          {
+            "index": 3,
+            "series": 1,
+            "shape": "path",
+            "d": "M192.0,196.0 V16.0 Q192.0,12.0 196.0,12.0 H214.4 Q218.4,12.0 218.4,16.0 V196.0 Z",
+            "x": "192.0",
+            "y": "12.0",
+            "width": "26.4",
+            "height": "184.0",
+            "title": "W4",
+            "body": "$10.0k",
+            "label": "W4: $10.0k",
+            "anchorX": "205.2",
+            "anchorY": "12.0"
+          },
+          {
+            "index": 4,
+            "series": 1,
+            "shape": "path",
+            "d": "M239.2,196.0 V126.4 Q239.2,122.4 243.2,122.4 H261.6 Q265.6,122.4 265.6,126.4 V196.0 Z",
+            "x": "239.2",
+            "y": "122.4",
+            "width": "26.4",
+            "height": "73.6",
+            "title": "W5",
+            "body": "$4.0k",
+            "label": "W5: $4.0k",
+            "anchorX": "252.4",
+            "anchorY": "122.4"
+          },
+          {
+            "index": 5,
+            "series": 1,
+            "shape": "path",
+            "d": "M286.4,196.0 V52.8 Q286.4,48.8 290.4,48.8 H308.8 Q312.8,48.8 312.8,52.8 V196.0 Z",
+            "x": "286.4",
+            "y": "48.8",
+            "width": "26.4",
+            "height": "147.2",
+            "title": "W6",
+            "body": "$8.0k",
+            "label": "W6: $8.0k",
+            "anchorX": "299.6",
+            "anchorY": "48.8"
+          },
+          {
+            "index": 6,
+            "series": 1,
+            "shape": "path",
+            "d": "M333.6,196.0 V126.4 Q333.6,122.4 337.6,122.4 H356.0 Q360.0,122.4 360.0,126.4 V196.0 Z",
+            "x": "333.6",
+            "y": "122.4",
+            "width": "26.4",
+            "height": "73.6",
+            "title": "W7",
+            "body": "$4.0k",
+            "label": "W7: $4.0k",
+            "anchorX": "346.8",
+            "anchorY": "122.4"
+          },
+          {
+            "index": 7,
+            "series": 1,
+            "shape": "path",
+            "d": "M380.8,196.0 V52.8 Q380.8,48.8 384.8,48.8 H403.2 Q407.2,48.8 407.2,52.8 V196.0 Z",
+            "x": "380.8",
+            "y": "48.8",
+            "width": "26.4",
+            "height": "147.2",
+            "title": "W8",
+            "body": "$8.0k",
+            "label": "W8: $8.0k",
+            "anchorX": "394.0",
+            "anchorY": "48.8"
+          },
+          {
+            "index": 8,
+            "series": 1,
+            "shape": "path",
+            "d": "M428.0,196.0 V89.6 Q428.0,85.6 432.0,85.6 H450.4 Q454.4,85.6 454.4,89.6 V196.0 Z",
+            "x": "428.0",
+            "y": "85.6",
+            "width": "26.4",
+            "height": "110.4",
+            "title": "W9",
+            "body": "$6.0k",
+            "label": "W9: $6.0k",
+            "anchorX": "441.2",
+            "anchorY": "85.6"
+          },
+          {
+            "index": 9,
+            "series": 1,
+            "shape": "path",
+            "d": "M475.2,196.0 V126.4 Q475.2,122.4 479.2,122.4 H497.6 Q501.6,122.4 501.6,126.4 V196.0 Z",
+            "x": "475.2",
+            "y": "122.4",
+            "width": "26.4",
+            "height": "73.6",
+            "title": "W10",
+            "body": "$4.0k",
+            "label": "W10: $4.0k",
+            "anchorX": "488.4",
+            "anchorY": "122.4"
+          }
+        ],
+        "lines": [],
+        "areas": [],
+        "points": [],
+        "value": {
+          "x": "205.2",
+          "y": "4.0",
+          "text": "$10.0k"
+        },
+        "table": {
+          "columns": ["", "Revenue"],
+          "rows": [
+            {
+              "label": "W1",
+              "cells": ["$4.1k"]
+            },
+            {
+              "label": "W2",
+              "cells": ["$6.0k"]
+            },
+            {
+              "label": "W3",
+              "cells": ["$8.2k"]
+            },
+            {
+              "label": "W4",
+              "cells": ["$10.0k"]
+            },
+            {
+              "label": "W5",
+              "cells": ["$4.0k"]
+            },
+            {
+              "label": "W6",
+              "cells": ["$8.0k"]
+            },
+            {
+              "label": "W7",
+              "cells": ["$4.0k"]
+            },
+            {
+              "label": "W8",
+              "cells": ["$8.0k"]
+            },
+            {
+              "label": "W9",
+              "cells": ["$6.0k"]
+            },
+            {
+              "label": "W10",
+              "cells": ["$4.0k"]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "area, the spec's sales versus target",
+      "series": [
+        {
+          "name": "Sales",
+          "data": [600000, 1800000, 2600000, 3200000, 3600000, 4400000, 6100000, 7400000]
+        },
+        {
+          "name": "Target",
+          "data": [3200000, 4400000, 3800000, 5200000, 6100000, 6600000, 7000000, 6400000]
+        }
+      ],
+      "options": {
+        "type": "area",
+        "labels": ["Q1", "Q2", "Q3", "Q4", "Q1", "Q2", "Q3", "Q4"],
+        "prefix": "$",
+        "notation": "compact",
+        "width": 1000,
+        "height": 260
+      },
+      "expected": {
+        "type": "area",
+        "width": 1000,
+        "height": 260,
+        "left": "40.0",
+        "right": "992.0",
+        "tickX": "32.0",
+        "labelY": "254.0",
+        "ticks": [
+          {
+            "y": "236.0",
+            "textY": "240.0",
+            "label": "$0M"
+          },
+          {
+            "y": "180.0",
+            "textY": "184.0",
+            "label": "$2M"
+          },
+          {
+            "y": "124.0",
+            "textY": "128.0",
+            "label": "$4M"
+          },
+          {
+            "y": "68.0",
+            "textY": "72.0",
+            "label": "$6M"
+          },
+          {
+            "y": "12.0",
+            "textY": "16.0",
+            "label": "$8M"
+          }
+        ],
+        "categories": [
+          {
+            "x": "40.0",
+            "label": "Q1"
+          },
+          {
+            "x": "176.0",
+            "label": "Q2"
+          },
+          {
+            "x": "312.0",
+            "label": "Q3"
+          },
+          {
+            "x": "448.0",
+            "label": "Q4"
+          },
+          {
+            "x": "584.0",
+            "label": "Q1"
+          },
+          {
+            "x": "720.0",
+            "label": "Q2"
+          },
+          {
+            "x": "856.0",
+            "label": "Q3"
+          },
+          {
+            "x": "992.0",
+            "label": "Q4"
+          }
+        ],
+        "legend": [
+          {
+            "name": "Sales",
+            "series": 1,
+            "value": null
+          },
+          {
+            "name": "Target",
+            "series": 2,
+            "value": null
+          }
+        ],
+        "marks": [
+          {
+            "index": 0,
+            "series": 1,
+            "shape": "rect",
+            "d": "",
+            "x": "40.0",
+            "y": "12.0",
+            "width": "68.0",
+            "height": "224.0",
+            "title": "Q1",
+            "body": "Sales $600.0k · Target $3.2M",
+            "label": "Q1: Sales $600.0k, Target $3.2M",
+            "anchorX": "40.0",
+            "anchorY": "146.4"
+          },
+          {
+            "index": 1,
+            "series": 1,
+            "shape": "rect",
+            "d": "",
+            "x": "108.0",
+            "y": "12.0",
+            "width": "136.0",
+            "height": "224.0",
+            "title": "Q2",
+            "body": "Sales $1.8M · Target $4.4M",
+            "label": "Q2: Sales $1.8M, Target $4.4M",
+            "anchorX": "176.0",
+            "anchorY": "112.8"
+          },
+          {
+            "index": 2,
+            "series": 1,
+            "shape": "rect",
+            "d": "",
+            "x": "244.0",
+            "y": "12.0",
+            "width": "136.0",
+            "height": "224.0",
+            "title": "Q3",
+            "body": "Sales $2.6M · Target $3.8M",
+            "label": "Q3: Sales $2.6M, Target $3.8M",
+            "anchorX": "312.0",
+            "anchorY": "129.6"
+          },
+          {
+            "index": 3,
+            "series": 1,
+            "shape": "rect",
+            "d": "",
+            "x": "380.0",
+            "y": "12.0",
+            "width": "136.0",
+            "height": "224.0",
+            "title": "Q4",
+            "body": "Sales $3.2M · Target $5.2M",
+            "label": "Q4: Sales $3.2M, Target $5.2M",
+            "anchorX": "448.0",
+            "anchorY": "90.4"
+          },
+          {
+            "index": 4,
+            "series": 1,
+            "shape": "rect",
+            "d": "",
+            "x": "516.0",
+            "y": "12.0",
+            "width": "136.0",
+            "height": "224.0",
+            "title": "Q1",
+            "body": "Sales $3.6M · Target $6.1M",
+            "label": "Q1: Sales $3.6M, Target $6.1M",
+            "anchorX": "584.0",
+            "anchorY": "65.2"
+          },
+          {
+            "index": 5,
+            "series": 1,
+            "shape": "rect",
+            "d": "",
+            "x": "652.0",
+            "y": "12.0",
+            "width": "136.0",
+            "height": "224.0",
+            "title": "Q2",
+            "body": "Sales $4.4M · Target $6.6M",
+            "label": "Q2: Sales $4.4M, Target $6.6M",
+            "anchorX": "720.0",
+            "anchorY": "51.2"
+          },
+          {
+            "index": 6,
+            "series": 1,
+            "shape": "rect",
+            "d": "",
+            "x": "788.0",
+            "y": "12.0",
+            "width": "136.0",
+            "height": "224.0",
+            "title": "Q3",
+            "body": "Sales $6.1M · Target $7.0M",
+            "label": "Q3: Sales $6.1M, Target $7.0M",
+            "anchorX": "856.0",
+            "anchorY": "40.0"
+          },
+          {
+            "index": 7,
+            "series": 1,
+            "shape": "rect",
+            "d": "",
+            "x": "924.0",
+            "y": "12.0",
+            "width": "68.0",
+            "height": "224.0",
+            "title": "Q4",
+            "body": "Sales $7.4M · Target $6.4M",
+            "label": "Q4: Sales $7.4M, Target $6.4M",
+            "anchorX": "992.0",
+            "anchorY": "28.8"
+          }
+        ],
+        "lines": [
+          {
+            "series": 1,
+            "d": "M40.0,219.2 L176.0,185.6 L312.0,163.2 L448.0,146.4 L584.0,135.2 L720.0,112.8 L856.0,65.2 L992.0,28.8"
+          },
+          {
+            "series": 2,
+            "d": "M40.0,146.4 L176.0,112.8 L312.0,129.6 L448.0,90.4 L584.0,65.2 L720.0,51.2 L856.0,40.0 L992.0,56.8"
+          }
+        ],
+        "areas": [
+          {
+            "series": 1,
+            "d": "M40.0,219.2 L176.0,185.6 L312.0,163.2 L448.0,146.4 L584.0,135.2 L720.0,112.8 L856.0,65.2 L992.0,28.8 L992.0,236.0 L40.0,236.0 Z"
+          },
+          {
+            "series": 2,
+            "d": "M40.0,146.4 L176.0,112.8 L312.0,129.6 L448.0,90.4 L584.0,65.2 L720.0,51.2 L856.0,40.0 L992.0,56.8 L992.0,236.0 L40.0,236.0 Z"
+          }
+        ],
+        "points": [
+          {
+            "index": 0,
+            "x": "40.0",
+            "top": "12.0",
+            "bottom": "236.0",
+            "dots": [
+              {
+                "series": 1,
+                "cx": "40.0",
+                "cy": "219.2"
+              },
+              {
+                "series": 2,
+                "cx": "40.0",
+                "cy": "146.4"
+              }
+            ]
+          },
+          {
+            "index": 1,
+            "x": "176.0",
+            "top": "12.0",
+            "bottom": "236.0",
+            "dots": [
+              {
+                "series": 1,
+                "cx": "176.0",
+                "cy": "185.6"
+              },
+              {
+                "series": 2,
+                "cx": "176.0",
+                "cy": "112.8"
+              }
+            ]
+          },
+          {
+            "index": 2,
+            "x": "312.0",
+            "top": "12.0",
+            "bottom": "236.0",
+            "dots": [
+              {
+                "series": 1,
+                "cx": "312.0",
+                "cy": "163.2"
+              },
+              {
+                "series": 2,
+                "cx": "312.0",
+                "cy": "129.6"
+              }
+            ]
+          },
+          {
+            "index": 3,
+            "x": "448.0",
+            "top": "12.0",
+            "bottom": "236.0",
+            "dots": [
+              {
+                "series": 1,
+                "cx": "448.0",
+                "cy": "146.4"
+              },
+              {
+                "series": 2,
+                "cx": "448.0",
+                "cy": "90.4"
+              }
+            ]
+          },
+          {
+            "index": 4,
+            "x": "584.0",
+            "top": "12.0",
+            "bottom": "236.0",
+            "dots": [
+              {
+                "series": 1,
+                "cx": "584.0",
+                "cy": "135.2"
+              },
+              {
+                "series": 2,
+                "cx": "584.0",
+                "cy": "65.2"
+              }
+            ]
+          },
+          {
+            "index": 5,
+            "x": "720.0",
+            "top": "12.0",
+            "bottom": "236.0",
+            "dots": [
+              {
+                "series": 1,
+                "cx": "720.0",
+                "cy": "112.8"
+              },
+              {
+                "series": 2,
+                "cx": "720.0",
+                "cy": "51.2"
+              }
+            ]
+          },
+          {
+            "index": 6,
+            "x": "856.0",
+            "top": "12.0",
+            "bottom": "236.0",
+            "dots": [
+              {
+                "series": 1,
+                "cx": "856.0",
+                "cy": "65.2"
+              },
+              {
+                "series": 2,
+                "cx": "856.0",
+                "cy": "40.0"
+              }
+            ]
+          },
+          {
+            "index": 7,
+            "x": "992.0",
+            "top": "12.0",
+            "bottom": "236.0",
+            "dots": [
+              {
+                "series": 1,
+                "cx": "992.0",
+                "cy": "28.8"
+              },
+              {
+                "series": 2,
+                "cx": "992.0",
+                "cy": "56.8"
+              }
+            ]
+          }
+        ],
+        "value": {
+          "x": "992.0",
+          "y": "18.8",
+          "text": "$7.4M"
+        },
+        "table": {
+          "columns": ["", "Sales", "Target"],
+          "rows": [
+            {
+              "label": "Q1",
+              "cells": ["$600.0k", "$3.2M"]
+            },
+            {
+              "label": "Q2",
+              "cells": ["$1.8M", "$4.4M"]
+            },
+            {
+              "label": "Q3",
+              "cells": ["$2.6M", "$3.8M"]
+            },
+            {
+              "label": "Q4",
+              "cells": ["$3.2M", "$5.2M"]
+            },
+            {
+              "label": "Q1",
+              "cells": ["$3.6M", "$6.1M"]
+            },
+            {
+              "label": "Q2",
+              "cells": ["$4.4M", "$6.6M"]
+            },
+            {
+              "label": "Q3",
+              "cells": ["$6.1M", "$7.0M"]
+            },
+            {
+              "label": "Q4",
+              "cells": ["$7.4M", "$6.4M"]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "line with negatives, a gap and a numeric string",
+      "series": [
+        {
+          "name": "Margin",
+          "data": [-12.5, 4, null, "7.25", 18, -3]
+        },
+        {
+          "name": "Goal",
+          "data": [5, 5, 5, 5, 5, 5]
+        }
+      ],
+      "options": {
+        "type": "line",
+        "labels": ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+        "suffix": "%"
+      },
+      "expected": {
+        "type": "line",
+        "width": 520,
+        "height": 220,
+        "left": "40.0",
+        "right": "512.0",
+        "tickX": "32.0",
+        "labelY": "214.0",
+        "ticks": [
+          {
+            "y": "196.0",
+            "textY": "200.0",
+            "label": "-20%"
+          },
+          {
+            "y": "150.0",
+            "textY": "154.0",
+            "label": "-10%"
+          },
+          {
+            "y": "104.0",
+            "textY": "108.0",
+            "label": "0%"
+          },
+          {
+            "y": "58.0",
+            "textY": "62.0",
+            "label": "10%"
+          },
+          {
+            "y": "12.0",
+            "textY": "16.0",
+            "label": "20%"
+          }
+        ],
+        "categories": [
+          {
+            "x": "40.0",
+            "label": "Jan"
+          },
+          {
+            "x": "134.4",
+            "label": "Feb"
+          },
+          {
+            "x": "228.8",
+            "label": "Mar"
+          },
+          {
+            "x": "323.2",
+            "label": "Apr"
+          },
+          {
+            "x": "417.6",
+            "label": "May"
+          },
+          {
+            "x": "512.0",
+            "label": "Jun"
+          }
+        ],
+        "legend": [
+          {
+            "name": "Margin",
+            "series": 1,
+            "value": null
+          },
+          {
+            "name": "Goal",
+            "series": 2,
+            "value": null
+          }
+        ],
+        "marks": [
+          {
+            "index": 0,
+            "series": 1,
+            "shape": "rect",
+            "d": "",
+            "x": "40.0",
+            "y": "12.0",
+            "width": "47.2",
+            "height": "184.0",
+            "title": "Jan",
+            "body": "Margin -12.5% · Goal 5%",
+            "label": "Jan: Margin -12.5%, Goal 5%",
+            "anchorX": "40.0",
+            "anchorY": "81.0"
+          },
+          {
+            "index": 1,
+            "series": 1,
+            "shape": "rect",
+            "d": "",
+            "x": "87.2",
+            "y": "12.0",
+            "width": "94.4",
+            "height": "184.0",
+            "title": "Feb",
+            "body": "Margin 4% · Goal 5%",
+            "label": "Feb: Margin 4%, Goal 5%",
+            "anchorX": "134.4",
+            "anchorY": "81.0"
+          },
+          {
+            "index": 2,
+            "series": 1,
+            "shape": "rect",
+            "d": "",
+            "x": "181.6",
+            "y": "12.0",
+            "width": "94.4",
+            "height": "184.0",
+            "title": "Mar",
+            "body": "Goal 5%",
+            "label": "Mar: Goal 5%",
+            "anchorX": "228.8",
+            "anchorY": "81.0"
+          },
+          {
+            "index": 3,
+            "series": 1,
+            "shape": "rect",
+            "d": "",
+            "x": "276.0",
+            "y": "12.0",
+            "width": "94.4",
+            "height": "184.0",
+            "title": "Apr",
+            "body": "Margin 7.25% · Goal 5%",
+            "label": "Apr: Margin 7.25%, Goal 5%",
+            "anchorX": "323.2",
+            "anchorY": "70.7"
+          },
+          {
+            "index": 4,
+            "series": 1,
+            "shape": "rect",
+            "d": "",
+            "x": "370.4",
+            "y": "12.0",
+            "width": "94.4",
+            "height": "184.0",
+            "title": "May",
+            "body": "Margin 18% · Goal 5%",
+            "label": "May: Margin 18%, Goal 5%",
+            "anchorX": "417.6",
+            "anchorY": "21.2"
+          },
+          {
+            "index": 5,
+            "series": 1,
+            "shape": "rect",
+            "d": "",
+            "x": "464.8",
+            "y": "12.0",
+            "width": "47.2",
+            "height": "184.0",
+            "title": "Jun",
+            "body": "Margin -3% · Goal 5%",
+            "label": "Jun: Margin -3%, Goal 5%",
+            "anchorX": "512.0",
+            "anchorY": "81.0"
+          }
+        ],
+        "lines": [
+          {
+            "series": 1,
+            "d": "M40.0,161.5 L134.4,85.6 M323.2,70.7 L417.6,21.2 L512.0,117.8"
+          },
+          {
+            "series": 2,
+            "d": "M40.0,81.0 L134.4,81.0 L228.8,81.0 L323.2,81.0 L417.6,81.0 L512.0,81.0"
+          }
+        ],
+        "areas": [],
+        "points": [
+          {
+            "index": 0,
+            "x": "40.0",
+            "top": "12.0",
+            "bottom": "196.0",
+            "dots": [
+              {
+                "series": 1,
+                "cx": "40.0",
+                "cy": "161.5"
+              },
+              {
+                "series": 2,
+                "cx": "40.0",
+                "cy": "81.0"
+              }
+            ]
+          },
+          {
+            "index": 1,
+            "x": "134.4",
+            "top": "12.0",
+            "bottom": "196.0",
+            "dots": [
+              {
+                "series": 1,
+                "cx": "134.4",
+                "cy": "85.6"
+              },
+              {
+                "series": 2,
+                "cx": "134.4",
+                "cy": "81.0"
+              }
+            ]
+          },
+          {
+            "index": 2,
+            "x": "228.8",
+            "top": "12.0",
+            "bottom": "196.0",
+            "dots": [
+              {
+                "series": 2,
+                "cx": "228.8",
+                "cy": "81.0"
+              }
+            ]
+          },
+          {
+            "index": 3,
+            "x": "323.2",
+            "top": "12.0",
+            "bottom": "196.0",
+            "dots": [
+              {
+                "series": 1,
+                "cx": "323.2",
+                "cy": "70.7"
+              },
+              {
+                "series": 2,
+                "cx": "323.2",
+                "cy": "81.0"
+              }
+            ]
+          },
+          {
+            "index": 4,
+            "x": "417.6",
+            "top": "12.0",
+            "bottom": "196.0",
+            "dots": [
+              {
+                "series": 1,
+                "cx": "417.6",
+                "cy": "21.2"
+              },
+              {
+                "series": 2,
+                "cx": "417.6",
+                "cy": "81.0"
+              }
+            ]
+          },
+          {
+            "index": 5,
+            "x": "512.0",
+            "top": "12.0",
+            "bottom": "196.0",
+            "dots": [
+              {
+                "series": 1,
+                "cx": "512.0",
+                "cy": "117.8"
+              },
+              {
+                "series": 2,
+                "cx": "512.0",
+                "cy": "81.0"
+              }
+            ]
+          }
+        ],
+        "value": {
+          "x": "417.6",
+          "y": "11.2",
+          "text": "18%"
+        },
+        "table": {
+          "columns": ["", "Margin", "Goal"],
+          "rows": [
+            {
+              "label": "Jan",
+              "cells": ["-12.5%", "5%"]
+            },
+            {
+              "label": "Feb",
+              "cells": ["4%", "5%"]
+            },
+            {
+              "label": "Mar",
+              "cells": ["", "5%"]
+            },
+            {
+              "label": "Apr",
+              "cells": ["7.25%", "5%"]
+            },
+            {
+              "label": "May",
+              "cells": ["18%", "5%"]
+            },
+            {
+              "label": "Jun",
+              "cells": ["-3%", "5%"]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "donut, the spec's active listings",
+      "series": [1240, 990, 723, 260],
+      "options": {
+        "type": "donut",
+        "labels": ["United States", "Mexico", "Canada", "Other"],
+        "title": "Active listings"
+      },
+      "expected": {
+        "type": "donut",
+        "width": 160,
+        "height": 160,
+        "left": "0.0",
+        "right": "160.0",
+        "tickX": "0.0",
+        "labelY": "160.0",
+        "ticks": [],
+        "categories": [],
+        "legend": [
+          {
+            "name": "United States",
+            "series": 1,
+            "value": "38.6%"
+          },
+          {
+            "name": "Mexico",
+            "series": 2,
+            "value": "30.8%"
+          },
+          {
+            "name": "Canada",
+            "series": 3,
+            "value": "22.5%"
+          },
+          {
+            "name": "Other",
+            "series": 4,
+            "value": "8.1%"
+          }
+        ],
+        "marks": [
+          {
+            "index": 0,
+            "series": 1,
+            "shape": "path",
+            "d": "M80.00,16.00 A64,64 0 0 1 122.04,128.25 L108.90,113.17 A44,44 0 0 0 80.00,36.00 Z",
+            "x": "",
+            "y": "",
+            "width": "",
+            "height": "",
+            "title": "United States",
+            "body": "1,240 · 38.6%",
+            "label": "United States: 1,240, 38.6%",
+            "anchorX": "139.93",
+            "anchorY": "57.55"
+          },
+          {
+            "index": 1,
+            "series": 2,
+            "shape": "path",
+            "d": "M122.04,128.25 A64,64 0 0 1 19.91,102.04 L38.69,95.15 A44,44 0 0 0 108.90,113.17 Z",
+            "x": "",
+            "y": "",
+            "width": "",
+            "height": "",
+            "title": "Mexico",
+            "body": "990 · 30.8%",
+            "label": "Mexico: 990, 30.8%",
+            "anchorX": "64.09",
+            "anchorY": "141.99"
+          },
+          {
+            "index": 2,
+            "series": 3,
+            "shape": "path",
+            "d": "M19.91,102.04 A64,64 0 0 1 48.84,24.10 L58.58,41.57 A44,44 0 0 0 38.69,95.15 Z",
+            "x": "",
+            "y": "",
+            "width": "",
+            "height": "",
+            "title": "Canada",
+            "body": "723 · 22.5%",
+            "label": "Canada: 723, 22.5%",
+            "anchorX": "20.00",
+            "anchorY": "57.73"
+          },
+          {
+            "index": 3,
+            "series": 4,
+            "shape": "path",
+            "d": "M48.84,24.10 A64,64 0 0 1 80.00,16.00 L80.00,36.00 A44,44 0 0 0 58.58,41.57 Z",
+            "x": "",
+            "y": "",
+            "width": "",
+            "height": "",
+            "title": "Other",
+            "body": "260 · 8.1%",
+            "label": "Other: 260, 8.1%",
+            "anchorX": "63.90",
+            "anchorY": "18.06"
+          }
+        ],
+        "lines": [],
+        "areas": [],
+        "points": [],
+        "value": null,
+        "table": {
+          "columns": ["", "Active listings"],
+          "rows": [
+            {
+              "label": "United States",
+              "cells": ["1,240 (38.6%)"]
+            },
+            {
+              "label": "Mexico",
+              "cells": ["990 (30.8%)"]
+            },
+            {
+              "label": "Canada",
+              "cells": ["723 (22.5%)"]
+            },
+            {
+              "label": "Other",
+              "cells": ["260 (8.1%)"]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "donut with one slice and a zero",
+      "series": [
+        {
+          "name": "Plan",
+          "data": [12, 0]
+        }
+      ],
+      "options": {
+        "type": "donut",
+        "labels": ["Pro", "Free"]
+      },
+      "expected": {
+        "type": "donut",
+        "width": 160,
+        "height": 160,
+        "left": "0.0",
+        "right": "160.0",
+        "tickX": "0.0",
+        "labelY": "160.0",
+        "ticks": [],
+        "categories": [],
+        "legend": [
+          {
+            "name": "Pro",
+            "series": 1,
+            "value": "100.0%"
+          },
+          {
+            "name": "Free",
+            "series": 2,
+            "value": "0.0%"
+          }
+        ],
+        "marks": [
+          {
+            "index": 0,
+            "series": 1,
+            "shape": "path",
+            "d": "M80.00,16.00 A64,64 0 1 1 80.00,144.00 A64,64 0 1 1 80.00,16.00 M80.00,36.00 A44,44 0 1 0 80.00,124.00 A44,44 0 1 0 80.00,36.00 Z",
+            "x": "",
+            "y": "",
+            "width": "",
+            "height": "",
+            "title": "Pro",
+            "body": "12 · 100.0%",
+            "label": "Pro: 12, 100.0%",
+            "anchorX": "80.00",
+            "anchorY": "144.00"
+          }
+        ],
+        "lines": [],
+        "areas": [],
+        "points": [],
+        "value": null,
+        "table": {
+          "columns": ["", "Plan"],
+          "rows": [
+            {
+              "label": "Pro",
+              "cells": ["12 (100.0%)"]
+            },
+            {
+              "label": "Free",
+              "cells": ["0 (0.0%)"]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "bar with small decimals and only the first series drawn",
+      "series": [
+        {
+          "name": "Rate",
+          "data": [0.12, 0.31, 0.07, 0.3]
+        },
+        {
+          "name": "Ignored",
+          "data": [9, 9, 9, 9]
+        }
+      ],
+      "options": {
+        "type": "bar",
+        "labels": ["A", "B", "C", "D"],
+        "height": 180
+      },
+      "expected": {
+        "type": "bar",
+        "width": 520,
+        "height": 180,
+        "left": "40.0",
+        "right": "512.0",
+        "tickX": "32.0",
+        "labelY": "174.0",
+        "ticks": [
+          {
+            "y": "156.0",
+            "textY": "160.0",
+            "label": "0"
+          },
+          {
+            "y": "120.0",
+            "textY": "124.0",
+            "label": "0.1"
+          },
+          {
+            "y": "84.0",
+            "textY": "88.0",
+            "label": "0.2"
+          },
+          {
+            "y": "48.0",
+            "textY": "52.0",
+            "label": "0.3"
+          },
+          {
+            "y": "12.0",
+            "textY": "16.0",
+            "label": "0.4"
+          }
+        ],
+        "categories": [
+          {
+            "x": "99.0",
+            "label": "A"
+          },
+          {
+            "x": "217.0",
+            "label": "B"
+          },
+          {
+            "x": "335.0",
+            "label": "C"
+          },
+          {
+            "x": "453.0",
+            "label": "D"
+          }
+        ],
+        "legend": [],
+        "marks": [
+          {
+            "index": 0,
+            "series": 1,
+            "shape": "path",
+            "d": "M66.0,156.0 V116.8 Q66.0,112.8 70.0,112.8 H128.0 Q132.0,112.8 132.0,116.8 V156.0 Z",
+            "x": "66.0",
+            "y": "112.8",
+            "width": "66.1",
+            "height": "43.2",
+            "title": "A",
+            "body": "0.12",
+            "label": "A: 0.12",
+            "anchorX": "99.0",
+            "anchorY": "112.8"
+          },
+          {
+            "index": 1,
+            "series": 1,
+            "shape": "path",
+            "d": "M184.0,156.0 V48.4 Q184.0,44.4 188.0,44.4 H246.0 Q250.0,44.4 250.0,48.4 V156.0 Z",
+            "x": "184.0",
+            "y": "44.4",
+            "width": "66.1",
+            "height": "111.6",
+            "title": "B",
+            "body": "0.31",
+            "label": "B: 0.31",
+            "anchorX": "217.0",
+            "anchorY": "44.4"
+          },
+          {
+            "index": 2,
+            "series": 1,
+            "shape": "path",
+            "d": "M302.0,156.0 V134.8 Q302.0,130.8 306.0,130.8 H364.0 Q368.0,130.8 368.0,134.8 V156.0 Z",
+            "x": "302.0",
+            "y": "130.8",
+            "width": "66.1",
+            "height": "25.2",
+            "title": "C",
+            "body": "0.07",
+            "label": "C: 0.07",
+            "anchorX": "335.0",
+            "anchorY": "130.8"
+          },
+          {
+            "index": 3,
+            "series": 1,
+            "shape": "path",
+            "d": "M420.0,156.0 V52.0 Q420.0,48.0 424.0,48.0 H482.0 Q486.0,48.0 486.0,52.0 V156.0 Z",
+            "x": "420.0",
+            "y": "48.0",
+            "width": "66.1",
+            "height": "108.0",
+            "title": "D",
+            "body": "0.3",
+            "label": "D: 0.3",
+            "anchorX": "453.0",
+            "anchorY": "48.0"
+          }
+        ],
+        "lines": [],
+        "areas": [],
+        "points": [],
+        "value": {
+          "x": "217.0",
+          "y": "36.4",
+          "text": "0.31"
+        },
+        "table": {
+          "columns": ["", "Rate"],
+          "rows": [
+            {
+              "label": "A",
+              "cells": ["0.12"]
+            },
+            {
+              "label": "B",
+              "cells": ["0.31"]
+            },
+            {
+              "label": "C",
+              "cells": ["0.07"]
+            },
+            {
+              "label": "D",
+              "cells": ["0.3"]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "line with one point",
+      "series": [
+        {
+          "name": "Visits",
+          "data": [12500]
+        }
+      ],
+      "options": {
+        "type": "line",
+        "labels": ["Today"]
+      },
+      "expected": {
+        "type": "line",
+        "width": 520,
+        "height": 220,
+        "left": "40.0",
+        "right": "512.0",
+        "tickX": "32.0",
+        "labelY": "214.0",
+        "ticks": [
+          {
+            "y": "196.0",
+            "textY": "200.0",
+            "label": "0"
+          },
+          {
+            "y": "134.7",
+            "textY": "138.7",
+            "label": "5,000"
+          },
+          {
+            "y": "73.3",
+            "textY": "77.3",
+            "label": "10,000"
+          },
+          {
+            "y": "12.0",
+            "textY": "16.0",
+            "label": "15,000"
+          }
+        ],
+        "categories": [
+          {
+            "x": "276.0",
+            "label": "Today"
+          }
+        ],
+        "legend": [],
+        "marks": [
+          {
+            "index": 0,
+            "series": 1,
+            "shape": "rect",
+            "d": "",
+            "x": "40.0",
+            "y": "12.0",
+            "width": "472.0",
+            "height": "184.0",
+            "title": "Today",
+            "body": "12,500",
+            "label": "Today: 12,500",
+            "anchorX": "276.0",
+            "anchorY": "42.7"
+          }
+        ],
+        "lines": [
+          {
+            "series": 1,
+            "d": "M276.0,42.7"
+          }
+        ],
+        "areas": [],
+        "points": [
+          {
+            "index": 0,
+            "x": "276.0",
+            "top": "12.0",
+            "bottom": "196.0",
+            "dots": [
+              {
+                "series": 1,
+                "cx": "276.0",
+                "cy": "42.7"
+              }
+            ]
+          }
+        ],
+        "value": {
+          "x": "276.0",
+          "y": "32.7",
+          "text": "12,500"
+        },
+        "table": {
+          "columns": ["", "Visits"],
+          "rows": [
+            {
+              "label": "Today",
+              "cells": ["12,500"]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "area with no data",
+      "series": [],
+      "options": {
+        "type": "area",
+        "labels": []
+      },
+      "expected": {
+        "type": "area",
+        "width": 520,
+        "height": 220,
+        "left": "40.0",
+        "right": "512.0",
+        "tickX": "32.0",
+        "labelY": "214.0",
+        "ticks": [
+          {
+            "y": "196.0",
+            "textY": "200.0",
+            "label": "0"
+          },
+          {
+            "y": "159.2",
+            "textY": "163.2",
+            "label": "0.2"
+          },
+          {
+            "y": "122.4",
+            "textY": "126.4",
+            "label": "0.4"
+          },
+          {
+            "y": "85.6",
+            "textY": "89.6",
+            "label": "0.6"
+          },
+          {
+            "y": "48.8",
+            "textY": "52.8",
+            "label": "0.8"
+          },
+          {
+            "y": "12.0",
+            "textY": "16.0",
+            "label": "1"
+          }
+        ],
+        "categories": [],
+        "legend": [],
+        "marks": [],
+        "lines": [],
+        "areas": [],
+        "points": [],
+        "value": null,
+        "table": {
+          "columns": [""],
+          "rows": []
+        }
+      }
+    },
+    {
+      "name": "bar with large standard values",
+      "series": [
+        {
+          "name": "Units",
+          "data": [1234567, 2500000, 980000]
+        }
+      ],
+      "options": {
+        "type": "bar",
+        "labels": ["North", "South", "West"],
+        "notation": "standard"
+      },
+      "expected": {
+        "type": "bar",
+        "width": 520,
+        "height": 220,
+        "left": "40.0",
+        "right": "512.0",
+        "tickX": "32.0",
+        "labelY": "214.0",
+        "ticks": [
+          {
+            "y": "196.0",
+            "textY": "200.0",
+            "label": "0"
+          },
+          {
+            "y": "134.7",
+            "textY": "138.7",
+            "label": "1,000,000"
+          },
+          {
+            "y": "73.3",
+            "textY": "77.3",
+            "label": "2,000,000"
+          },
+          {
+            "y": "12.0",
+            "textY": "16.0",
+            "label": "3,000,000"
+          }
+        ],
+        "categories": [
+          {
+            "x": "118.7",
+            "label": "North"
+          },
+          {
+            "x": "276.0",
+            "label": "South"
+          },
+          {
+            "x": "433.3",
+            "label": "West"
+          }
+        ],
+        "legend": [],
+        "marks": [
+          {
+            "index": 0,
+            "series": 1,
+            "shape": "path",
+            "d": "M74.6,196.0 V124.3 Q74.6,120.3 78.6,120.3 H158.7 Q162.7,120.3 162.7,124.3 V196.0 Z",
+            "x": "74.6",
+            "y": "120.3",
+            "width": "88.1",
+            "height": "75.7",
+            "title": "North",
+            "body": "1,234,567",
+            "label": "North: 1,234,567",
+            "anchorX": "118.7",
+            "anchorY": "120.3"
+          },
+          {
+            "index": 1,
+            "series": 1,
+            "shape": "path",
+            "d": "M231.9,196.0 V46.7 Q231.9,42.7 235.9,42.7 H316.1 Q320.1,42.7 320.1,46.7 V196.0 Z",
+            "x": "231.9",
+            "y": "42.7",
+            "width": "88.1",
+            "height": "153.3",
+            "title": "South",
+            "body": "2,500,000",
+            "label": "South: 2,500,000",
+            "anchorX": "276.0",
+            "anchorY": "42.7"
+          },
+          {
+            "index": 2,
+            "series": 1,
+            "shape": "path",
+            "d": "M389.3,196.0 V139.9 Q389.3,135.9 393.3,135.9 H473.4 Q477.4,135.9 477.4,139.9 V196.0 Z",
+            "x": "389.3",
+            "y": "135.9",
+            "width": "88.1",
+            "height": "60.1",
+            "title": "West",
+            "body": "980,000",
+            "label": "West: 980,000",
+            "anchorX": "433.3",
+            "anchorY": "135.9"
+          }
+        ],
+        "lines": [],
+        "areas": [],
+        "points": [],
+        "value": {
+          "x": "276.0",
+          "y": "34.7",
+          "text": "2,500,000"
+        },
+        "table": {
+          "columns": ["", "Units"],
+          "rows": [
+            {
+              "label": "North",
+              "cells": ["1,234,567"]
+            },
+            {
+              "label": "South",
+              "cells": ["2,500,000"]
+            },
+            {
+              "label": "West",
+              "cells": ["980,000"]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "line with values below 0.01",
+      "series": [
+        {
+          "name": "Error rate",
+          "data": [0.001, 0.0032, 0.0024]
+        }
+      ],
+      "options": {
+        "type": "line",
+        "labels": ["Mon", "Tue", "Wed"],
+        "suffix": "%"
+      },
+      "expected": {
+        "type": "line",
+        "width": 520,
+        "height": 220,
+        "left": "40.0",
+        "right": "512.0",
+        "tickX": "32.0",
+        "labelY": "214.0",
+        "ticks": [
+          {
+            "y": "196.0",
+            "textY": "200.0",
+            "label": "0%"
+          },
+          {
+            "y": "150.0",
+            "textY": "154.0",
+            "label": "0.001%"
+          },
+          {
+            "y": "104.0",
+            "textY": "108.0",
+            "label": "0.002%"
+          },
+          {
+            "y": "58.0",
+            "textY": "62.0",
+            "label": "0.003%"
+          },
+          {
+            "y": "12.0",
+            "textY": "16.0",
+            "label": "0.004%"
+          }
+        ],
+        "categories": [
+          {
+            "x": "40.0",
+            "label": "Mon"
+          },
+          {
+            "x": "276.0",
+            "label": "Tue"
+          },
+          {
+            "x": "512.0",
+            "label": "Wed"
+          }
+        ],
+        "legend": [],
+        "marks": [
+          {
+            "index": 0,
+            "series": 1,
+            "shape": "rect",
+            "d": "",
+            "x": "40.0",
+            "y": "12.0",
+            "width": "118.0",
+            "height": "184.0",
+            "title": "Mon",
+            "body": "0.001%",
+            "label": "Mon: 0.001%",
+            "anchorX": "40.0",
+            "anchorY": "150.0"
+          },
+          {
+            "index": 1,
+            "series": 1,
+            "shape": "rect",
+            "d": "",
+            "x": "158.0",
+            "y": "12.0",
+            "width": "236.0",
+            "height": "184.0",
+            "title": "Tue",
+            "body": "0.0032%",
+            "label": "Tue: 0.0032%",
+            "anchorX": "276.0",
+            "anchorY": "48.8"
+          },
+          {
+            "index": 2,
+            "series": 1,
+            "shape": "rect",
+            "d": "",
+            "x": "394.0",
+            "y": "12.0",
+            "width": "118.0",
+            "height": "184.0",
+            "title": "Wed",
+            "body": "0.0024%",
+            "label": "Wed: 0.0024%",
+            "anchorX": "512.0",
+            "anchorY": "85.6"
+          }
+        ],
+        "lines": [
+          {
+            "series": 1,
+            "d": "M40.0,150.0 L276.0,48.8 L512.0,85.6"
+          }
+        ],
+        "areas": [],
+        "points": [
+          {
+            "index": 0,
+            "x": "40.0",
+            "top": "12.0",
+            "bottom": "196.0",
+            "dots": [
+              {
+                "series": 1,
+                "cx": "40.0",
+                "cy": "150.0"
+              }
+            ]
+          },
+          {
+            "index": 1,
+            "x": "276.0",
+            "top": "12.0",
+            "bottom": "196.0",
+            "dots": [
+              {
+                "series": 1,
+                "cx": "276.0",
+                "cy": "48.8"
+              }
+            ]
+          },
+          {
+            "index": 2,
+            "x": "512.0",
+            "top": "12.0",
+            "bottom": "196.0",
+            "dots": [
+              {
+                "series": 1,
+                "cx": "512.0",
+                "cy": "85.6"
+              }
+            ]
+          }
+        ],
+        "value": {
+          "x": "276.0",
+          "y": "38.8",
+          "text": "0.0032%"
+        },
+        "table": {
+          "columns": ["", "Error rate"],
+          "rows": [
+            {
+              "label": "Mon",
+              "cells": ["0.001%"]
+            },
+            {
+              "label": "Tue",
+              "cells": ["0.0032%"]
+            },
+            {
+              "label": "Wed",
+              "cells": ["0.0024%"]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "line with ApexCharts {x, y} and [x, y] points, labeled by x",
+      "series": [
+        {
+          "name": "Visits",
+          "data": [
+            {
+              "x": "Jan",
+              "y": 3
+            },
+            {
+              "x": "Feb",
+              "y": 5
+            },
+            {
+              "x": "Mar",
+              "y": null
+            }
+          ]
+        },
+        {
+          "name": "Signups",
+          "data": [
+            ["Jan", 2],
+            ["Feb", "4"],
+            ["Mar", 1]
+          ]
+        }
+      ],
+      "options": {
+        "type": "line"
+      },
+      "expected": {
+        "type": "line",
+        "width": 520,
+        "height": 220,
+        "left": "40.0",
+        "right": "512.0",
+        "tickX": "32.0",
+        "labelY": "214.0",
+        "ticks": [
+          {
+            "y": "196.0",
+            "textY": "200.0",
+            "label": "0"
+          },
+          {
+            "y": "159.2",
+            "textY": "163.2",
+            "label": "1"
+          },
+          {
+            "y": "122.4",
+            "textY": "126.4",
+            "label": "2"
+          },
+          {
+            "y": "85.6",
+            "textY": "89.6",
+            "label": "3"
+          },
+          {
+            "y": "48.8",
+            "textY": "52.8",
+            "label": "4"
+          },
+          {
+            "y": "12.0",
+            "textY": "16.0",
+            "label": "5"
+          }
+        ],
+        "categories": [
+          {
+            "x": "40.0",
+            "label": "Jan"
+          },
+          {
+            "x": "276.0",
+            "label": "Feb"
+          },
+          {
+            "x": "512.0",
+            "label": "Mar"
+          }
+        ],
+        "legend": [
+          {
+            "name": "Visits",
+            "series": 1,
+            "value": null
+          },
+          {
+            "name": "Signups",
+            "series": 2,
+            "value": null
+          }
+        ],
+        "marks": [
+          {
+            "index": 0,
+            "series": 1,
+            "shape": "rect",
+            "d": "",
+            "x": "40.0",
+            "y": "12.0",
+            "width": "118.0",
+            "height": "184.0",
+            "title": "Jan",
+            "body": "Visits 3 · Signups 2",
+            "label": "Jan: Visits 3, Signups 2",
+            "anchorX": "40.0",
+            "anchorY": "85.6"
+          },
+          {
+            "index": 1,
+            "series": 1,
+            "shape": "rect",
+            "d": "",
+            "x": "158.0",
+            "y": "12.0",
+            "width": "236.0",
+            "height": "184.0",
+            "title": "Feb",
+            "body": "Visits 5 · Signups 4",
+            "label": "Feb: Visits 5, Signups 4",
+            "anchorX": "276.0",
+            "anchorY": "12.0"
+          },
+          {
+            "index": 2,
+            "series": 1,
+            "shape": "rect",
+            "d": "",
+            "x": "394.0",
+            "y": "12.0",
+            "width": "118.0",
+            "height": "184.0",
+            "title": "Mar",
+            "body": "Signups 1",
+            "label": "Mar: Signups 1",
+            "anchorX": "512.0",
+            "anchorY": "159.2"
+          }
+        ],
+        "lines": [
+          {
+            "series": 1,
+            "d": "M40.0,85.6 L276.0,12.0"
+          },
+          {
+            "series": 2,
+            "d": "M40.0,122.4 L276.0,48.8 L512.0,159.2"
+          }
+        ],
+        "areas": [],
+        "points": [
+          {
+            "index": 0,
+            "x": "40.0",
+            "top": "12.0",
+            "bottom": "196.0",
+            "dots": [
+              {
+                "series": 1,
+                "cx": "40.0",
+                "cy": "85.6"
+              },
+              {
+                "series": 2,
+                "cx": "40.0",
+                "cy": "122.4"
+              }
+            ]
+          },
+          {
+            "index": 1,
+            "x": "276.0",
+            "top": "12.0",
+            "bottom": "196.0",
+            "dots": [
+              {
+                "series": 1,
+                "cx": "276.0",
+                "cy": "12.0"
+              },
+              {
+                "series": 2,
+                "cx": "276.0",
+                "cy": "48.8"
+              }
+            ]
+          },
+          {
+            "index": 2,
+            "x": "512.0",
+            "top": "12.0",
+            "bottom": "196.0",
+            "dots": [
+              {
+                "series": 2,
+                "cx": "512.0",
+                "cy": "159.2"
+              }
+            ]
+          }
+        ],
+        "value": {
+          "x": "276.0",
+          "y": "2.0",
+          "text": "5"
+        },
+        "table": {
+          "columns": ["", "Visits", "Signups"],
+          "rows": [
+            {
+              "label": "Jan",
+              "cells": ["3", "2"]
+            },
+            {
+              "label": "Feb",
+              "cells": ["5", "4"]
+            },
+            {
+              "label": "Mar",
+              "cells": ["", "1"]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "donut from points, with labels given (they win over x)",
+      "series": [
+        {
+          "name": "Share",
+          "data": [
+            {
+              "x": "a",
+              "y": 2
+            },
+            {
+              "x": "b",
+              "y": 6
+            }
+          ]
+        }
+      ],
+      "options": {
+        "type": "donut",
+        "labels": ["North", "South"]
+      },
+      "expected": {
+        "type": "donut",
+        "width": 160,
+        "height": 160,
+        "left": "0.0",
+        "right": "160.0",
+        "tickX": "0.0",
+        "labelY": "160.0",
+        "ticks": [],
+        "categories": [],
+        "legend": [
+          {
+            "name": "North",
+            "series": 1,
+            "value": "25.0%"
+          },
+          {
+            "name": "South",
+            "series": 2,
+            "value": "75.0%"
+          }
+        ],
+        "marks": [
+          {
+            "index": 0,
+            "series": 1,
+            "shape": "path",
+            "d": "M80.00,16.00 A64,64 0 0 1 144.00,80.00 L124.00,80.00 A44,44 0 0 0 80.00,36.00 Z",
+            "x": "",
+            "y": "",
+            "width": "",
+            "height": "",
+            "title": "North",
+            "body": "2 · 25.0%",
+            "label": "North: 2, 25.0%",
+            "anchorX": "125.25",
+            "anchorY": "34.75"
+          },
+          {
+            "index": 1,
+            "series": 2,
+            "shape": "path",
+            "d": "M144.00,80.00 A64,64 0 1 1 80.00,16.00 L80.00,36.00 A44,44 0 1 0 124.00,80.00 Z",
+            "x": "",
+            "y": "",
+            "width": "",
+            "height": "",
+            "title": "South",
+            "body": "6 · 75.0%",
+            "label": "South: 6, 75.0%",
+            "anchorX": "34.75",
+            "anchorY": "125.25"
+          }
+        ],
+        "lines": [],
+        "areas": [],
+        "points": [],
+        "value": null,
+        "table": {
+          "columns": ["", "Share"],
+          "rows": [
+            {
+              "label": "North",
+              "cells": ["2 (25.0%)"]
+            },
+            {
+              "label": "South",
+              "cells": ["6 (75.0%)"]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "bar, a value at the float limit draws at the 1e300 axis limit",
+      "series": [
+        {
+          "name": "Bytes",
+          "data": [1.7976931348623157e308, 5000]
+        }
+      ],
+      "options": {
+        "type": "bar",
+        "labels": ["A", "B"],
+        "notation": "compact"
+      },
+      "expected": {
+        "type": "bar",
+        "width": 520,
+        "height": 220,
+        "left": "40.0",
+        "right": "512.0",
+        "tickX": "32.0",
+        "labelY": "214.0",
+        "ticks": [
+          {
+            "y": "196.0",
+            "textY": "200.0",
+            "label": "0B"
+          },
+          {
+            "y": "159.2",
+            "textY": "163.2",
+            "label": "200,000,000,000,000,012,345,566,705,573,431,377,398,874,462,192,602,251,662,010,570,107,762,675,307,934,311,788,507,834,188,892,959,338,862,091,690,298,252,262,069,181,570,867,912,343,476,423,070,733,974,457,108,518,204,218,323,764,372,269,486,067,627,507,254,546,771,920,492,554,489,989,692,515,780,696,061,630,802,248,473,408,403,824,265,151,663,702,610,072,177,901,842,265,203,015,680B"
+          },
+          {
+            "y": "122.4",
+            "textY": "126.4",
+            "label": "400,000,000,000,000,024,691,133,411,146,862,754,797,748,924,385,204,503,324,021,140,215,525,350,615,868,623,577,015,668,377,785,918,677,724,183,380,596,504,524,138,363,141,735,824,686,952,846,141,467,948,914,217,036,408,436,647,528,744,538,972,135,255,014,509,093,543,840,985,108,979,979,385,031,561,392,123,261,604,496,946,816,807,648,530,303,327,405,220,144,355,803,684,530,406,031,360B"
+          },
+          {
+            "y": "85.6",
+            "textY": "89.6",
+            "label": "600,000,000,000,000,002,414,389,724,213,336,547,249,683,242,288,974,430,166,853,351,220,027,951,745,769,908,593,422,624,609,158,487,501,176,993,217,393,290,920,826,394,434,504,551,931,195,739,552,633,924,002,074,232,120,107,763,180,848,778,735,644,085,325,681,651,573,319,194,422,618,972,949,674,813,644,930,647,224,551,653,875,094,959,616,297,394,605,306,998,133,267,812,638,150,098,944B"
+          },
+          {
+            "y": "48.8",
+            "textY": "52.8",
+            "label": "800,000,000,000,000,049,382,266,822,293,725,509,595,497,848,770,409,006,648,042,280,431,050,701,231,737,247,154,031,336,755,571,837,355,448,366,761,193,009,048,276,726,283,471,649,373,905,692,282,935,897,828,434,072,816,873,295,057,489,077,944,270,510,029,018,187,087,681,970,217,959,958,770,063,122,784,246,523,208,993,893,633,615,297,060,606,654,810,440,288,711,607,369,060,812,062,720B"
+          },
+          {
+            "y": "12.0",
+            "textY": "16.0",
+            "label": "1,000,000,000,000,000,096,350,143,920,374,114,471,941,312,455,251,843,583,129,231,209,642,073,450,717,704,585,714,640,048,901,985,187,209,719,740,304,992,727,175,727,058,132,438,746,816,615,645,013,237,871,654,793,913,513,638,826,934,129,377,152,896,934,732,354,722,602,044,746,013,300,944,590,451,431,923,562,399,193,436,133,392,135,634,504,915,915,015,573,579,289,946,925,483,474,026,496B"
+          }
+        ],
+        "categories": [
+          {
+            "x": "158.0",
+            "label": "A"
+          },
+          {
+            "x": "394.0",
+            "label": "B"
+          }
+        ],
+        "legend": [],
+        "marks": [
+          {
+            "index": 0,
+            "series": 1,
+            "shape": "path",
+            "d": "M91.9,196.0 V16.0 Q91.9,12.0 95.9,12.0 H220.1 Q224.1,12.0 224.1,16.0 V196.0 Z",
+            "x": "91.9",
+            "y": "12.0",
+            "width": "132.2",
+            "height": "184.0",
+            "title": "A",
+            "body": "179,769,313,486,231,564,793,826,746,329,356,487,460,061,771,816,610,493,194,377,291,867,566,634,083,253,736,182,911,671,780,280,864,445,928,163,680,987,122,391,750,825,462,330,354,250,895,282,439,122,322,875,506,826,024,599,142,533,926,918,074,193,061,745,122,574,500,020,189,880,363,468,340,637,347,674,643,851,875,759,782,894,318,316,386,198,487,970,256,787,451,014,597,457,079,993,094,755,057,664.0B",
+            "label": "A: 179,769,313,486,231,564,793,826,746,329,356,487,460,061,771,816,610,493,194,377,291,867,566,634,083,253,736,182,911,671,780,280,864,445,928,163,680,987,122,391,750,825,462,330,354,250,895,282,439,122,322,875,506,826,024,599,142,533,926,918,074,193,061,745,122,574,500,020,189,880,363,468,340,637,347,674,643,851,875,759,782,894,318,316,386,198,487,970,256,787,451,014,597,457,079,993,094,755,057,664.0B",
+            "anchorX": "158.0",
+            "anchorY": "12.0"
+          },
+          {
+            "index": 1,
+            "series": 1,
+            "shape": "path",
+            "d": "M327.9,196.0 V196.0 Q327.9,196.0 327.9,196.0 H460.1 Q460.1,196.0 460.1,196.0 V196.0 Z",
+            "x": "327.9",
+            "y": "196.0",
+            "width": "132.2",
+            "height": "0.0",
+            "title": "B",
+            "body": "5.0k",
+            "label": "B: 5.0k",
+            "anchorX": "394.0",
+            "anchorY": "196.0"
+          }
+        ],
+        "lines": [],
+        "areas": [],
+        "points": [],
+        "value": {
+          "x": "158.0",
+          "y": "4.0",
+          "text": "179,769,313,486,231,564,793,826,746,329,356,487,460,061,771,816,610,493,194,377,291,867,566,634,083,253,736,182,911,671,780,280,864,445,928,163,680,987,122,391,750,825,462,330,354,250,895,282,439,122,322,875,506,826,024,599,142,533,926,918,074,193,061,745,122,574,500,020,189,880,363,468,340,637,347,674,643,851,875,759,782,894,318,316,386,198,487,970,256,787,451,014,597,457,079,993,094,755,057,664.0B"
+        },
+        "table": {
+          "columns": ["", "Bytes"],
+          "rows": [
+            {
+              "label": "A",
+              "cells": [
+                "179,769,313,486,231,564,793,826,746,329,356,487,460,061,771,816,610,493,194,377,291,867,566,634,083,253,736,182,911,671,780,280,864,445,928,163,680,987,122,391,750,825,462,330,354,250,895,282,439,122,322,875,506,826,024,599,142,533,926,918,074,193,061,745,122,574,500,020,189,880,363,468,340,637,347,674,643,851,875,759,782,894,318,316,386,198,487,970,256,787,451,014,597,457,079,993,094,755,057,664.0B"
+              ]
+            },
+            {
+              "label": "B",
+              "cells": ["5.0k"]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "line, values within 1e-10 of zero keep a 1e-10 step",
+      "series": [
+        {
+          "name": "Drift",
+          "data": [1e-60, -1e-60]
+        }
+      ],
+      "options": {
+        "type": "line",
+        "labels": ["A", "B"]
+      },
+      "expected": {
+        "type": "line",
+        "width": 520,
+        "height": 220,
+        "left": "40.0",
+        "right": "512.0",
+        "tickX": "32.0",
+        "labelY": "214.0",
+        "ticks": [
+          {
+            "y": "196.0",
+            "textY": "200.0",
+            "label": "-0.0000000001"
+          },
+          {
+            "y": "104.0",
+            "textY": "108.0",
+            "label": "0"
+          },
+          {
+            "y": "12.0",
+            "textY": "16.0",
+            "label": "0.0000000001"
+          }
+        ],
+        "categories": [
+          {
+            "x": "40.0",
+            "label": "A"
+          },
+          {
+            "x": "512.0",
+            "label": "B"
+          }
+        ],
+        "legend": [],
+        "marks": [
+          {
+            "index": 0,
+            "series": 1,
+            "shape": "rect",
+            "d": "",
+            "x": "40.0",
+            "y": "12.0",
+            "width": "236.0",
+            "height": "184.0",
+            "title": "A",
+            "body": "0",
+            "label": "A: 0",
+            "anchorX": "40.0",
+            "anchorY": "104.0"
+          },
+          {
+            "index": 1,
+            "series": 1,
+            "shape": "rect",
+            "d": "",
+            "x": "276.0",
+            "y": "12.0",
+            "width": "236.0",
+            "height": "184.0",
+            "title": "B",
+            "body": "0",
+            "label": "B: 0",
+            "anchorX": "512.0",
+            "anchorY": "104.0"
+          }
+        ],
+        "lines": [
+          {
+            "series": 1,
+            "d": "M40.0,104.0 L512.0,104.0"
+          }
+        ],
+        "areas": [],
+        "points": [
+          {
+            "index": 0,
+            "x": "40.0",
+            "top": "12.0",
+            "bottom": "196.0",
+            "dots": [
+              {
+                "series": 1,
+                "cx": "40.0",
+                "cy": "104.0"
+              }
+            ]
+          },
+          {
+            "index": 1,
+            "x": "512.0",
+            "top": "12.0",
+            "bottom": "196.0",
+            "dots": [
+              {
+                "series": 1,
+                "cx": "512.0",
+                "cy": "104.0"
+              }
+            ]
+          }
+        ],
+        "value": {
+          "x": "40.0",
+          "y": "94.0",
+          "text": "0"
+        },
+        "table": {
+          "columns": ["", "Drift"],
+          "rows": [
+            {
+              "label": "A",
+              "cells": ["0"]
+            },
+            {
+              "label": "B",
+              "cells": ["0"]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "bar, a viewBox inside the padding falls back to the default",
+      "series": [
+        {
+          "name": "Visits",
+          "data": [3, 5]
+        }
+      ],
+      "options": {
+        "type": "bar",
+        "labels": ["A", "B"],
+        "width": 40,
+        "height": 30
+      },
+      "expected": {
+        "type": "bar",
+        "width": 520,
+        "height": 220,
+        "left": "40.0",
+        "right": "512.0",
+        "tickX": "32.0",
+        "labelY": "214.0",
+        "ticks": [
+          {
+            "y": "196.0",
+            "textY": "200.0",
+            "label": "0"
+          },
+          {
+            "y": "159.2",
+            "textY": "163.2",
+            "label": "1"
+          },
+          {
+            "y": "122.4",
+            "textY": "126.4",
+            "label": "2"
+          },
+          {
+            "y": "85.6",
+            "textY": "89.6",
+            "label": "3"
+          },
+          {
+            "y": "48.8",
+            "textY": "52.8",
+            "label": "4"
+          },
+          {
+            "y": "12.0",
+            "textY": "16.0",
+            "label": "5"
+          }
+        ],
+        "categories": [
+          {
+            "x": "158.0",
+            "label": "A"
+          },
+          {
+            "x": "394.0",
+            "label": "B"
+          }
+        ],
+        "legend": [],
+        "marks": [
+          {
+            "index": 0,
+            "series": 1,
+            "shape": "path",
+            "d": "M91.9,196.0 V89.6 Q91.9,85.6 95.9,85.6 H220.1 Q224.1,85.6 224.1,89.6 V196.0 Z",
+            "x": "91.9",
+            "y": "85.6",
+            "width": "132.2",
+            "height": "110.4",
+            "title": "A",
+            "body": "3",
+            "label": "A: 3",
+            "anchorX": "158.0",
+            "anchorY": "85.6"
+          },
+          {
+            "index": 1,
+            "series": 1,
+            "shape": "path",
+            "d": "M327.9,196.0 V16.0 Q327.9,12.0 331.9,12.0 H456.1 Q460.1,12.0 460.1,16.0 V196.0 Z",
+            "x": "327.9",
+            "y": "12.0",
+            "width": "132.2",
+            "height": "184.0",
+            "title": "B",
+            "body": "5",
+            "label": "B: 5",
+            "anchorX": "394.0",
+            "anchorY": "12.0"
+          }
+        ],
+        "lines": [],
+        "areas": [],
+        "points": [],
+        "value": {
+          "x": "394.0",
+          "y": "4.0",
+          "text": "5"
+        },
+        "table": {
+          "columns": ["", "Visits"],
+          "rows": [
+            {
+              "label": "A",
+              "cells": ["3"]
+            },
+            {
+              "label": "B",
+              "cells": ["5"]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "line, subnormal values keep a finite 1e-10 axis",
+      "series": [
+        {
+          "name": "Rate",
+          "data": [1e-310, 5e-324]
+        }
+      ],
+      "options": {
+        "type": "line",
+        "labels": ["A", "B"]
+      },
+      "expected": {
+        "type": "line",
+        "width": 520,
+        "height": 220,
+        "left": "40.0",
+        "right": "512.0",
+        "tickX": "32.0",
+        "labelY": "214.0",
+        "ticks": [
+          {
+            "y": "196.0",
+            "textY": "200.0",
+            "label": "0"
+          },
+          {
+            "y": "12.0",
+            "textY": "16.0",
+            "label": "0.0000000001"
+          }
+        ],
+        "categories": [
+          {
+            "x": "40.0",
+            "label": "A"
+          },
+          {
+            "x": "512.0",
+            "label": "B"
+          }
+        ],
+        "legend": [],
+        "marks": [
+          {
+            "index": 0,
+            "series": 1,
+            "shape": "rect",
+            "d": "",
+            "x": "40.0",
+            "y": "12.0",
+            "width": "236.0",
+            "height": "184.0",
+            "title": "A",
+            "body": "0",
+            "label": "A: 0",
+            "anchorX": "40.0",
+            "anchorY": "196.0"
+          },
+          {
+            "index": 1,
+            "series": 1,
+            "shape": "rect",
+            "d": "",
+            "x": "276.0",
+            "y": "12.0",
+            "width": "236.0",
+            "height": "184.0",
+            "title": "B",
+            "body": "0",
+            "label": "B: 0",
+            "anchorX": "512.0",
+            "anchorY": "196.0"
+          }
+        ],
+        "lines": [
+          {
+            "series": 1,
+            "d": "M40.0,196.0 L512.0,196.0"
+          }
+        ],
+        "areas": [],
+        "points": [
+          {
+            "index": 0,
+            "x": "40.0",
+            "top": "12.0",
+            "bottom": "196.0",
+            "dots": [
+              {
+                "series": 1,
+                "cx": "40.0",
+                "cy": "196.0"
+              }
+            ]
+          },
+          {
+            "index": 1,
+            "x": "512.0",
+            "top": "12.0",
+            "bottom": "196.0",
+            "dots": [
+              {
+                "series": 1,
+                "cx": "512.0",
+                "cy": "196.0"
+              }
+            ]
+          }
+        ],
+        "value": {
+          "x": "40.0",
+          "y": "186.0",
+          "text": "0"
+        },
+        "table": {
+          "columns": ["", "Rate"],
+          "rows": [
+            {
+              "label": "A",
+              "cells": ["0"]
+            },
+            {
+              "label": "B",
+              "cells": ["0"]
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "ticks": [
+    {
+      "min": 0,
+      "max": 10000,
+      "expected": [0, 2000, 4000, 6000, 8000, 10000]
+    },
+    {
+      "min": 0,
+      "max": 7400000,
+      "expected": [0, 2000000, 4000000, 6000000, 8000000]
+    },
+    {
+      "min": -12.5,
+      "max": 18,
+      "expected": [-20, -10, 0, 10, 20]
+    },
+    {
+      "min": 0,
+      "max": 0,
+      "expected": [0, 0.2, 0.4, 0.6, 0.8, 1]
+    },
+    {
+      "min": 0,
+      "max": 0.31,
+      "expected": [0, 0.1, 0.2, 0.3, 0.4]
+    },
+    {
+      "min": -3,
+      "max": -1,
+      "expected": [-3, -2, -1, 0]
+    },
+    {
+      "min": 0,
+      "max": 1,
+      "expected": [0, 0.2, 0.4, 0.6, 0.8, 1]
+    },
+    {
+      "min": 0,
+      "max": 99,
+      "expected": [0, 20, 40, 60, 80, 100]
+    },
+    {
+      "min": 0,
+      "max": 101,
+      "expected": [0, 50, 100, 150]
+    },
+    {
+      "min": 0,
+      "max": 1.7976931348623157e308,
+      "expected": [0, 2e299, 4e299, 6e299, 8e299, 1e300]
+    },
+    {
+      "min": -1.7976931348623157e308,
+      "max": 1.7976931348623157e308,
+      "expected": [-1e300, -5e299, 0, 5e299, 1e300]
+    },
+    {
+      "min": 0,
+      "max": 1e-60,
+      "expected": [0, 1e-10]
+    },
+    {
+      "min": -1e-60,
+      "max": 1e-60,
+      "expected": [-1e-10, 0, 1e-10]
+    },
+    {
+      "min": 0,
+      "max": 3e-10,
+      "expected": [0, 1e-10, 2e-10, 3e-10]
+    },
+    {
+      "min": 0,
+      "max": 1e-310,
+      "expected": [0, 1e-10]
+    },
+    {
+      "min": -5e-324,
+      "max": 5e-324,
+      "expected": [-1e-10, 0, 1e-10]
+    }
+  ],
+  "values": [
+    {
+      "value": 4100,
+      "options": {
+        "notation": "compact",
+        "prefix": "$",
+        "suffix": ""
+      },
+      "expected": "$4.1k"
+    },
+    {
+      "value": 10000,
+      "options": {
+        "notation": "compact",
+        "prefix": "$",
+        "suffix": ""
+      },
+      "expected": "$10.0k"
+    },
+    {
+      "value": 999,
+      "options": {
+        "notation": "compact",
+        "prefix": "",
+        "suffix": ""
+      },
+      "expected": "999"
+    },
+    {
+      "value": -2500,
+      "options": {
+        "notation": "compact",
+        "prefix": "$",
+        "suffix": ""
+      },
+      "expected": "-$2.5k"
+    },
+    {
+      "value": 1234567.891,
+      "options": {
+        "notation": "standard",
+        "prefix": "",
+        "suffix": ""
+      },
+      "expected": "1,234,567.89"
+    },
+    {
+      "value": 0.125,
+      "options": {
+        "notation": "standard",
+        "prefix": "",
+        "suffix": "%"
+      },
+      "expected": "0.13%"
+    },
+    {
+      "value": -0.001,
+      "options": {
+        "notation": "standard",
+        "prefix": "",
+        "suffix": ""
+      },
+      "expected": "-0.001"
+    },
+    {
+      "value": 3600000,
+      "options": {
+        "notation": "compact",
+        "prefix": "$",
+        "suffix": ""
+      },
+      "expected": "$3.6M"
+    },
+    {
+      "value": 2500000000,
+      "options": {
+        "notation": "compact",
+        "prefix": "",
+        "suffix": ""
+      },
+      "expected": "2.5B"
+    },
+    {
+      "value": -1e-12,
+      "options": {
+        "notation": "standard",
+        "prefix": "",
+        "suffix": ""
+      },
+      "expected": "0"
+    },
+    {
+      "value": 0.0012,
+      "options": {
+        "notation": "standard",
+        "prefix": "",
+        "suffix": ""
+      },
+      "expected": "0.0012"
+    },
+    {
+      "value": 0.00123,
+      "options": {
+        "notation": "compact",
+        "prefix": "",
+        "suffix": ""
+      },
+      "expected": "0.0012"
+    },
+    {
+      "value": 1150,
+      "options": {
+        "notation": "compact",
+        "prefix": "$",
+        "suffix": ""
+      },
+      "expected": "$1.1k"
+    },
+    {
+      "value": 1450000,
+      "options": {
+        "notation": "compact",
+        "prefix": "",
+        "suffix": ""
+      },
+      "expected": "1.4M"
+    },
+    {
+      "value": 1.005,
+      "options": {
+        "notation": "standard",
+        "prefix": "",
+        "suffix": ""
+      },
+      "expected": "1"
+    },
+    {
+      "value": 8.25,
+      "options": {
+        "notation": "standard",
+        "prefix": "",
+        "suffix": ""
+      },
+      "expected": "8.25"
+    },
+    {
+      "value": 8250,
+      "options": {
+        "notation": "compact",
+        "prefix": "$",
+        "suffix": ""
+      },
+      "expected": "$8.3k"
+    },
+    {
+      "value": 999950,
+      "options": {
+        "notation": "compact",
+        "prefix": "",
+        "suffix": ""
+      },
+      "expected": "1.0M"
+    },
+    {
+      "value": 999.996,
+      "options": {
+        "notation": "compact",
+        "prefix": "",
+        "suffix": ""
+      },
+      "expected": "1.0k"
+    },
+    {
+      "value": 2.5e21,
+      "options": {
+        "notation": "standard",
+        "prefix": "",
+        "suffix": ""
+      },
+      "expected": "2,500,000,000,000,000,000,000"
+    },
+    {
+      "value": 2.5e30,
+      "options": {
+        "notation": "compact",
+        "prefix": "$",
+        "suffix": ""
+      },
+      "expected": "$2,500,000,000,000,000,000,000.0B"
+    },
+    {
+      "value": 1e-310,
+      "options": {
+        "notation": "standard",
+        "prefix": "",
+        "suffix": ""
+      },
+      "expected": "0"
+    }
+  ],
+  "tickLabels": [
+    {
+      "ticks": [0, 0.001, 0.002, 0.003],
+      "options": {
+        "notation": "standard",
+        "prefix": "",
+        "suffix": ""
+      },
+      "expected": ["0", "0.001", "0.002", "0.003"]
+    },
+    {
+      "ticks": [0, 0.00001, 0.00002, 0.00003],
+      "options": {
+        "notation": "standard",
+        "prefix": "",
+        "suffix": "%"
+      },
+      "expected": ["0%", "0.00001%", "0.00002%", "0.00003%"]
+    },
+    {
+      "ticks": [0, 500, 1000, 1500],
+      "options": {
+        "notation": "compact",
+        "prefix": "$",
+        "suffix": ""
+      },
+      "expected": ["$0k", "$0.5k", "$1k", "$1.5k"]
+    },
+    {
+      "ticks": [-20, -10, 0, 10, 20],
+      "options": {
+        "notation": "standard",
+        "prefix": "",
+        "suffix": ""
+      },
+      "expected": ["-20", "-10", "0", "10", "20"]
+    },
+    {
+      "ticks": [0, 2000000, 4000000, 6000000, 8000000],
+      "options": {
+        "notation": "compact",
+        "prefix": "",
+        "suffix": ""
+      },
+      "expected": ["0M", "2M", "4M", "6M", "8M"]
+    }
+  ]
+}

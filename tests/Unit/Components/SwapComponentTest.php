@@ -2,144 +2,87 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
+use Illuminate\Support\Facades\Blade;
 
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
-use ArtisanPack\LivewireUiComponents\View\Components\Swap;
-use Error;
-use RuntimeException;
-
-/**
- * Comprehensive unit tests for the Swap component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * Swap (#65): the design-system markup contract. The manifest parity check
+ * is in tests/Feature/DesignSystemParityTest.php.
  */
-class SwapComponentTest extends ComponentTestCase
+
+function swapDom(string $blade): DOMXPath
 {
-    protected string $componentClass = Swap::class;
-
-    protected array $defaultProperties = [
-        'trueIcon'  => 'o-sun',
-        'falseIcon' => 'o-moon',
-        'iconSize'  => 'h-5 w-5',
-    ];
-
-    protected array $requiredProperties = [];
-
-    public function test_swap_string_properties(): void
-    {
-        $stringProperties = ['id', 'true', 'false', 'trueIcon', 'falseIcon', 'iconSize'];
-        $testValues       = ComponentDataFactory::sampleTexts();
-
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
-
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
-    }
-
-    public function test_swap_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
-
-    public function test_swap_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'Swap should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
-
-    public function test_swap_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
-
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
-
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_swap_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'Swap rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
+    return designSystemDom(Blade::render($blade));
 }
+
+test('renders a named checkbox over the on and off contents', function (): void {
+    $dom     = swapDom('<x-artisanpack-swap label="Dark mode" />');
+    $root    = $dom->query('//label[@data-part="root"]')->item(0);
+    $control = $dom->query('//label/input[@data-part="control"]')->item(0);
+
+    expect($root->getAttribute('class'))->toBe('apui-swap')
+        ->and($root->getAttribute('data-scope'))->toBe('swap')
+        ->and($root->getAttribute('data-size'))->toBe('md')
+        ->and($root->getAttribute('data-transition'))->toBe('fade')
+        ->and($root->getAttribute('data-state'))->toBe('unchecked')
+        ->and($control->getAttribute('type'))->toBe('checkbox')
+        ->and($control->getAttribute('aria-label'))->toBe('Dark mode')
+        ->and($control->hasAttribute('checked'))->toBeFalse()
+        ->and($dom->query('//span[@data-part="on"][@aria-hidden="true"]/svg'))->toHaveCount(1)
+        ->and($dom->query('//span[@data-part="off"][@aria-hidden="true"]/svg'))->toHaveCount(1);
+});
+
+test('checked and disabled reach the checkbox and the root', function (): void {
+    $dom = swapDom('<x-artisanpack-swap label="Dark mode" checked disabled />');
+
+    expect($dom->query('//label[@data-state="checked"][@data-disabled]'))->toHaveCount(1)
+        ->and($dom->query('//input[@checked][@disabled]'))->toHaveCount(1);
+});
+
+test('wire:model and other attributes land on the checkbox; class on the root', function (): void {
+    $dom = swapDom('<x-artisanpack-swap label="Dark mode" wire:model.live="dark" name="dark" class="ms-2" />');
+
+    expect($dom->query('//label[@class="apui-swap ms-2"]'))->toHaveCount(1)
+        ->and($dom->query('//input[@*[name()="wire:model.live"]="dark"][@name="dark"]'))->toHaveCount(1)
+        ->and($dom->query('//label[@name]'))->toHaveCount(0);
+});
+
+test('data-state follows the checkbox after a form reset, which fires no change', function (): void {
+    $input = designSystemDom(Blade::render('<form><x-artisanpack-swap label="Dark mode" /></form>'))->query('//input')->item(0);
+
+    expect($input->getAttribute('x-on:reset.window'))->toContain('$event.target === $el.form')
+        ->and($input->getAttribute('x-on:reset.window'))->toContain("dataset.state = \$el.checked ? 'checked' : 'unchecked'");
+});
+
+test('size and transition fall back to md and fade', function (): void {
+    $root = swapDom('<x-artisanpack-swap label="x" size="huge" transition="spin" />')->query('//label')->item(0);
+
+    expect($root->getAttribute('data-size'))->toBe('md')
+        ->and($root->getAttribute('data-transition'))->toBe('fade');
+
+    $root = swapDom('<x-artisanpack-swap label="x" size="lg" transition="rotate" />')->query('//label')->item(0);
+
+    expect($root->getAttribute('data-size'))->toBe('lg')
+        ->and($root->getAttribute('data-transition'))->toBe('rotate');
+});
+
+test('on and off slots replace the icons', function (): void {
+    $dom = swapDom('<x-artisanpack-swap label="Menu"><x-slot:on><b>On</b></x-slot:on><x-slot:off><i>Off</i></x-slot:off></x-artisanpack-swap>');
+
+    expect($dom->query('//span[@data-part="on"]/b'))->toHaveCount(1)
+        ->and($dom->query('//span[@data-part="off"]/i'))->toHaveCount(1);
+});
+
+test('the 2.x true and false slots and icons still work', function (): void {
+    $dom = swapDom('<x-artisanpack-swap label="Menu"><x-slot:true><b>On</b></x-slot:true><x-slot:false><i>Off</i></x-slot:false></x-artisanpack-swap>');
+
+    expect($dom->query('//span[@data-part="on"]/b'))->toHaveCount(1)
+        ->and($dom->query('//span[@data-part="off"]/i'))->toHaveCount(1);
+
+    $legacy  = swapDom('<x-artisanpack-swap label="Theme" true-icon="o-sun" false-icon="x" />');
+    $current = swapDom('<x-artisanpack-swap label="Theme" on-icon="sun" off-icon="x" />');
+
+    expect($legacy->query('//span[@data-part="on"]/svg')->item(0)->C14N())
+        ->toBe($current->query('//span[@data-part="on"]/svg')->item(0)->C14N())
+        ->and($legacy->query('//span[@data-part="off"]/svg')->item(0)->C14N())
+        ->toBe($current->query('//span[@data-part="off"]/svg')->item(0)->C14N());
+});

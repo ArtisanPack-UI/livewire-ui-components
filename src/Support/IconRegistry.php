@@ -59,6 +59,8 @@ final class IconRegistry
 
     /**
      * Directional icons, which mirror under RTL (`data-mirror` on their part).
+     * Mirrors `DIRECTIONAL_ICONS` in `@artisanpack-ui/behavior/icons`; apps
+     * add their own with `registerDirectional()`.
      *
      * @since 3.0.0
      *
@@ -95,6 +97,13 @@ final class IconRegistry
      * @var array<string, string>
      */
     private static array $registered = [];
+
+    /**
+     * Names registered as directional at runtime.
+     *
+     * @var list<string>
+     */
+    private static array $directional = [];
 
     /**
      * The default set, loaded once.
@@ -159,7 +168,21 @@ final class IconRegistry
      */
     public static function reset(): void
     {
-        self::$registered = [];
+        self::$registered  = [];
+        self::$directional = [];
+    }
+
+    /**
+     * Marks names as directional, so they mirror under RTL like the built-in
+     * arrows. Mirrors `registerDirectionalIcons` in `@artisanpack-ui/behavior/icons`.
+     *
+     * @since 3.0.0
+     *
+     * @param  list<string>  $names  The icon names.
+     */
+    public static function registerDirectional(array $names): void
+    {
+        self::$directional = array_values(array_unique([...self::$directional, ...array_map('strval', $names)]));
     }
 
     /**
@@ -276,11 +299,11 @@ final class IconRegistry
      *
      * @param  string|null  $name  The icon name.
      *
-     * @return bool True for arrow and chevron left/right.
+     * @return bool True for arrow and chevron left/right, and registered names.
      */
     public static function isDirectional(?string $name): bool
     {
-        return null !== $name && in_array($name, self::DIRECTIONAL, true);
+        return null !== $name && (in_array($name, self::DIRECTIONAL, true) || in_array($name, self::$directional, true));
     }
 
     /**
@@ -311,9 +334,10 @@ final class IconRegistry
     /**
      * The `registered_icons` config, checked.
      *
-     * @return array<string, string> Name => inner SVG markup.
      *
      * @throws InvalidArgumentException When a configured body could run script.
+     *
+     * @return array<string, string> Name => inner SVG markup.
      */
     private static function configured(): array
     {
