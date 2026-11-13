@@ -19,6 +19,7 @@ Migration guides provide step-by-step instructions for updating your code when b
 
 ### Version Upgrades
 
+- [**Upgrading from v2.x to v3.0**](Migration-V2-To-V3) - Guide for upgrading to v3.0 on the design system: the `artisanpack:upgrade-ui` command, what it rewrites and what it reports
 - [**Upgrading from v1.x to v2.0**](Migration-V1-To-V2) - Guide for upgrading to v2.0, including new dashboard components, table export, streaming content, and theme preview tool (no breaking changes)
 
 ### Livewire 4 Features

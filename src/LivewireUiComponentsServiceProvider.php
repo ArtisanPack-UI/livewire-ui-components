@@ -24,6 +24,7 @@ use ArtisanPack\LivewireUiComponents\Console\Commands\GeneratePresetCommand;
 use ArtisanPack\LivewireUiComponents\Console\Commands\GenerateThemeCss;
 use ArtisanPack\LivewireUiComponents\Console\Commands\LivewireUiComponentsBootcampCommand;
 use ArtisanPack\LivewireUiComponents\Console\Commands\LivewireUiComponentsInstallCommand;
+use ArtisanPack\LivewireUiComponents\Console\Commands\UpgradeUiCommand;
 use ArtisanPack\LivewireUiComponents\Support\DesignSystemAssets;
 use ArtisanPack\LivewireUiComponents\Support\ThemeScript;
 use ArtisanPack\LivewireUiComponents\Theming\DesignTokens;
@@ -577,6 +578,7 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
             GenerateThemeCss::class,
             GeneratePresetCommand::class,
             GenerateIdeHelperCommand::class,
+            UpgradeUiCommand::class,
         ]);
     }
 
