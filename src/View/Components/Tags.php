@@ -20,6 +20,8 @@ declare(strict_types=1);
 
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
+use ArtisanPack\LivewireUiComponents\View\Concerns\CallsLegacySearchFunction;
+
 /**
  * Tags Component Class
  *
@@ -29,15 +31,19 @@ namespace ArtisanPack\LivewireUiComponents\View\Components;
  * `empty-label`, and `hint-class` and `error-class` are the `hint` and
  * `error` keys of `classes`. Options keyed by `option-value`,
  * `option-label` and `option-sub-label` become `value`, `label` and
- * `description` entries. `searchable` is ignored, since filtering is always
- * on, and so are the Tailwind-era options; `id` stays an attribute, which
- * Combobox uses as its base id.
+ * `description` entries, whose value is the label: 2.x bound the tags'
+ * labels, not their ids. `searchable` searches on the server, calling
+ * `search-function` with the typed text after `min-chars`. The
+ * Tailwind-era options are ignored; `id` stays an attribute, which Combobox
+ * uses as its base id.
  *
  * @since      1.0.0
  * @deprecated 3.0.0 Use <x-artisanpack-combobox multiple allow-create>.
  */
 class Tags extends Combobox
 {
+    use CallsLegacySearchFunction;
+
     /**
      * Creates the component.
      *
@@ -52,7 +58,7 @@ class Tags extends Combobox
      * @param  bool|null  $clearable  Adds a button that clears the value.
      * @param  string|null  $prefix  Ignored.
      * @param  string|null  $suffix  Ignored.
-     * @param  bool|null  $searchable  Ignored: filtering is always on.
+     * @param  bool|null  $searchable  The server filters the options (`remote`), calling `search-function`.
      * @param  int|string|null  $debounce  Delay before setting search-model: `250ms`, `1s` or milliseconds.
      * @param  int|null  $minChars  Ignored.
      * @param  string|null  $searchFunction  Ignored.
@@ -73,6 +79,7 @@ class Tags extends Combobox
      * @param  bool|null  $firstErrorOnly  Ignored.
      * @param  bool|null  $single  Selects one value instead of several.
      * @param  bool  $disabled  Disables the field.
+     * @param  bool|null  $readonly  Ignored for now: Combobox has no read-only state yet (ArtisanPack-UI/design-system#120). Not mapped to `disabled`, which would change its meaning.
      * @param  bool  $required  Marks the field required.
      * @param  string|null  $placeholder  Shown in the empty input.
      * @param  string  $size  Combobox: control height, sm, md or lg.
@@ -119,6 +126,7 @@ class Tags extends Combobox
         ?bool $firstErrorOnly = false,
         ?bool $single = false,
         bool $disabled = false,
+        ?bool $readonly = false,
         bool $required = false,
         ?string $placeholder = null,
         string $size = 'md',
@@ -135,7 +143,7 @@ class Tags extends Combobox
         array $classes = [],
     ) {
         parent::__construct(
-            options: Choices::legacyOptions($options, $optionValue, $optionLabel, $optionSubLabel),
+            options: static::legacyTagOptions($options, $optionValue, $optionLabel, $optionSubLabel),
             label: $label,
             hint: $hint,
             disabled: $disabled,
@@ -153,6 +161,7 @@ class Tags extends Combobox
             portal: $portal,
             searchModel: $searchModel,
             multiple: ! $single,
+            remote: (bool) $searchable,
             allowCreate: (bool) $allowCustomTags,
             clearable: (bool) $clearable,
             leadingIcon: $icon,
@@ -161,6 +170,30 @@ class Tags extends Combobox
             debounce: Choices::legacyDebounce($debounce),
             errorField: $errorField,
             classes: [...Choices::legacyClasses($hintClass, $errorClass), ...$classes],
+        );
+
+        $this->useLegacySearchFunction($searchable, $searchFunction, $minChars);
+    }
+
+    /**
+     * Maps 2.x tag options like Choices does, but with each option's label as
+     * its value: 2.x appended the label to the bound array, so a string-tag
+     * field keeps receiving `'Bug'`, not the option's id.
+     *
+     * @since 3.0.0
+     *
+     * @param  iterable<mixed>  $options  The 2.x options.
+     * @param  string|null  $optionValue  The option key holding the 2.x value.
+     * @param  string|null  $optionLabel  The option key holding the label.
+     * @param  string|null  $optionSubLabel  The option key holding the description.
+     *
+     * @return list<mixed> The Combobox options.
+     */
+    public static function legacyTagOptions(iterable $options, ?string $optionValue = 'id', ?string $optionLabel = 'name', ?string $optionSubLabel = ''): array
+    {
+        return array_map(
+            static fn (mixed $option): mixed => is_array($option) && isset($option['label']) ? [...$option, 'value' => $option['label']] : $option,
+            Choices::legacyOptions($options, $optionValue, $optionLabel, $optionSubLabel),
         );
     }
 }

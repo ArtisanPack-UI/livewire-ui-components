@@ -24,19 +24,21 @@ test('extends combobox', function (): void {
 });
 
 test('renders the combobox markup with multiple and allow-create', function (): void {
-    $dom  = designSystemDom(legacyTagsHtml('search="Rooftop" :value="[\'bug\', \'Garden\']"'));
+    $dom  = designSystemDom(legacyTagsHtml('search="Rooftop" :value="[\'Bug\', \'Garden\']"'));
     $root = $dom->query('//div[contains(@class, "apui-combobox")]')->item(0);
 
     expect($root)->not->toBeNull()
         ->and($root->getAttribute('id'))->toBe('labels')
         ->and($root->hasAttribute('data-multiple'))->toBeTrue()
-        ->and(array_map(fn ($chip) => $chip->getAttribute('data-value'), iterator_to_array($dom->query('//*[@data-part="chip"][@data-value]'))))->toBe(['bug', 'Garden'])
-        ->and(trim($dom->query('//*[@data-part="chip"][@data-value="bug"]')->item(0)->textContent))->toBe('Bug')
+        ->and(array_map(fn ($chip) => $chip->getAttribute('data-value'), iterator_to_array($dom->query('//*[@data-part="chip"][@data-value]'))))->toBe(['Bug', 'Garden'])
+        ->and(trim($dom->query('//*[@data-part="chip"][@data-value="Bug"]')->item(0)->textContent))->toBe('Bug')
         ->and($dom->query('//*[@data-create]')->item(0)->getAttribute('data-value'))->toBe('Rooftop');
 });
 
 test('allow-custom-tags false turns allow-create off', function (): void {
-    expect(designSystemDom(legacyTagsHtml(':allow-custom-tags="false"'))->query('//*[@data-create]'))->toHaveCount(0);
+    // Unmatched search text, so creation would be offered if the flag were ignored.
+    expect(designSystemDom(legacyTagsHtml('search="Rooftop"'))->query('//*[@data-create]'))->toHaveCount(1)
+        ->and(designSystemDom(legacyTagsHtml(':allow-custom-tags="false" search="Rooftop"'))->query('//*[@data-create]'))->toHaveCount(0);
 });
 
 test('custom-tags-text becomes the create label', function (): void {
@@ -62,7 +64,8 @@ test('maps option keys, icon, no-result-text, clearable, hint-class and error-cl
     );
     $dom = designSystemDom($html);
 
-    expect($dom->query('//*[@data-part="item"][@data-value="ux"]'))->toHaveCount(1)
+    // The value is the label: 2.x bound tag labels, not ids.
+    expect($dom->query('//*[@data-part="item"][@data-value="UX"]'))->toHaveCount(1)
         ->and(trim($dom->query('//*[@data-part="item-description"]')->item(0)->textContent))->toBe('Design work')
         ->and($dom->query('//div[@data-part="box"]/*[@data-part="icon"]'))->toHaveCount(1)
         ->and($dom->query('//*[@data-part="clear-trigger"]'))->toHaveCount(1)
@@ -71,11 +74,11 @@ test('maps option keys, icon, no-result-text, clearable, hint-class and error-cl
         ->and($html)->toContain('No tags.');
 });
 
-test('searchable is ignored, without the 2.x exception for missing options', function (): void {
+test('searchable without options calls the default search method, without the 2.x exception', function (): void {
     $html = Blade::render('<x-artisanpack-tags id="free" :portal="false" searchable />');
 
     expect(designSystemDom($html)->query('//div[@data-part="root"]')->item(0)->hasAttribute('searchable'))->toBeFalse()
-        ->and($html)->not->toContain('x-on:search-change');
+        ->and($html)->toContain('$wire.call(&#039;search&#039;, $event.detail.search)');
 });
 
 test('does not leak the removed 2.x props as attributes', function (): void {
@@ -87,4 +90,31 @@ test('does not leak the removed 2.x props as attributes', function (): void {
     }
 
     expect($html)->not->toContain('max-h-10');
+});
+
+test('binds the tag labels, not the option ids, as 2.x did', function (): void {
+    $dom = designSystemDom(legacyTagsHtml());
+
+    $values = array_map(fn ($item) => $item->getAttribute('data-value'), iterator_to_array($dom->query('//*[@data-part="item"][@data-value][not(@data-create)]')));
+
+    expect($values)->toBe(['Bug', 'Docs']);
+});
+
+test('searchable calls the 2.x search-function on the server', function (): void {
+    $html = legacyTagsHtml('searchable search-function="findTags" min-chars="2"');
+
+    expect($html)->toContain('$wire.call(&#039;findTags&#039;, $event.detail.search)')
+        ->and($html)->toContain('$event.detail.search.length &lt; 2');
+
+    // Remote: the server filters, so typed text doesn't hide the options.
+    expect(designSystemDom(legacyTagsHtml('searchable search="zz"'))->query('//*[@data-part="item"][@data-value][not(@data-create)][not(@hidden)]'))->toHaveCount(2)
+        ->and(designSystemDom(legacyTagsHtml('search="zz"'))->query('//*[@data-part="item"][@data-value][not(@data-create)][not(@hidden)]'))->toHaveCount(0);
+
+    expect(legacyTagsHtml())->not->toContain('$wire.call(');
+});
+
+test('readonly is consumed rather than leaking onto the root', function (): void {
+    $root = designSystemDom(legacyTagsHtml('readonly'))->query('//div[contains(@class, "apui-combobox")]')->item(0);
+
+    expect($root->hasAttribute('readonly'))->toBeFalse();
 });

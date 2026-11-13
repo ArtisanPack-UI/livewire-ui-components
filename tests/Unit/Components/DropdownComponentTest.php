@@ -114,3 +114,17 @@ test('without a trigger slot the default trigger button is kept', function (): v
     expect($trigger->nodeName)->toBe('button')
         ->and(trim($trigger->textContent))->toBe('Actions');
 });
+
+test('a text or icon-only 2.x trigger slot goes inside the keyboard-reachable trigger button', function (string $slot, string $text): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-dropdown :portal="false"><x-slot:trigger>'.$slot.'</x-slot:trigger><x-artisanpack-dropdown-menu-item label="Profile" /></x-artisanpack-dropdown>'));
+
+    $trigger = $dom->query('//*[@data-scope="dropdown-menu"][@data-part="trigger"]')->item(0);
+
+    expect($trigger->nodeName)->toBe('button')
+        ->and($trigger->hasAttribute('tabindex'))->toBeFalse()
+        ->and(trim($trigger->textContent))->toBe($text)
+        ->and($dom->query('//button//button'))->toHaveCount(0);
+})->with([
+    'text'          => ['Settings', 'Settings'],
+    'icon and text' => ['<svg aria-hidden="true"></svg><span>Options</span>', 'Options'],
+]);

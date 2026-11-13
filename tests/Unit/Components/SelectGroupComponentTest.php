@@ -64,3 +64,24 @@ test('removed 2.x props do not leak as HTML attributes', function () use ($legac
         expect($html)->not->toContain($attribute);
     }
 });
+
+test('keeps a numeric group label and reads model options directly', function (): void {
+    $options = [
+        2026 => collect([
+            \ArtisanPack\LivewireUiComponents\Tests\Fixtures\LegacyOption::make(7, 'Seven'),
+            \ArtisanPack\LivewireUiComponents\Tests\Fixtures\LegacyOption::make(8, 'Eight'),
+        ]),
+        2027 => [['id' => 9, 'name' => 'Nine']],
+    ];
+
+    $dom = designSystemDom(Blade::render('<x-artisanpack-select-group option-label="display_name" :options="$options" />', ['options' => $options]));
+
+    $groups = $dom->query('//optgroup');
+
+    expect($groups)->toHaveCount(2)
+        ->and($groups->item(0)->getAttribute('label'))->toBe('2026')
+        ->and($groups->item(1)->getAttribute('label'))->toBe('2027')
+        ->and($dom->query('//optgroup[@label="2026"]/option[@value="7"]')->item(0)?->textContent)->toBe('Option Seven')
+        ->and($dom->query('//optgroup[@label="2026"]/option[@value="8"]'))->toHaveCount(1)
+        ->and($dom->query('//optgroup[@label="2027"]/option[@value="9"]'))->toHaveCount(1);
+});

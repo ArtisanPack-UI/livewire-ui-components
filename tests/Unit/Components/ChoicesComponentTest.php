@@ -113,3 +113,21 @@ test('does not leak the removed 2.x props as attributes', function (): void {
 
     expect($html)->not->toContain('max-h-10')->not->toContain('$wire.call');
 });
+
+test('readonly is consumed rather than leaking onto the root', function (): void {
+    $html = Blade::render('<x-artisanpack-choices readonly :portal="false" :options="[ [ \'id\' => 1, \'name\' => \'One\' ] ]" />');
+
+    expect(designSystemDom($html)->query('//div[contains(@class, "apui-combobox")]')->item(0)->hasAttribute('readonly'))->toBeFalse();
+});
+
+test('reads model options directly, keeping hidden ids and accessor labels', function (): void {
+    $options = collect([
+        \ArtisanPack\LivewireUiComponents\Tests\Fixtures\LegacyOption::make(7, 'Seven'),
+    ]);
+
+    $dom  = designSystemDom(Blade::render('<x-artisanpack-choices option-label="display_name" :portal="false" :options="$options" />', ['options' => $options]));
+    $item = $dom->query('//*[@data-part="item"][@data-value]')->item(0);
+
+    expect($item->getAttribute('data-value'))->toBe('7')
+        ->and(trim($dom->query('.//*[@data-part="item-text"]', $item)->item(0)->textContent))->toBe('Option Seven');
+});

@@ -76,6 +76,7 @@ class ChoicesOffline extends Combobox
      * @param  mixed  $prepend  Ignored.
      * @param  mixed  $append  Ignored.
      * @param  bool  $disabled  Disables the field.
+     * @param  bool|null  $readonly  Ignored for now: Combobox has no read-only state yet (ArtisanPack-UI/design-system#120). Not mapped to `disabled`, which would change its meaning.
      * @param  bool  $required  Marks the field required.
      * @param  string|null  $placeholder  Shown in the empty input.
      * @param  string  $size  Combobox: control height, sm, md or lg.
@@ -126,6 +127,7 @@ class ChoicesOffline extends Combobox
         mixed $prepend = null,
         mixed $append = null,
         bool $disabled = false,
+        ?bool $readonly = false,
         bool $required = false,
         ?string $placeholder = null,
         string $size = 'md',

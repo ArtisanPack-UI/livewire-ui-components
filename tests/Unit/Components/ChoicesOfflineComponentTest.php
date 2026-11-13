@@ -90,3 +90,9 @@ test('does not leak the removed 2.x props as attributes', function (): void {
 
     expect($html)->not->toContain('max-h-10');
 });
+
+test('readonly is consumed rather than leaking onto the root', function (): void {
+    $html = Blade::render('<x-artisanpack-choices-offline readonly :portal="false" :options="[ [ \'id\' => 1, \'name\' => \'One\' ] ]" />');
+
+    expect(designSystemDom($html)->query('//div[contains(@class, "apui-combobox")]')->item(0)->hasAttribute('readonly'))->toBeFalse();
+});

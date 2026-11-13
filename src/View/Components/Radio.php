@@ -127,26 +127,46 @@ class Radio extends RadioGroup
     {
         $mapped = [];
         foreach ($options as $option) {
-            if ($option instanceof Arrayable) {
-                $option = $option->toArray();
-            }
-
             if (! is_array($option) && ! is_object($option)) {
                 $mapped[] = $option;
 
                 continue;
             }
 
-            $value    = data_get($option, $optionValue ?? 'id') ?? data_get($option, 'value');
+            $value    = self::legacyField($option, $optionValue ?? 'id') ?? self::legacyField($option, 'value');
             $mapped[] = [
                 'value'       => $value,
-                'label'       => data_get($option, $optionLabel ?? 'name') ?? data_get($option, 'label') ?? $value,
-                'description' => data_get($option, $optionHint ?? 'hint') ?? data_get($option, 'description'),
-                'meta'        => data_get($option, 'meta'),
-                'disabled'    => (bool) data_get($option, 'disabled', false),
+                'label'       => self::legacyField($option, $optionLabel ?? 'name') ?? self::legacyField($option, 'label') ?? $value,
+                'description' => self::legacyField($option, $optionHint ?? 'hint') ?? self::legacyField($option, 'description'),
+                'meta'        => self::legacyField($option, 'meta'),
+                'disabled'    => (bool) (self::legacyField($option, 'disabled') ?? false),
             ];
         }
 
         return $mapped;
+    }
+
+    /**
+     * Reads a 2.x option field. A model is read directly rather than through
+     * `toArray()`, which would drop `$hidden` attributes (often the id) and
+     * accessors that aren't appended; other Arrayable objects fall back to
+     * their array form.
+     *
+     * @since 3.0.0
+     *
+     * @param  array<array-key, mixed>|object  $option  The option.
+     * @param  string  $key  The field, in dot notation.
+     *
+     * @return mixed The field's value, or null.
+     */
+    public static function legacyField(array|object $option, string $key): mixed
+    {
+        $value = data_get($option, $key);
+
+        if (null === $value && $option instanceof Arrayable && ! $option instanceof \Illuminate\Database\Eloquent\Model) {
+            $value = data_get($option->toArray(), $key);
+        }
+
+        return $value;
     }
 }

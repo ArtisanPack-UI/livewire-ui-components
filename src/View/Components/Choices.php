@@ -19,8 +19,7 @@ declare(strict_types=1);
 
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
-use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Support\Js;
+use ArtisanPack\LivewireUiComponents\View\Concerns\CallsLegacySearchFunction;
 
 /**
  * Choices Component Class
@@ -39,19 +38,7 @@ use Illuminate\Support\Js;
  */
 class Choices extends Combobox
 {
-    /**
-     * The 2.x search method called with the typed text, when searchable.
-     *
-     * @since 3.0.0
-     */
-    protected ?string $legacySearchFunction = null;
-
-    /**
-     * The fewest characters that call the 2.x search method.
-     *
-     * @since 3.0.0
-     */
-    protected int $legacyMinChars = 0;
+    use CallsLegacySearchFunction;
 
     /**
      * Creates the component.
@@ -97,6 +84,7 @@ class Choices extends Combobox
      * @param  mixed  $prepend  Ignored.
      * @param  mixed  $append  Ignored.
      * @param  bool  $disabled  Disables the field.
+     * @param  bool|null  $readonly  Ignored for now: Combobox has no read-only state yet (ArtisanPack-UI/design-system#120). Not mapped to `disabled`, which would change its meaning.
      * @param  bool  $required  Marks the field required.
      * @param  string|null  $placeholder  Shown in the empty input.
      * @param  string  $size  Combobox: control height, sm, md or lg.
@@ -152,6 +140,7 @@ class Choices extends Combobox
         mixed $prepend = null,
         mixed $append = null,
         bool $disabled = false,
+        ?bool $readonly = false,
         bool $required = false,
         ?string $placeholder = null,
         string $size = 'md',
@@ -195,48 +184,7 @@ class Choices extends Combobox
             classes: [...static::legacyClasses($hintClass, $errorClass), ...$classes],
         );
 
-        if ($searchable && null !== $searchFunction && '' !== trim($searchFunction)) {
-            $this->legacySearchFunction = trim($searchFunction);
-            $this->legacyMinChars       = max(0, (int) $minChars);
-        }
-    }
-
-    /**
-     * The `x-on:search-change` handler: Combobox's with search-model, else,
-     * when searchable, a call to the 2.x search method with the typed text
-     * (and any arguments written in `search-function`), once it has
-     * `min-chars` characters.
-     *
-     * @since 3.0.0
-     *
-     * @return string|null The handler.
-     */
-    public function searchHandler(): ?string
-    {
-        $handler = parent::searchHandler();
-        if (null !== $handler || null === $this->legacySearchFunction) {
-            return $handler;
-        }
-
-        $method    = $this->legacySearchFunction;
-        $arguments = '';
-        if (1 === preg_match('/^([A-Za-z_][A-Za-z0-9_]*)\((.*)\)$/s', $method, $matches)) {
-            $method    = $matches[1];
-            $arguments = '' !== trim($matches[2]) ? ', '.trim($matches[2]) : '';
-        }
-
-        $call = sprintf(
-            '(loading = true, Promise.resolve($wire.call(%s, $event.detail.search%s)).finally(() => loading = %s))',
-            Js::from($method)->toHtml(),
-            $arguments,
-            $this->loading ? 'true' : 'false',
-        );
-
-        if (0 === $this->legacyMinChars) {
-            return $call;
-        }
-
-        return sprintf('$event.detail.search.length < %d ? null : %s', $this->legacyMinChars, $call);
+        $this->useLegacySearchFunction($searchable, $searchFunction, $minChars);
     }
 
     /**
@@ -264,18 +212,19 @@ class Choices extends Combobox
                 continue;
             }
 
-            $source = $option instanceof Arrayable ? $option->toArray() : $option;
-            $value  = data_get($source, $optionValue ?? 'id') ?? data_get($source, 'value');
-            $label  = data_get($source, $optionLabel ?? 'name') ?? data_get($source, 'label') ?? $value;
-            $sub    = null !== $optionSubLabel && '' !== $optionSubLabel ? data_get($source, $optionSubLabel) : null;
+            // Read through Radio::legacyField(), not toArray(): a model's
+            // hidden id and unappended accessors don't survive toArray().
+            $value = Radio::legacyField($option, $optionValue ?? 'id') ?? Radio::legacyField($option, 'value');
+            $label = Radio::legacyField($option, $optionLabel ?? 'name') ?? Radio::legacyField($option, 'label') ?? $value;
+            $sub   = null !== $optionSubLabel && '' !== $optionSubLabel ? Radio::legacyField($option, $optionSubLabel) : null;
 
             $mapped[] = array_filter([
                 'value'       => $value,
                 'label'       => null !== $label ? (string) $label : null,
-                'description' => $sub ?? data_get($source, 'description'),
-                'icon'        => data_get($source, 'icon'),
-                'color'       => data_get($source, 'color'),
-                'disabled'    => (bool) data_get($source, 'disabled', false),
+                'description' => $sub ?? Radio::legacyField($option, 'description'),
+                'icon'        => Radio::legacyField($option, 'icon'),
+                'color'       => Radio::legacyField($option, 'color'),
+                'disabled'    => (bool) (Radio::legacyField($option, 'disabled') ?? false),
             ], static fn (mixed $entry): bool => null !== $entry);
         }
 

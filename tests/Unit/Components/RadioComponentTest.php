@@ -75,3 +75,20 @@ test('removed 2.x props do not leak as HTML attributes', function (): void {
         expect($html)->not->toContain($attribute);
     }
 });
+
+test('reads model options directly, keeping hidden ids and accessor labels', function (): void {
+    $options = collect([
+        \ArtisanPack\LivewireUiComponents\Tests\Fixtures\LegacyOption::make(7, 'Seven'),
+        \ArtisanPack\LivewireUiComponents\Tests\Fixtures\LegacyOption::make(8, 'Eight'),
+    ]);
+
+    foreach (['radio', 'group'] as $tag) {
+        $dom    = designSystemDom(Blade::render('<x-artisanpack-'.$tag.' option-label="display_name" :options="$options" />', ['options' => $options]));
+        $inputs = $dom->query('//input[@type="radio"]');
+
+        expect($inputs)->toHaveCount(2)
+            ->and($inputs->item(0)->getAttribute('value'))->toBe('7')
+            ->and($inputs->item(1)->getAttribute('value'))->toBe('8')
+            ->and($dom->document->textContent)->toContain('Option Seven');
+    }
+});

@@ -65,7 +65,7 @@ class Modal extends Dialog
      */
     public function __construct(
         ?string $title = null,
-        ?string $subtitle = null,
+        public ?string $subtitle = null,
         ?string $boxClass = null,
         ?bool $separator = false,
         ?bool $persistent = false,
@@ -73,7 +73,7 @@ class Modal extends Dialog
         string|bool|null $glass = null,
         ?string $glassTint = null,
         ?int $glassTintOpacity = null,
-        ?string $actions = null,
+        public ?string $actions = null,
         bool $open = false,
         string $size = 'md',
         ?string $role = null,
@@ -96,8 +96,8 @@ class Modal extends Dialog
             role: $role ?? ($persistent ? 'alertdialog' : 'dialog'),
             surface: null !== $glass && false !== $glass && '' !== $glass ? 'glass' : $surface,
             title: $title,
-            description: $description ?? $subtitle,
-            footer: $footer ?? $actions,
+            description: $description,
+            footer: $footer,
             trigger: $trigger,
             portal: $portal,
             hideClose: $hideClose || (bool) $persistent,

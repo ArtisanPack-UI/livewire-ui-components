@@ -19,8 +19,8 @@ declare(strict_types=1);
 
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
-use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Collection;
+use Traversable;
 
 /**
  * SelectGroup Class
@@ -133,10 +133,6 @@ class SelectGroup extends Select
     {
         $mapped = [];
         foreach ($groups as $key => $group) {
-            if ($group instanceof Arrayable) {
-                $group = $group->toArray();
-            }
-
             if (is_array($group) && isset($group['options']) && is_iterable($group['options'])) {
                 $mapped[] = [
                     'label'   => (string) ($group['label'] ?? $key),
@@ -146,8 +142,11 @@ class SelectGroup extends Select
                 continue;
             }
 
-            if (is_string($key) && is_iterable($group)) {
-                $mapped[] = ['label' => $key, 'options' => self::legacyOptions($group, $optionValue, $optionLabel)];
+            // A group is a list or collection of options, whatever its key:
+            // `[ 2026 => [ ... ] ]` has an integer label. A single option is
+            // an associative array or a model, which isn't iterable.
+            if ((is_array($group) && [] !== $group && array_is_list($group)) || $group instanceof Traversable) {
+                $mapped[] = ['label' => (string) $key, 'options' => self::legacyOptions($group, $optionValue, $optionLabel)];
 
                 continue;
             }
@@ -174,21 +173,17 @@ class SelectGroup extends Select
     {
         $mapped = [];
         foreach ($options as $option) {
-            if ($option instanceof Arrayable) {
-                $option = $option->toArray();
-            }
-
             if (! is_array($option) && ! is_object($option)) {
                 $mapped[] = (string) $option;
 
                 continue;
             }
 
-            $value    = data_get($option, $optionValue) ?? data_get($option, 'value');
+            $value    = Radio::legacyField($option, $optionValue) ?? Radio::legacyField($option, 'value');
             $mapped[] = [
                 'value'    => $value,
-                'label'    => data_get($option, $optionLabel) ?? data_get($option, 'label') ?? $value,
-                'disabled' => (bool) data_get($option, 'disabled', false),
+                'label'    => Radio::legacyField($option, $optionLabel) ?? Radio::legacyField($option, 'label') ?? $value,
+                'disabled' => (bool) (Radio::legacyField($option, 'disabled') ?? false),
             ];
         }
 

@@ -98,3 +98,25 @@ test('the 2.x actions and subtitle slots become the footer and description', fun
         ->and(trim($footer->textContent))->toContain('Delete')
         ->and($dom->query('//p[@data-part="description"]/strong')->item(0)->textContent)->toBe('can\'t');
 });
+
+test('a 2.x slot wins over the matching 2.x attribute, and 3.0 props win over both', function (): void {
+    $legacy = designSystemDom(Blade::render(<<<'BLADE'
+        <x-artisanpack-modal title="T" subtitle="Attribute subtitle" actions="Attribute actions" :portal="false">
+            <x-slot:subtitle>Slot subtitle</x-slot:subtitle>
+            <x-slot:actions><x-artisanpack-button>Slot action</x-artisanpack-button></x-slot:actions>
+        </x-artisanpack-modal>
+        BLADE));
+
+    expect(trim($legacy->query('//p[@data-part="description"]')->item(0)->textContent))->toBe('Slot subtitle')
+        ->and(trim($legacy->query('//div[@data-part="footer"]')->item(0)->textContent))->toBe('Slot action');
+
+    $modern = designSystemDom(Blade::render(<<<'BLADE'
+        <x-artisanpack-modal title="T" description="New description" footer="New footer" :portal="false">
+            <x-slot:subtitle>Slot subtitle</x-slot:subtitle>
+            <x-slot:actions>Slot action</x-slot:actions>
+        </x-artisanpack-modal>
+        BLADE));
+
+    expect(trim($modern->query('//p[@data-part="description"]')->item(0)->textContent))->toBe('New description')
+        ->and(trim($modern->query('//div[@data-part="footer"]')->item(0)->textContent))->toBe('New footer');
+});
