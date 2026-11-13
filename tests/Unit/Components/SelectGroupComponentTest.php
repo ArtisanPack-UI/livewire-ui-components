@@ -2,200 +2,65 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
+use Illuminate\Support\Facades\Blade;
 
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
-use ArtisanPack\LivewireUiComponents\View\Components\SelectGroup;
-use Error;
-use RuntimeException;
-
-/**
- * Comprehensive unit tests for the SelectGroup component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * select-group (#145) is a deprecated alias of select: the 2.x map of group
+ * label to options becomes Select's { label, options } groups.
  */
-class SelectGroupComponentTest extends ComponentTestCase
-{
-    protected string $componentClass = SelectGroup::class;
 
-    protected array $defaultProperties = [
-        'hintClass'      => 'fieldset-label',
-        'inline'         => false,
-        'optionValue'    => 'id',
-        'optionLabel'    => 'name',
-        'options'        => [],
-        'errorClass'     => 'text-error',
-        'omitError'      => false,
-        'firstErrorOnly' => false,
-    ];
+$legacyGroups = "[ 'Apartments' => [ [ 'id' => 'studio', 'name' => 'Studio' ], [ 'id' => 'loft', 'name' => 'Loft', 'disabled' => true ] ], 'Houses' => [ [ 'id' => 'cabin', 'name' => 'Cabin' ] ] ]";
 
-    protected array $requiredProperties = [];
+test('renders the select markup with native option groups', function () use ($legacyGroups): void {
+    $dom    = designSystemDom(Blade::render('<x-artisanpack-select-group id="home" label="Home" wire:model="home" :options="'.$legacyGroups.'" />'));
+    $groups = $dom->query('//optgroup');
 
-    public function test_selectgroup_string_properties(): void
-    {
-        $stringProperties = ['id', 'label', 'icon', 'iconRight', 'hint', 'hintClass', 'placeholder', 'placeholderValue', 'optionValue', 'optionLabel', 'errorField', 'errorClass'];
-        $testValues       = ComponentDataFactory::sampleTexts();
+    expect($dom->query('//select[@id="home"]'))->toHaveCount(1)
+        ->and($dom->query('//select')->item(0)->getAttribute('wire:model'))->toBe('home')
+        ->and($dom->query('//*[contains(@class, "apui-select")]')->length)->toBeGreaterThan(0)
+        ->and($groups)->toHaveCount(2)
+        ->and($groups->item(0)->getAttribute('label'))->toBe('Apartments')
+        ->and($groups->item(1)->getAttribute('label'))->toBe('Houses')
+        ->and($dom->query('//optgroup[@label="Apartments"]/option')->length)->toBe(2)
+        ->and(trim($dom->query('//optgroup/option[@value="studio"]')->item(0)->textContent))->toBe('Studio')
+        ->and($dom->query('//optgroup/option[@value="loft"]')->item(0)->hasAttribute('disabled'))->toBeTrue()
+        ->and($dom->query('//optgroup[@label="Houses"]/option[@value="cabin"]'))->toHaveCount(1);
+});
 
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
+test('has no placeholder option unless one is given, as in 2.x', function () use ($legacyGroups): void {
+    $without = designSystemDom(Blade::render('<x-artisanpack-select-group :options="'.$legacyGroups.'" />'));
+    $with    = designSystemDom(Blade::render('<x-artisanpack-select-group placeholder="Pick a home" placeholder-value="none" :options="'.$legacyGroups.'" />'));
 
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
+    expect($without->query('//select/option'))->toHaveCount(0)
+        ->and(trim($with->query('//select/option')->item(0)->textContent))->toBe('Pick a home')
+        ->and($with->query('//select/option')->item(0)->getAttribute('value'))->toBe('');
+});
+
+test('reads custom option keys through option-value and option-label', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-select-group option-value="key" option-label="title" :options="[ \'Group\' => [ [ \'key\' => \'a\', \'title\' => \'Alpha\' ] ] ]" />'));
+
+    expect(trim($dom->query('//optgroup[@label="Group"]/option[@value="a"]')->item(0)->textContent))->toBe('Alpha');
+});
+
+test('takes 3.0 { label, options } groups too', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-select-group :options="[ [ \'label\' => \'G\', \'options\' => [ [ \'value\' => \'v\', \'label\' => \'Vee\' ] ] ] ]" />'));
+
+    expect(trim($dom->query('//optgroup[@label="G"]/option[@value="v"]')->item(0)->textContent))->toBe('Vee');
+});
+
+test('icon is the leading icon and the hint and error classes become part classes', function () use ($legacyGroups): void {
+    $html = Blade::render('<x-artisanpack-select-group icon="o-home" hint="H" error="Pick one." hint-class="my-hint" error-class="my-error" :options="'.$legacyGroups.'" />');
+    $dom  = designSystemDom($html);
+
+    expect($dom->query('//*[@data-scope="select"][@data-part="icon"]')->length)->toBeGreaterThan(0)
+        ->and($dom->query('//*[@data-part="hint"]')->item(0)->getAttribute('class'))->toBe('my-hint')
+        ->and($dom->query('//*[@data-part="error"]')->item(0)->getAttribute('class'))->toBe('my-error');
+});
+
+test('removed 2.x props do not leak as HTML attributes', function () use ($legacyGroups): void {
+    $html = Blade::render('<x-artisanpack-select-group icon-right="o-x" hint-class="h" error-class="e" placeholder-value="none" inline option-value="id" option-label="name" prepend="p" append="a" omit-error first-error-only error-field="home" :options="'.$legacyGroups.'" />');
+
+    foreach (['icon-right', 'hint-class', 'error-class', 'placeholder-value', 'inline', 'option-value', 'option-label', 'prepend', 'append', 'omit-error', 'first-error-only', 'error-field'] as $attribute) {
+        expect($html)->not->toContain($attribute);
     }
-
-    public function test_selectgroup_boolean_properties(): void
-    {
-        $booleanProperties = ['inline', 'omitError', 'firstErrorOnly'];
-
-        foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
-            $this->assertTrue($component->$property);
-
-            $component = $this->createComponent([$property => false]);
-            $this->assertFalse($component->$property);
-        }
-    }
-
-    public function test_selectgroup_model_name_method(): void
-    {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'modelName')) {
-            try {
-                $result = $component->modelName();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_selectgroup_error_field_name_method(): void
-    {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'errorFieldName')) {
-            try {
-                $result = $component->errorFieldName();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_selectgroup_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
-
-    public function test_selectgroup_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'SelectGroup should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
-
-    public function test_selectgroup_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
-
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
-
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_selectgroup_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'SelectGroup rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
-}
+});
