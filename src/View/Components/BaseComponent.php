@@ -69,6 +69,25 @@ abstract class BaseComponent extends Component
     }
 
     /**
+     * A class list through the `ap.livewireUiComponents.componentClasses`
+     * filter, with empty entries dropped. Views call it as
+     * `$filteredClasses( [ … ] )` for any element whose classes they build.
+     *
+     * @since 3.0.0
+     *
+     * @param  array<int, mixed>  $classes  The class list to filter.
+     *
+     * @return list<string> The filtered, non-empty classes.
+     */
+    public function filteredClasses(array $classes): array
+    {
+        return array_values(array_filter(
+            $this->getClasses($classes),
+            static fn (mixed $class): bool => is_string($class) && '' !== trim($class),
+        ));
+    }
+
+    /**
      * Apply the `ap.livewireUiComponents.componentClasses` filter to a
      * class list.
      *

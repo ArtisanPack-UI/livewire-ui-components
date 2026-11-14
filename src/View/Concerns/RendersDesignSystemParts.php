@@ -37,10 +37,24 @@ trait RendersDesignSystemParts
      */
     public function rootClasses(string $rootClass): array
     {
-        return array_values(array_filter(
-            $this->getClasses([$rootClass, $this->classes['root'] ?? null]),
-            static fn (mixed $class): bool => is_string($class) && '' !== trim($class),
-        ));
+        return $this->filteredClasses([$rootClass, $this->classes['root'] ?? null]);
+    }
+
+    /**
+     * The classes for a child component's own element, such as a menu item
+     * or a tab panel: `classes[$part]` and any extra classes, through the
+     * `ap.livewireUiComponents.componentClasses` filter.
+     *
+     * @since 3.0.0
+     *
+     * @param  string  $part  The `classes` key, such as `item`.
+     * @param  array<int, mixed>  $extra  More classes for the element.
+     *
+     * @return list<string> The classes.
+     */
+    public function partClasses(string $part, array $extra = []): array
+    {
+        return $this->filteredClasses([$this->classes[$part] ?? null, ...$extra]);
     }
 
     /**

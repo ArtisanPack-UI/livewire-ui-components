@@ -9,7 +9,7 @@
     $labelKey = (string) json_encode( [ 'htmlFor' => $groupId ], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP );
 @endphp
 <div
-    {{ $attributes->except( 'id' )->when( $filled( $classes['itemGroup'] ?? null ), fn ( $bag ) => $bag->class( $classes['itemGroup'] ) ) }}
+    {{ $attributes->except( 'id' )->when( $partClasses( 'itemGroup' ), fn ( $bag, $classes ) => $bag->class( $classes ) ) }}
     id="{{ $groupId }}"
     data-scope="dropdown-menu"
     data-part="item-group"

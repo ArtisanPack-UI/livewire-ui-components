@@ -2,4 +2,4 @@
 @php
     $text = isset( $slot ) && $slot->hasActualContent() ? $content( $slot ) : $content( $label ?? $title ?? '' );
 @endphp
-<li {{ $attributes->when( $filled( $classes['title'] ?? null ), fn ( $bag ) => $bag->class( $classes['title'] ) ) }} data-scope="menu" data-part="title">{{ $text }}</li>
+<li {{ $attributes->when( $partClasses( 'title' ), fn ( $bag, $classes ) => $bag->class( $classes ) ) }} data-scope="menu" data-part="title">{{ $text }}</li>
