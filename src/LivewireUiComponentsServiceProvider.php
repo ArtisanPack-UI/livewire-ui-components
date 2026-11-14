@@ -45,6 +45,15 @@ use Livewire\Livewire;
 class LivewireUiComponentsServiceProvider extends ServiceProvider
 {
     /**
+     * The prefix every component also registers under, whatever the
+     * configured prefix. The package's own views compose components with it
+     * (`<x-artisanpack-button>`), so they render under any prefix.
+     *
+     * @since 3.0.0
+     */
+    public const INTERNAL_PREFIX = 'artisanpack';
+
+    /**
      * An array of the Blade components this package provides.
      *
      * This array is the single source of truth for all Blade components.
@@ -245,9 +254,11 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
     /**
      * Register all Blade components provided by the package.
      *
-     * This method registers both standardized components and their deprecated
-     * aliases for backwards compatibility. It respects the custom prefix
-     * set in the package's configuration file.
+     * Each component registers under the internal `artisanpack-` name, which
+     * the package's own views use to compose components, and under the
+     * prefix set in the configuration (or no prefix when it's empty). A
+     * custom prefix then changes the tags the app writes without breaking
+     * the components that render other components.
      *
      * @since 1.0.0
      */
@@ -256,24 +267,100 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         // Rename <x-icon> from BladeUI Icons to prevent collision.
         Blade::component('BladeUI\Icons\Components\Icon', 'svg');
 
-        // Get the user-defined prefix from the config, defaulting to 'artisanpack'.
-        $prefix = config('artisanpack.livewire-ui-components.prefix', 'artisanpack');
+        $prefix = static::componentPrefix();
 
-        // Register all Blade components.
         foreach ($this->bladeComponents as $alias => $class) {
-            // Build the component name with prefix (e.g., 'artisanpack-button').
-            // If prefix is empty, just use the alias.
-            $newName = $prefix ? $prefix.'-'.$alias : $alias;
-
-            // Register the component with the correct name.
-            Blade::component($class, $newName);
+            foreach (static::registeredNames($alias, $prefix) as $name) {
+                Blade::component($class, $name);
+            }
         }
 
-        // Register all Livewire components.
         foreach ($this->livewireComponents as $alias => $class) {
-            $componentName = $prefix ? $prefix.'-'.$alias : $alias;
-            Livewire::component($componentName, $class);
+            foreach (static::registeredNames($alias, $prefix) as $name) {
+                Livewire::component($name, $class);
+            }
         }
+    }
+
+    /**
+     * The component prefix from the configuration, normalized: trimmed, with
+     * any trailing hyphen removed (`'artisanpack-'` reads as `'artisanpack'`).
+     * An empty or null prefix registers the components without one.
+     *
+     * @since 3.0.0
+     *
+     * @return string The prefix, or an empty string for none.
+     */
+    public static function componentPrefix(): string
+    {
+        $prefix = config('artisanpack.livewire-ui-components.prefix', self::INTERNAL_PREFIX);
+
+        if (! is_string($prefix)) {
+            return '';
+        }
+
+        return rtrim(trim($prefix), '-');
+    }
+
+    /**
+     * A component's tag name under a prefix: `artisanpack-button`, or just
+     * `button` with an empty prefix.
+     *
+     * @since 3.0.0
+     *
+     * @param  string  $alias  The component alias, such as `button`.
+     * @param  string|null  $prefix  The prefix. Defaults to the configured one.
+     *
+     * @return string The tag name, without `x-`.
+     */
+    public static function componentName(string $alias, ?string $prefix = null): string
+    {
+        $prefix ??= static::componentPrefix();
+
+        return '' === $prefix ? $alias : $prefix.'-'.$alias;
+    }
+
+    /**
+     * The names a component registers under: the configured name, then the
+     * internal `artisanpack-` name when it differs.
+     *
+     * @since 3.0.0
+     *
+     * @param  string  $alias  The component alias, such as `button`.
+     * @param  string  $prefix  The normalized prefix.
+     *
+     * @return list<string> The tag names, without `x-`.
+     */
+    public static function registeredNames(string $alias, string $prefix): array
+    {
+        return array_values(array_unique([
+            static::componentName($alias, $prefix),
+            static::componentName($alias, self::INTERNAL_PREFIX),
+        ]));
+    }
+
+    /**
+     * The Blade components this package provides, keyed by alias.
+     *
+     * @since 3.0.0
+     *
+     * @return array<string, class-string> Component classes keyed by alias.
+     */
+    public function bladeComponents(): array
+    {
+        return $this->bladeComponents;
+    }
+
+    /**
+     * The Livewire components this package provides, keyed by alias.
+     *
+     * @since 3.0.0
+     *
+     * @return array<string, class-string> Component classes keyed by alias.
+     */
+    public function livewireComponents(): array
+    {
+        return $this->livewireComponents;
     }
 
     /**
