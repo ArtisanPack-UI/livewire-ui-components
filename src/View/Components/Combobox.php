@@ -99,7 +99,7 @@ class Combobox extends BaseComponent
      * @param  string|null  $leadingIcon  Icon name before the input. The `icon` slot overrides it.
      * @param  string|null  $emptyLabel  The empty text. `:search` is the typed text. Null uses the translated default.
      * @param  string|null  $loadingLabel  The loading text. Null uses the translated "Loading…".
-     * @param  string|null  $createLabel  The create option's text. `:value` is the typed text.
+     * @param  string|null  $createLabel  The create option's text. `{value}` is the typed text.
      * @param  string|null  $removeLabel  A chip remove button's name. `:label` is the chip's label.
      * @param  string|null  $removedLabel  Announced when a chip is removed. `:label` is the chip's label.
      * @param  string|null  $clearLabel  The clear button's name.

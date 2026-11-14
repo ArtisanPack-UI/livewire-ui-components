@@ -168,22 +168,16 @@ return [
 					'note' => 'Gone: the separator is always a chevron; remove it and style it through `classes`.',
 				],
 				'linkItemClass'  => [
-					'kind' => 'part-class',
-					'to'   => 'classes',
-					'part' => 'linkItem',
-					'note' => 'Per-part override.',
+					'kind' => 'manual',
+					'note' => 'Breadcrumbs has no `linkItem` part. Style it with `class`, or a `classes` key: `root`, `list`, `item`, `link`, `separator`, `current`, `overflow`.',
 				],
 				'textItemClass'  => [
-					'kind' => 'part-class',
-					'to'   => 'classes',
-					'part' => 'textItem',
-					'note' => 'Per-part override.',
+					'kind' => 'manual',
+					'note' => 'Breadcrumbs has no `textItem` part. Style it with `class`, or a `classes` key: `root`, `list`, `item`, `link`, `separator`, `current`, `overflow`.',
 				],
 				'iconClass'      => [
-					'kind' => 'part-class',
-					'to'   => 'classes',
-					'part' => 'icon',
-					'note' => 'Per-part override.',
+					'kind' => 'manual',
+					'note' => 'Breadcrumbs has no `icon` part. Style it with `class`, or a `classes` key: `root`, `list`, `item`, `link`, `separator`, `current`, `overflow`.',
 				],
 				'separatorClass' => [
 					'kind' => 'part-class',
@@ -240,10 +234,8 @@ return [
 					'note' => 'Gone: render a Badge inside the button\'s slot or beside it.',
 				],
 				'badgeClasses'    => [
-					'kind' => 'part-class',
-					'to'   => 'classes',
-					'part' => 'badge',
-					'note' => 'Per-part override.',
+					'kind' => 'manual',
+					'note' => 'Button has no `badge` part. Style it with `class`, or a `classes` key: `root`, `icon`, `iconEnd`, `label`, `spinner`.',
 				],
 				'tooltip'         => [
 					'kind'    => 'wrap',
@@ -478,18 +470,16 @@ return [
 				'hintClass'  => [
 					'kind' => 'part-class',
 					'to'   => 'classes',
-					'part' => 'hint',
-					'note' => 'Per-part override.',
+					'part' => 'description',
+					'note' => '`hint` is now `description`, and so is its part.',
 				],
 				'card'       => [
 					'kind' => 'manual',
 					'note' => 'Gone on Checkbox: use CheckboxGroup with `variant="cards"` for card options.',
 				],
 				'cardClass'  => [
-					'kind' => 'part-class',
-					'to'   => 'classes',
-					'part' => 'card',
-					'note' => 'Per-part override.',
+					'kind' => 'manual',
+					'note' => 'Checkbox has no `card` part. Style it with `class`, or a `classes` key: `root`, `box`, `control`, `indicator`, `label`, `description`, `error`.',
 				],
 				'errorClass' => [
 					'kind' => 'part-class',
@@ -542,10 +532,8 @@ return [
 					'value' => 'cards',
 				],
 				'cardClass'   => [
-					'kind' => 'part-class',
-					'to'   => 'classes',
-					'part' => 'card',
-					'note' => 'Per-part override.',
+					'kind' => 'manual',
+					'note' => 'CheckboxGroup has no `card` part. Style it with `class`, or a `classes` key: `root`, `label`, `selectAll`, `items`, `hint`, `error`.',
 				],
 				'errorClass'  => [
 					'kind' => 'part-class',
@@ -615,8 +603,9 @@ return [
 					'kind' => 'remove',
 				],
 				'debounce'         => [
-					'kind' => 'manual',
-					'note' => 'A `250ms` string becomes integer milliseconds (`:debounce="250"`).',
+					'kind' => 'duration',
+					'to'   => 'debounce',
+					'note' => 'A `250ms` or `1s` string becomes integer milliseconds.',
 				],
 				'minChars'         => [
 					'kind' => 'manual',
@@ -632,7 +621,7 @@ return [
 				],
 				'searchFunction'   => [
 					'kind' => 'manual',
-					'note' => 'A method name became a property name: bind the search text with `search-model`, or keep the method with `wire:search-change`.',
+					'note' => 'The deprecated `choices`, `choices-offline` and `tags` tags still call it. `combobox` doesn\'t: set `search-model` to a property and search in its `updated` hook, or call your method with `wire:search-change="yourMethod($event.detail.search)"`.',
 				],
 				'optionValue'      => [
 					'kind' => 'manual',
@@ -757,8 +746,9 @@ return [
 					'kind' => 'remove',
 				],
 				'debounce'       => [
-					'kind' => 'manual',
-					'note' => 'A `250ms` string becomes integer milliseconds (`:debounce="250"`).',
+					'kind' => 'duration',
+					'to'   => 'debounce',
+					'note' => 'A `250ms` or `1s` string becomes integer milliseconds.',
 				],
 				'minChars'       => [
 					'kind' => 'manual',
@@ -825,7 +815,7 @@ return [
 				],
 				'searchFunction' => [
 					'kind' => 'manual',
-					'note' => 'A method name became a property name: bind the search text with `search-model`, or keep the method with `wire:search-change`.',
+					'note' => 'The deprecated `choices`, `choices-offline` and `tags` tags still call it. `combobox` doesn\'t: set `search-model` to a property and search in its `updated` hook, or call your method with `wire:search-change="yourMethod($event.detail.search)"`.',
 				],
 			],
 		],
@@ -846,16 +836,12 @@ return [
 					'note' => 'Removed, with no replacement.',
 				],
 				'lightClass'  => [
-					'kind' => 'part-class',
-					'to'   => 'classes',
-					'part' => 'light',
-					'note' => 'Per-part override.',
+					'kind' => 'manual',
+					'note' => 'Code has no `light` part. Style it with `class`, or a `classes` key: `root`, `header`, `file`, `language`, `copy`, `status`, `pre`, `line`.',
 				],
 				'darkClass'   => [
-					'kind' => 'part-class',
-					'to'   => 'classes',
-					'part' => 'dark',
-					'note' => 'Per-part override.',
+					'kind' => 'manual',
+					'note' => 'Code has no `dark` part. Style it with `class`, or a `classes` key: `root`, `header`, `file`, `language`, `copy`, `status`, `pre`, `line`.',
 				],
 				'height'      => [
 					'kind' => 'manual',
@@ -1177,6 +1163,10 @@ return [
 			'canonical' => 'DropdownMenu',
 			'to'        => 'dropdown-menu',
 			'props'     => [
+				'label'            => [
+					'kind' => 'keep',
+					'note' => 'Still the trigger\'s text.',
+				],
 				'icon'             => [
 					'kind' => 'manual',
 					'note' => 'Gone: the trigger always shows a chevron; put a custom icon in the `label` slot.',
@@ -1359,8 +1349,7 @@ return [
 				'dragDropClass'   => [
 					'kind' => 'part-class',
 					'to'   => 'classes',
-					'part' => 'dragDrop',
-					'note' => 'Per-part override.',
+					'part' => 'dropzone',
 				],
 				'errorClass'      => [
 					'kind' => 'part-class',
@@ -1391,8 +1380,12 @@ return [
 					'name'  => 'variant',
 					'value' => 'segmented',
 				],
+				[
+					'name'  => 'orientation',
+					'value' => 'horizontal',
+				],
 			],
-			'note'      => 'Group is RadioGroup with `variant="segmented"` (D-025).',
+			'note'      => 'Group is RadioGroup with `variant="segmented"` and `orientation="horizontal"` (D-025).',
 			'props'     => [
 				'hintClass'   => [
 					'kind' => 'part-class',
@@ -1455,10 +1448,8 @@ return [
 					'note' => 'Removed, with no replacement.',
 				],
 				'iconClasses'            => [
-					'kind' => 'part-class',
-					'to'   => 'classes',
-					'part' => 'icon',
-					'note' => 'Per-part override.',
+					'kind' => 'manual',
+					'note' => 'PageHeader has no `icon` part. Style it with `class`, or a `classes` key: `root`, `breadcrumbs`, `row`, `meta`, `title`, `description`, `actions`, `tabs`.',
 				],
 				'middle'                 => [
 					'kind' => 'manual',
@@ -1943,10 +1934,8 @@ return [
 					'note' => 'Removed, with no replacement.',
 				],
 				'hintClass'  => [
-					'kind' => 'part-class',
-					'to'   => 'classes',
-					'part' => 'hint',
-					'note' => 'Per-part override.',
+					'kind' => 'manual',
+					'note' => 'Markdown has no `hint` part. Style it with `class`, or a `classes` key: `root`, `editor`, `preview`, `split`, `task`.',
 				],
 				'disk'       => [
 					'kind' => 'manual',
@@ -1961,9 +1950,8 @@ return [
 					'note' => 'EasyMDE is removed; use `mode="write"` or `mode="split"` for the editor (D-049).',
 				],
 				'errorClass' => [
-					'kind' => 'part-class',
-					'to'   => 'classes',
-					'part' => 'error',
+					'kind' => 'manual',
+					'note' => 'Markdown has no `error` part. Style it with `class`, or a `classes` key: `root`, `editor`, `preview`, `split`, `task`.',
 				],
 				'omitError'  => [
 					'kind' => 'manual',
@@ -2101,6 +2089,10 @@ return [
 			'canonical' => 'Dialog',
 			'to'        => 'dialog',
 			'props'     => [
+				'title'            => [
+					'kind' => 'keep',
+					'note' => 'Still the heading and the accessible name.',
+				],
 				'subtitle'         => [
 					'kind' => 'rename',
 					'to'   => 'description',
@@ -2108,8 +2100,8 @@ return [
 				'boxClass'         => [
 					'kind' => 'part-class',
 					'to'   => 'classes',
-					'part' => 'box',
-					'note' => 'Per-part override.',
+					'part' => 'root',
+					'note' => 'The panel is the `root` part.',
 				],
 				'separator'        => [
 					'kind' => 'remove',
@@ -2155,6 +2147,7 @@ return [
 		'nav'                 => [
 			'canonical' => 'Navbar',
 			'to'        => 'navbar',
+			'note'      => 'Navbar is sticky by default; 2.x `nav` was not. Add `:sticky="false"` to keep a bar that scrolls away.',
 			'props'     => [
 				'fullWidth' => [
 					'kind' => 'remove',
@@ -2448,8 +2441,8 @@ return [
 				'cardClass'   => [
 					'kind' => 'part-class',
 					'to'   => 'classes',
-					'part' => 'card',
-					'note' => 'Per-part override.',
+					'part' => 'item',
+					'note' => 'Each option card is the `item` part (`variant="cards"`).',
 				],
 				'errorClass'  => [
 					'kind' => 'part-class',
@@ -2497,8 +2490,8 @@ return [
 				'cardClass'   => [
 					'kind' => 'part-class',
 					'to'   => 'classes',
-					'part' => 'card',
-					'note' => 'Per-part override.',
+					'part' => 'item',
+					'note' => 'Each option card is the `item` part (`variant="cards"`).',
 				],
 				'errorClass'  => [
 					'kind' => 'part-class',
@@ -2969,10 +2962,8 @@ return [
 					'note' => 'Not in the 3.0 API (planned as `color`). Remove it, or check the component\'s docs for what replaces it.',
 				],
 				'stepperClasses'   => [
-					'kind' => 'part-class',
-					'to'   => 'classes',
-					'part' => 'stepper',
-					'note' => 'Per-part override.',
+					'kind' => 'manual',
+					'note' => 'Steps has no `stepper` part. Style it with `class`, or a `classes` key: `root`, `step`, `marker`, `title`, `connector`, `description`.',
 				],
 				'glass'            => [
 					'kind' => 'manual',
@@ -3195,82 +3186,56 @@ return [
 					'note' => 'Gone: use `classes` or the design tokens.',
 				],
 				'labelColorClasses'          => [
-					'kind' => 'part-class',
-					'to'   => 'classes',
-					'part' => 'labelColor',
-					'note' => 'Per-part override.',
+					'kind' => 'manual',
+					'note' => 'Tabs has no `labelColor` part. Style it with `class`, or a `classes` key: `root`, `list`, `trigger`, `icon`, `count`, `content`.',
 				],
 				'activeColorClasses'         => [
-					'kind' => 'part-class',
-					'to'   => 'classes',
-					'part' => 'activeColor',
-					'note' => 'Per-part override.',
+					'kind' => 'manual',
+					'note' => 'Tabs has no `activeColor` part. Style it with `class`, or a `classes` key: `root`, `list`, `trigger`, `icon`, `count`, `content`.',
 				],
 				'labelClass'                 => [
-					'kind' => 'part-class',
-					'to'   => 'classes',
-					'part' => 'label',
-					'note' => 'Per-part override.',
+					'kind' => 'manual',
+					'note' => 'Tabs has no `label` part. Style it with `class`, or a `classes` key: `root`, `list`, `trigger`, `icon`, `count`, `content`.',
 				],
 				'activeClass'                => [
-					'kind' => 'part-class',
-					'to'   => 'classes',
-					'part' => 'active',
-					'note' => 'Per-part override.',
+					'kind' => 'manual',
+					'note' => 'Tabs has no `active` part. Style it with `class`, or a `classes` key: `root`, `list`, `trigger`, `icon`, `count`, `content`.',
 				],
 				'labelDivClass'              => [
-					'kind' => 'part-class',
-					'to'   => 'classes',
-					'part' => 'labelDiv',
-					'note' => 'Per-part override.',
+					'kind' => 'manual',
+					'note' => 'Tabs has no `labelDiv` part. Style it with `class`, or a `classes` key: `root`, `list`, `trigger`, `icon`, `count`, `content`.',
 				],
 				'tabsClass'                  => [
-					'kind' => 'part-class',
-					'to'   => 'classes',
-					'part' => 'tabs',
-					'note' => 'Per-part override.',
+					'kind' => 'manual',
+					'note' => 'Tabs has no `tabs` part. Style it with `class`, or a `classes` key: `root`, `list`, `trigger`, `icon`, `count`, `content`.',
 				],
 				'verticalTabsClass'          => [
-					'kind' => 'part-class',
-					'to'   => 'classes',
-					'part' => 'verticalTabs',
-					'note' => 'Per-part override.',
+					'kind' => 'manual',
+					'note' => 'Tabs has no `verticalTabs` part. Style it with `class`, or a `classes` key: `root`, `list`, `trigger`, `icon`, `count`, `content`.',
 				],
 				'verticalLabelClass'         => [
-					'kind' => 'part-class',
-					'to'   => 'classes',
-					'part' => 'verticalLabel',
-					'note' => 'Per-part override.',
+					'kind' => 'manual',
+					'note' => 'Tabs has no `verticalLabel` part. Style it with `class`, or a `classes` key: `root`, `list`, `trigger`, `icon`, `count`, `content`.',
 				],
 				'verticalActiveClass'        => [
-					'kind' => 'part-class',
-					'to'   => 'classes',
-					'part' => 'verticalActive',
-					'note' => 'Per-part override.',
+					'kind' => 'manual',
+					'note' => 'Tabs has no `verticalActive` part. Style it with `class`, or a `classes` key: `root`, `list`, `trigger`, `icon`, `count`, `content`.',
 				],
 				'verticalLabelDivClass'      => [
-					'kind' => 'part-class',
-					'to'   => 'classes',
-					'part' => 'verticalLabelDiv',
-					'note' => 'Per-part override.',
+					'kind' => 'manual',
+					'note' => 'Tabs has no `verticalLabelDiv` part. Style it with `class`, or a `classes` key: `root`, `list`, `trigger`, `icon`, `count`, `content`.',
 				],
 				'verticalContentClass'       => [
-					'kind' => 'part-class',
-					'to'   => 'classes',
-					'part' => 'verticalContent',
-					'note' => 'Per-part override.',
+					'kind' => 'manual',
+					'note' => 'Tabs has no `verticalContent` part. Style it with `class`, or a `classes` key: `root`, `list`, `trigger`, `icon`, `count`, `content`.',
 				],
 				'verticalRightActiveClass'   => [
-					'kind' => 'part-class',
-					'to'   => 'classes',
-					'part' => 'verticalRightActive',
-					'note' => 'Per-part override.',
+					'kind' => 'manual',
+					'note' => 'Tabs has no `verticalRightActive` part. Style it with `class`, or a `classes` key: `root`, `list`, `trigger`, `icon`, `count`, `content`.',
 				],
 				'verticalRightLabelDivClass' => [
-					'kind' => 'part-class',
-					'to'   => 'classes',
-					'part' => 'verticalRightLabelDiv',
-					'note' => 'Per-part override.',
+					'kind' => 'manual',
+					'note' => 'Tabs has no `verticalRightLabelDiv` part. Style it with `class`, or a `classes` key: `root`, `list`, `trigger`, `icon`, `count`, `content`.',
 				],
 				'glass'                      => [
 					'kind' => 'manual',
@@ -3329,8 +3294,9 @@ return [
 					'note' => '`choices`: becomes `remote` (server search). `choices-offline`: dropped, filtering is always on.',
 				],
 				'debounce'        => [
-					'kind' => 'manual',
-					'note' => 'A `250ms` string becomes integer milliseconds (`:debounce="250"`).',
+					'kind' => 'duration',
+					'to'   => 'debounce',
+					'note' => 'A `250ms` or `1s` string becomes integer milliseconds.',
 				],
 				'minChars'        => [
 					'kind' => 'manual',
@@ -3338,7 +3304,7 @@ return [
 				],
 				'searchFunction'  => [
 					'kind' => 'manual',
-					'note' => 'A method name became a property name: bind the search text with `search-model`, or keep the method with `wire:search-change`.',
+					'note' => 'The deprecated `choices`, `choices-offline` and `tags` tags still call it. `combobox` doesn\'t: set `search-model` to a property and search in its `updated` hook, or call your method with `wire:search-change="yourMethod($event.detail.search)"`.',
 				],
 				'optionValue'     => [
 					'kind' => 'manual',
@@ -3372,7 +3338,7 @@ return [
 				'customTagsText'  => [
 					'kind' => 'rename',
 					'to'   => 'createLabel',
-					'note' => '`tags` only; `:value` is the typed text.',
+					'note' => '`tags` only; `{value}` is the typed text.',
 				],
 				'prepend'         => [
 					'kind' => 'manual',
@@ -3493,16 +3459,12 @@ return [
 					'note' => 'Removed, with no replacement.',
 				],
 				'lightClass' => [
-					'kind' => 'part-class',
-					'to'   => 'classes',
-					'part' => 'light',
-					'note' => 'Per-part override.',
+					'kind' => 'manual',
+					'note' => 'ThemeToggle has no `light` part. Style it with `class`, or a `classes` key: `root`.',
 				],
 				'darkClass'  => [
-					'kind' => 'part-class',
-					'to'   => 'classes',
-					'part' => 'dark',
-					'note' => 'Per-part override.',
+					'kind' => 'manual',
+					'note' => 'ThemeToggle has no `dark` part. Style it with `class`, or a `classes` key: `root`.',
 				],
 				'withLabel'  => [
 					'kind' => 'remove',
@@ -3576,8 +3538,8 @@ return [
 				'hintClass'  => [
 					'kind' => 'part-class',
 					'to'   => 'classes',
-					'part' => 'hint',
-					'note' => 'Per-part override.',
+					'part' => 'description',
+					'note' => '`hint` is now `description`, and so is its part.',
 				],
 				'errorClass' => [
 					'kind' => 'part-class',

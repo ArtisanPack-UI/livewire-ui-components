@@ -10,7 +10,7 @@
  *
  * Component stylesheets go in src/components/<name>.css and are imported
  * between the presets and the utilities. Headless mode (dist/headless.css,
- * #25) leaves out every ./components/ import. See docs/css-conventions.md.
+ * #25) leaves out every ./components/ import. See contributing/css-conventions.md.
  */
 @layer apui.reset, apui.tokens, apui.components, apui.utilities;
 

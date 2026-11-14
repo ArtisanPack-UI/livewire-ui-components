@@ -601,6 +601,12 @@ final class BladeUpgrader
 
                     break;
 
+                case 'number':
+                    $this->edits[] = [$attribute['start'], $attribute['end'], ':'.$plan['to'].'="'.$plan['value'].'"'];
+                    $plan['to']    = ':'.$plan['to'].'="'.$plan['value'].'"';
+
+                    break;
+
                 case 'negate':
                     $this->edits[] = [$attribute['start'], $attribute['end'], ':'.$plan['to'].'="! ('.$value['expression'].')"'];
 
@@ -628,7 +634,7 @@ final class BladeUpgrader
                     continue 2;
             }
 
-            $taken[UpgradeRules::camel(strtok($plan['to'], '='))] = true;
+            $taken[UpgradeRules::camel(ltrim((string) strtok($plan['to'], '='), ':'))] = true;
 
             $message = __('`:name` is now `:to`.', ['name' => $written, 'to' => $plan['to']]);
             $this->report(

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use ArtisanPack\LivewireUiComponents\Upgrade\AttributePlanner;
 use ArtisanPack\LivewireUiComponents\Upgrade\BladeUpgrader;
 use ArtisanPack\LivewireUiComponents\Upgrade\Finding;
 use ArtisanPack\LivewireUiComponents\Upgrade\UpgradeResult;
@@ -86,7 +87,9 @@ test('removes flags that are gone and says so', function (): void {
 
 test('merges per-part classes into classes', function (): void {
     expect(upgradeBlade('<x-artisanpack-modal box-class="w-96" />')->code)
-        ->toBe('<x-artisanpack-dialog :classes="[\'box\' => \'w-96\']" />');
+        ->toBe('<x-artisanpack-dialog :classes="[\'root\' => \'w-96\']" />')
+        ->and(upgradeBlade('<x-artisanpack-radio card-class="p-4" />')->code)
+        ->toBe('<x-artisanpack-radio-group :classes="[\'item\' => \'p-4\']" />');
 
     $existing = upgradeBlade('<x-artisanpack-modal box-class="w-96" :classes="$classes" />');
 
@@ -243,3 +246,41 @@ test('survives malformed markup', function (string $source): void {
     'an unclosed echo'   => ['<x-artisanpack-button {{ $attributes label="x" />'],
     'an empty file'      => [''],
 ]);
+
+test('turns a duration into integer milliseconds', function (string $source, string $expected): void {
+    $result = upgradeBlade($source);
+
+    expect($result->code)->toBe($expected)
+        ->and($result->findings(Finding::MANUAL))->toBe([]);
+})->with([
+    'seconds'      => ['<x-artisanpack-choices debounce="1s" />', '<x-artisanpack-combobox multiple :debounce="1000" />'],
+    'milliseconds' => ['<x-artisanpack-choices debounce="300ms" />', '<x-artisanpack-combobox multiple :debounce="300" />'],
+    'bound number' => ['<x-artisanpack-tags :debounce="400" />', '<x-artisanpack-combobox multiple allow-create :debounce="400" />'],
+]);
+
+test('leaves a dynamic duration for a person', function (): void {
+    $result = upgradeBlade('<x-artisanpack-choices :debounce="$wait" />');
+
+    expect($result->code)->toBe('<x-artisanpack-combobox multiple :debounce="$wait" />')
+        ->and(upgradeFindings($result))->toContain('manual debounce');
+});
+
+test('reads durations like the codemods do', function (string $text, ?int $milliseconds): void {
+    expect(AttributePlanner::durationMs($text))->toBe($milliseconds);
+})->with([
+    ['250ms', 250],
+    ['250', 250],
+    ['1s', 1000],
+    ['1.5s', 1500],
+    [' 2 S ', 2000],
+    ['fast', null],
+    ['1m', null],
+    ['-5ms', null],
+]);
+
+test('leaves a kept attribute alone', function (): void {
+    $result = upgradeBlade('<x-artisanpack-modal title="Hi" />');
+
+    expect($result->code)->toBe('<x-artisanpack-dialog title="Hi" />')
+        ->and(upgradeFindings($result))->not->toContain('manual title');
+});

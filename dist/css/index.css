@@ -10,7 +10,7 @@
  *
  * Component stylesheets go in src/components/<name>.css and are imported
  * between the presets and the utilities. Headless mode (dist/headless.css,
- * #25) leaves out every ./components/ import. See docs/css-conventions.md.
+ * #25) leaves out every ./components/ import. See contributing/css-conventions.md.
  */
 @layer apui.reset, apui.tokens, apui.components, apui.utilities;
 
@@ -15439,7 +15439,7 @@
  *
  * The miniature is drawn with the real tokens: it carries data-theme and
  * data-preset, so the tokens resolve inside it as they would on a page
- * (docs/tokens, Modes and Presets). A system card shows light and dark
+ * (contributing/tokens, Modes and Presets). A system card shows light and dark
  * halves. See design/components/ThemePreview.
  */
 @layer apui.components {
