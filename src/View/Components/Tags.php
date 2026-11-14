@@ -60,8 +60,8 @@ class Tags extends Combobox
      * @param  string|null  $suffix  Ignored.
      * @param  bool|null  $searchable  The server filters the options (`remote`), calling `search-function`.
      * @param  int|string|null  $debounce  Delay before setting search-model: `250ms`, `1s` or milliseconds.
-     * @param  int|null  $minChars  Ignored.
-     * @param  string|null  $searchFunction  Ignored.
+     * @param  int|null  $minChars  The fewest characters that call search-function, when searchable.
+     * @param  string|null  $searchFunction  The Livewire method called with the typed text, when searchable. Arguments written as `method(5)` are passed after the text.
      * @param  string|null  $optionValue  The options' value key.
      * @param  string|null  $optionLabel  The options' label key.
      * @param  string|null  $optionSubLabel  The options' description key.
