@@ -1,27 +1,27 @@
 ---
 title: AI Guidelines
+menu_order: 9
 ---
 
 # AI Guidelines
 
-## Livewire UI Components (livewire-ui-components)
+Guidance for AI coding assistants that write Blade and Livewire code with Livewire UI Components 3.0. Paste it into your assistant's project instructions, or point the assistant at this page.
 
-**Primary Goal**: To guide the creation of reusable, performant, and accessible Livewire components.
+## Rules
 
-### Core Principles for the AI:
+1. **Use the components, not raw markup.** Write `<x-artisanpack-button>`, `<x-artisanpack-input>`, `<x-artisanpack-dialog>` and so on, rather than hand-built HTML. Check the [component list](Components) first.
+2. **Don't use DaisyUI.** 3.0 has no DaisyUI: classes such as `btn`, `card`, `badge`, `modal` and `bg-base-200` style nothing. Style with component props (`color`, `variant`, `size`, `surface`), the `classes` prop and the design tokens (`var(--apui-surface-sunken)`, or `bg-surface-sunken` with the Tailwind preset).
+3. **Use 3.0 names.** `dialog` not `modal`, `dropdown-menu` not `dropdown`, `combobox` not `choices` or `tags`, `page-header` not `header`, `app-shell` not `main`. The old names are [deprecated aliases](Components-Deprecated-Aliases).
+4. **Use 3.0 props.** On Button, `color="primary"` and `variant="ghost"`; `leading-icon` and `trailing-icon` instead of `icon` and `icon-right`; the label in the slot, not a `label` attribute.
+5. **Bind with `wire:model`.** Fields bind their value with `wire:model` (add `.live` only when each change must reach the server). Overlays bind their open state with `wire:model` to a boolean property.
+6. **Give list items a `wire:key`** in every `@foreach`.
+7. **Use registry icon names**: Lucide names in kebab-case, such as `plus`, `search`, `circle-alert`. Heroicons names (`o-user`) only work through the Blade Icons fallback.
+8. **Show toasts from PHP** with the `Toast` trait (`$this->success( __( 'Saved' ) )`) or `$this->dispatch( 'toast', title: …, color: … )`, and keep one `<x-artisanpack-toaster />` in the layout.
+9. **Translate every visible string** with `__()`, including attributes: `:label="__( 'Email' )"`.
+10. **Keep accessibility intact.** Give icon-only buttons an accessible name (`aria-label`), keep visible labels on fields, and don't make a toast the only place an error appears.
 
-**Reusability**: Components should be designed to be self-contained and easily reusable throughout the application.
+## References
 
-**Performance**: Prioritize performance by using Livewire's optimization features, such as wire:model.defer and lazy loading.
-
-**Interactivity**: Use Alpine.js for client-side interactions that do not require a server round-trip.
-
-### Specific Instructions for the AI:
-
-1. **Loading States**: When generating Livewire components, include loading states using `wire:loading` to provide visual feedback to the user during asynchronous operations.
-
-2. **Form Input Optimization**: For all form inputs, use `wire:model.defer` to batch updates and reduce the number of server requests.
-
-3. **Client-Side Interactions**: For complex client-side interactions, such as a dropdown menu, generate Alpine.js code within the Blade view and use the `$wire` object to communicate with the Livewire component.
-
-4. **Accessibility**: Ensure that all interactive elements within Livewire components are fully accessible, with proper focus management and ARIA attributes.
+- [Components](Components) and the design system's [component pages](https://docs.artisanpackui.dev/documentation/design-system/components)
+- [Livewire Integration](Livewire)
+- [Upgrading from 2.x](Upgrading)

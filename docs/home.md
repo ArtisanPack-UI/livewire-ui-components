@@ -1,113 +1,70 @@
 ---
-title: ArtisanPack UI Livewire Components
+title: Livewire UI Components Documentation Home
+menu_order: 1
 ---
 
-# ArtisanPack UI Livewire Components
+# Livewire UI Components
 
-Welcome to the ArtisanPack UI Livewire Components documentation. This package provides a comprehensive set of UI components for Laravel applications using the TALL stack (Tailwind CSS, Alpine.js, Laravel, and Livewire).
+Livewire UI Components renders the [ArtisanPack UI design system](https://docs.artisanpackui.dev/documentation/design-system/home) as Blade components: `<x-artisanpack-button>`, `<x-artisanpack-combobox>`, `<x-artisanpack-dialog>` and 75 more. They work in plain Blade views and in Livewire components, and bind to Livewire with `wire:model` like native inputs.
 
-## Introduction
+Version 3.0 is rebuilt on the design system:
 
-ArtisanPack UI Livewire Components is a powerful UI component library for Laravel applications, forked from MaryUI and adapted for the ArtisanPack UI ecosystem. It provides a set of pre-built, customizable components that integrate seamlessly with Laravel, Livewire, Tailwind CSS, and DaisyUI.
+- **Styling** comes from `@artisanpack-ui/css`: design tokens and plain CSS in cascade layers. DaisyUI is gone and Tailwind is optional.
+- **Interaction** comes from `@artisanpack-ui/behavior`: state machines with an Alpine adapter that handles focus, keyboard and ARIA, and survives Livewire's DOM morphing.
+- **Component APIs** are shared with the React and Vue packages: the same props, parts, slots and events in every stack.
 
-### Key Features and Benefits
+This documentation covers what is specific to Laravel and Livewire: installing the package, its configuration, Livewire integration, the Artisan commands and upgrading from 2.x. The components themselves, theming, tokens and accessibility are documented once, in the design-system documentation.
 
-- **70+ Pre-built Components**: From simple buttons to complex data tables and charts
-- **Livewire 3 & 4 Compatible**: Built for the latest versions of Livewire with graceful feature detection
-- **DaisyUI Integration**: Leverages DaisyUI for beautiful, consistent styling
-- **Customizable Theming**: Generate custom color themes with a simple Artisan command
-- **Dashboard Components**: KPI cards, widget grids, and sparklines for building dashboards (v2.0+)
-- **Data Export**: Export table data to CSV, Excel, and PDF formats (v2.0+)
-- **Streaming Content**: Support for real-time AI response streaming in Livewire 4 (v2.0+)
-- **Glass Effects**: Frosted glass UI effects for modern aesthetics (v2.0+)
-- **Responsive Design**: All components are fully responsive out of the box
-- **Accessibility**: Components are designed with accessibility in mind
-- **Easy Installation**: Simple installation process with an interactive installer
-- **Comprehensive Documentation**: Detailed documentation for all components and features
+## Requirements
 
-### Technology Stack
+- PHP 8.2 or later
+- Laravel 12 or 13
+- Livewire 3.6 or later, or Livewire 4
 
-- **Laravel 12 & 13**: The installer enforces Laravel 12 or newer; the package itself is compatible with Laravel 12.x and 13.x
-- **Livewire 3 & 4**: Utilizes Livewire for dynamic, reactive components with version-specific features
-- **Tailwind CSS 4**: Uses Tailwind CSS for styling
-- **DaisyUI**: Integrates with DaisyUI for additional styling and components
-- **Alpine.js**: Uses Alpine.js for client-side interactivity
+## Table of Contents
 
-### Package Origin
+- **Getting Started**
+  - [Overview](Getting-Started)
+  - [Installation](Getting-Started-Installation)
+  - [Configuration](Getting-Started-Configuration)
 
-ArtisanPack UI Livewire Components is forked from MaryUI, a popular Livewire component library. It has been adapted and enhanced for the ArtisanPack UI ecosystem, with additional features, components, and customization options.
+- **Components**
+  - [All Components](Components)
+  - [Deprecated Aliases](Components-Deprecated-Aliases)
 
-## Getting Started
+- **Livewire**
+  - [Livewire Integration](Livewire)
+  - [Toasts](Livewire-Toasts)
+  - [Spotlight](Livewire-Spotlight)
+  - [Calendar](Livewire-Calendar)
+  - [Tables](Livewire-Tables)
+  - [Media and Uploads](Livewire-Media-And-Uploads)
 
-### Quick Installation
+- **Theming and Icons**
+  - [Theming](Theming)
+  - [Icons](Icons)
 
-```bash
-# Install the package
-composer require artisanpack-ui/livewire-ui-components
+- **Advanced**
+  - [Overview](Advanced)
+  - [Extension Hooks](Advanced-Extension-Hooks)
+  - [Custom Components](Advanced-Custom-Components)
 
-# Run the installer
-php artisan livewire-ui-components:install
-```
+- **Upgrading**
+  - [Upgrading from 2.x](Upgrading)
 
-For detailed installation instructions, see the [Installation Guide](Installation).
+- [AI Guidelines](Ai-Guidelines)
 
-### Basic Usage Example
+## Design-system documentation
 
-```php
-<x-artisanpack-card>
-    <x-slot:header>
-        <h3 class="text-lg font-bold">Card Title</h3>
-    </x-slot:header>
-    
-    <p>This is a basic card component from ArtisanPack UI.</p>
-    
-    <x-slot:footer>
-        <x-artisanpack-button>Click Me</x-artisanpack-button>
-    </x-slot:footer>
-</x-artisanpack-card>
-```
+- [Getting Started with Livewire](https://docs.artisanpackui.dev/documentation/design-system/getting-started/livewire)
+- [Components](https://docs.artisanpackui.dev/documentation/design-system/components): a page per component with a Blade tab, live examples and tables of props, parts, slots and events
+- [Theming](https://docs.artisanpackui.dev/documentation/design-system/theming)
+- [Accessibility](https://docs.artisanpackui.dev/documentation/design-system/accessibility)
 
-## Component Showcase
+## Credits
 
-ArtisanPack UI Livewire Components includes a wide range of components for various use cases:
+Livewire UI Components began as a fork of [maryUI](https://github.com/robsontenorio/mary) by Robson Tenorio and contributors, released under the MIT license. Version 3.0 replaces its components with the design system's.
 
-### Form Components
-- [Input](Components-Input) - Text input fields
-- [Checkbox](Components-Checkbox) - Checkbox inputs
-- [Select](Components-Select) - Dropdown select menus
-- [Button](Components-Button) - Various button styles
+## License
 
-### Layout Components
-- [Card](Components-Card) - Content containers
-- [Dialog](Components-Dialog) - Modal dialogs and confirmations
-- [DropdownMenu](Components-Dropdown-Menu) - Action and option menus
-- [Tabs](Components-Tabs) - Tabbed interfaces
-
-### Data Display Components
-- [Table](Components-Table) - Data tables with sorting, export, and more
-- [Chart](Components-Chart) - Data visualization
-- [Pagination](Components-Pagination) - Page navigation
-
-### Dashboard Components (v2.0+)
-- [KpiCard](Components-Kpi-Card) - KPI cards with sparklines and trend indicators
-- [WidgetGrid](Components-Widget-Grid) - Responsive grid for dashboard layouts
-- [Sparkline](Components-Sparkline) - Inline sparkline charts
-
-### AI/Streaming Components (v2.0+)
-- [StreamableContent](Components-Streamable-Content) - Real-time streaming content display
-
-For a complete list of components, see the [Components Overview](Components).
-
-## Theming & Styling
-
-- [Generating Color Themes](Generating-Themes) - Create custom color themes
-- [Glass Theme Presets](Glass-Presets) - Pre-built glassmorphism styles
-- [Theme Preview Tool](Theme-Preview-Tool) - Browser-based theme customization (v2.0+, development only)
-- [High Contrast Theme](High-Contrast-Theme) - Accessibility-focused themes (v2.0+)
-- [Customization](Customization) - Advanced styling and customization
-
-## Resources
-
-- **Repository**: [GitLab Repository](https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components)
-- **Issues**: [GitLab Issues](https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components/-/issues)
-- **Support**: For support, please open an issue on GitLab or contact the maintainer at [me@jacobmartella.com](mailto:me@jacobmartella.com)
+Livewire UI Components is open-source software licensed under the MIT license.

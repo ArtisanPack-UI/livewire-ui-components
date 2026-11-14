@@ -101,12 +101,12 @@ Icon, Theme Toggle, Carousel, and various utility components.
 
 ## 📖 Documentation
 
-Comprehensive documentation is available in our [Documentation Wiki](https://github.com/ArtisanPack-UI/livewire-ui-components/wiki/home):
+Comprehensive documentation is available on the [ArtisanPack UI documentation site](https://docs.artisanpackui.dev/documentation/livewire-ui-components/home) (source in [`docs/`](docs/home.md)):
 
-- **[Installation Guide](https://github.com/ArtisanPack-UI/livewire-ui-components/wiki/installation)** - Detailed setup instructions
-- **[Components Overview](https://github.com/ArtisanPack-UI/livewire-ui-components/wiki/components)** - Complete component reference
-- **[Customization Guide](https://github.com/ArtisanPack-UI/livewire-ui-components/wiki/customization)** - Theming and customization options
-- **[Advanced Topics](https://github.com/ArtisanPack-UI/livewire-ui-components/wiki/advanced)** - Color system, custom components, and more
+- **[Installation](docs/getting-started/installation.md)** - Setup, the installer and the Blade directives
+- **[Components](https://docs.artisanpackui.dev/documentation/design-system/components)** - Every component, with a Blade tab, live examples and API tables
+- **[Theming](docs/theming.md)** - Themes, presets and the preset generator
+- **[Upgrading from 2.x](docs/upgrading.md)** - The upgrade command and what changes in 3.0
 
 ## 🎨 Theming
 
@@ -138,13 +138,13 @@ Some components require additional JavaScript packages and configuration.
 
 ### Charts
 
-`<x-artisanpack-chart>` (bar, line, area and donut) is drawn on the server as inline SVG with no chart library; the design-system Alpine plugin opens its tooltips. See [Chart](docs/components/chart.md).
+`<x-artisanpack-chart>` (bar, line, area and donut) is drawn on the server as inline SVG with no chart library; the design-system Alpine plugin opens its tooltips. See [Chart](https://docs.artisanpackui.dev/documentation/design-system/components/chart).
 
-`<x-artisanpack-sparkline>` is drawn on the server as inline SVG and needs no library or script. See [Sparkline](docs/components/sparkline.md).
+`<x-artisanpack-sparkline>` is drawn on the server as inline SVG and needs no library or script. See [Sparkline](https://docs.artisanpackui.dev/documentation/design-system/components/sparkline).
 
 ### Date Pickers
 
-`<x-artisanpack-date-picker>` runs on the design system's behavior engine and needs no third-party library: flatpickr is no longer required. See [DatePicker](docs/components/date-picker.md).
+`<x-artisanpack-date-picker>` runs on the design system's behavior engine and needs no third-party library: flatpickr is no longer required. See [DatePicker](https://docs.artisanpackui.dev/documentation/design-system/components/date-picker).
 
 ## 🔌 Extension Hooks
 
@@ -220,7 +220,7 @@ Version 2.0 is **fully backwards compatible** with v1.x. All your existing code 
 composer require artisanpack-ui/livewire-ui-components:^2.0
 ```
 
-See the complete [v1.x to v2.0 Migration Guide](docs/migration/v1-to-v2.md) for details on new features and optional enhancements.
+See the 2.x documentation for details on new features and optional enhancements. To upgrade to 3.0, see [Upgrading from 2.x](docs/upgrading.md).
 
 ### Upgrading to v1.0
 
