@@ -12,7 +12,7 @@ The package fires a small set of hooks, powered by [`artisanpack-ui/hooks`](http
 | Hook | Type | Fires from | Arguments |
 |---|---|---|---|
 | `ap.livewireUiComponents.componentAttributes` | filter | Every component render | `(ComponentAttributeBag $attributes, string $componentName)` |
-| `ap.livewireUiComponents.componentClasses` | filter | Components that pass a class list through `getClasses()` | `(array $classes, string $componentName, ComponentAttributeBag $attributes)` |
+| `ap.livewireUiComponents.componentClasses` | filter | Every component's root classes, a child component's own classes, and your components that call `getClasses()` | `(array $classes, string $componentName, ComponentAttributeBag $attributes)` |
 | `ap.livewireUiComponents.iconAlias` | filter | An icon name the registry doesn't know, before the Blade Icons fallback | `(string $iconName)` |
 | `ap.livewireUiComponents.tableColumns` | filter | Table, when it resolves its columns | `(array $columns, string $context)`: the context is the table's `id`, or `'default'` |
 | `ap.livewireUiComponents.themeColors` | filter | ThemeToggle, when it builds its choices | `(array $themes)`: `[ 'light' => [ 'label' => … ], 'dark' => […], 'high-contrast' => […], 'system' => […] ]` |
@@ -23,7 +23,12 @@ The package fires a small set of hooks, powered by [`artisanpack-ui/hooks`](http
 
 `$componentName` is the short name of the component's PHP class: `Button`, `Dialog`, `Table`. The deprecated aliases have their own classes, so `<x-artisanpack-modal>` reports `Modal`.
 
-None of the built-in components pass their classes through `getClasses()` in 3.0, so `componentClasses` only fires for your own components that do. See [Custom Components](Advanced-Custom-Components).
+`componentClasses` receives each component's root classes: its `.apui-*` class, then `classes.root`. The `class` attribute merges after the filter. Child components, such as menu items, tabs, steps and dropdown-menu items, pass the classes for their own element. Your own components fire it through `getClasses()`; see [Custom Components](Advanced-Custom-Components).
+
+Three components don't fire it:
+- Toaster draws its toasts in the browser.
+- Breadcrumbs renders BreadcrumbsItem's markup itself.
+- Icon.
 
 ## Registering callbacks
 
