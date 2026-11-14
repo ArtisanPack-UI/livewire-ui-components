@@ -11,10 +11,10 @@
     @php
         $tabValue = $tabValue();
         $selected = null === $tabs || $tabs->isSelected( $tabValue );
-        $panelClasses = array_values( array_filter( [ $classes['content'] ?? null, $contentClasses ], fn ( $class ) => $filled( $class ) ) );
+        $panelClasses = $partClasses( 'content', [ $contentClasses ] );
     @endphp
     <div
-        {{ $attributes->when( [] !== $panelClasses, fn ( $bag ) => $bag->class( $panelClasses ) ) }}
+        {{ $attributes->when( $panelClasses, fn ( $bag, $classes ) => $bag->class( $classes ) ) }}
         @if ( null !== $tabs )
             id="{{ $tabs->valuePartId( 'content', $tabValue ) }}"
             aria-labelledby="{{ $tabs->valuePartId( 'trigger', $tabValue ) }}"

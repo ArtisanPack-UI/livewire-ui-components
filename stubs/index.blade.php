@@ -1,6 +1,5 @@
 <?php
 
-use Modules\Users\Models\User;
 use Illuminate\Support\Collection;
 use Livewire\Volt\Component;
 use ArtisanPack\LivewireUiComponents\Traits\Toast;
@@ -31,25 +30,24 @@ new class extends Component {
     public function headers(): array
     {
         return [
-            ['key' => 'id', 'label' => '#', 'class' => 'w-1'],
-            ['key' => 'name', 'label' => 'Name', 'class' => 'w-64'],
-            ['key' => 'age', 'label' => 'Age', 'class' => 'w-20'],
-            ['key' => 'email', 'label' => 'E-mail', 'sortable' => false],
+            ['key' => 'id', 'label' => '#'],
+            ['key' => 'name', 'label' => __('Name')],
+            ['key' => 'age', 'label' => __('Age'), 'numeric' => true],
+            ['key' => 'email', 'label' => __('Email'), 'sortable' => false],
         ];
     }
 
     /**
      * For demo purpose, this is a static collection.
      *
-     * On real projects you do it with Eloquent collections.
-     * Please, refer to maryUI docs to see the eloquent examples.
+     * On real projects you query an Eloquent model instead.
      */
     public function users(): Collection
     {
         return collect([
-            ['id' => 1, 'name' => 'Mary', 'email' => 'mary@mary-ui.com', 'age' => 23],
-            ['id' => 2, 'name' => 'Giovanna', 'email' => 'giovanna@mary-ui.com', 'age' => 7],
-            ['id' => 3, 'name' => 'Marina', 'email' => 'marina@mary-ui.com', 'age' => 5],
+            ['id' => 1, 'name' => 'Ada', 'email' => 'ada@example.com', 'age' => 36],
+            ['id' => 2, 'name' => 'Grace', 'email' => 'grace@example.com', 'age' => 45],
+            ['id' => 3, 'name' => 'Linus', 'email' => 'linus@example.com', 'age' => 28],
         ])
             ->sortBy([[...array_values($this->sortBy)]])
             ->when($this->search, function (Collection $collection) {
@@ -67,32 +65,49 @@ new class extends Component {
 }; ?>
 
 <div>
-    <!-- HEADER -->
-    <x-artisanpack-header title="Hello" separator progress-indicator>
-        <x-slot:middle class="!justify-end">
-            <x-artisanpack-input id="header-search" placeholder="Search..." aria-label="Search" wire:model.live.debounce="search" leading-icon="search" />
-        </x-slot:middle>
+    <x-artisanpack-page-header :title="__( 'Hello' )">
         <x-slot:actions>
-            <x-artisanpack-button @click="$wire.drawer = true" leading-icon="o-funnel">Filters</x-artisanpack-button>
+            <x-artisanpack-input
+                id="header-search"
+                :placeholder="__( 'Search...' )"
+                :aria-label="__( 'Search' )"
+                wire:model.live.debounce="search"
+                leading-icon="search"
+            />
+            <x-artisanpack-button variant="outline" color="neutral" leading-icon="o-funnel" x-on:click="$wire.drawer = true">{{ __( 'Filters' ) }}</x-artisanpack-button>
         </x-slot:actions>
-    </x-header>
+    </x-artisanpack-page-header>
 
-    <!-- TABLE  -->
-    <x-artisanpack-card surface="raised">
-        <x-artisanpack-table :headers="$headers" :rows="$users" :sort-by="$sortBy">
-            @scope('actions', $user)
-            <x-artisanpack-button variant="ghost" color="error" size="sm" icon-only leading-icon="trash" aria-label="Delete" wire:click="delete({{ $user['id'] }})" wire:confirm="Are you sure?" />
+    <x-artisanpack-card>
+        <x-artisanpack-table :headers="$headers" :rows="$users" :sort-by="$sortBy" :label="__( 'Users' )">
+            @scope( 'actions', $user )
+                <x-artisanpack-button
+                    variant="ghost"
+                    color="error"
+                    size="sm"
+                    icon-only
+                    leading-icon="trash"
+                    :aria-label="__( 'Delete' )"
+                    wire:click="delete( {{ $user['id'] }} )"
+                    :wire:confirm="__( 'Are you sure?' )"
+                />
             @endscope
-        </x-table>
-    </x-card>
+        </x-artisanpack-table>
+    </x-artisanpack-card>
 
-    <!-- FILTER DRAWER -->
-    <x-artisanpack-drawer wire:model="drawer" title="Filters" right separator with-close-button class="lg:w-1/3">
-        <x-artisanpack-input id="drawer-search" placeholder="Search..." aria-label="Search" wire:model.live.debounce="search" leading-icon="search" @keydown.enter="$wire.drawer = false" />
+    <x-artisanpack-drawer wire:model="drawer" :title="__( 'Filters' )">
+        <x-artisanpack-input
+            id="drawer-search"
+            :placeholder="__( 'Search...' )"
+            :aria-label="__( 'Search' )"
+            wire:model.live.debounce="search"
+            leading-icon="search"
+            x-on:keydown.enter="$wire.drawer = false"
+        />
 
-        <x-slot:actions>
-            <x-artisanpack-button variant="outline" color="neutral" leading-icon="x" wire:click="clear">Reset</x-artisanpack-button>
-            <x-artisanpack-button leading-icon="check" @click="$wire.drawer = false">Done</x-artisanpack-button>
-        </x-slot:actions>
-    </x-drawer>
+        <x-slot:footer>
+            <x-artisanpack-button variant="outline" color="neutral" leading-icon="x" wire:click="clear">{{ __( 'Reset' ) }}</x-artisanpack-button>
+            <x-artisanpack-button leading-icon="check" x-on:click="$wire.drawer = false">{{ __( 'Done' ) }}</x-artisanpack-button>
+        </x-slot:footer>
+    </x-artisanpack-drawer>
 </div>

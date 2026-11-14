@@ -14,7 +14,7 @@
     $hasIcon    = $filled( $icon );
 @endphp
 <div
-    {{ $attributes->except( [ 'wire:key', 'id' ] )->when( $filled( $classes['item'] ?? null ), fn ( $bag ) => $bag->class( $classes['item'] ) ) }}
+    {{ $attributes->except( [ 'wire:key', 'id' ] )->when( $partClasses( 'item' ), fn ( $bag, $classes ) => $bag->class( $classes ) ) }}
     wire:key="{{ $itemKey( $itemValue ) }}"
     @if ( null !== $itemId ) id="{{ $itemId }}" @endif
     data-scope="dropdown-menu"

@@ -238,7 +238,7 @@ class LivewireHelper
      */
     public static function supportsIslands(): bool
     {
-        return self::isLivewire4();
+        return self::hasNativeIslands() || self::isLivewire4();
     }
 
     /**
@@ -246,17 +246,31 @@ class LivewireHelper
      *
      * wire:stream enables real-time content streaming, particularly useful for
      * AI-generated content that streams character by character or chunk by chunk.
-     *
-     * - Livewire 4+: Native wire:stream support with $this->stream() method
-     * - Livewire 3: Not supported (content must be sent all at once)
+     * Livewire has had `wire:stream` and `$this->stream()` since 3.0.0 (its
+     * `SupportStreaming` feature), so every Livewire this package supports
+     * (3.6 and later, and 4) has it.
      *
      * @since 2.0.0
      *
-     * @return bool True if wire:stream is supported (Livewire 4+).
+     * @return bool True if wire:stream is supported (Livewire 3+).
      */
     public static function supportsWireStream(): bool
     {
-        return self::isLivewire4();
+        return class_exists(\Livewire\Features\SupportStreaming\SupportStreaming::class)
+            || self::getMajorVersion() >= 3;
+    }
+
+    /**
+     * Check if Livewire provides the @island, @endisland and @placeholder
+     * Blade directives itself (Livewire 4's `SupportIslands` feature).
+     *
+     * @since 3.0.0
+     *
+     * @return bool True when Livewire registers the directives natively.
+     */
+    public static function hasNativeIslands(): bool
+    {
+        return class_exists('Livewire\\Features\\SupportIslands\\SupportIslands');
     }
 
     /**

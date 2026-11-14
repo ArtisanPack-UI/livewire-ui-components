@@ -11,7 +11,7 @@
     $color      = $colorValue();
 @endphp
 <li
-    {{ $attributes->when( $filled( $classes['item'] ?? null ), fn ( $bag ) => $bag->class( $classes['item'] ) ) }}
+    {{ $attributes->when( $partClasses( 'item' ), fn ( $bag, $classes ) => $bag->class( $classes ) ) }}
     data-scope="timeline"
     data-part="item"
 >

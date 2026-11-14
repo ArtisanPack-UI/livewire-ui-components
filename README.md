@@ -1,261 +1,74 @@
 # ArtisanPack UI Livewire UI Components
 
-ArtisanPack UI Livewire UI Components is a comprehensive set of UI components for Livewire, styled by the ArtisanPack UI Design System. This package provides a collection of beautiful, responsive, and customizable components to accelerate your Laravel application development.
+Blade and Livewire components for Laravel, built on the [ArtisanPack UI design system](https://docs.artisanpackui.dev/documentation/design-system/home). Version 3.0 renders the design system's components, with the same markup, accessibility and behavior as its React and Vue packages, and binds them to Livewire with `wire:model`.
 
-## 🚀 Quick Start
+## Requirements
 
-### Installation
+- PHP 8.2 or later
+- Laravel 12 or 13
+- Livewire 3.6 or later, or Livewire 4
+
+## Installation
 
 ```bash
-# Install the package
 composer require artisanpack-ui/livewire-ui-components
-
-# Run the interactive installer
 php artisan livewire-ui-components:install
 ```
 
-The installer asks how your app loads the design system's CSS and JS. There are two paths. Until the npm packages are published, it uses the prebuilt files without asking; pass `--assets=bundler` if you have the packages linked or from a private registry.
-
-**With a bundler (Vite).** The installer adds `@artisanpack-ui/css` and `@artisanpack-ui/behavior` from npm and imports them. Tailwind CSS is optional.
-
-```css
-/* resources/css/app.css */
-@import '@artisanpack-ui/css'; /* or '@artisanpack-ui/css/headless' */
-```
-
-```js
-// resources/js/app.js
-import apuiBehavior from '@artisanpack-ui/behavior/alpine';
-
-document.addEventListener('alpine:init', () => window.Alpine.plugin(apuiBehavior));
-```
-
-Then run `npm run dev`.
-
-**Without a bundler.** The package ships the prebuilt CSS and JS. Publish them, then add the directives to your layout's `<head>`. The script must load before Livewire's script, and `<head>` guarantees that.
-
-```bash
-php artisan vendor:publish --tag=artisanpack-design-system-assets --force
-```
+The installer sets up the design system's CSS and JavaScript, either through npm and Vite or as prebuilt files for apps without a build step, and copies a starter layout into a fresh app. Put the theme script and the toaster in your layout:
 
 ```blade
 <head>
-    {{-- ... --}}
-    @artisanpackStyles   {{-- or @artisanpackStyles('headless') --}}
+    @apuiThemeScript
+    @artisanpackStyles
     @artisanpackScripts
 </head>
+<body>
+    {{ $slot }}
+
+    <x-artisanpack-toaster />
+</body>
 ```
 
-Publish again after each package update. Each URL carries a content hash, so browsers pick up the new files.
+See [Installation](https://docs.artisanpackui.dev/documentation/livewire-ui-components/getting-started/installation) for both asset paths and the installer's options.
 
-### Basic Usage
+## Usage
 
 ```blade
-<!-- Simple button -->
-<x-artisanpack-button>Click Me</x-artisanpack-button>
+<x-artisanpack-input wire:model="email" type="email" :label="__( 'Email' )" />
 
-<!-- Card with header and footer -->
-<x-artisanpack-card>
-    <x-slot:header>
-        <h3 class="text-lg font-bold">Card Title</h3>
-    </x-slot:header>
-    
-    <p>Card content goes here.</p>
-    
+<x-artisanpack-button color="primary" leading-icon="plus" wire:click="save">
+    {{ __( 'Save' ) }}
+</x-artisanpack-button>
+
+<x-artisanpack-dialog wire:model="confirming" role="alertdialog" :title="__( 'Delete listing?' )">
     <x-slot:footer>
-        <x-artisanpack-button color="primary">Action</x-artisanpack-button>
+        <x-artisanpack-button color="error" wire:click="delete">{{ __( 'Delete listing' ) }}</x-artisanpack-button>
     </x-slot:footer>
-</x-artisanpack-card>
+</x-artisanpack-dialog>
 ```
 
-## ✨ Key Features
+Style components with their props (`color`, `variant`, `size`, `surface`) and per-part `:classes`. Theme them with the design tokens, and generate a brand preset with `php artisan artisanpack:generate-preset`.
 
-- **🎯 70+ Pre-built Components**: From simple inputs to complex data tables and charts
-- **⚡ TALL Stack Integration**: Built specifically for Tailwind CSS, Alpine.js, Laravel, and Livewire
-- **🎨 Design System Styling**: Plain CSS from the ArtisanPack UI Design System, with or without Tailwind CSS, and a headless option
-- **🔧 Livewire 3 & 4 Compatible**: Fully compatible with Livewire 3 and 4
-- **🎨 Customizable Theming**: Generate custom color themes with a simple Artisan command
-- **📱 Responsive Design**: All components are fully responsive out of the box
-- **♿ Accessibility Focused**: Components designed with accessibility best practices
-- **📚 Comprehensive Documentation**: Detailed documentation with examples for every component
+## Documentation
 
-## 🧩 Component Categories
-
-### 📝 Form Components
-Input, Button, Checkbox, Select, DatePicker, File Upload, Rich Text Editor, and more.
-
-### 🏗️ Layout Components  
-Card, Modal, Tabs, Accordion, Drawer, Dropdown, and structural elements.
-
-### 🧭 Navigation Components
-Menu, Breadcrumbs, Pagination, Spotlight Search, and navigation helpers.
-
-### 📊 Data Display Components
-Table, Chart, Calendar, Avatar, Badge, Progress indicators, and data visualization.
-
-### 💬 Feedback Components
-Alert, Toast, Loading states, and user feedback elements.
-
-### 🛠️ Utility Components
-Icon, Theme Toggle, Carousel, and various utility components.
-
-## 📖 Documentation
-
-Comprehensive documentation is available on the [ArtisanPack UI documentation site](https://docs.artisanpackui.dev/documentation/livewire-ui-components/home) (source in [`docs/`](docs/home.md)):
-
-- **[Installation](docs/getting-started/installation.md)** - Setup, the installer and the Blade directives
-- **[Components](https://docs.artisanpackui.dev/documentation/design-system/components)** - Every component, with a Blade tab, live examples and API tables
-- **[Theming](docs/theming.md)** - Themes, presets and the preset generator
-- **[Upgrading from 2.x](docs/upgrading.md)** - The upgrade command and what changes in 3.0
-
-## 🎨 Theming
-
-Generate custom themes to match your brand:
-
-```bash
-php artisan artisanpack:generate-theme
-```
-
-This interactive command helps you create custom color schemes that work across all components.
-
-## 📦 Optional Dependencies
-
-Some features require optional packages:
-
-```bash
-# For Excel (XLSX) export
-composer require phpoffice/phpspreadsheet
-
-# For PDF export
-composer require barryvdh/laravel-dompdf
-```
-
-CSV export works without any additional dependencies.
-
-## 📊 JavaScript Dependencies
-
-Some components require additional JavaScript packages and configuration.
-
-### Charts
-
-`<x-artisanpack-chart>` (bar, line, area and donut) is drawn on the server as inline SVG with no chart library; the design-system Alpine plugin opens its tooltips. See [Chart](https://docs.artisanpackui.dev/documentation/design-system/components/chart).
-
-`<x-artisanpack-sparkline>` is drawn on the server as inline SVG and needs no library or script. See [Sparkline](https://docs.artisanpackui.dev/documentation/design-system/components/sparkline).
-
-### Date Pickers
-
-`<x-artisanpack-date-picker>` runs on the design system's behavior engine and needs no third-party library: flatpickr is no longer required. See [DatePicker](https://docs.artisanpackui.dev/documentation/design-system/components/date-picker).
-
-## 🔌 Extension Hooks
-
-This package fires a small set of cross-cutting hooks — powered by [`artisanpack-ui/hooks`](https://github.com/ArtisanPack-UI/hooks) — that let applications and other packages extend rendered UI without editing individual components. All hook names follow the ecosystem convention: `ap.` + camelCase segments joined by periods.
-
-| Hook | Type | Fires from | Payload |
-| --- | --- | --- | --- |
-| `ap.livewireUiComponents.componentClasses` | filter | `BaseComponent::getClasses()` (opt-in per component) | `(array $classes, string $componentName, ComponentAttributeBag $attributes)` |
-| `ap.livewireUiComponents.componentAttributes` | filter | `BaseComponent::withAttributes()` — every render | `(ComponentAttributeBag $attributes, string $componentName)` |
-| `ap.livewireUiComponents.iconAlias` | filter | `Icon::icon()` | `(string $iconName)` |
-| `ap.livewireUiComponents.toastDispatched` | action | `Toast` trait `toast()` and `flashToast()` | `(string $color, string $title, array $options)` |
-| `ap.livewireUiComponents.tableColumns` | filter | `Table::__construct()` | `(array $columns, string $context)` — context is the table's `id` or `'default'` |
-| `ap.livewireUiComponents.themeColors` | filter | `ThemeToggle::__construct()` | `(array $themes)` — `['light' => ['label','theme','class'], 'dark' => [...]]` |
-| `ap.livewireUiComponents.modalWillOpen` | action | `Support\ModalBridge::willOpen()` | `(string $modalId)` |
-| `ap.livewireUiComponents.modalWillClose` | action | `Support\ModalBridge::willClose()` | `(string $modalId)` |
-| `ap.livewireUiComponents.spotlightCommands` | filter | `artisanpack.spotlight` route handler | `(array $commands, ?\Illuminate\Contracts\Auth\Authenticatable $user)` |
-
-### Registering callbacks
-
-```php
-use ArtisanPackUI\Hooks\Facades\Action;
-use ArtisanPackUI\Hooks\Facades\Filter;
-
-// Add a class to every rendered button
-Filter::add('ap.livewireUiComponents.componentClasses', function (array $classes, string $name) {
-    if ('Button' === $name) {
-        $classes[] = 'analytics-hook';
-    }
-
-    return $classes;
-});
-
-// Swap Font Awesome names for Heroicon names package-wide
-Filter::add('ap.livewireUiComponents.iconAlias', function (string $name) {
-    return match ($name) {
-        'fa-home' => 'o-home',
-        'fa-user' => 'o-user',
-        default   => $name,
-    };
-});
-
-// Log toasts to your analytics pipeline
-Action::add('ap.livewireUiComponents.toastDispatched', function (string $color, string $title) {
-    analytics()->track('toast_shown', ['color' => $color, 'title' => $title]);
-});
-```
-
-### Firing modal lifecycle hooks
-
-Modals open through Alpine on the client, so the server has no automatic signal. Call the bridge from your Livewire actions when you open or close a modal to invoke the `modalWillOpen` / `modalWillClose` hooks:
-
-```php
-use ArtisanPack\LivewireUiComponents\Support\ModalBridge;
-
-public function openConfirmDialog(): void
-{
-    ModalBridge::willOpen('confirm-delete');
-    $this->dispatch('open-modal', id: 'confirm-delete');
-}
-```
-
-### Performance
-
-Filters short-circuit inside `applyFilters()` when no callback is registered, so idle hooks add only a facade dispatch plus a hash-map lookup per render. `componentClasses` is opt-in per component (route class lists through `$this->getClasses($classes)`); `componentAttributes` fires on every render but is cheap when nothing is subscribed. The base component name is cached per subclass so it is not recomputed each render.
-
-## 🚀 Migration Guides
-
-### Upgrading to v2.0
-
-Version 2.0 is **fully backwards compatible** with v1.x. All your existing code will continue to work without any modifications. Simply update the package:
-
-```bash
-composer require artisanpack-ui/livewire-ui-components:^2.0
-```
-
-See the 2.x documentation for details on new features and optional enhancements. To upgrade to 3.0, see [Upgrading from 2.x](docs/upgrading.md).
-
-### Upgrading to v1.0
-
-Version 1.0.0 introduced standardized component naming. The duplicated prefix was removed:
-
-**Before (deprecated):**
-```blade
-<x-artisanpack-artisanpack-button>Click Me</x-artisanpack-artisanpack-button>
-```
-
-**After (v1.0.0+):**
-```blade
-<x-artisanpack-button>Click Me</x-artisanpack-button>
-```
-
-Search and replace `artisanpack-artisanpack-` with `artisanpack-` in your Blade files.
+- [Getting Started](https://docs.artisanpackui.dev/documentation/livewire-ui-components/getting-started)
+- [Configuration](https://docs.artisanpackui.dev/documentation/livewire-ui-components/getting-started/configuration)
+- [Components](https://docs.artisanpackui.dev/documentation/livewire-ui-components/components)
+- [Livewire Integration](https://docs.artisanpackui.dev/documentation/livewire-ui-components/livewire)
+- [Theming](https://docs.artisanpackui.dev/documentation/livewire-ui-components/theming)
+- [Icons](https://docs.artisanpackui.dev/documentation/livewire-ui-components/icons)
+- [Extension Hooks](https://docs.artisanpackui.dev/documentation/livewire-ui-components/advanced/extension-hooks)
+- [Upgrading from 2.x](https://docs.artisanpackui.dev/documentation/livewire-ui-components/upgrading): `php artisan artisanpack:upgrade-ui` rewrites 2.x Blade for you.
 
 ## Acknowledgements
 
-ArtisanPack UI Livewire UI Components is a fork of the excellent [MaryUI](https://github.com/robsontenorio/mary) library, created by Robson Tenorio and contributors.
-
-We extend our sincere gratitude to the MaryUI team for their incredible work and for making it available to the open-source community. This fork aims to adapt MaryUI to the specific coding standards and architectural patterns of the ArtisanPack UI ecosystem while adding new features.
+Livewire UI Components began as a fork of [maryUI](https://github.com/robsontenorio/mary) by Robson Tenorio and contributors. Thank you to the maryUI team for their work.
 
 ## Contributing
 
-Contributions are welcome! To contribute:
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+Contributions are welcome. Fork the repository, create a branch, and open a pull request. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-<a name="license"></a>
-
-ArtisanPack UI Livewire UI Components is open-sourced software licensed under the [MIT license](/license.md).
+Livewire UI Components is open-source software licensed under the [MIT license](license.md).

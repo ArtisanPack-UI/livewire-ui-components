@@ -42,10 +42,11 @@ test('streaming renders the status, Stop, the busy live region and the caret', f
         ->and($dom->query('//*[@data-part="caret"][@aria-hidden="true"]'))->toHaveCount(1);
 });
 
-test('wire:stream targets the stream only on Livewire 4', function (): void {
+test('wire:stream targets the stream on Livewire 3 and 4', function (): void {
     $stream = designSystemDom(Blade::render('<x-artisanpack-streamable-content id="sum" target="summary" />'))->query('//*[@id="sum-stream"]')->item(0);
 
-    expect($stream->getAttribute('wire:stream'))->toBe(LivewireHelper::supportsWireStream() ? 'summary' : '');
+    expect(LivewireHelper::supportsWireStream())->toBeTrue()
+        ->and($stream->getAttribute('wire:stream'))->toBe('summary');
 });
 
 test('waiting shows the spinner and skeleton lines', function (): void {

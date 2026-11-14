@@ -1,65 +1,48 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace( '_', '-', app()->getLocale() ) }}">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ isset($title) ? $title.' - '.config('app.name') : config('app.name') }}</title>
+    <title>{{ isset( $title ) ? $title . ' - ' . config( 'app.name' ) : config( 'app.name' ) }}</title>
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- Applies the stored light, dark or system theme before the first paint. --}}
+    @apuiThemeScript
+    @vite( [ 'resources/css/app.css', 'resources/js/app.js' ] )
 </head>
-<body class="min-h-screen font-sans antialiased bg-base-200">
-
-    {{-- NAVBAR mobile only --}}
-    <x-artisanpack-nav sticky class="lg:hidden">
+<body>
+    <x-artisanpack-app-shell :label="__( 'Main navigation' )">
         <x-slot:brand>
-            <x-artisanpack-app-brand />
+            <x-app-brand />
         </x-slot:brand>
-        <x-slot:actions>
-            <label for="main-drawer" class="lg:hidden me-3">
-                <x-artisanpack-icon name="o-bars-3" class="cursor-pointer" />
-            </label>
-        </x-slot:actions>
-    </x-artisanpack-nav>
 
-    {{-- MAIN --}}
-    <x-artisanpack-main>
-        {{-- SIDEBAR --}}
-        <x-slot:sidebar drawer="main-drawer" collapsible class="bg-base-100 lg:bg-inherit">
+        <x-slot:sidebar>
+            <x-artisanpack-menu :label="__( 'Main navigation' )">
+                <x-artisanpack-menu-item :label="__( 'Home' )" icon="house" href="/" />
 
-            {{-- BRAND --}}
-            <x-artisanpack-app-brand class="px-5 pt-4" />
-
-            {{-- MENU --}}
-            <x-artisanpack-menu activate-by-route>
-
-                {{-- User --}}
-                @if($user = auth()->user())
-                    <x-artisanpack-menu-separator />
-
-                    <x-artisanpack-list-item :item="$user" value="name" sub-value="email" no-separator no-hover class="-mx-2 !-my-2 rounded">
-                        <x-slot:actions>
-                            <x-artisanpack-button variant="ghost" color="neutral" size="xs" icon-only leading-icon="o-power" aria-label="Log off" title="Log off" href="/logout" />
-                        </x-slot:actions>
-                    </x-artisanpack-list-item>
-
-                    <x-artisanpack-menu-separator />
-                @endif
-
-                <x-artisanpack-menu-item title="Hello" icon="o-sparkles" link="/" />
-
-                <x-artisanpack-menu-sub title="Settings" icon="o-cog-6-tooth">
-                    <x-artisanpack-menu-item title="Wifi" icon="o-wifi" link="####" />
-                    <x-artisanpack-menu-item title="Archives" icon="o-archive-box" link="####" />
+                <x-artisanpack-menu-sub :label="__( 'Settings' )" icon="settings">
+                    <x-artisanpack-menu-item :label="__( 'Profile' )" icon="user" href="#" />
+                    <x-artisanpack-menu-item :label="__( 'Notifications' )" icon="inbox" href="#" />
                 </x-artisanpack-menu-sub>
             </x-artisanpack-menu>
         </x-slot:sidebar>
 
-        {{-- The `$slot` goes here --}}
-        <x-slot:content>
-            {{ $slot }}
-        </x-slot:content>
-    </x-artisanpack-main>
+        <x-slot:footer>
+            {{-- Applies and stores the light, dark or system choice. --}}
+            <x-artisanpack-theme-toggle variant="icon" />
+
+            @if ( $user = auth()->user() )
+                {{-- The theme control lives in the toggle above, so the menu hides its own. --}}
+                <x-artisanpack-user-menu
+                    :user="[ 'name' => $user->name, 'email' => $user->email ]"
+                    logout-action="/logout"
+                    hide-theme
+                />
+            @endif
+        </x-slot:footer>
+
+        {{ $slot }}
+    </x-artisanpack-app-shell>
 
     {{-- Toasts: $this->toast(), $this->dispatch( 'toast', … ) and flashed toasts show here. --}}
     <x-artisanpack-toaster />

@@ -6,14 +6,18 @@ return [
      *
      * Make sure to clear view cache after renaming with `php artisan view:clear`
      *
-     *    prefix => ''
-     *              <x-button />
-     *              <x-card />
-     *
      *    prefix => 'artisanpack'
      *               <x-artisanpack-button />
-     *               <x-artisanpack-card />
+     *               <livewire:artisanpack-calendar />
      *
+     *    prefix => 'ui'
+     *               <x-ui-button />
+     *
+     *    prefix => ''
+     *               <x-button />
+     *
+     * Every component also stays registered as `artisanpack-{name}`, which the
+     * package's own views use to render nested components, so any prefix works.
      */
     'prefix' => 'artisanpack',
 
@@ -23,13 +27,13 @@ return [
      * Some Livewire UI Components make network request to its internal routes.
      *
      *      route_prefix => ''
-     *          - Spotlight: '/livewire-ui-components/spotlight'
-     *          - Editor: '/livewire-ui-components/upload'
-     *          - ...
+     *          - Spotlight: '/artisanpack/spotlight'
+     *          - RichTextEditor uploads: '/artisanpack/upload'
+     *          - AppShell sidebar state: '/artisanpack/toogle-sidebar'
      *
      *      route_prefix => 'my-components'
-     *          - Spotlight: '/my-components/livewire-ui-components/spotlight'
-     *          - Editor: '/my-components/livewire-ui-components/upload'
+     *          - Spotlight: '/my-components/artisanpack/spotlight'
+     *          - RichTextEditor uploads: '/my-components/artisanpack/upload'
      *          - ...
      */
     'route_prefix' => '',
@@ -50,52 +54,13 @@ return [
 
     /**
      * Components settings
+     *
+     *      spotlight.class - The class whose search() the Spotlight route calls.
      */
     'components' => [
         'spotlight' => [
             'class' => 'App\Support\Spotlight',
-        ]
-    ],
-    /**
-     * Icons configuration for components
-     */
-    'icons' => [
-        'list_item' => [
-            // Default list style icons
-            'bullet' => 'o-minus',
-            'checkmark' => 'o-check',
-            'arrow' => 'o-chevron-right',
-            'dot' => 'o-ellipsis-horizontal',
-            
-            // Status icons
-            'status' => [
-                'new' => 'o-sparkles',
-                'completed' => 'o-check-circle',
-                'error' => 'o-exclamation-triangle',
-                'warning' => 'o-exclamation-circle',
-                'info' => 'o-information-circle',
-            ],
-            
-            // Type icons
-            'type' => [
-                'user' => 'o-user',
-                'file' => 'o-document',
-                'folder' => 'o-folder',
-                'email' => 'o-envelope',
-                'notification' => 'o-bell',
-            ]
         ],
-        
-        'loading' => [
-            // Custom loading icons (SVG-based)
-            'spinner' => 'o-arrow-path',
-            'dots' => null, // Keep CSS-based
-            'ring' => null, // Keep CSS-based
-            'custom_svg' => null, // Allow custom SVG content
-            
-            // Default loading type
-            'default_type' => 'css', // 'css' or 'svg'
-        ]
     ],
 
 	/*
@@ -123,22 +88,27 @@ return [
 
 	/*
     |--------------------------------------------------------------------------
-    | Theme Generation Settings
+    | Theme Generation Settings (deprecated)
     |--------------------------------------------------------------------------
     |
-    | This value specifies the default output path for the generated CSS theme
-    | file within the user's Laravel application. Developers can publish this
-    | file and modify the path to suit their project structure.
+    | Deprecated in 3.0: `theme_output_path`, `glass` and `design_tokens` only
+    | configure the deprecated `artisanpack:generate-theme` command, whose 2.x
+    | output nothing in 3.0 reads. Use `artisanpack:generate-preset` instead.
+    | These keys will be removed with that command in a later major release.
+    |
+    | The default output path for the generated CSS theme file.
     |
     */
 	'theme_output_path' => resource_path('css/artisanpack-ui-theme.css'),
 
 	/*
     |--------------------------------------------------------------------------
-    | Glass Design Token Settings
+    | Glass Design Token Settings (deprecated)
     |--------------------------------------------------------------------------
     |
-    | These settings control the glassmorphism design system tokens.
+    | Deprecated in 3.0: read only by `artisanpack:generate-theme`.
+    |
+    | These settings control the 2.x glassmorphism tokens.
     | You can customize the default values for glass effects here.
     |
     | @since 2.0.0
@@ -216,8 +186,11 @@ return [
 
 	/*
     |--------------------------------------------------------------------------
-    | Design Tokens Settings
+    | Design Tokens Settings (deprecated)
     |--------------------------------------------------------------------------
+    |
+    | Deprecated in 3.0: read only by `artisanpack:generate-theme`. The 3.0
+    | design tokens come from the design system; see `artisanpack:generate-preset`.
     |
     | These settings control the comprehensive design token system including
     | typography, spacing, border radius, shadows, and animations.
