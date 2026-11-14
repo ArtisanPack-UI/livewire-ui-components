@@ -103,7 +103,7 @@ A 2.x theme from `artisanpack:generate-theme`, or any DaisyUI theme, has nothing
 php artisan artisanpack:generate-preset acme --primary="#7c3aed"
 ```
 
-See [Theming](Theming). `artisanpack:generate-theme` still runs, deprecated, and the `theme_output_path`, `glass` and `design_tokens` config keys only configure it. The 2.x theme builder page and its route are gone.
+See [Theming](Theming). `artisanpack:generate-theme` still runs, deprecated, and the `theme_output_path`, `glass` and `design_tokens` config keys only configure it. The `artisanpack-glass-tokens` and `artisanpack-design-tokens` publish tags, the `icons.list_item` and `icons.loading` keys, and the `livewire-ui-components:bootcamp` command are gone. The 2.x theme builder page and its route are gone.
 
 The theme now lives in `data-theme` on `<html>` (`light`, `dark` or `high-contrast`), stored under the `apui-theme` localStorage key. The 2.x `mary-theme` key, the theme class on `<html>` and the `theme-changed` event are gone; ThemeToggle reports a change as `value-change`.
 

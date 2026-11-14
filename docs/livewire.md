@@ -109,7 +109,7 @@ Or use the `Toast` trait for `$this->success( __( 'Saved' ) )` and toasts that s
 $this->stream( to: 'answer', content: $chunk );
 ```
 
-While it's streaming, its Stop button dispatches `stop`. The component adds `wire:stream` on Livewire 4; on Livewire 3 the content renders when the request finishes.
+While it's streaming, its Stop button dispatches `stop`. The component adds `wire:stream`, which Livewire 3 and 4 both support, so chunks appear as `$this->stream()` sends them.
 
 ## Livewire-only components
 
