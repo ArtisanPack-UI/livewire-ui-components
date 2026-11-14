@@ -27,8 +27,9 @@ final class AttributePlanner
      * Plans one attribute.
      *
      * The plan's `type` is `none`, `rename` (with `to` and maybe `value`),
-     * `set` (`to="value"`), `boolean` (`to` set to `value`), `negate`,
-     * `part-class` (`part`), `wrap`, `content` or `remove`.
+     * `set` (`to="value"`), `boolean` (`to` set to `value`), `number` (`to`
+     * bound to the integer `value`), `negate`, `part-class` (`part`), `wrap`,
+     * `content` or `remove`.
      *
      * @since 3.0.0
      *
@@ -127,6 +128,21 @@ final class AttributePlanner
             case 'part-class':
                 return ['plan' => ['type' => 'part-class', 'part' => $rule['part']]];
 
+            case 'duration':
+                $milliseconds = 'literal' === $value['type'] ? self::durationMs((string) ($value['value'] ?? '')) : null;
+
+                if (null !== $milliseconds) {
+                    return ['plan' => ['type' => 'number', 'to' => $to, 'value' => $milliseconds]];
+                }
+
+                return [
+                    'plan'   => ['type' => 'none'],
+                    'manual' => __('`:name` is now integer milliseconds on `:to`; convert this value.', ['name' => $name, 'to' => $to]).$note,
+                ];
+
+            case 'keep':
+                return ['plan' => ['type' => 'none']];
+
             case 'wrap':
                 return ['plan' => ['type' => 'wrap']];
 
@@ -139,5 +155,26 @@ final class AttributePlanner
             default:
                 return ['plan' => ['type' => 'none'], 'manual' => $rule['note'] ?? __('`:name` changed.', ['name' => $name])];
         }
+    }
+
+    /**
+     * A duration (`250ms`, `1s` or `250`) in milliseconds, the twin of
+     * `durationMs()` in `@artisanpack-ui/codemods`.
+     *
+     * @since 3.0.0
+     *
+     * @param  string  $text  The duration as written.
+     *
+     * @return int|null The milliseconds, or null when it isn't a duration.
+     */
+    public static function durationMs(string $text): ?int
+    {
+        if (1 !== preg_match('/^\s*(\d+(?:\.\d+)?)\s*(ms|s)?\s*$/i', $text, $matches)) {
+            return null;
+        }
+
+        $multiplier = 's' === strtolower($matches[2] ?? '') ? 1000 : 1;
+
+        return (int) round((float) $matches[1] * $multiplier);
     }
 }

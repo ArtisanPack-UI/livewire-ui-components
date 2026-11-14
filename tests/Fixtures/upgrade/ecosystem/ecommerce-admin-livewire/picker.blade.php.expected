@@ -18,7 +18,7 @@
         option-value="id"
         option-label="name"
         option-sub-label="description"
-        debounce="300ms"
+        :debounce="300"
         :empty-label="__( 'No results found.' )"
         wire:model.live="{{ $model }}"
         {{ $attributes->whereDoesntStartWith( 'wire:model' ) }}
@@ -35,7 +35,7 @@
         option-value="id"
         option-label="name"
         option-sub-label="description"
-        debounce="300ms"
+        :debounce="300"
         :empty-label="__( 'No results found.' )"
         wire:model="{{ $model }}"
         {{ $attributes->whereDoesntStartWith( 'wire:model' ) }}
