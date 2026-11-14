@@ -6,11 +6,18 @@
 
 `upgrade-rules.php` is a copy of the Livewire upgrade rules that `@artisanpack-ui/codemods` generates (`packages/codemods/generated/upgrade-rules.php`, D-056): what every 2.x tag, attribute and slot becomes in 3.0, and the DaisyUI classes to report. `Upgrade\UpgradeRules` reads it for `php artisan artisanpack:upgrade-ui`.
 
-Don't edit any of them by hand. The asset build writes them, along with the prebuilt CSS and JS in `dist/` and, from a checkout, the generator fixtures in `tests/Fixtures/design-system/generator/`:
+Don't edit any of them by hand. The asset build writes them, along with the prebuilt CSS and JS in `dist/`, from the published design-system packages pinned in `package.json`:
+
+```bash
+npm ci
+node scripts/build-assets.mjs --check   # fails if the committed copies are stale (CI runs this through DesignSystemDistTest)
+node scripts/build-assets.mjs           # rewrites them after you bump the pins
+```
+
+To move to a new design-system release, change the versions in `package.json`, run `npm install`, then rebuild. `npm ci` also installs the design-system PHP kit (`@artisanpack-ui/manifest` and `@artisanpack-ui/testing`), which `composer.json` autoloads for the parity tests.
+
+The npm packages don't ship the design system's test fixtures: the generator fixtures in `tests/Fixtures/design-system/generator/` and the Markdown vectors in `tests/Fixtures/design-system/markdown-vectors.json`. To refresh those, or to try unreleased design-system changes, build from a checkout instead (run `npm run build` in it first):
 
 ```bash
 node scripts/build-assets.mjs --from ../design-system   # or DESIGN_SYSTEM_PATH=../design-system
-node scripts/build-assets.mjs --check --from ../design-system   # fails if the committed copies are stale
 ```
-
-Build the design-system packages first (`npm run build` in the checkout). Without `--from` or `DESIGN_SYSTEM_PATH`, the script reads `node_modules/@artisanpack-ui/*`, once those packages are published; the generator fixtures aren't in the npm packages, so that path leaves them as they are. The parity tests fail until the token map and the fixtures match.

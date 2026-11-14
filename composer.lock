@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8ebef6957a2c7a3ca26ce115fbb9ad76",
+    "content-hash": "52c61bdd68576477b05cfc7f397505f8",
     "packages": [
         {
             "name": "artisanpack-ui/accessibility",
@@ -6574,72 +6574,6 @@
                 "source": "https://gitlab.com/jacob-martella-web-design/artisanpack-ui/artisanpack-ui-code-style-pint/-/tree/v1.1.0"
             },
             "time": "2025-11-23T21:13:56+00:00"
-        },
-        {
-            "name": "artisanpack-ui/design-system",
-            "version": "dev-feature/63-65-chart-calendar-utility",
-            "dist": {
-                "type": "path",
-                "url": "../design-system",
-                "reference": "78bd52e253db3fdb4442cd224d7544f566869c32"
-            },
-            "require": {
-                "ext-dom": "*",
-                "ext-json": "*",
-                "ext-libxml": "*",
-                "php": "^8.2"
-            },
-            "require-dev": {
-                "orchestra/testbench": "^10.0|^11.0",
-                "pestphp/pest": "^3.8|^4.0"
-            },
-            "suggest": {
-                "illuminate/view": "Renders the Blade fixtures and runs the Livewire parity checks (^12.0|^13.0).",
-                "pestphp/pest": "For the toMatchManifest expectation."
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "ArtisanPackUI\\DesignSystem\\Manifest\\": "packages/manifest/php/",
-                    "ArtisanPackUI\\DesignSystem\\Testing\\": "packages/testing/php/"
-                }
-            },
-            "autoload-dev": {
-                "psr-4": {
-                    "ArtisanPackUI\\DesignSystem\\Testing\\Tests\\": "packages/testing/tests-php/"
-                }
-            },
-            "archive": {
-                "exclude": [
-                    "/design",
-                    "/docs",
-                    "/apps",
-                    "/tools",
-                    "/node_modules",
-                    "/packages/*/node_modules",
-                    "/packages/*/test",
-                    "/packages/testing/tests-php"
-                ]
-            },
-            "scripts": {
-                "test": [
-                    "pest --test-directory=packages/testing/tests-php"
-                ]
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Jacob Martella",
-                    "email": "me@jacobmartella.com"
-                }
-            ],
-            "description": "The PHP side of the ArtisanPack UI Design System: component manifests, docs examples and the quality-gate kit (Blade fixture host and parity checks).",
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
         },
         {
             "name": "brianium/paratest",
@@ -13246,9 +13180,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "artisanpack-ui/design-system": 20
-    },
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

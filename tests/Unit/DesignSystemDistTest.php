@@ -69,15 +69,18 @@ test('the manifest is stable JSON', function (): void {
         ->and(array_keys($this->manifest['files']))->toBe(collect($this->manifest['files'])->keys()->sort()->values()->all());
 });
 
-test('the committed assets match a design-system checkout', function (): void {
-    $checkout = getenv('DESIGN_SYSTEM_PATH') ?: dirname(__DIR__, 3).'/design-system';
+test('the committed assets match the pinned design-system packages', function (): void {
     $node     = (new ExecutableFinder)->find('node');
+    $checkout = getenv('DESIGN_SYSTEM_PATH') ?: null;
+    $modules  = dirname(__DIR__, 2).'/node_modules/@artisanpack-ui';
+    $source   = null !== $checkout ? $checkout.'/packages' : $modules;
 
-    if (! is_dir($checkout.'/packages/css/dist') || ! is_dir($checkout.'/packages/behavior/dist') || null === $node) {
-        $this->markTestSkipped('No built design-system checkout (set DESIGN_SYSTEM_PATH) or no node.');
+    if (! is_dir($source.'/css/dist') || ! is_dir($source.'/behavior/dist') || null === $node) {
+        $this->markTestSkipped('No design-system packages (run npm ci, or set DESIGN_SYSTEM_PATH to a built checkout) or no node.');
     }
 
-    $process = new Process([$node, dirname(__DIR__, 2).'/scripts/build-assets.mjs', '--check', '--from', $checkout]);
+    $arguments = null !== $checkout ? ['--from', $checkout] : [];
+    $process   = new Process([$node, dirname(__DIR__, 2).'/scripts/build-assets.mjs', '--check', ...$arguments]);
     $process->run();
 
     expect($process->getExitCode())->toBe(0, $process->getErrorOutput().$process->getOutput());

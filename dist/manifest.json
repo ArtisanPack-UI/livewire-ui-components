@@ -1,8 +1,8 @@
 {
   "packages": {
-    "@artisanpack-ui/behavior": "0.0.0",
-    "@artisanpack-ui/css": "0.0.0",
-    "@artisanpack-ui/tokens": "1.0.1"
+    "@artisanpack-ui/behavior": "1.0.0",
+    "@artisanpack-ui/css": "1.0.0",
+    "@artisanpack-ui/tokens": "2.0.0"
   },
   "styles": {
     "default": "css/index.css",

@@ -54,30 +54,29 @@ class LivewireUiComponentsInstallCommand extends Command
     public const ASSETS_PREBUILT = 'prebuilt';
 
     /**
-     * The asset path the installer offers first. Prebuilt until
-     * `@artisanpack-ui/css` and `@artisanpack-ui/behavior` are published to
-     * npm (design-system #81): the bundler path installs them and fails until then.
+     * The asset path the installer offers first: prebuilt, which works in
+     * every app. The prompt also offers the bundler path.
      *
      * @since 3.0.0
      */
     public const DEFAULT_ASSETS = self::ASSETS_PREBUILT;
 
     /**
-     * Whether `NPM_PACKAGES` are on the npm registry yet (design-system #81).
-     * Until they are, the installer doesn't offer the bundler path, and
-     * `--assets=bundler` warns that the packages must come from a link or a
-     * private registry.
+     * Whether `NPM_PACKAGES` are on the npm registry. They are, from
+     * design-system 1.0, so the installer always offers the bundler path.
+     * Kept for code that read it during the 3.0 pre-releases.
      *
      * @since 3.0.0
      */
-    public const NPM_PACKAGES_PUBLISHED = false;
+    public const NPM_PACKAGES_PUBLISHED = true;
 
     /**
-     * The npm packages the bundler path installs.
+     * The npm packages the bundler path installs, held to the design-system
+     * major this release renders: 3.x markup needs the 1.x CSS and behavior.
      *
      * @since 3.0.0
      */
-    public const NPM_PACKAGES = ['@artisanpack-ui/css', '@artisanpack-ui/behavior'];
+    public const NPM_PACKAGES = ['@artisanpack-ui/css@^1', '@artisanpack-ui/behavior@^1'];
 
     /**
      * The name and signature of the console command.
@@ -204,7 +203,7 @@ class LivewireUiComponentsInstallCommand extends Command
 
         $this->info("\n".__('Installing the ArtisanPack UI design system...')."\n");
 
-        Process::run($packageManagerCommand.' '.implode(' ', $packages), function (string $type, string $output): void {
+        Process::run($packageManagerCommand.' '.implode(' ', array_map('escapeshellarg', $packages)), function (string $type, string $output): void {
             echo $output;
         })->throw();
 
@@ -546,19 +545,7 @@ class LivewireUiComponentsInstallCommand extends Command
                 ]));
             }
 
-            if (self::ASSETS_BUNDLER === $option && ! static::NPM_PACKAGES_PUBLISHED) {
-                $this->warn(__('The design system npm packages (:packages) aren\'t on npm yet. The bundler path only works if you have them linked or from a private registry.', [
-                    'packages' => implode(', ', self::NPM_PACKAGES),
-                ]));
-            }
-
             return $option;
-        }
-
-        if (! static::NPM_PACKAGES_PUBLISHED) {
-            $this->info(__('Using the prebuilt design system files. The bundler path (npm + Vite) arrives once the npm packages are published.'));
-
-            return self::ASSETS_PREBUILT;
         }
 
         return (string) select(

@@ -13,20 +13,20 @@ use ArtisanPack\LivewireUiComponents\Support\Markdown\MarkdownRenderer;
  */
 
 /**
- * The shared vectors, from the linked design-system checkout.
+ * The shared vectors, copied from a design-system checkout by
+ * scripts/build-assets.mjs (the npm package doesn't ship its test fixtures).
  *
  * @return list<array{name: string, source: string, html: string, unsanitized: string}>
  */
 function markdownVectors(): array
 {
-    foreach ([dirname(__DIR__, 3).'/vendor/artisanpack-ui/design-system', dirname(__DIR__, 3).'/../design-system'] as $root) {
-        $file = $root.'/packages/behavior/test/fixtures/markdown-vectors.json';
-        if (is_file($file)) {
-            return json_decode((string) file_get_contents($file), true)['vectors'];
-        }
+    $file = dirname(__DIR__, 2).'/Fixtures/design-system/markdown-vectors.json';
+
+    if (! is_file($file)) {
+        throw new RuntimeException('The design-system markdown vectors are missing: run scripts/build-assets.mjs --from <checkout>.');
     }
 
-    throw new RuntimeException('The design-system markdown vectors are missing.');
+    return json_decode((string) file_get_contents($file), true)['vectors'];
 }
 
 test('it writes the shared vectors', function (): void {

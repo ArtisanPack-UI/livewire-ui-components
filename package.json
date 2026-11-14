@@ -10,5 +10,13 @@
   "scripts": {
     "build:assets": "node scripts/build-assets.mjs",
     "check:assets": "node scripts/build-assets.mjs --check"
+  },
+  "devDependencies": {
+    "@artisanpack-ui/behavior": "1.0.0",
+    "@artisanpack-ui/codemods": "1.0.0",
+    "@artisanpack-ui/css": "1.0.0",
+    "@artisanpack-ui/manifest": "1.0.0",
+    "@artisanpack-ui/testing": "1.0.0",
+    "@artisanpack-ui/tokens": "2.0.0"
   }
 }

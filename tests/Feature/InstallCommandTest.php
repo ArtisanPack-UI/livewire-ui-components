@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Prompts\Prompt;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
@@ -117,7 +118,7 @@ test('the bundler path installs the design system packages and imports them', fu
     [$command] = installCommand();
     $command->setupBundlerAssets('npm install --save-dev');
 
-    Process::assertRan('npm install --save-dev @artisanpack-ui/css @artisanpack-ui/behavior');
+    Process::assertRan("npm install --save-dev '@artisanpack-ui/css@^1' '@artisanpack-ui/behavior@^1'");
 
     $css = File::get($this->appRoot.'/resources/css/app.css');
     $js  = File::get($this->appRoot.'/resources/js/app.js');
@@ -136,7 +137,7 @@ test('the bundler path adds Tailwind and the preset when asked', function (): vo
     [$command] = installCommand();
     $command->setupBundlerAssets('pnpm i -D', true);
 
-    Process::assertRan('pnpm i -D @artisanpack-ui/css @artisanpack-ui/behavior tailwindcss @tailwindcss/vite');
+    Process::assertRan("pnpm i -D '@artisanpack-ui/css@^1' '@artisanpack-ui/behavior@^1' 'tailwindcss' '@tailwindcss/vite'");
 
     expect(File::get($this->appRoot.'/resources/css/app.css'))
         ->toContain("@layer theme, base, apui, components, utilities;\n\n@import 'tailwindcss';\n@import '@artisanpack-ui/css';\n@import '@artisanpack-ui/css/tailwind';")
@@ -200,19 +201,27 @@ test('--assets picks the path without asking', function (string $assets): void {
     expect($command->askForAssetPath())->toBe($assets);
 })->with(['bundler', 'prebuilt']);
 
-test('uses the prebuilt path without asking while the npm packages are unpublished', function (): void {
+test('offers both paths now the npm packages are published, defaulting to prebuilt', function (): void {
+    Prompt::interactive(false);
     [$command, $buffer] = installCommand();
 
-    expect(LivewireUiComponentsInstallCommand::NPM_PACKAGES_PUBLISHED)->toBeFalse()
-        ->and($command->askForAssetPath())->toBe('prebuilt')
-        ->and($buffer->fetch())->toContain('arrives once the npm packages are published');
+    expect(LivewireUiComponentsInstallCommand::NPM_PACKAGES_PUBLISHED)->toBeTrue()
+        ->and($command->askForAssetPath())->toBe(LivewireUiComponentsInstallCommand::DEFAULT_ASSETS)
+        ->and(LivewireUiComponentsInstallCommand::DEFAULT_ASSETS)->toBe('prebuilt')
+        ->and($buffer->fetch())->not->toContain('arrives once the npm packages are published');
+
+    Prompt::interactive(true);
 });
 
-test('--assets=bundler warns while the npm packages are unpublished', function (): void {
+test('the bundler packages are held to the design-system 1.x line', function (): void {
+    expect(LivewireUiComponentsInstallCommand::NPM_PACKAGES)->toBe(['@artisanpack-ui/css@^1', '@artisanpack-ui/behavior@^1']);
+});
+
+test('--assets=bundler no longer warns about unpublished packages', function (): void {
     [$command, $buffer] = installCommand(['--assets' => 'bundler']);
 
     expect($command->askForAssetPath())->toBe('bundler')
-        ->and($buffer->fetch())->toContain("aren't on npm yet");
+        ->and($buffer->fetch())->not->toContain("aren't on npm yet");
 });
 
 test('the Welcome stub declares the class the root route uses', function (): void {

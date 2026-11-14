@@ -49,15 +49,6 @@
         "phpoffice/phpspreadsheet": "Required for XLSX/Excel export functionality in Table component (^2.0|^3.0)",
         "barryvdh/laravel-dompdf": "Required for PDF export functionality in Table component (^3.0)"
     },
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../design-system",
-            "options": {
-                "symlink": true
-            }
-        }
-    ],
     "require-dev": {
         "orchestra/testbench": "^10|^11",
         "pestphp/pest": "^3.5|^4.4",
@@ -82,8 +73,7 @@
         "rector/rector": "^2.0",
         "infection/infection": "^0.29",
         "laravel/pint": "^1.25",
-        "artisanpack-ui/code-style-pint": "^1.0",
-        "artisanpack-ui/design-system": "@dev"
+        "artisanpack-ui/code-style-pint": "^1.0"
     },
     "autoload": {
         "psr-4": {
@@ -92,7 +82,9 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "ArtisanPack\\LivewireUiComponents\\Tests\\": "tests"
+            "ArtisanPack\\LivewireUiComponents\\Tests\\": "tests",
+            "ArtisanPackUI\\DesignSystem\\Manifest\\": "node_modules/@artisanpack-ui/manifest/php/",
+            "ArtisanPackUI\\DesignSystem\\Testing\\": "node_modules/@artisanpack-ui/testing/php/"
         }
     },
     "extra": {

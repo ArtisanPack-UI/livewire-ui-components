@@ -16,11 +16,16 @@
  * Sources, in order:
  *   1. `--from <path>`: a design-system checkout (its packages must be built).
  *   2. The `DESIGN_SYSTEM_PATH` environment variable: the same, as an env var.
- *   3. `node_modules/@artisanpack-ui/*`, once the packages are published (#81).
+ *   3. `node_modules/@artisanpack-ui/*`: the published packages, pinned in
+ *      package.json. This is the default, and what CI checks against.
+ *
+ * A checkout also refreshes the test fixtures the npm packages don't ship
+ * (the generator parity fixtures and the Markdown vectors).
  *
  * Usage:
+ *   npm ci && node scripts/build-assets.mjs --check   # fail if the committed files are stale
+ *   node scripts/build-assets.mjs                     # rewrite them from node_modules
  *   node scripts/build-assets.mjs --from ../design-system
- *   node scripts/build-assets.mjs --check   # fail if the committed files are stale
  *
  * The output is deterministic: same sources, same bytes. No timestamps or
  * absolute paths go into the manifest.
@@ -259,6 +264,12 @@ function collect(sources) {
     for (const name of readdirSync(fixtures).filter((file) => file.endsWith('.json')).sort()) {
       outputs.set(`tests/Fixtures/design-system/generator/${name}`, readFileSync(join(fixtures, name)));
     }
+
+    // The shared Markdown vectors MarkdownRenderer is held to, also checkout-only.
+    outputs.set(
+      'tests/Fixtures/design-system/markdown-vectors.json',
+      readRequired(join(sources.behavior, 'test', 'fixtures', 'markdown-vectors.json')),
+    );
   }
 
   return outputs;

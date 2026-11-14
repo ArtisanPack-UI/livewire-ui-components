@@ -37,7 +37,7 @@ Run it on a new app, or commit your work first so you can review what it changed
 | `--assets=prebuilt` | Publishes the compiled CSS and JavaScript that ship with the package, for apps without a build step |
 | `--tailwind` | With `--assets=bundler`, also installs Tailwind CSS v4 and the design system's Tailwind preset |
 
-Until `@artisanpack-ui/css` and `@artisanpack-ui/behavior` are published to the npm registry, the installer uses the prebuilt files without asking. `--assets=bundler` still runs, with a warning: it only works if you have the packages linked or from a private registry.
+Without `--assets`, the installer asks which path to use, and suggests the prebuilt files. The bundler path installs `@artisanpack-ui/css` and `@artisanpack-ui/behavior` at `^1`, the design system release that 3.x renders.
 
 If `resources/css/app.css` still loads DaisyUI, the installer warns you. Remove the `@plugin "daisyui"` block, any `@apply` rules that use DaisyUI colors, and `daisyui` from `package.json`.
 
@@ -76,7 +76,7 @@ Publish again with `--force` after every package update, so the files match the 
 `--assets=bundler` installs the npm packages as dev dependencies with the package manager you choose (npm, yarn, pnpm or bun) and writes the imports for you. To set it up by hand:
 
 ```bash
-npm install --save-dev @artisanpack-ui/css @artisanpack-ui/behavior
+npm install --save-dev @artisanpack-ui/css@^1 @artisanpack-ui/behavior@^1
 ```
 
 ```css
