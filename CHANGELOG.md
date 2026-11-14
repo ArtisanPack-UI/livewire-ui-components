@@ -87,6 +87,13 @@
 - `SelectGroup` crashed rendering grouped options, which are a collection.
 - `Tab` without a `label` threw a TypeError while rendering.
 - `Header` rendered an empty `id=""` when it has no anchor.
+- A custom `prefix` broke every component that renders other components (Alert, Dialog, Table and 30 more). Components now also register under the internal `artisanpack-` names, which the package's views use. An empty prefix registers bare names (`<x-button>`), and a trailing hyphen is ignored, so `'artisanpack-'` no longer gives `artisanpack--button`.
+- The installer no longer force-publishes `config/livewire-ui-components.php` over an existing file when it finds Jetstream, Breeze or Flux. It warns when the prefix is empty instead.
+- The installer's starter layout and demo pages are rewritten for 3.0: AppShell, Menu, UserMenu, PageHeader, Table and Drawer, with `@apuiThemeScript` and the toaster, no DaisyUI classes, and the demo pages' mismatched closing tags fixed.
+- `artisanpack:generate-ide-helper` listed nothing but Spotlight. It now lists every registered Blade and Livewire component under the configured prefix.
+- The `ap.livewireUiComponents.componentClasses` filter now runs for Skeleton and the child components (accordion, menu, navbar, timeline, dropdown-menu items, tabs and steps), as it already did for every other component's root.
+- `@island`, `@endisland` and `@placeholder` replaced Livewire 4's own directives. They're now registered only on Livewire 3.
+- StreamableContent left out `wire:stream` on Livewire 3, which has supported it since 3.0.
 
 ### Deprecated
 - `<x-artisanpack-modal>` and `<x-artisanpack-dropdown>`. Use `<x-artisanpack-dialog>` and `<x-artisanpack-dropdown-menu>`. They're removed in a later major release.
@@ -101,6 +108,9 @@
 - The PhotoSwipe hooks in ImageGallery and ImageSlider; ImageGallery has a built-in lightbox.
 - `resources/js/sparkline.js`, the diff2html Diff renderer and the `jfcherng/php-diff` dependency.
 - `Support\ChartThemes`, the EasyMDE Markdown editor and its upload query, and the `<livewire:theme-preview>` theme builder with its `/artisanpack/theme-preview` route.
+- The maryUI `livewire-ui-components:bootcamp` command and its stubs, and the installer's maryUI sponsor line.
+- The `artisanpack-glass-tokens` and `artisanpack-design-tokens` publish tags, and the unread `icons.list_item` and `icons.loading` config keys. The `theme_output_path`, `glass` and `design_tokens` keys stay, deprecated, for `artisanpack:generate-theme`.
+- The DaisyUI and glass-token Boost guidelines. The core guideline is rewritten for 3.0.
 
 ---
 

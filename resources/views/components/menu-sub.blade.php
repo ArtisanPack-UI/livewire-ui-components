@@ -11,7 +11,7 @@
         $subId       = $subId();
         $isOpen      = $isOpen();
         $collapsible = $collapsible();
-        $bag         = $attributes->when( $filled( $classes['item'] ?? null ), fn ( $bag ) => $bag->class( $classes['item'] ) );
+        $bag         = $attributes->when( $partClasses( 'item' ), fn ( $bag, $classes ) => $bag->class( $classes ) );
     @endphp
     <li @if ( $collapsible ) x-data="{ open: @js( $isOpen ) }" @endif>
         @if ( $collapsible )

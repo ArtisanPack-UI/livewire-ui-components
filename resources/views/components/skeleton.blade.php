@@ -6,7 +6,7 @@
     $style = $sizeStyle( $attributes->get( 'style' ) );
 @endphp
 <span
-    {{ $attributes->except( 'style' )->class( [ 'apui-skeleton' ] ) }}
+    {{ $attributes->except( 'style' )->class( $filteredClasses( [ 'apui-skeleton' ] ) ) }}
     data-scope="skeleton"
     data-part="root"
     data-shape="{{ $shape }}"

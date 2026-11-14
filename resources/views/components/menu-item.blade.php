@@ -9,7 +9,7 @@
         $url       = $disabled ? null : $url();
         $unsafe    = ! $disabled && $hasUnsafeUrl();
         $isCurrent = $isCurrent();
-        $bag       = $attributes->when( $filled( $classes['item'] ?? null ), fn ( $bag ) => $bag->class( $classes['item'] ) );
+        $bag       = $attributes->when( $partClasses( 'item' ), fn ( $bag, $classes ) => $bag->class( $classes ) );
     @endphp
     <li>
         @if ( null !== $url )

@@ -75,7 +75,7 @@ class StreamableContent extends BaseComponent
     ) {}
 
     /**
-     * Whether wire:stream is available (Livewire 4).
+     * Whether wire:stream is available (Livewire 3 and 4).
      *
      * @since 2.0.0
      */

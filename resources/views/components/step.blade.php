@@ -15,7 +15,7 @@
     $titleHtml  = isset( $slot ) && $slot->hasActualContent() ? $content( $slot ) : $content( $titleText() );
 @endphp
 <li
-    {{ $attributes->when( $filled( $classes['step'] ?? null ), fn ( $bag ) => $bag->class( $classes['step'] ) ) }}
+    {{ $attributes->when( $partClasses( 'step' ), fn ( $bag, $classes ) => $bag->class( $classes ) ) }}
     data-scope="steps"
     data-part="step"
     data-state="{{ $state }}"

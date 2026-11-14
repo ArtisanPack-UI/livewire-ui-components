@@ -17,7 +17,7 @@
     $args      = $accordion?->partArgs( [ 'value' => $itemValue, 'disabled' => $disabled ] );
 @endphp
 <div
-    {{ $attributes->when( $filled( $classes['item'] ?? null ), fn ( $bag ) => $bag->class( $classes['item'] ) ) }}
+    {{ $attributes->when( $partClasses( 'item' ), fn ( $bag, $classes ) => $bag->class( $classes ) ) }}
     @if ( null !== $accordion )
         id="{{ $accordion->valuePartId( 'item', $itemValue ) }}"
         wire:key="{{ $accordion->valuePartId( 'item', $itemValue ) }}"

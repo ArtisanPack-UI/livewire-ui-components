@@ -69,7 +69,7 @@ class GenerateThemeCss extends Command
      *
      * @var string
      */
-    protected $description = 'Generates a CSS theme file with variables for ArtisanPack UI and DaisyUI.';
+    protected $description = 'Deprecated: generates a 2.x CSS theme file with DaisyUI variables. Use artisanpack:generate-preset.';
 
     /**
      * Execute the console command.

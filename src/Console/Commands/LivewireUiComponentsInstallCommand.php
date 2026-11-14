@@ -18,6 +18,7 @@ declare(strict_types=1);
 
 namespace ArtisanPack\LivewireUiComponents\Console\Commands;
 
+use ArtisanPack\LivewireUiComponents\LivewireUiComponentsServiceProvider;
 use ArtisanPack\LivewireUiComponents\Support\DesignSystemAssets;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
@@ -150,7 +151,7 @@ class LivewireUiComponentsInstallCommand extends Command
         // Copy stubs if is brand-new project
         $this->copyStubs($shouldInstallVolt, $assets);
 
-        // Rename components if Jetstream or Breeze are detected
+        // Check the component prefix if Jetstream, Breeze or Flux are detected
         $this->renameComponents();
 
         // Clear view cache
@@ -158,7 +159,6 @@ class LivewireUiComponentsInstallCommand extends Command
 
         $this->info("\n");
         $this->info(__('✅  Done!'));
-        $this->info('❤️  Sponsor: https://github.com/sponsors/robsontenorio');
         $this->info("\n");
     }
 
@@ -357,36 +357,40 @@ class LivewireUiComponentsInstallCommand extends Command
     }
 
     /**
-     * Rename components to avoid name collisions with existing components.
+     * Check the component prefix when a starter kit is installed.
      *
-     * If Jetstream or Breeze are detected, we publish config file and add a global prefix
-     * to Livewire UI Components components, in order to avoid name collision with existing components.
-     *
+     * Jetstream, Breeze and Flux ship components such as `<x-button>`. The
+     * default `artisanpack` prefix keeps this package's components apart
+     * from them, so the installer only warns when the configured prefix is
+     * empty. It never publishes or rewrites a config file, so an existing
+     * `config/livewire-ui-components.php` is left as it is.
      *
      * @since 1.0.0
      */
     public function renameComponents(): void
     {
         $composerJson = File::get(base_path().'/composer.json');
+        $kit          = collect(['jetstream', 'breeze', 'livewire/flux'])
+            ->first(fn (string $target): bool => str($composerJson)->contains($target));
 
-        collect(['jetstream', 'breeze', 'livewire/flux'])->each(function (string $target) use ($composerJson): void {
-            if (str($composerJson)->contains($target)) {
-                Artisan::call('vendor:publish --force --tag livewire-ui-components.config');
+        if (null === $kit) {
+            return;
+        }
 
-                $path     = base_path()."{$this->ds}config{$this->ds}livewire-ui-components.php";
-                $config   = File::get($path);
-                $contents = str($config)->replace("'prefix' => ''", "'prefix' => 'artisanpack-'");
-                File::put($path, $contents);
+        $prefix = LivewireUiComponentsServiceProvider::componentPrefix();
 
-                $this->warn('---------------------------------------------');
-                $this->warn(__('🚨`:target` was detected.🚨', ['target' => $target]));
-                $this->warn('---------------------------------------------');
-                $this->warn(__('A global prefix on Livewire UI Components components was added to avoid name collision.'));
-                $this->warn("\n".__(' * Example: x-artisanpack-button, x-artisanpack-card ...'));
-                $this->warn(__(' * See config/livewire-ui-components.php'));
-                $this->warn('---------------------------------------------');
-            }
-        });
+        $this->warn('---------------------------------------------');
+        $this->warn(__('🚨`:target` was detected.🚨', ['target' => $kit]));
+        $this->warn('---------------------------------------------');
+
+        if ('' === $prefix) {
+            $this->warn(__('The component prefix is empty, so tags such as <x-button> may collide with the starter kit\'s components.'));
+            $this->warn(__('Set a prefix, such as \'artisanpack\', in your livewire-ui-components config file, then run php artisan view:clear.'));
+        } else {
+            $this->info(__('Components use the ":prefix" prefix (<x-:prefix-button>), so they don\'t collide with the starter kit\'s components.', ['prefix' => $prefix]));
+        }
+
+        $this->warn('---------------------------------------------');
     }
 
     /**

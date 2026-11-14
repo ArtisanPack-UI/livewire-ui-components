@@ -5,7 +5,7 @@
     $href = \ArtisanPack\LivewireUiComponents\Support\SafeUrl::href( $href );
 @endphp
 <a
-    {{ $attributes->when( $filled( $classes['link'] ?? null ), fn ( $bag ) => $bag->class( $classes['link'] ) ) }}
+    {{ $attributes->when( $partClasses( 'link' ), fn ( $bag, $classes ) => $bag->class( $classes ) ) }}
     @if ( null !== $href ) href="{{ $href }}" @endif
     @if ( $navigate && \ArtisanPack\LivewireUiComponents\Support\SafeUrl::navigable( $href ) ) wire:navigate @endif
     data-scope="navbar"
