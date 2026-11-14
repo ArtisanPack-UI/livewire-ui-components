@@ -35,3 +35,8 @@ test('the maryUI bootcamp command is gone', function (): void {
     expect(Artisan::all())->not->toHaveKey('livewire-ui-components:bootcamp')
         ->and(dirname(__DIR__, 2).'/stubs/bootcamp')->not->toBeDirectory();
 });
+
+test('generate-theme describes itself as deprecated', function (): void {
+    expect(Artisan::all()['artisanpack:generate-theme']->getDescription())->toStartWith('Deprecated:')
+        ->toContain('artisanpack:generate-preset');
+});
