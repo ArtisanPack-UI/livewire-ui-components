@@ -6,8 +6,10 @@ use ArtisanPack\LivewireUiComponents\Console\Commands\LivewireUiComponentsInstal
 use ArtisanPack\LivewireUiComponents\LivewireUiComponentsServiceProvider;
 use ArtisanPack\LivewireUiComponents\Support\DesignSystemAssets;
 use Illuminate\Console\OutputStyle;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Process;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\ServiceProvider;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -253,4 +255,89 @@ test('the prebuilt layout uses the asset directives instead of Vite', function (
 
     expect($layout)->not->toContain('@vite')
         ->toContain("    @artisanpackStyles\n    @artisanpackScripts\n</head>");
+});
+
+test('the layout stub uses the 3.0 components, the theme script and the toaster', function (): void {
+    $stub = (string) file_get_contents(dirname(__DIR__, 2).'/stubs/app.blade.php');
+
+    expect($stub)->toContain('@apuiThemeScript')
+        ->toContain('<x-artisanpack-app-shell')
+        ->toContain('<x-artisanpack-toaster />')
+        ->not->toContain('bg-base-')
+        ->not->toContain('<x-artisanpack-nav ')
+        ->not->toContain('<x-artisanpack-main')
+        ->and(strpos($stub, '@apuiThemeScript'))->toBeLessThan(strpos($stub, '@vite'));
+
+    require_once dirname(__DIR__, 2).'/stubs/AppBrand.php';
+    Blade::component(\App\View\Components\AppBrand::class, 'app-brand');
+
+    $html = Blade::render((string) preg_replace('/^\s*@vite\(.*\)$/m', '', $stub), ['slot' => new HtmlString('<p>Page body</p>')]);
+
+    expect($html)->toContain('apui-app-shell')
+        ->toContain('apui-menu')
+        ->toContain('data-theme')
+        ->toContain('<p>Page body</p>')
+        ->not->toContain('<x-');
+});
+
+test('the demo page stubs render with the 3.0 components', function (string $file): void {
+    $stub = (string) file_get_contents(dirname(__DIR__, 2).'/stubs/'.$file);
+    $view = str_contains($stub, '?>') ? substr($stub, strpos($stub, '?>') + 2) : $stub;
+
+    expect($view)->not->toContain('<x-artisanpack-header')
+        ->not->toContain('</x-header>')
+        ->not->toContain('mary');
+
+    $html = Blade::render($view, [
+        'headers' => [['key' => 'id', 'label' => '#'], ['key' => 'name', 'label' => 'Name']],
+        'users'   => collect([['id' => 1, 'name' => 'Ada']]),
+        'sortBy'  => ['column' => 'name', 'direction' => 'asc'],
+    ]);
+
+    expect($html)->toContain('apui-page-header')
+        ->toContain('apui-table')
+        ->toContain('apui-drawer')
+        ->toContain('Ada')
+        ->not->toContain('<x-');
+})->with(['welcome.blade.php', 'index.blade.php']);
+
+test('a starter kit leaves an existing config file alone', function (string $kit): void {
+    File::put($this->appRoot.'/composer.json', json_encode(['require' => [$kit => '*']], JSON_UNESCAPED_SLASHES));
+    File::ensureDirectoryExists($this->appRoot.'/config');
+    File::put($this->appRoot.'/config/livewire-ui-components.php', "<?php return ['prefix' => 'mine'];\n");
+
+    [$command, $buffer] = installCommand();
+    $command->renameComponents();
+
+    expect(File::get($this->appRoot.'/config/livewire-ui-components.php'))->toBe("<?php return ['prefix' => 'mine'];\n")
+        ->and($buffer->fetch())->toContain('was detected')
+        ->toContain('"artisanpack" prefix');
+})->with(['laravel/jetstream', 'laravel/breeze', 'livewire/flux']);
+
+test('a starter kit with an empty prefix gets a warning, not a rewritten config', function (): void {
+    config()->set('artisanpack.livewire-ui-components.prefix', '');
+    File::put($this->appRoot.'/composer.json', json_encode(['require' => ['laravel/breeze' => '*']]));
+
+    [$command, $buffer] = installCommand();
+    $command->renameComponents();
+
+    expect(File::exists($this->appRoot.'/config/livewire-ui-components.php'))->toBeFalse()
+        ->and($buffer->fetch())->toContain('The component prefix is empty');
+});
+
+test('without a starter kit the prefix check says nothing', function (): void {
+    File::put($this->appRoot.'/composer.json', '{}');
+
+    [$command, $buffer] = installCommand();
+    $command->renameComponents();
+
+    expect($buffer->fetch())->toBe('');
+});
+
+test('the installer no longer prints the maryUI sponsor line', function (): void {
+    $source = (string) file_get_contents(dirname(__DIR__, 2).'/src/Console/Commands/LivewireUiComponentsInstallCommand.php');
+
+    expect($source)->not->toContain('sponsors/robsontenorio')
+        ->not->toContain("'--force' => true, '--tag' => 'livewire-ui-components.config'")
+        ->not->toContain('vendor:publish --force --tag livewire-ui-components.config');
 });

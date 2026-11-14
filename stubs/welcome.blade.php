@@ -1,30 +1,46 @@
 <div>
-    <!-- HEADER -->
-    <x-artisanpack-header title="Hello" separator progress-indicator>
-        <x-slot:middle class="!justify-end">
-            <x-artisanpack-input id="header-search" placeholder="Search..." aria-label="Search" wire:model.live.debounce="search" leading-icon="search" />
-        </x-slot:middle>
+    <x-artisanpack-page-header :title="__( 'Hello' )">
         <x-slot:actions>
-            <x-artisanpack-button @click="$wire.drawer = true" leading-icon="o-funnel">Filters</x-artisanpack-button>
+            <x-artisanpack-input
+                id="header-search"
+                :placeholder="__( 'Search...' )"
+                :aria-label="__( 'Search' )"
+                wire:model.live.debounce="search"
+                leading-icon="search"
+            />
+            <x-artisanpack-button variant="outline" color="neutral" leading-icon="o-funnel" x-on:click="$wire.drawer = true">{{ __( 'Filters' ) }}</x-artisanpack-button>
         </x-slot:actions>
-    </x-header>
+    </x-artisanpack-page-header>
 
-    <!-- TABLE  -->
     <x-artisanpack-card>
-        <x-artisanpack-table :headers="$headers" :rows="$users" :sort-by="$sortBy">
-            @scope('actions', $user)
-            <x-artisanpack-button variant="ghost" color="error" size="sm" icon-only leading-icon="trash" aria-label="Delete" wire:click="delete({{ $user['id'] }})" />
+        <x-artisanpack-table :headers="$headers" :rows="$users" :sort-by="$sortBy" :label="__( 'Users' )">
+            @scope( 'actions', $user )
+                <x-artisanpack-button
+                    variant="ghost"
+                    color="error"
+                    size="sm"
+                    icon-only
+                    leading-icon="trash"
+                    :aria-label="__( 'Delete' )"
+                    wire:click="delete( {{ $user['id'] }} )"
+                />
             @endscope
-        </x-table>
-    </x-card>
+        </x-artisanpack-table>
+    </x-artisanpack-card>
 
-    <!-- FILTER DRAWER -->
-    <x-artisanpack-drawer wire:model="drawer" title="Filters" right separator with-close-button class="lg:w-1/3">
-        <x-artisanpack-input id="drawer-search" placeholder="Search..." aria-label="Search" wire:model.live.debounce="search" leading-icon="search" @keydown.enter="$wire.drawer = false" />
+    <x-artisanpack-drawer wire:model="drawer" :title="__( 'Filters' )">
+        <x-artisanpack-input
+            id="drawer-search"
+            :placeholder="__( 'Search...' )"
+            :aria-label="__( 'Search' )"
+            wire:model.live.debounce="search"
+            leading-icon="search"
+            x-on:keydown.enter="$wire.drawer = false"
+        />
 
-        <x-slot:actions>
-            <x-artisanpack-button variant="outline" color="neutral" leading-icon="x" wire:click="clear">Reset</x-artisanpack-button>
-            <x-artisanpack-button leading-icon="check" @click="$wire.drawer = false">Done</x-artisanpack-button>
-        </x-slot:actions>
-    </x-drawer>
+        <x-slot:footer>
+            <x-artisanpack-button variant="outline" color="neutral" leading-icon="x" wire:click="clear">{{ __( 'Reset' ) }}</x-artisanpack-button>
+            <x-artisanpack-button leading-icon="check" x-on:click="$wire.drawer = false">{{ __( 'Done' ) }}</x-artisanpack-button>
+        </x-slot:footer>
+    </x-artisanpack-drawer>
 </div>
