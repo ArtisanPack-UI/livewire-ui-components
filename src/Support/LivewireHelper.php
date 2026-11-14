@@ -238,7 +238,7 @@ class LivewireHelper
      */
     public static function supportsIslands(): bool
     {
-        return self::isLivewire4();
+        return self::hasNativeIslands() || self::isLivewire4();
     }
 
     /**
@@ -257,6 +257,19 @@ class LivewireHelper
     public static function supportsWireStream(): bool
     {
         return self::isLivewire4();
+    }
+
+    /**
+     * Check if Livewire provides the @island, @endisland and @placeholder
+     * Blade directives itself (Livewire 4's `SupportIslands` feature).
+     *
+     * @since 3.0.0
+     *
+     * @return bool True when Livewire registers the directives natively.
+     */
+    public static function hasNativeIslands(): bool
+    {
+        return class_exists('Livewire\\Features\\SupportIslands\\SupportIslands');
     }
 
     /**

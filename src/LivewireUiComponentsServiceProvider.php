@@ -474,17 +474,25 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
      * Islands allow isolated updates within complex components. Different parts
      * of a component can update independently without affecting other regions.
      *
-     * - Livewire 4+: Full Islands support with optimized partial updates
-     * - Livewire 3: Falls back to normal rendering (still works, just less optimized)
+     * Livewire 4 ships its own @island, @endisland and @placeholder (its
+     * `SupportIslands` feature), and this package's versions would replace
+     * them. So these are only registered on Livewire 3, where they render a
+     * wire:key'd region with normal rendering.
      *
-     * Usage:
+     * Usage (Livewire 3):
      * - @island('name') ... @endisland - Basic island with wire:key isolation
-     * - @island('name', ['defer' => true]) ... @endisland - Deferred loading (Livewire 4+)
+     * - @island('name', ['defer' => true]) ... @endisland - A deferred island's markup
      *
      * @since 2.0.0
+     *
+     * @param  bool|null  $native  Whether Livewire provides the directives. Detected when null.
      */
-    public function registerIslandDirectives(): void
+    public function registerIslandDirectives(?bool $native = null): void
     {
+        if ($native ?? Support\LivewireHelper::hasNativeIslands()) {
+            return;
+        }
+
         /**
          * @island directive - Creates an isolated region with wire:key.
          *
