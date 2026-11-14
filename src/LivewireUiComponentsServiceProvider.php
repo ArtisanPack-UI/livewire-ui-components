@@ -22,7 +22,6 @@ use Arr;
 use ArtisanPack\LivewireUiComponents\Console\Commands\GenerateIdeHelperCommand;
 use ArtisanPack\LivewireUiComponents\Console\Commands\GeneratePresetCommand;
 use ArtisanPack\LivewireUiComponents\Console\Commands\GenerateThemeCss;
-use ArtisanPack\LivewireUiComponents\Console\Commands\LivewireUiComponentsBootcampCommand;
 use ArtisanPack\LivewireUiComponents\Console\Commands\LivewireUiComponentsInstallCommand;
 use ArtisanPack\LivewireUiComponents\Console\Commands\UpgradeUiCommand;
 use ArtisanPack\LivewireUiComponents\Support\DesignSystemAssets;
@@ -228,22 +227,6 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
 
         // The prebuilt design-system CSS and JS, for apps without a bundler (3.0).
         $this->publishes($this->designSystemAssetPaths(), DesignSystemAssets::PUBLISH_TAG);
-
-        // Publish glass design tokens CSS separately for easy customization
-        $this->publishes(
-            [
-                __DIR__.'/../resources/css/glass-tokens.css' => resource_path('css/artisanpack-glass-tokens.css'),
-            ],
-            'artisanpack-glass-tokens',
-        );
-
-        // Publish comprehensive design tokens CSS separately for easy customization
-        $this->publishes(
-            [
-                __DIR__.'/../resources/css/design-tokens.css' => resource_path('css/artisanpack-design-tokens.css'),
-            ],
-            'artisanpack-design-tokens',
-        );
 
         // Publishing is only necessary when using the CLI.
         if ($this->app->runningInConsole()) {
@@ -661,7 +644,6 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         );
 
         $this->commands([LivewireUiComponentsInstallCommand::class,
-            LivewireUiComponentsBootcampCommand::class,
             GenerateThemeCss::class,
             GeneratePresetCommand::class,
             GenerateIdeHelperCommand::class,
