@@ -27,14 +27,19 @@
             </x-artisanpack-menu>
         </x-slot:sidebar>
 
-        @if ( $user = auth()->user() )
-            <x-slot:footer>
+        <x-slot:footer>
+            {{-- Applies and stores the light, dark or system choice. --}}
+            <x-artisanpack-theme-toggle variant="icon" />
+
+            @if ( $user = auth()->user() )
+                {{-- The theme control lives in the toggle above, so the menu hides its own. --}}
                 <x-artisanpack-user-menu
                     :user="[ 'name' => $user->name, 'email' => $user->email ]"
                     logout-action="/logout"
+                    hide-theme
                 />
-            </x-slot:footer>
-        @endif
+            @endif
+        </x-slot:footer>
 
         {{ $slot }}
     </x-artisanpack-app-shell>

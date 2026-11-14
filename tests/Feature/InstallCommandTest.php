@@ -5,6 +5,7 @@ declare(strict_types=1);
 use ArtisanPack\LivewireUiComponents\Console\Commands\LivewireUiComponentsInstallCommand;
 use ArtisanPack\LivewireUiComponents\LivewireUiComponentsServiceProvider;
 use ArtisanPack\LivewireUiComponents\Support\DesignSystemAssets;
+use Illuminate\Auth\GenericUser;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\File;
@@ -266,6 +267,8 @@ test('the layout stub uses the 3.0 components, the theme script and the toaster'
         ->not->toContain('bg-base-')
         ->not->toContain('<x-artisanpack-nav ')
         ->not->toContain('<x-artisanpack-main')
+        ->toContain('<x-artisanpack-theme-toggle')
+        ->toMatch('/<x-artisanpack-user-menu\b(?:(?!\/>).)*\bhide-theme\b/s')
         ->and(strpos($stub, '@apuiThemeScript'))->toBeLessThan(strpos($stub, '@vite'));
 
     require_once dirname(__DIR__, 2).'/stubs/AppBrand.php';
@@ -275,9 +278,26 @@ test('the layout stub uses the 3.0 components, the theme script and the toaster'
 
     expect($html)->toContain('apui-app-shell')
         ->toContain('apui-menu')
+        ->toContain('apui-theme-toggle')
         ->toContain('data-theme')
         ->toContain('<p>Page body</p>')
         ->not->toContain('<x-');
+});
+
+test('the layout stub leaves the theme to the toggle for a signed-in user', function (): void {
+    $stub = (string) file_get_contents(dirname(__DIR__, 2).'/stubs/app.blade.php');
+
+    require_once dirname(__DIR__, 2).'/stubs/AppBrand.php';
+    Blade::component(\App\View\Components\AppBrand::class, 'app-brand');
+
+    $this->actingAs(new GenericUser(['id' => 1, 'name' => 'Ada Lovelace', 'email' => 'ada@example.test']));
+
+    $html = Blade::render((string) preg_replace('/^\s*@vite\(.*\)$/m', '', $stub), ['slot' => new HtmlString('<p>Page body</p>')]);
+
+    expect($html)->toContain('apui-user-menu')
+        ->toContain('Ada Lovelace')
+        ->toContain('apui-theme-toggle')
+        ->not->toContain('data-scope="user-menu" data-part="theme"');
 });
 
 test('the demo page stubs render with the 3.0 components', function (string $file): void {
