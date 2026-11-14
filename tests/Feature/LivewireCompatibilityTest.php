@@ -21,6 +21,11 @@ function freshBladeCompiler(): BladeCompiler
     return $compiler;
 }
 
+test('wire:stream is supported on the installed Livewire 3', function (): void {
+    expect(LivewireHelper::getMajorVersion())->toBeGreaterThanOrEqual(3)
+        ->and(LivewireHelper::supportsWireStream())->toBeTrue();
+});
+
 test('the island directives register when Livewire has none of its own', function (): void {
     $compiler = freshBladeCompiler();
 

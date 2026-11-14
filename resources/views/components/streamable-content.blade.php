@@ -3,8 +3,7 @@
     design-system wave #58–#62, StreamableContent. data-state drives the
     status line, the waiting skeleton, the caret and Stop, which dispatches
     stop (wire:stop="cancel"). The content is aria-live=polite and aria-busy
-    while waiting or streaming. wire:stream needs Livewire 4; Livewire 3
-    renders the content statically.
+    while waiting or streaming. wire:stream works on Livewire 3 and 4.
 --}}
 @php
     $statusSlot = isset( $status ) && $status instanceof \Illuminate\Contracts\Support\Htmlable && $filled( $status ) ? $status : null;
