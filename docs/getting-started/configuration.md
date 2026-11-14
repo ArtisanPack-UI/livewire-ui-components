@@ -31,13 +31,15 @@ Every value is read as `config( 'artisanpack.livewire-ui-components.<key>' )`.
 
 ### The component prefix
 
-All components register under the prefix, joined with a hyphen: with `'prefix' => 'artisanpack'` a button is `<x-artisanpack-button>`. Clear the compiled views after changing it:
+All components register under the prefix, joined with a hyphen: with `'prefix' => 'ui'` a button is `<x-ui-button>` and the calendar is `<livewire:ui-calendar>`. A trailing hyphen is ignored, so `'ui-'` works the same. An empty prefix registers the bare names, such as `<x-button>`. Clear the compiled views after changing it:
 
 ```bash
 php artisan view:clear
 ```
 
-Keep the default in 3.0. The package's own views render nested components as `<x-artisanpack-…>` (the buttons in Dialog, Drawer and Alert, the checkboxes, select and pagination in Table, and more), so those components fail to render under any other prefix.
+Every component also stays registered as `<x-artisanpack-…>`, whatever the prefix. The package's own views render nested components under that name, such as the buttons in Dialog and Alert or the checkboxes in Table, so they work under any prefix.
+
+With no prefix, tags such as `<x-button>` can collide with components from your app or a starter kit. When the installer finds Jetstream, Breeze or Flux, it warns you if the prefix is empty. It never changes your config file.
 
 ### Routes
 
@@ -53,4 +55,4 @@ With `'route_prefix' => 'admin'`, the Spotlight route is `/admin/artisanpack/spo
 
 ## Deprecated settings
 
-`theme_output_path`, `glass` and `design_tokens` configure the deprecated `artisanpack:generate-theme` command, and nothing else reads them. `icons.list_item` and `icons.loading` are no longer read. See [Theming](Theming).
+`theme_output_path`, `glass` and `design_tokens` configure the deprecated `artisanpack:generate-theme` command, and nothing else reads them. The 2.x `icons.list_item` and `icons.loading` keys are gone; delete them from a published config. See [Theming](Theming).

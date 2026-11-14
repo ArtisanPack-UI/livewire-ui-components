@@ -23,8 +23,9 @@ The installer:
 1. Checks that the app runs Laravel 12 or later.
 2. Asks whether to install Livewire Volt too, then runs `composer require livewire/livewire` (plus `livewire/volt` and `php artisan volt:install` if you said yes).
 3. Sets up the design system's CSS and JavaScript, either with a bundler or as prebuilt files (see below).
-4. On a fresh app, copies a starter layout to `resources/views/components/layouts/app.blade.php`, an `AppBrand` Blade component and a demo page, and **replaces `routes/web.php`** with a route to the demo. It skips this step when it finds Jetstream, Breeze or Flux in `composer.json`.
-5. Clears the compiled views.
+4. On a fresh app, copies a starter layout to `resources/views/components/layouts/app.blade.php`, an `AppBrand` Blade component and a demo page, and **replaces `routes/web.php`** with a route to the demo. It skips this step when it finds Jetstream, Breeze or Flux in `composer.json`. The layout is an AppShell with a sidebar Menu. The sidebar footer holds an icon ThemeToggle, plus a UserMenu (with `hide-theme`, since the toggle owns the theme) for a signed-in user. The layout also has the theme script and the toaster.
+5. When it finds Jetstream, Breeze or Flux, checks the [component prefix](Getting-Started-Configuration). An empty prefix gets a warning, because tags like `<x-button>` would collide with the starter kit's. It doesn't publish or change your config file.
+6. Clears the compiled views.
 
 Run it on a new app, or commit your work first so you can review what it changed.
 
