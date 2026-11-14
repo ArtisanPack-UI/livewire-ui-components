@@ -1,69 +1,83 @@
 <?php
 
-declare(strict_types=1);
 /**
  * Streamable Content Component
  *
- * A component for displaying streaming content, such as AI-generated text.
- * This component supports Livewire 4's wire:stream directive for real-time
- * content streaming.
+ * The design-system StreamableContent (#60): content that arrives over time
+ * through wire:stream. Livewire only (D-003).
  *
  * @author     Jacob Martella
- * @copyright  2024 Jacob Martella
+ * @copyright  2026 Jacob Martella
  * @license    MIT
  *
- * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
+ * @link       https://github.com/ArtisanPack-UI/livewire-ui-components
  * @since      2.0.0
  */
+
+declare(strict_types=1);
 
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
 use ArtisanPack\LivewireUiComponents\Support\LivewireHelper;
-use Closure;
+use ArtisanPack\LivewireUiComponents\View\Concerns\HasStablePartIds;
+use ArtisanPack\LivewireUiComponents\View\Concerns\RendersDesignSystemParts;
 use Illuminate\Contracts\View\View;
 
 /**
- * StreamableContent Class
+ * Streamable Content Component Class
  *
- * Provides a container for streaming content with wire:stream support.
- * In Livewire 4+, content can be streamed in real-time (ideal for AI responses).
- * In Livewire 3, the content is displayed statically.
+ * Renders `.apui-streamable-content` with data-state and the status (with a
+ * Stop button while streaming), content (the live region wire:stream writes
+ * to), caret and actions parts. Stop dispatches `stop`.
  *
  * @since 2.0.0
  */
 class StreamableContent extends BaseComponent
 {
-    public string $uuid;
+    use HasStablePartIds;
+    use RendersDesignSystemParts;
 
     /**
-     * Create a new StreamableContent component instance.
+     * The prefix of generated ids.
      *
-     * @since 2.0.0
+     * @since 3.0.0
+     */
+    protected string $idPrefix = 'streamable-content';
+
+    /**
+     * Props that don't change the id: the state and text.
      *
-     * @param  string  $target  The wire:stream target identifier.
-     * @param  string|null  $id  Optional custom ID for the element.
-     * @param  string  $tag  The HTML tag to use (default: 'div').
-     * @param  bool  $prose  Whether to apply prose styling for rich text.
-     * @param  string|null  $placeholder  Placeholder text shown while waiting for content.
-     * @param  bool  $showCursor  Whether to show a blinking cursor during streaming.
+     * @since 3.0.0
+     *
+     * @var list<string>
+     */
+    protected array $idIgnore = ['state', 'status', 'stopLabel', 'actions'];
+
+    /**
+     * Creates the component.
+     *
+     * @since 3.0.0
+     *
+     * @param  string  $target  The wire:stream target.
+     * @param  string  $state  waiting, streaming, done, error or stopped.
+     * @param  string|null  $status  The status line's text. A `status` slot overrides it.
+     * @param  string|null  $stopLabel  The Stop button's text. Defaults to "Stop", translated.
+     * @param  string|null  $actions  Buttons under the content. An `actions` slot overrides it.
+     * @param  array<string, string>  $classes  Extra classes per part.
      */
     public function __construct(
         public string $target,
-        public ?string $id = null,
-        public string $tag = 'div',
-        public bool $prose = false,
-        public ?string $placeholder = null,
-        public bool $showCursor = false,
-    ) {
-        $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
-    }
+        public string $state = 'streaming',
+        public ?string $status = null,
+        public ?string $stopLabel = null,
+        public ?string $actions = null,
+        public array $classes = [],
+    ) {}
 
     /**
-     * Check if wire:stream is supported (Livewire 4+).
+     * Whether wire:stream is available (Livewire 3 and 4).
      *
      * @since 2.0.0
-     *
-     * @return bool True if streaming is supported.
      */
     public function supportsStreaming(): bool
     {
@@ -71,11 +85,66 @@ class StreamableContent extends BaseComponent
     }
 
     /**
-     * Render the component.
+     * Whether the stream is still running: waiting or streaming.
+     *
+     * @since 3.0.0
+     */
+    public function isBusy(): bool
+    {
+        return in_array($this->state, ['waiting', 'streaming'], true);
+    }
+
+    /**
+     * The status line's text: `status`, else the state's, translated.
+     *
+     * @since 3.0.0
+     */
+    public function statusText(): string
+    {
+        if (null !== $this->status && '' !== $this->status) {
+            return $this->status;
+        }
+
+        return match ($this->state) {
+            'waiting' => __('Waiting for a response…'),
+            'done'    => __('Done'),
+            'error'   => __('The response was interrupted.'),
+            'stopped' => __('Stopped'),
+            default   => __('Writing…'),
+        };
+    }
+
+    /**
+     * The status icon for a finished state, or null.
+     *
+     * @since 3.0.0
+     */
+    public function statusIcon(): ?string
+    {
+        return match ($this->state) {
+            'done'    => 'circle-check',
+            'error'   => 'circle-alert',
+            'stopped' => 'square',
+            default   => null,
+        };
+    }
+
+    /**
+     * The Stop button's text: `stopLabel`, else "Stop", translated.
+     *
+     * @since 3.0.0
+     */
+    public function stopText(): string
+    {
+        return null !== $this->stopLabel && '' !== $this->stopLabel ? $this->stopLabel : __('Stop');
+    }
+
+    /**
+     * Get the view that represents the component.
      *
      * @since 2.0.0
      */
-    public function render(): View|Closure|string
+    public function render(): View
     {
         return view('livewire-ui-components::components.streamable-content');
     }

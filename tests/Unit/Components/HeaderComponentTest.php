@@ -2,177 +2,35 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
-
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
 use ArtisanPack\LivewireUiComponents\View\Components\Header;
-use Error;
-use RuntimeException;
+use ArtisanPack\LivewireUiComponents\View\Components\PageHeader;
+use Illuminate\Support\Facades\Blade;
 
-/**
- * Comprehensive unit tests for the Header component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * Header (deprecated 3.0.0): the 2.x header, rendered by the design-system
+ * PageHeader (#58).
  */
-class HeaderComponentTest extends ComponentTestCase
-{
-    protected string $componentClass = Header::class;
 
-    protected array $defaultProperties = [
-        'separator'              => false,
-        'progressIndicatorClass' => 'progress-primary',
-        'withAnchor'             => false,
-        'size'                   => 'text-2xl',
-    ];
+test('is a PageHeader with the 2.x level 2', function (): void {
+    $header = new Header(title: 'T');
 
-    protected array $requiredProperties = [];
+    expect($header)->toBeInstanceOf(PageHeader::class)
+        ->and($header->level)->toBe(2);
+});
 
-    public function test_header_string_properties(): void
-    {
-        $stringProperties = ['title', 'subtitle', 'progressIndicator', 'progressIndicatorClass', 'size', 'icon', 'iconClasses'];
-        $testValues       = ComponentDataFactory::sampleTexts();
+test('renders subtitle as the description, the middle slot and actions', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-header title="Users" subtitle="All accounts" separator progress-indicator><x-slot:middle><input></x-slot:middle><x-slot:actions><button>Add</button></x-slot:actions></x-artisanpack-header>'));
 
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
+    expect($dom->query('//div[contains(@class, "apui-page-header")]')->length)->toBe(1)
+        ->and($dom->query('//h2[@data-part="title"]')->item(0)->textContent)->toBe('Users')
+        ->and($dom->query('//p[@data-part="description"]')->item(0)->textContent)->toBe('All accounts')
+        ->and($dom->query('//*[@data-part="row"]/div/input')->length)->toBe(1)
+        ->and($dom->query('//*[@data-part="actions"]/button')->length)->toBe(1)
+        ->and($dom->query('//progress | //hr')->length)->toBe(0);
+});
 
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
-    }
+test('renders a subtitle slot as the description', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-header title="T"><x-slot:subtitle>Sub</x-slot:subtitle></x-artisanpack-header>'));
 
-    public function test_header_boolean_properties(): void
-    {
-        $booleanProperties = ['separator', 'withAnchor'];
-
-        foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
-            $this->assertTrue($component->$property);
-
-            $component = $this->createComponent([$property => false]);
-            $this->assertFalse($component->$property);
-        }
-    }
-
-    public function test_header_progress_target_method(): void
-    {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'progressTarget')) {
-            try {
-                $result = $component->progressTarget();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_header_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
-
-    public function test_header_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'Header should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
-
-    public function test_header_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
-
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
-
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_header_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'Header rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
-}
+    expect($dom->query('//p[@data-part="description"]')->item(0)->textContent)->toBe('Sub');
+});

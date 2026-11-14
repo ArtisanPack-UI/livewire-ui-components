@@ -1,174 +1,35 @@
+{{--
+    Stat (#61). Markup contract: design-system wave 5, Stat.
+    The top row (label, icon tile), the value (with its unit) and the foot
+    (delta, description). The delta carries hidden direction text and an
+    arrow, so color is never the only signal. The default slot replaces
+    value; the icon slot replaces the named icon. 2.x title and change-label
+    still work, as label and description.
+--}}
 @php
-    $sizeClasses = $sizeClasses();
-    $layoutClasses = $layoutClasses();
-    $canAnimate = $canAnimate();
-    $numericValue = $numericValue();
-    $valueFormat = $valueFormat();
+    $label       = $filled( $label ) ? $label : $attributes->get( 'title' );
+    $description = $filled( $description ) ? $description : ( $attributes->get( 'change-label' ) ?? $attributes->get( 'changeLabel' ) );
+    $attributes  = $attributes->except( \ArtisanPack\LivewireUiComponents\View\Components\Stat::DEPRECATED_ATTRIBUTES );
+    $trend       = $trendValue();
+    $deltaText   = $deltaText();
+    $trendIcon   = \ArtisanPack\LivewireUiComponents\View\Components\Stat::trendIcon( $trend );
+    $trendLabel  = $trendLabel();
+    $hasIconSlot = isset( $icon ) && $icon instanceof \Illuminate\View\ComponentSlot && $icon->hasActualContent();
+    $hasIcon     = $hasIconSlot || $filled( $icon );
+    $valueHtml   = isset( $slot ) && $slot->hasActualContent() ? $content( $slot ) : $content( $value ?? '' );
 @endphp
-
 <div
-    {{ $attributes->class([
-        "rounded-lg w-full",
-        "bg-base-100" => !$glass,
-        $sizeClasses['container'],
-        "lg:tooltip $tooltipPosition" => $tooltip,
-        $glassClasses() => $glass,
-    ]) }}
-
-    @if($tooltip)
-        data-tip="{{ $tooltip }}"
-    @endif
-
-    @if($glassStyle())
-        style="{{ $glassStyle() }}"
-    @endif
-
-    @if($canAnimate)
-        x-data="{
-            currentValue: {{ $numericValue }},
-            targetValue: {{ $numericValue }},
-            displayValue: '{{ $value }}',
-            isAnimating: false,
-            prefersReducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
-            duration: {{ $animateDuration }},
-            prefix: '{{ addslashes($valueFormat['prefix']) }}',
-            suffix: '{{ addslashes($valueFormat['suffix']) }}',
-            decimals: {{ $valueFormat['decimals'] }},
-            useCommas: {{ $valueFormat['useCommas'] ? 'true' : 'false' }},
-
-            formatNumber(num) {
-                let formatted = num.toFixed(this.decimals);
-                if (this.useCommas) {
-                    const parts = formatted.split('.');
-                    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-                    formatted = parts.join('.');
-                }
-                return this.prefix + formatted + this.suffix;
-            },
-
-            animateValue(from, to) {
-                if (this.prefersReducedMotion || from === to) {
-                    this.currentValue = to;
-                    this.displayValue = this.formatNumber(to);
-                    return;
-                }
-
-                this.isAnimating = true;
-                const startTime = performance.now();
-                const diff = to - from;
-
-                const easeOutQuart = (t) => 1 - Math.pow(1 - t, 4);
-
-                const step = (currentTime) => {
-                    const elapsed = currentTime - startTime;
-                    const progress = Math.min(elapsed / this.duration, 1);
-                    const easedProgress = easeOutQuart(progress);
-
-                    this.currentValue = from + (diff * easedProgress);
-                    this.displayValue = this.formatNumber(this.currentValue);
-
-                    if (progress < 1) {
-                        requestAnimationFrame(step);
-                    } else {
-                        this.currentValue = to;
-                        this.displayValue = this.formatNumber(to);
-                        this.isAnimating = false;
-                    }
-                };
-
-                requestAnimationFrame(step);
-            },
-
-            init() {
-                this.displayValue = this.formatNumber(this.targetValue);
-
-                // Listen for Livewire updates
-                this.$watch('targetValue', (newVal, oldVal) => {
-                    if (newVal !== oldVal) {
-                        this.animateValue(oldVal, newVal);
-                    }
-                });
-
-                // Listen for reduced motion preference changes
-                window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', (e) => {
-                    this.prefersReducedMotion = e.matches;
-                });
-            }
-        }"
-        x-init="init()"
-        x-effect="targetValue = {{ $numericValue }}"
-    @endif
+    {{ $attributes->class( $rootClasses( 'apui-stat' ) ) }}
+    data-size="{{ $sizeValue() }}"
+    data-color="{{ $colorValue() }}"
+    @if ( $emphasis ) data-emphasis @endif
+    @if ( $bare ) data-bare @endif
 >
-    <div class="{{ $layoutClasses['container'] }}">
-        {{-- Icon First (left/top) --}}
-        @if($icon && $shouldRenderIconFirst())
-            <div class="{{ $color }}">
-                <x-artisanpack-icon :name="$icon" :class="$sizeClasses['icon']" />
-            </div>
-        @endif
-
-        <div class="{{ $layoutClasses['content'] }}">
-            {{-- Title First (top position) --}}
-            @if($title && $shouldRenderTitleFirst())
-                <div class="text-base-content/50 whitespace-nowrap {{ $sizeClasses['title'] }}">
-                    {{ $title }}
-                </div>
-            @endif
-
-            {{-- Value/Slot --}}
-            <div class="font-black {{ $sizeClasses['value'] }}">
-                @if($canAnimate)
-                    <span x-text="displayValue"></span>
-                @else
-                    {{ $value ?? $slot }}
-                @endif
-            </div>
-
-            {{-- Title Last (bottom position) --}}
-            @if($title && !$shouldRenderTitleFirst())
-                <div class="text-base-content/50 whitespace-nowrap {{ $sizeClasses['title'] }}">
-                    {{ $title }}
-                </div>
-            @endif
-
-            {{-- Description --}}
-            @if($description)
-                <div class="stat-desc {{ $sizeClasses['description'] }}">
-                    {{ $description }}
-                </div>
-            @endif
-
-            {{-- Trend Indicator --}}
-            @if($hasChange())
-                <div class="flex items-center gap-1 mt-1 {{ $changeColorClasses() }} {{ $sizeClasses['description'] }}">
-                    <x-artisanpack-icon :name="$changeIcon()" class="w-4 h-4" />
-                    <span class="font-medium">{{ $formattedChange() }}</span>
-                    @if($changeLabel)
-                        <span class="text-base-content/50">{{ $changeLabel }}</span>
-                    @endif
-                </div>
-            @endif
-
-            {{-- Sparkline --}}
-            @if($hasSparkline())
-                <div class="mt-2 w-full overflow-hidden">
-                    <x-artisanpack-sparkline
-                        :data="$sparklineData"
-                        :type="$sparklineType"
-                        :color="$sparklineColor"
-                        :height="$sparklineHeight()"
-                        width="100%"
-                        class="w-full block"
-                    />
-                </div>
-            @endif
-        </div>
-
-        {{-- Icon Last (right/bottom) --}}
-        @if($icon && !$shouldRenderIconFirst())
-            <div class="{{ $color }}">
-                <x-artisanpack-icon :name="$icon" :class="$sizeClasses['icon']" />
-            </div>
-        @endif
-    </div>
+    @if ( $filled( $label ) || $hasIcon )
+        <div data-scope="stat" data-part="top"{{ $partClass( 'top' ) }}>@if ( $filled( $label ) )<span data-scope="stat" data-part="label"{{ $partClass( 'label' ) }}>{{ $label }}</span>@endif @if ( $hasIcon )<span data-scope="stat" data-part="icon" aria-hidden="true"{{ $partClass( 'icon' ) }}>@if ( $hasIconSlot ){{ $icon }}@else{{ $iconSvg( $icon ) }}@endif</span>@endif</div>
+    @endif
+    <span data-scope="stat" data-part="value"{{ $partClass( 'value' ) }}>{{ $valueHtml }}@if ( $filled( $unit ) )<span data-scope="stat" data-part="unit"{{ $partClass( 'unit' ) }}>{{ $unit }}</span>@endif</span>
+    @if ( null !== $deltaText || $filled( $description ) )
+        <span data-scope="stat" data-part="foot"{{ $partClass( 'foot' ) }}>@if ( null !== $deltaText )<span data-scope="stat" data-part="delta"{{ $partClass( 'delta' ) }}@if ( null !== $trend ) data-trend="{{ $trend }}"@endif>@if ( null !== $trendLabel )<span class="apui-sr-only">{{ $trendLabel }} </span>@endif{{-- --}}@if ( null !== $trendIcon ){{ $iconSvg( $trendIcon ) }}@endif{{ $deltaText }}</span>@endif @if ( $filled( $description ) )<span data-scope="stat" data-part="description"{{ $partClass( 'description' ) }}>{{ $description }}</span>@endif</span>
+    @endif
 </div>

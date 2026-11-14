@@ -2,197 +2,56 @@
 
 declare(strict_types=1);
 
-use ArtisanPack\LivewireUiComponents\View\Components\Tabs;
+use Illuminate\Support\Facades\Blade;
+use Livewire\Component;
+use Livewire\Livewire;
 
-describe('Tabs Component', function (): void {
-    describe('Orientation Detection', function (): void {
-        test('defaults to horizontal orientation', function (): void {
-            $component = new Tabs;
+/*
+ * Tabs (#56) inside Livewire: wire:model sets the selected tab on the
+ * server render and entangles it on the client.
+ */
 
-            expect($component->orientation)->toBe('horizontal');
-            expect($component->isVertical())->toBeFalse();
-            expect($component->isVerticalRight())->toBeFalse();
-        });
+class TabsTestSections extends Component
+{
+    public string $section = 'billing';
 
-        test('detects vertical-left orientation', function (): void {
-            $component = new Tabs(orientation: 'vertical-left');
+    public function render(): string
+    {
+        return <<<'BLADE'
+            <div>
+                <x-artisanpack-tabs wire:model="section">
+                    <x-artisanpack-tab value="profile" label="Profile">Profile panel</x-artisanpack-tab>
+                    <x-artisanpack-tab value="billing" label="Billing">Billing panel</x-artisanpack-tab>
+                </x-artisanpack-tabs>
+            </div>
+            BLADE;
+    }
+}
 
-            expect($component->orientation)->toBe('vertical-left');
-            expect($component->isVertical())->toBeTrue();
-            expect($component->isVerticalRight())->toBeFalse();
-        });
+test('renders the bound tab selected and entangles it', function (): void {
+    $html = Livewire::test(TabsTestSections::class)->html();
+    $dom  = designSystemDom($html);
 
-        test('detects vertical-right orientation', function (): void {
-            $component = new Tabs(orientation: 'vertical-right');
+    $billing = $dom->query('//*[@data-part="trigger" and @data-value="billing"]')->item(0);
+    expect($billing->getAttribute('aria-selected'))->toBe('true');
+    expect($dom->query('//*[contains(@class, "apui-tabs")]')->item(0)->getAttribute('x-data'))->toContain('$wire.entangle(\'section\')');
+});
 
-            expect($component->orientation)->toBe('vertical-right');
-            expect($component->isVertical())->toBeTrue();
-            expect($component->isVerticalRight())->toBeTrue();
-        });
+test('keeps part ids across re-renders', function (): void {
+    $component = Livewire::test(TabsTestSections::class);
+    $ids       = static fn (string $html): array => array_map(
+        static fn (DOMElement $el): string => $el->getAttribute('id'),
+        iterator_to_array(designSystemDom($html)->query('//*[@data-scope="tabs"][@id]')),
+    );
+    $before = $ids($component->html());
 
-        test('handles invalid orientation gracefully', function (): void {
-            $component = new Tabs(orientation: 'invalid');
+    expect($ids($component->set('section', 'profile')->html()))->toBe($before);
+});
 
-            expect($component->orientation)->toBe('invalid');
-            expect($component->isVertical())->toBeFalse();
-            expect($component->isVerticalRight())->toBeFalse();
-        });
-    });
+test('nests tabs inside a tab panel', function (): void {
+    $html = Blade::render('<x-artisanpack-tabs id="outer"><x-artisanpack-tab value="a" label="A"><x-artisanpack-tabs id="inner"><x-artisanpack-tab value="x" label="X">X</x-artisanpack-tab></x-artisanpack-tabs></x-artisanpack-tab><x-artisanpack-tab value="b" label="B">B</x-artisanpack-tab></x-artisanpack-tabs>');
+    $dom  = designSystemDom($html);
 
-    describe('Container Classes', function (): void {
-        test('returns horizontal classes for horizontal orientation', function (): void {
-            $component = new Tabs;
-
-            expect($component->getTabsContainerClass())
-                ->toBe('relative w-full');
-        });
-
-        test('returns vertical classes for vertical-left orientation', function (): void {
-            $component = new Tabs(orientation: 'vertical-left');
-
-            expect($component->getTabsContainerClass())
-                ->toBe('relative w-full flex flex-col md:flex-row');
-        });
-
-        test('returns vertical classes for vertical-right orientation', function (): void {
-            $component = new Tabs(orientation: 'vertical-right');
-
-            expect($component->getTabsContainerClass())
-                ->toBe('relative w-full flex flex-col md:flex-row');
-        });
-    });
-
-    describe('Label Div Classes', function (): void {
-        test('returns horizontal label div classes for horizontal orientation', function (): void {
-            $component = new Tabs;
-
-            expect($component->getLabelDivClass())
-                ->toBe('border-b-[length:var(--border)] border-b-base-content/10 flex overflow-x-auto');
-        });
-
-        test('returns vertical-left label div classes for vertical-left orientation', function (): void {
-            $component = new Tabs(orientation: 'vertical-left');
-
-            expect($component->getLabelDivClass())
-                ->toBe('border-r-[length:var(--border)] border-r-base-content/10 flex flex-col overflow-y-auto min-w-48');
-        });
-
-        test('returns vertical-right label div classes for vertical-right orientation', function (): void {
-            $component = new Tabs(orientation: 'vertical-right');
-
-            expect($component->getLabelDivClass())
-                ->toBe('border-l-[length:var(--border)] border-l-base-content/10 flex flex-col overflow-y-auto min-w-48');
-        });
-    });
-
-    describe('Label Classes', function (): void {
-        test('returns horizontal label classes for horizontal orientation', function (): void {
-            $component = new Tabs;
-
-            expect($component->getFinalLabelClass())
-                ->toBe('font-semibold pb-1');
-        });
-
-        test('returns vertical label classes for vertical orientations', function (): void {
-            $componentLeft  = new Tabs(orientation: 'vertical-left');
-            $componentRight = new Tabs(orientation: 'vertical-right');
-
-            expect($componentLeft->getFinalLabelClass())
-                ->toBe('font-semibold w-full px-3 py-2 md:pr-1 md:pl-1 md:py-2');
-
-            expect($componentRight->getFinalLabelClass())
-                ->toBe('font-semibold w-full px-3 py-2 md:pr-1 md:pl-1 md:py-2');
-        });
-    });
-
-    describe('Active Classes', function (): void {
-        test('returns horizontal active classes for horizontal orientation', function (): void {
-            $component = new Tabs;
-
-            expect($component->getActiveClass())
-                ->toBe('border-b-[length:var(--border)] border-b-base-content/50');
-        });
-
-        test('returns vertical-left active classes for vertical-left orientation', function (): void {
-            $component = new Tabs(orientation: 'vertical-left');
-
-            expect($component->getActiveClass())
-                ->toBe('border-r-[length:var(--border)] border-r-base-content/50');
-        });
-
-        test('returns vertical-right active classes for vertical-right orientation', function (): void {
-            $component = new Tabs(orientation: 'vertical-right');
-
-            expect($component->getActiveClass())
-                ->toBe('border-l-[length:var(--border)] border-l-base-content/50');
-        });
-    });
-
-    describe('Custom Class Overrides', function (): void {
-        test('allows custom vertical classes to be overridden', function (): void {
-            $component = new Tabs(
-                orientation: 'vertical-left',
-                verticalTabsClass: 'custom-container',
-                verticalLabelClass: 'custom-label',
-                verticalActiveClass: 'custom-active',
-                verticalLabelDivClass: 'custom-label-div',
-            );
-
-            expect($component->getTabsContainerClass())->toBe('custom-container');
-            expect($component->getFinalLabelClass())->toBe('custom-label');
-            expect($component->getActiveClass())->toBe('custom-active');
-            expect($component->getLabelDivClass())->toBe('custom-label-div');
-        });
-
-        test('allows custom vertical-right classes to be overridden', function (): void {
-            $component = new Tabs(
-                orientation: 'vertical-right',
-                verticalRightActiveClass: 'custom-right-active',
-                verticalRightLabelDivClass: 'custom-right-label-div',
-            );
-
-            expect($component->getActiveClass())->toBe('custom-right-active');
-            expect($component->getLabelDivClass())->toBe('custom-right-label-div');
-        });
-    });
-
-    describe('UUID Generation', function (): void {
-        test('generates unique UUID for each instance', function (): void {
-            $component1 = new Tabs(id: 'test1');
-            $component2 = new Tabs(id: 'test2');
-
-            expect($component1->uuid)->not->toBe($component2->uuid);
-            expect($component1->uuid)->toContain('test1');
-            expect($component2->uuid)->toContain('test2');
-        });
-    });
-
-    describe('Backward Compatibility', function (): void {
-        test('maintains all existing properties and defaults', function (): void {
-            $component = new Tabs;
-
-            expect($component->id)->toBeNull();
-            expect($component->selected)->toBeNull();
-            expect($component->labelClass)->toBe('font-semibold pb-1');
-            expect($component->activeClass)->toBe('border-b-[length:var(--border)] border-b-base-content/50');
-            expect($component->labelDivClass)->toBe('border-b-[length:var(--border)] border-b-base-content/10 flex overflow-x-auto');
-            expect($component->tabsClass)->toBe('relative w-full');
-        });
-
-        test('existing horizontal behavior remains unchanged', function (): void {
-            $component = new Tabs(
-                id: 'test',
-                selected: 'tab1',
-                labelClass: 'custom-label',
-                activeClass: 'custom-active',
-                labelDivClass: 'custom-label-div',
-                tabsClass: 'custom-tabs',
-            );
-
-            expect($component->getTabsContainerClass())->toBe('custom-tabs');
-            expect($component->getFinalLabelClass())->toBe('custom-label');
-            expect($component->getActiveClass())->toBe('custom-active');
-            expect($component->getLabelDivClass())->toBe('custom-label-div');
-        });
-    });
+    expect($dom->query('//*[@id="outer-list"]/*[@data-part="trigger"]')->length)->toBe(2)
+        ->and($dom->query('//*[@id="inner-list"]/*[@data-part="trigger"]')->length)->toBe(1);
 });

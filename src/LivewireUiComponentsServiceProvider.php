@@ -20,9 +20,16 @@ namespace ArtisanPack\LivewireUiComponents;
 
 use Arr;
 use ArtisanPack\LivewireUiComponents\Console\Commands\GenerateIdeHelperCommand;
+use ArtisanPack\LivewireUiComponents\Console\Commands\GeneratePresetCommand;
 use ArtisanPack\LivewireUiComponents\Console\Commands\GenerateThemeCss;
-use ArtisanPack\LivewireUiComponents\Console\Commands\LivewireUiComponentsBootcampCommand;
 use ArtisanPack\LivewireUiComponents\Console\Commands\LivewireUiComponentsInstallCommand;
+use ArtisanPack\LivewireUiComponents\Console\Commands\UpgradeUiCommand;
+use ArtisanPack\LivewireUiComponents\Support\DesignSystemAssets;
+use ArtisanPack\LivewireUiComponents\Support\ThemeScript;
+use ArtisanPack\LivewireUiComponents\Theming\DesignTokens;
+use ArtisanPack\LivewireUiComponents\Theming\GlassSurface;
+use ArtisanPack\LivewireUiComponents\Theming\PresetGenerator;
+use ArtisanPack\LivewireUiComponents\Theming\TokenThemes;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
@@ -37,6 +44,15 @@ use Livewire\Livewire;
 class LivewireUiComponentsServiceProvider extends ServiceProvider
 {
     /**
+     * The prefix every component also registers under, whatever the
+     * configured prefix. The package's own views compose components with it
+     * (`<x-artisanpack-button>`), so they render under any prefix.
+     *
+     * @since 3.0.0
+     */
+    public const INTERNAL_PREFIX = 'artisanpack';
+
+    /**
      * An array of the Blade components this package provides.
      *
      * This array is the single source of truth for all Blade components.
@@ -44,88 +60,120 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
      * @since 1.0.0
      */
     protected array $bladeComponents = [
-        'accordion'          => View\Components\Accordion::class,
-        'alert'              => View\Components\Alert::class,
-        'avatar'             => View\Components\Avatar::class,
-        'badge'              => View\Components\Badge::class,
-        'breadcrumbs'        => View\Components\Breadcrumbs::class,
-        'button'             => View\Components\Button::class,
-        'card'               => View\Components\Card::class,
-        'carousel'           => View\Components\Carousel::class,
-        'chart'              => View\Components\Chart::class,
-        'checkbox'           => View\Components\Checkbox::class,
-        'checkbox-group'     => View\Components\CheckboxGroup::class,
-        'choices'            => View\Components\Choices::class,
-        'choices-offline'    => View\Components\ChoicesOffline::class,
-        'code'               => View\Components\Code::class,
-        'collapse'           => View\Components\Collapse::class,
-        'colorpicker'        => View\Components\Colorpicker::class,
-        'datepicker'         => View\Components\DatePicker::class,
-        'datetime'           => View\Components\DateTime::class,
-        'diff'               => View\Components\Diff::class,
-        'drawer'             => View\Components\Drawer::class,
-        'dropdown'           => View\Components\Dropdown::class,
-        'editor'             => View\Components\Editor::class,
-        'errors'             => View\Components\Errors::class,
-        'fieldset'           => View\Components\Fieldset::class,
-        'file'               => View\Components\File::class,
-        'form'               => View\Components\Form::class,
-        'group'              => View\Components\Group::class,
-        'header'             => View\Components\Header::class,
-        'heading'            => View\Components\Heading::class,
-        'icon'               => View\Components\Icon::class,
-        'image-gallery'      => View\Components\ImageGallery::class,
-        'image-library'      => View\Components\ImageLibrary::class,
-        'image-slider'       => View\Components\ImageSlider::class,
-        'input'              => View\Components\Input::class,
-        'kbd'                => View\Components\Kbd::class,
-        'kpi-card'           => View\Components\KpiCard::class,
-        'link'               => View\Components\Link::class,
-        'list-item'          => View\Components\ListItem::class,
-        'loading'            => View\Components\Loading::class,
-        'main'               => View\Components\Main::class,
-        'markdown'           => View\Components\Markdown::class,
-        'menu'               => View\Components\Menu::class,
-        'menu-item'          => View\Components\MenuItem::class,
-        'menu-separator'     => View\Components\MenuSeparator::class,
-        'menu-sub'           => View\Components\MenuSub::class,
-        'menu-title'         => View\Components\MenuTitle::class,
-        'modal'              => View\Components\Modal::class,
-        'nav'                => View\Components\Nav::class,
-        'pagination'         => View\Components\Pagination::class,
-        'password'           => View\Components\Password::class,
-        'pin'                => View\Components\Pin::class,
-        'popover'            => View\Components\Popover::class,
-        'profile'            => View\Components\Profile::class,
-        'progress'           => View\Components\Progress::class,
-        'progress-radial'    => View\Components\ProgressRadial::class,
-        'radio'              => View\Components\Radio::class,
-        'radio-group'        => View\Components\RadioGroup::class,
-        'range'              => View\Components\Range::class,
-        'rating'             => View\Components\Rating::class,
-        'select'             => View\Components\Select::class,
-        'select-group'       => View\Components\SelectGroup::class,
-        'separator'          => View\Components\Separator::class,
-        'signature'          => View\Components\Signature::class,
-        'sparkline'          => View\Components\Sparkline::class,
-        'spotlight'          => View\Components\Spotlight::class,
-        'stat'               => View\Components\Stat::class,
-        'streamable-content' => View\Components\StreamableContent::class,
-        'step'               => View\Components\Step::class,
-        'steps'              => View\Components\Steps::class,
-        'subheading'         => View\Components\Subheading::class,
-        'swap'               => View\Components\Swap::class,
-        'tab'                => View\Components\Tab::class,
-        'table'              => View\Components\Table::class,
-        'tabs'               => View\Components\Tabs::class,
-        'tags'               => View\Components\Tags::class,
-        'text'               => View\Components\Text::class,
-        'textarea'           => View\Components\Textarea::class,
-        'theme-toggle'       => View\Components\ThemeToggle::class,
-        'timeline-item'      => View\Components\TimelineItem::class,
-        'toast'              => View\Components\Toast::class,
-        'toggle'             => View\Components\Toggle::class,
-        'widget-grid'        => View\Components\WidgetGrid::class,
+        'accordion'               => View\Components\Accordion::class,
+        'accordion-item'          => View\Components\AccordionItem::class,
+        'app-shell'               => View\Components\AppShell::class,
+        'alert'                   => View\Components\Alert::class,
+        'avatar'                  => View\Components\Avatar::class,
+        'avatar-group'            => View\Components\AvatarGroup::class,
+        'badge'                   => View\Components\Badge::class,
+        'breadcrumbs'             => View\Components\Breadcrumbs::class,
+        'breadcrumbs-item'        => View\Components\BreadcrumbsItem::class,
+        'button'                  => View\Components\Button::class,
+        'calendar'                => View\Components\CalendarGrid::class, // The markup; <livewire:artisanpack-calendar> keeps state.
+        'card'                    => View\Components\Card::class,
+        'carousel'                => View\Components\Carousel::class,
+        'chart'                   => View\Components\Chart::class,
+        'checkbox'                => View\Components\Checkbox::class,
+        'checkbox-group'          => View\Components\CheckboxGroup::class,
+        'choices'                 => View\Components\Choices::class, // Deprecated alias of combobox multiple.
+        'choices-offline'         => View\Components\ChoicesOffline::class, // Deprecated alias of combobox multiple.
+        'clipboard'               => View\Components\Clipboard::class,
+        'code'                    => View\Components\Code::class,
+        'code-editor'             => View\Components\CodeEditor::class,
+        'collapse'                => View\Components\Collapse::class,
+        'combobox'                => View\Components\Combobox::class,
+        'color-picker'            => View\Components\ColorPicker::class,
+        'colorpicker'             => View\Components\ColorPicker::class, // Deprecated alias of color-picker.
+        'date-picker'             => View\Components\DatePicker::class,
+        'datepicker'              => View\Components\DatePicker::class, // Deprecated alias of date-picker.
+        'datetime'                => View\Components\DateTime::class, // Deprecated: date-picker with time.
+        'dialog'                  => View\Components\Dialog::class,
+        'diff'                    => View\Components\Diff::class,
+        'divider'                 => View\Components\Divider::class,
+        'drawer'                  => View\Components\Drawer::class,
+        'dropdown'                => View\Components\Dropdown::class, // Deprecated alias of dropdown-menu.
+        'dropdown-menu'           => View\Components\DropdownMenu::class,
+        'dropdown-menu-group'     => View\Components\DropdownMenuGroup::class,
+        'dropdown-menu-item'      => View\Components\DropdownMenuItem::class,
+        'dropdown-menu-separator' => View\Components\DropdownMenuSeparator::class,
+        'editor'                  => View\Components\RichTextEditor::class, // Deprecated alias of rich-text-editor.
+        'empty-state'             => View\Components\EmptyState::class,
+        'errors'                  => View\Components\Errors::class, // Deprecated alias of validation-summary.
+        'error-state'             => View\Components\ErrorState::class,
+        'fieldset'                => View\Components\Fieldset::class,
+        'file'                    => View\Components\File::class,
+        'form'                    => View\Components\Form::class,
+        'group'                   => View\Components\Group::class, // Deprecated alias of radio-group variant="segmented".
+        'grid'                    => View\Components\Grid::class,
+        'header'                  => View\Components\Header::class, // Deprecated alias of page-header.
+        'heading'                 => View\Components\Heading::class,
+        'icon'                    => View\Components\Icon::class,
+        'image-gallery'           => View\Components\ImageGallery::class,
+        'image-library'           => View\Components\ImageLibrary::class,
+        'image-slider'            => View\Components\ImageSlider::class,
+        'input'                   => View\Components\Input::class,
+        'kbd'                     => View\Components\Kbd::class,
+        'kpi-card'                => View\Components\KpiCard::class,
+        'link'                    => View\Components\Link::class,
+        'list'                    => View\Components\ItemList::class,
+        'list-item'               => View\Components\ListItem::class,
+        'loading'                 => View\Components\Loading::class,
+        'main'                    => View\Components\Main::class, // Deprecated alias of app-shell.
+        'markdown'                => View\Components\Markdown::class,
+        'menu'                    => View\Components\Menu::class,
+        'menu-item'               => View\Components\MenuItem::class,
+        'menu-separator'          => View\Components\MenuSeparator::class,
+        'menu-sub'                => View\Components\MenuSub::class,
+        'menu-title'              => View\Components\MenuTitle::class,
+        'modal'                   => View\Components\Modal::class, // Deprecated alias of dialog.
+        'nav'                     => View\Components\Nav::class, // Deprecated alias of navbar.
+        'navbar'                  => View\Components\Navbar::class,
+        'navbar-item'             => View\Components\NavbarItem::class,
+        'page-header'             => View\Components\PageHeader::class,
+        'pagination'              => View\Components\Pagination::class,
+        'password'                => View\Components\Password::class,
+        'pin'                     => View\Components\Pin::class,
+        'popover'                 => View\Components\Popover::class,
+        'profile'                 => View\Components\Profile::class, // Deprecated alias of user-menu.
+        'progress'                => View\Components\Progress::class,
+        'progress-radial'         => View\Components\ProgressRadial::class,
+        'radio'                   => View\Components\Radio::class, // Deprecated alias of radio-group.
+        'radio-group'             => View\Components\RadioGroup::class,
+        'range'                   => View\Components\Range::class,
+        'rating'                  => View\Components\Rating::class,
+        'rich-text-editor'        => View\Components\RichTextEditor::class,
+        'select'                  => View\Components\Select::class,
+        'select-group'            => View\Components\SelectGroup::class, // Deprecated alias of select.
+        'separator'               => View\Components\Separator::class, // Deprecated alias of divider.
+        'signature'               => View\Components\Signature::class,
+        'skeleton'                => View\Components\Skeleton::class,
+        'sparkline'               => View\Components\Sparkline::class,
+        'spotlight'               => View\Components\Spotlight::class,
+        'stack'                   => View\Components\Stack::class,
+        'stat'                    => View\Components\Stat::class,
+        'streamable-content'      => View\Components\StreamableContent::class,
+        'step'                    => View\Components\Step::class,
+        'steps'                   => View\Components\Steps::class,
+        'subheading'              => View\Components\Subheading::class, // Deprecated alias of text size="lead".
+        'swap'                    => View\Components\Swap::class,
+        'tab'                     => View\Components\Tab::class,
+        'table'                   => View\Components\Table::class,
+        'tabs'                    => View\Components\Tabs::class,
+        'tags'                    => View\Components\Tags::class, // Deprecated alias of combobox multiple allow-create.
+        'text'                    => View\Components\Text::class,
+        'textarea'                => View\Components\Textarea::class,
+        'theme-preview'           => View\Components\ThemePreview::class,
+        'theme-toggle'            => View\Components\ThemeToggle::class,
+        'timeline'                => View\Components\Timeline::class,
+        'timeline-item'           => View\Components\TimelineItem::class,
+        'toast'                   => View\Components\Toast::class,
+        'toaster'                 => View\Components\Toaster::class,
+        'toggle'                  => View\Components\Toggle::class,
+        'tooltip'                 => View\Components\Tooltip::class,
+        'user-menu'               => View\Components\UserMenu::class,
+        'validation-summary'      => View\Components\ValidationSummary::class,
+        'widget-grid'             => View\Components\WidgetGrid::class, // Deprecated alias of grid.
     ];
 
     /**
@@ -138,7 +186,6 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
     protected array $livewireComponents = [
         'calendar'            => View\Components\Calendar::class,
         'event-modal-content' => View\Components\EventModalContent::class,
-        'theme-preview'       => View\Components\ThemePreview::class,
     ];
 
     /**
@@ -165,6 +212,7 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'livewire-ui-components');
         $this->registerComponents();
+        $this->resetOverlayIdsPerLivewireRender();
         $this->registerBladeDirectives();
 
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
@@ -177,21 +225,8 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
             'artisanpack-assets',
         );
 
-        // Publish glass design tokens CSS separately for easy customization
-        $this->publishes(
-            [
-                __DIR__.'/../resources/css/glass-tokens.css' => resource_path('css/artisanpack-glass-tokens.css'),
-            ],
-            'artisanpack-glass-tokens',
-        );
-
-        // Publish comprehensive design tokens CSS separately for easy customization
-        $this->publishes(
-            [
-                __DIR__.'/../resources/css/design-tokens.css' => resource_path('css/artisanpack-design-tokens.css'),
-            ],
-            'artisanpack-design-tokens',
-        );
+        // The prebuilt design-system CSS and JS, for apps without a bundler (3.0).
+        $this->publishes($this->designSystemAssetPaths(), DesignSystemAssets::PUBLISH_TAG);
 
         // Publishing is only necessary when using the CLI.
         if ($this->app->runningInConsole()) {
@@ -202,9 +237,11 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
     /**
      * Register all Blade components provided by the package.
      *
-     * This method registers both standardized components and their deprecated
-     * aliases for backwards compatibility. It respects the custom prefix
-     * set in the package's configuration file.
+     * Each component registers under the internal `artisanpack-` name, which
+     * the package's own views use to compose components, and under the
+     * prefix set in the configuration (or no prefix when it's empty). A
+     * custom prefix then changes the tags the app writes without breaking
+     * the components that render other components.
      *
      * @since 1.0.0
      */
@@ -213,24 +250,100 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         // Rename <x-icon> from BladeUI Icons to prevent collision.
         Blade::component('BladeUI\Icons\Components\Icon', 'svg');
 
-        // Get the user-defined prefix from the config, defaulting to 'artisanpack'.
-        $prefix = config('artisanpack.livewire-ui-components.prefix', 'artisanpack');
+        $prefix = static::componentPrefix();
 
-        // Register all Blade components.
         foreach ($this->bladeComponents as $alias => $class) {
-            // Build the component name with prefix (e.g., 'artisanpack-button').
-            // If prefix is empty, just use the alias.
-            $newName = $prefix ? $prefix.'-'.$alias : $alias;
-
-            // Register the component with the correct name.
-            Blade::component($class, $newName);
+            foreach (static::registeredNames($alias, $prefix) as $name) {
+                Blade::component($class, $name);
+            }
         }
 
-        // Register all Livewire components.
         foreach ($this->livewireComponents as $alias => $class) {
-            $componentName = $prefix ? $prefix.'-'.$alias : $alias;
-            Livewire::component($componentName, $class);
+            foreach (static::registeredNames($alias, $prefix) as $name) {
+                Livewire::component($name, $class);
+            }
         }
+    }
+
+    /**
+     * The component prefix from the configuration, normalized: trimmed, with
+     * any trailing hyphen removed (`'artisanpack-'` reads as `'artisanpack'`).
+     * An empty or null prefix registers the components without one.
+     *
+     * @since 3.0.0
+     *
+     * @return string The prefix, or an empty string for none.
+     */
+    public static function componentPrefix(): string
+    {
+        $prefix = config('artisanpack.livewire-ui-components.prefix', self::INTERNAL_PREFIX);
+
+        if (! is_string($prefix)) {
+            return '';
+        }
+
+        return rtrim(trim($prefix), '-');
+    }
+
+    /**
+     * A component's tag name under a prefix: `artisanpack-button`, or just
+     * `button` with an empty prefix.
+     *
+     * @since 3.0.0
+     *
+     * @param  string  $alias  The component alias, such as `button`.
+     * @param  string|null  $prefix  The prefix. Defaults to the configured one.
+     *
+     * @return string The tag name, without `x-`.
+     */
+    public static function componentName(string $alias, ?string $prefix = null): string
+    {
+        $prefix ??= static::componentPrefix();
+
+        return '' === $prefix ? $alias : $prefix.'-'.$alias;
+    }
+
+    /**
+     * The names a component registers under: the configured name, then the
+     * internal `artisanpack-` name when it differs.
+     *
+     * @since 3.0.0
+     *
+     * @param  string  $alias  The component alias, such as `button`.
+     * @param  string  $prefix  The normalized prefix.
+     *
+     * @return list<string> The tag names, without `x-`.
+     */
+    public static function registeredNames(string $alias, string $prefix): array
+    {
+        return array_values(array_unique([
+            static::componentName($alias, $prefix),
+            static::componentName($alias, self::INTERNAL_PREFIX),
+        ]));
+    }
+
+    /**
+     * The Blade components this package provides, keyed by alias.
+     *
+     * @since 3.0.0
+     *
+     * @return array<string, class-string> Component classes keyed by alias.
+     */
+    public function bladeComponents(): array
+    {
+        return $this->bladeComponents;
+    }
+
+    /**
+     * The Livewire components this package provides, keyed by alias.
+     *
+     * @since 3.0.0
+     *
+     * @return array<string, class-string> Component classes keyed by alias.
+     */
+    public function livewireComponents(): array
+    {
+        return $this->livewireComponents;
     }
 
     /**
@@ -242,6 +355,68 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
     {
         $this->registerScopeDirective();
         $this->registerIslandDirectives();
+        $this->registerAssetDirectives();
+    }
+
+    /**
+     * The prebuilt design-system files and where they're published: the
+     * `assets.path` config, under the public directory. The manifest goes too,
+     * because the directives read the published files' hashes from it.
+     *
+     * @since 3.0.0
+     *
+     * @return array<string, string> Package paths keyed to public paths.
+     */
+    public function designSystemAssetPaths(): array
+    {
+        $target = public_path(DesignSystemAssets::publicPath());
+
+        return [
+            __DIR__.'/../dist/css'           => $target.'/css',
+            __DIR__.'/../dist/js'            => $target.'/js',
+            __DIR__.'/../dist/manifest.json' => $target.'/manifest.json',
+        ];
+    }
+
+    /**
+     * Register the @artisanpackStyles and @artisanpackScripts Blade directives.
+     *
+     * They print the tags for the prebuilt design-system assets published with
+     * the `artisanpack-design-system-assets` tag, with a content hash on each
+     * URL for cache-busting. Put both in `<head>`: the script must run before
+     * Livewire's script, which Livewire injects at the end of `<body>`.
+     *
+     * Usage:
+     * - @artisanpackStyles - The stylesheet set in `assets.stylesheet` (`default`)
+     * - @artisanpackStyles('headless') - The headless stylesheet, without component CSS
+     * - @artisanpackScripts - The behavior engine's Alpine adapter
+     *
+     * @since 3.0.0
+     */
+    public function registerAssetDirectives(): void
+    {
+        Blade::directive(
+            'artisanpackStyles',
+            function ($expression) {
+                return '<?php echo app(\\'.DesignSystemAssets::class."::class)->styles({$expression}); ?>";
+            },
+        );
+
+        Blade::directive(
+            'artisanpackScripts',
+            function () {
+                return '<?php echo app(\\'.DesignSystemAssets::class.'::class)->scripts(); ?>';
+            },
+        );
+
+        // @apuiThemeScript in <head>: applies the stored theme before first paint (#65).
+        // @apuiThemeScript([ 'storageKey' => 'site-theme', 'default' => 'dark' ]) changes the key and default.
+        Blade::directive(
+            'apuiThemeScript',
+            function ($expression) {
+                return '<?php echo \\'.ThemeScript::class.'::tag('.('' !== trim((string) $expression) ? $expression : '[]').'); ?>';
+            },
+        );
     }
 
     /**
@@ -299,17 +474,25 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
      * Islands allow isolated updates within complex components. Different parts
      * of a component can update independently without affecting other regions.
      *
-     * - Livewire 4+: Full Islands support with optimized partial updates
-     * - Livewire 3: Falls back to normal rendering (still works, just less optimized)
+     * Livewire 4 ships its own @island, @endisland and @placeholder (its
+     * `SupportIslands` feature), and this package's versions would replace
+     * them. So these are only registered on Livewire 3, where they render a
+     * wire:key'd region with normal rendering.
      *
-     * Usage:
+     * Usage (Livewire 3):
      * - @island('name') ... @endisland - Basic island with wire:key isolation
-     * - @island('name', ['defer' => true]) ... @endisland - Deferred loading (Livewire 4+)
+     * - @island('name', ['defer' => true]) ... @endisland - A deferred island's markup
      *
      * @since 2.0.0
+     *
+     * @param  bool|null  $native  Whether Livewire provides the directives. Detected when null.
      */
-    public function registerIslandDirectives(): void
+    public function registerIslandDirectives(?bool $native = null): void
     {
+        if ($native ?? Support\LivewireHelper::hasNativeIslands()) {
+            return;
+        }
+
         /**
          * @island directive - Creates an isolated region with wire:key.
          *
@@ -390,6 +573,15 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // Overlay ids rendered so far, per request (Octane resets scoped bindings).
+        $this->app->scoped(Support\RenderedIds::class);
+        // The Steps whose step children are rendering, per request.
+        $this->app->scoped(Support\StepsContext::class);
+        // The Breadcrumbs whose composed children are rendering, per request.
+        $this->app->scoped(Support\BreadcrumbsContext::class);
+        // Tabs, Menu and Navbar parents rendering their children (#56).
+        $this->app->scoped(Support\NavigationContext::class);
+
         $this->mergeConfigFrom(__DIR__.'/../config/livewire-ui-components.php', 'artisanpack-livewire-ui-components-temp');
 
         // Register the service the package provides.
@@ -399,6 +591,15 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
                 return new LivewireUiComponents;
             },
         );
+
+        // The design tokens and the token-based theming built on them (3.0).
+        $this->app->singleton(DesignTokens::class, fn (): DesignTokens => DesignTokens::load());
+        $this->app->singleton(PresetGenerator::class);
+        $this->app->singleton(TokenThemes::class);
+        $this->app->singleton(GlassSurface::class);
+
+        // The prebuilt design-system assets (#42).
+        $this->app->singleton(DesignSystemAssets::class);
     }
 
     /**
@@ -411,6 +612,25 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
     public function provides()
     {
         return ['livewire-ui-components'];
+    }
+
+    /**
+     * Resets a Livewire component's overlay ids when it starts rendering, so
+     * a re-render renders the same ids as the first render (D-015).
+     *
+     * @since 3.0.0
+     */
+    protected function resetOverlayIdsPerLivewireRender(): void
+    {
+        if (! function_exists('Livewire\\on')) {
+            return;
+        }
+
+        \Livewire\on('render', function (object $component): void {
+            if (method_exists($component, 'getId')) {
+                app(Support\RenderedIds::class)->reset((string) $component->getId());
+            }
+        });
     }
 
     /**
@@ -432,9 +652,10 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         );
 
         $this->commands([LivewireUiComponentsInstallCommand::class,
-            LivewireUiComponentsBootcampCommand::class,
             GenerateThemeCss::class,
+            GeneratePresetCommand::class,
             GenerateIdeHelperCommand::class,
+            UpgradeUiCommand::class,
         ]);
     }
 
@@ -451,11 +672,19 @@ class LivewireUiComponentsServiceProvider extends ServiceProvider
         // Get the package's default configuration.
         $packageDefaults = config('artisanpack-livewire-ui-components-temp', []);
 
-        // Get the user's custom configuration from config/artisanpack.php.
+        // The file the `livewire-ui-components.config` tag publishes,
+        // config/livewire-ui-components.php, read as `livewire-ui-components`.
+        $publishedConfig = config('livewire-ui-components', []);
+
+        // Get the user's custom configuration from config/artisanpack/livewire-ui-components.php.
         $userConfig = config('artisanpack.livewire-ui-components', []);
 
-        // Merge them, with the user's config overwriting the defaults.
-        $mergedConfig = array_replace_recursive($packageDefaults, $userConfig);
+        // Merge them: defaults, then the published file, then the artisanpack file.
+        $mergedConfig = array_replace_recursive(
+            $packageDefaults,
+            is_array($publishedConfig) ? $publishedConfig : [],
+            is_array($userConfig) ? $userConfig : [],
+        );
 
         // Set the final, correctly merged configuration.
         config(['artisanpack.livewire-ui-components' => $mergedConfig]);

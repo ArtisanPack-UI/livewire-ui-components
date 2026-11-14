@@ -34,6 +34,8 @@ use function Laravel\Prompts\text;
  * Generates the CSS theme file based on selected colors.
  *
  * @since 1.0.0
+ * @deprecated 3.0.0 Use artisanpack:generate-preset
+ *             (\ArtisanPack\LivewireUiComponents\Console\Commands\GeneratePresetCommand).
  */
 class GenerateThemeCss extends Command
 {
@@ -60,14 +62,14 @@ class GenerateThemeCss extends Command
                             {--tint-intensity= : Tint intensity from 0.0 to 1.0 (default: 0.15).}
                             {--interactive : Run in interactive mode with prompts for all options.}
                             {--json : Export theme configuration to JSON file.}
-                            {--preview : Generate a preview URL for the theme.}';
+                            {--preview : Removed in 3.0 (the theme preview page is gone); prints a notice.}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Generates a CSS theme file with variables for ArtisanPack UI and DaisyUI.';
+    protected $description = 'Deprecated: generates a 2.x CSS theme file with DaisyUI variables. Use artisanpack:generate-preset.';
 
     /**
      * Execute the console command.
@@ -78,6 +80,8 @@ class GenerateThemeCss extends Command
      */
     public function handle(ColorGenerator $colorGenerator): int
     {
+        $this->warn(__('artisanpack:generate-theme is deprecated and will be removed. Use artisanpack:generate-preset, which builds a brand preset on the design tokens.'));
+
         // Check for interactive mode first
         if ($this->option('interactive')) {
             return $this->runInteractiveMode($colorGenerator);
@@ -188,9 +192,8 @@ class GenerateThemeCss extends Command
                 $this->generateStandaloneHighContrast($accessibilityPreset);
             }
 
-            // Generate preview URL if requested
             if ($generatePreview) {
-                $this->generatePreviewUrl($themeConfig);
+                $this->notePreviewRemoved();
             }
 
             $this->warn('🚀 Remember to import this file into your main CSS/SCSS file and recompile your assets (e.g., npm run dev).');
@@ -368,11 +371,6 @@ class GenerateThemeCss extends Command
             default: false,
         );
 
-        $generatePreview = confirm(
-            label: __('Generate preview URL?'),
-            default: false,
-        );
-
         // Build and display configuration summary
         $this->newLine();
         $this->info('📋 Theme Configuration Summary:');
@@ -464,11 +462,6 @@ class GenerateThemeCss extends Command
             // Generate high-contrast CSS
             if (config('artisanpack.livewire-ui-components.high_contrast.enabled', true)) {
                 $this->generateStandaloneHighContrast($accessibilityPreset);
-            }
-
-            // Generate preview URL if requested
-            if ($generatePreview) {
-                $this->generatePreviewUrl($themeConfig);
             }
 
             $this->warn('🚀 '.__('Remember to import this file into your main CSS/SCSS file and recompile your assets (e.g., npm run dev).'));
@@ -610,44 +603,18 @@ class GenerateThemeCss extends Command
     }
 
     /**
-     * Generate a preview URL for the theme.
+     * Explain that `--preview` no longer prints a URL: the theme preview page
+     * and its `/artisanpack/theme-preview` route were removed in 3.0.
      *
-     * @since 2.0.0
-     *
-     * @param  array  $themeConfig  The theme configuration.
+     * @since 3.0.0
      */
-    protected function generatePreviewUrl(array $themeConfig): void
+    protected function notePreviewRemoved(): void
     {
-        // Build query parameters for preview
-        $params = [
-            'primary'   => $themeConfig['colors']['primary'],
-            'secondary' => $themeConfig['colors']['secondary'],
-            'accent'    => $themeConfig['colors']['accent'],
-        ];
-
-        if (! empty($themeConfig['glass']['preset'])) {
-            $params['preset'] = $themeConfig['glass']['preset'];
-        }
-
-        if ('transparent' !== $themeConfig['glass']['tint']['color']) {
-            $params['tint']           = $themeConfig['glass']['tint']['color'];
-            $params['tint_intensity'] = $themeConfig['glass']['tint']['intensity'];
-        }
-
-        // Build the preview URL using the application's URL
-        $baseUrl    = config('app.url', 'http://localhost');
-        $previewUrl = $baseUrl.'/artisanpack/theme-preview?'.http_build_query($params);
-
         $this->newLine();
-        $this->info('🔗 '.__('Theme Preview URL:'));
-        $this->line("   <comment>{$previewUrl}</comment>");
-        $this->newLine();
-        $this->line('   '.__('Note: The preview route must be registered in your application.'));
-        $this->line('   '.__('Add the following to your routes/web.php:'));
-        $this->newLine();
-        $this->line("   <comment>Route::get('/artisanpack/theme-preview', function () {</comment>");
-        $this->line("   <comment>    return view('artisanpack::theme-preview');</comment>");
-        $this->line('   <comment>});</comment>');
+        $this->warn(__('The theme preview page was removed in 3.0, so --preview no longer prints a URL.'));
+        $this->line('   '.__('Where the theme builder goes next: :url', [
+            'url' => 'https://github.com/ArtisanPack-UI/livewire-ui-components/issues/142',
+        ]));
     }
 
     /**

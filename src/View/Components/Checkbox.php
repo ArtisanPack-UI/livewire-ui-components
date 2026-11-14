@@ -1,108 +1,132 @@
 <?php
 
-declare(strict_types=1);
 /**
- * Checkbox
+ * Checkbox Component
  *
- * This file contains the Checkbox class for the ArtisanPack UI Livewire UI Components package.
+ * The design-system Checkbox (#47): one option on or off, with the
+ * indeterminate (mixed) state.
  *
  * @author     Jacob Martella
- * @copyright  2023 Jacob Martella
+ * @copyright  2026 Jacob Martella
  * @license    MIT
  *
- * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
- * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
+ * @link       https://github.com/ArtisanPack-UI/livewire-ui-components
  * @since      1.0.0
  */
 
+declare(strict_types=1);
+
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
+use ArtisanPack\LivewireUiComponents\Support\IconRegistry;
+use ArtisanPack\LivewireUiComponents\View\Concerns\InteractsWithFieldControl;
+use ArtisanPack\LivewireUiComponents\View\Concerns\RendersDesignSystemParts;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\HtmlString;
 
 /**
- * Checkbox Class
+ * Checkbox Component Class
  *
- * Provides functionality for the Checkbox component.
+ * Renders `.apui-checkbox`: the box (native control and indicator), the
+ * label, the description and the error. `class` lands on the root; every
+ * other attribute, `wire:model` included, lands on the native checkbox.
  *
  * @since 1.0.0
  */
 class Checkbox extends BaseComponent
 {
-    /**
-     * The component's UUID.
-     *
-     * @since 1.0.0
-     */
-    public string $uuid;
+    use InteractsWithFieldControl;
+    use RendersDesignSystemParts;
 
     /**
-     * Creates a new component instance.
+     * The component name used in derived ids.
      *
-     * @param  string|null  $id  The component's ID.
-     * @param  string|null  $label  The component's label.
-     * @param  bool|null  $right  Whether to position the label on the right.
-     * @param  string|null  $hint  A hint message to display.
-     * @param  string|null  $hintClass  The CSS class for the hint.
-     * @param  bool|null  $card  Whether to display as a card.
-     * @param  string|null  $cardClass  The CSS class for the card.
-     * @param  string|null  $errorField  The validation error field name.
-     * @param  string|null  $errorClass  The CSS class for the error.
-     * @param  bool|null  $omitError  Whether to omit the error display.
-     * @param  bool|null  $firstErrorOnly  Whether to show only the first error.
+     * @since 3.0.0
+     */
+    protected string $fieldName = 'checkbox';
+
+    /**
+     * Creates the component.
      *
-     * @return void
+     * @since 3.0.0
      *
-     * @since 1.0.0
+     * @param  bool  $checked  Whether it's checked. Livewire binds it with wire:model.
+     * @param  bool  $indeterminate  Shows the mixed state. Wins over checked.
+     * @param  string|null  $label  The visible label. A `label` slot overrides it.
+     * @param  string|null  $description  Supporting text under the label. A `description` slot overrides it.
+     * @param  string|null  $error  Validation message. Defaults to the first `$errors` message for errorField.
+     * @param  bool  $invalid  Marks it invalid without a message.
+     * @param  bool  $disabled  Disables the control.
+     * @param  bool  $required  Marks it required, such as consent to terms.
+     * @param  string|null  $errorField  The `$errors` key. Defaults to the wire:model name.
+     * @param  array<string, string>  $classes  Extra classes per part.
      */
     public function __construct(
-        public ?string $id = null,
+        public bool $checked = false,
+        public bool $indeterminate = false,
         public ?string $label = null,
-        public ?bool $right = false,
-        public ?string $hint = null,
-        public ?string $hintClass = 'fieldset-label',
-        public ?bool $card = false, // New card variant
-        public ?string $cardClass = 'card card-compact border-2 border-base-300 hover:border-primary cursor-pointer transition-colors', // Card styling with proper color variables
-
-        // Validations
+        public ?string $description = null,
+        public ?string $error = null,
+        public bool $invalid = false,
+        public bool $disabled = false,
+        public bool $required = false,
         public ?string $errorField = null,
-        public ?string $errorClass = 'text-error',
-        public ?bool $omitError = false,
-        public ?bool $firstErrorOnly = false,
-    ) {
-        $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
-    }
+        public array $classes = [],
+    ) {}
 
     /**
-     * Gets the model name from attributes.
+     * The root's `data-state`: indeterminate wins over checked.
      *
-     * @return string|null The model name.
+     * @since 3.0.0
      *
-     * @since 1.0.0
+     * @return string `unchecked`, `checked` or `indeterminate`.
      */
-    public function modelName(): ?string
+    public function state(): string
     {
-        return $this->attributes->whereStartsWith('wire:model')->first();
+        if ($this->indeterminate) {
+            return 'indeterminate';
+        }
+
+        return $this->checked ? 'checked' : 'unchecked';
     }
 
     /**
-     * Gets the error field name.
+     * The indicator's glyphs: the check, then the minus, each marked with
+     * `data-icon`. CSS shows the one for the current state.
      *
-     * @return string|null The error field name.
+     * @since 3.0.0
      *
-     * @since 1.0.0
+     * @return HtmlString The markup.
      */
-    public function errorFieldName(): ?string
+    public function indicatorIcons(): HtmlString
     {
-        return $this->errorField ?? $this->modelName();
+        return new HtmlString(
+            IconRegistry::svg('check', ['data-icon' => 'check']).IconRegistry::svg('minus', ['data-icon' => 'minus']),
+        );
     }
 
     /**
-     * Get the view / contents that represent the component.
+     * Get the view that represents the component.
      *
      * @since 1.0.0
      */
     public function render(): View
     {
         return view('livewire-ui-components::components.checkbox');
+    }
+
+    /**
+     * Checkboxes bound to one array (`wire:model="roles" value="admin"`)
+     * share a model name, so their derived ids include the value too.
+     *
+     * @since 3.0.0
+     *
+     * @return list<string> The value, when there is one.
+     */
+    protected function idSeed(): array
+    {
+        $value = $this->attributes->get('value');
+
+        return is_scalar($value) && '' !== (string) $value ? [(string) $value] : [];
     }
 }

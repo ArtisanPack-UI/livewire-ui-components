@@ -1,174 +1,156 @@
-<div
-    x-data="
-        {
-            value: '',
-            results: [],
-            open: $persist(false).as('mary-spotlight-modal'),
-            elapsed: 0,
-            elapsedStep: 200,
-            elapsedMax: 500,
-            maxDebounce: 250,
-            searchTimer: null,
-            debounceTimer: null,
-            controller: new AbortController(),
-            query: '',
-            searchedWithNoResults: false,
-            init(){
-                if(this.open) {
-                    this.show()
-                }
-
-                this.$watch('value', value => this.debounce(() => this.search(), this.maxDebounce))
-
-                // Fix weird issue when navigating back
-                document.addEventListener('livewire:navigating', () => {
-                    this.close()
-                    document.querySelectorAll('.mary-spotlight-element')?.forEach(el =>  el.remove());
-                });
-            },
-            close() {
-                this.open = false
-                $refs.marySpotlightRef?.close()
-            },
-            show() {
-                this.open = true;
-                $refs.marySpotlightRef.showModal();
-            },
-            focus() {
-                setTimeout(() => {
-                    this.$refs.spotSearch.focus();
-                    this.$refs.spotSearch.select();
-                }, 100)
-            },
-            updateQuery(query){
-                this.query = query
-                this.search()
-            },
-            startTimer() {
-                this.searchTimer = setInterval(() => this.elapsed += this.elapsedStep, this.elapsedStep)
-            },
-            resetTimer() {
-                clearInterval(this.searchTimer)
-                this.elapsed = 0
-            },
-            debounce(fn, waitTime) {
-                clearTimeout(this.debounceTimer)
-                this.debounceTimer = setTimeout(() => fn(), waitTime)
-            },
-            async search() {
-                $refs.spotSearch.focus()
-
-                if (this.value == '') {
-                    this.results = []
-                    return
-                }
-
-                this.resetTimer()
-                this.startTimer()
-
-                try {
-                    this.controller?.abort()
-                    this.controller = new AbortController();
-
-                    let response = await fetch(`{{$url}}?search=${this.value}&${this.query}`, { signal: this.controller.signal })
-                    this.results = await response.json()
-                } catch(e) {
-                    console.log(e)
-                    return
-                }
-
-                this.resetTimer()
-
-                Object.keys(this.results).length
-                    ? this.searchedWithNoResults = false
-                    : this.searchedWithNoResults = true
-            }
-        }"
-
-    @keydown.window.prevent.{{ $shortcut }}="show(); focus();"
-    @keydown.escape="close()"
-    @keydown.up="$focus.previous()"
-    @keydown.down="$focus.next()"
-    @mary-search.window="updateQuery(event.detail)"
-    @mary-search-open.window="show(); focus();"
->
-    <x-artisanpack-modal
-        id="marySpotlight"
-        x-ref="marySpotlightRef"
-        class="backdrop-blur-sm"
-        box-class="absolute py-0 top-0 lg:top-10 w-full lg:max-w-3xl rounded-none md:rounded-box"
-    >
-        <div  @click.outside="close()">
-            <!-- INPUT -->
-            <div class="flex">
-                <div class="flex-1">
-                    <div class="flex items-center">
-                        <x-artisanpack-icon name="o-magnifying-glass"  class="opacity-40" />
-                        <input
-                            id="{{ $uuid }}"
-                            x-model="value"
-                            x-ref="spotSearch"
-                            placeholder=" {{ $searchText }}"
-                            class="w-full input my-2 border-none outline-none shadow-none border-transparent  focus:shadow-none focus:outline-none focus:border-transparent"
-                            @focus="$el.focus()"
-                            autofocus
-                            tabindex="1"
-                        />
-                    </div>
+{{--
+    Spotlight (#57). Markup contract: design-system Spotlight (D-019).
+    The .apui-spotlight panel is the dialog's content part; the search row, query
+    and results are the combobox's control, input and content. Every part has a
+    stable, server-rendered id and items carry wire:key, so Livewire's morph keeps
+    them (D-015). Recent choices and url results render on the client, inside
+    wire:ignore. `class` lands on the panel; every other attribute lands on the
+    apuiSpotlight element, where open-change, select and search-change are dispatched.
+--}}
+@php
+    $baseId     = $baseId();
+    $isOpen     = $isOpen();
+    $state      = $isOpen ? 'open' : 'closed';
+    $groupsList = $resultGroups();
+    $hasItems   = $hasItems();
+    $active     = $isOpen ? $activeValue() : null;
+    $label      = $labelText();
+    $keys       = $shortcutKeys();
+    $ariaKeys   = $ariaKeyShortcuts();
+    $hasTrigger = $filled( $trigger );
+    $footerSlot = $filled( $footer ) ? $footer : ( isset( $append ) && $filled( $append ) ? $append : null );
+    $hasFooter  = null !== $footerSlot;
+    $emptySlot  = isset( $empty ) && $filled( $empty ) ? $empty : null;
+@endphp
+<div {{ $hostAttributes() }} id="{{ $baseId }}" x-data="{{ $alpineData() }}" style="display: contents">
+    @if ( $hasTrigger )
+        <x-artisanpack-button
+            variant="outline"
+            color="neutral"
+            :id="$partId( 'trigger' )"
+            :class="$classes['trigger'] ?? null"
+            data-scope="spotlight"
+            data-part="trigger"
+            aria-haspopup="dialog"
+            :aria-expanded="$isOpen ? 'true' : 'false'"
+            :aria-controls="$partId( 'content' )"
+            :aria-keyshortcuts="$ariaKeys"
+            :data-state="$state"
+            x-apui:trigger=""
+        >{{ $content( $trigger ) }}@if ( [] !== $keys )<span data-scope="spotlight" data-part="shortcut" aria-hidden="true">@foreach ( $keys as $index => $key )<kbd x-text="keys[{{ $index }}]">{{ $key }}</kbd>@endforeach</span>@endif</x-artisanpack-button>
+    @endif
+    @if ( $portal )<template x-teleport="body">@endif
+    <div id="{{ $partId( 'layer' ) }}" style="display: contents">
+        <div data-scope="spotlight" data-part="backdrop" id="{{ $partId( 'backdrop' ) }}" data-state="{{ $state }}"{{ $partClass( 'backdrop' ) }} x-apui:backdrop @if ( ! $isOpen ) hidden @endif></div>
+        <div data-scope="spotlight" data-part="positioner" id="{{ $partId( 'positioner' ) }}"{{ $partClass( 'positioner' ) }} x-apui:positioner>
+            <div
+                {{ $attributes->only( 'class' )->class( $rootClasses( 'apui-spotlight' ) ) }}
+                data-scope="spotlight"
+                data-part="content"
+                id="{{ $partId( 'content' ) }}"
+                role="dialog"
+                aria-label="{{ $label }}"
+                tabindex="-1"
+                data-state="{{ $state }}"
+                @if ( $modal ) aria-modal="true" @endif
+                @if ( ! $isOpen ) hidden @endif
+                x-apui:content
+            >
+                <div data-scope="spotlight" data-part="search" id="{{ $partId( 'search' ) }}"{{ $partClass( 'search' ) }} x-apui:search>
+                    <span data-scope="spotlight" data-part="icon" id="{{ $partId( 'icon' ) }}" aria-hidden="true"{{ $partClass( 'icon' ) }}>{{ $iconSvg( 'search' ) }}</span>
+                    <input
+                        data-scope="spotlight"
+                        data-part="query"
+                        id="{{ $partId( 'query' ) }}"
+                        type="text"
+                        role="combobox"
+                        aria-label="{{ $label }}"
+                        aria-autocomplete="list"
+                        aria-expanded="{{ $isOpen ? 'true' : 'false' }}"
+                        aria-controls="{{ $partId( 'results' ) }}"
+                        @if ( null !== $active ) aria-activedescendant="{{ $itemId( $active ) }}" @endif
+                        @if ( null !== $ariaKeys ) aria-keyshortcuts="{{ $ariaKeys }}" @endif
+                        placeholder="{{ $placeholderText() }}"
+                        autocomplete="off"
+                        spellcheck="false"
+                        {{ $partClass( 'query' ) }}
+                        x-apui:query
+                    />
+                    <button type="button" data-scope="spotlight" data-part="close-trigger" id="{{ $partId( 'close-trigger' ) }}" aria-label="{{ $closeTriggerLabel() }}" aria-keyshortcuts="Escape"{{ $partClass( 'closeTrigger' ) }} x-apui:close-trigger>Esc</button>
                 </div>
-
-                @if($append)
-                    {{ $append }}
-                @endif
-            </div>
-
-            <!-- PROGRESS  -->
-            <div class="h-[1px]">
-                <progress class="progress hidden h-[1px]" :class="elapsed > elapsedMax && '!h-[2px] !block'"></progress>
-            </div>
-
-            <!-- SLOT -->
-            @if($slot)
-                {{ $slot }}
-            @endif
-
-            <!-- NO RESULTS -->
-            <template x-if="searchedWithNoResults && value != ''">
-                <div class="text-base-content/50 p-3 border-t-[length:var(--border)] border-t-base-content/10 mary-spotlight-element">{{ $noResultsText }}</div>
-            </template>
-
-            <!-- RESULTS  -->
-            <div class="-mx-1 mt-1" @click="close()" @keydown.enter="close()">
-                <template x-for="(item, index) in results" :key="index">
-                    <!-- ITEM -->
-                    <a x-bind:href="item.link" class="mary-spotlight-element" wire:navigate tabindex="0">
-                        <div class="p-3 hover:bg-base-200 border-t-[length:var(--border)] border-t-base-content/10" >
-                            <div class="flex gap-3 items-center">
-                                <!-- AVATAR -->
-                                <template x-if="item.icon">
-                                    <div x-html="item.icon"></div>
-                                </template>
-                                <!-- AVATAR -->
-                                <template x-if="item.avatar && !item.icon">
-                                    <div>
-                                        <img :src="item.avatar" class="rounded-full w-11 h-11" />
-                                    </div>
-                                </template>
-                                <div class="flex-1 overflow-hidden whitespace-nowrap text-ellipsis truncate w-0 mary-hideable">
-                                    <!-- NAME -->
-                                    <div x-text="item.name" class="font-semibold truncate"></div>
-
-                                    <!-- DESCRIPTION -->
-                                    <template x-if="item.description">
-                                        <div x-text="item.description" class="text-base-content/50 text-sm truncate"></div>
-                                    </template>
-                                </div>
-                            </div>
+                <div
+                    data-scope="spotlight"
+                    data-part="results"
+                    id="{{ $partId( 'results' ) }}"
+                    role="listbox"
+                    aria-label="{{ $label }}"
+                    tabindex="-1"
+                    @if ( $loading ) aria-busy="true" data-loading @endif
+                    {{ $partClass( 'results' ) }}
+                    x-apui:results
+                >
+                    @if ( $recent )
+                        <div data-apui-unfiltered wire:ignore style="display: contents">
+                            @include( 'livewire-ui-components::components.partials.spotlight-client-groups', [ 'source' => 'recent' ] )
                         </div>
-                    </a>
-                </template>
-                <div x-show="results.length" class="mb-3"></div>
+                    @endif
+                    @foreach ( $groupsList as $group )
+                        @php
+                            $groupId = $partId( 'group-' . $group['id'] );
+                        @endphp
+                        <div data-scope="spotlight" data-part="item-group" id="{{ $groupId }}" role="group" @if ( null !== $group['label'] ) aria-labelledby="{{ $groupId }}-label" @endif{{ $partClass( 'itemGroup' ) }} x-apui:item-group="{{ \Illuminate\Support\Js::from( [ 'id' => $group['id'] ] ) }}" @if ( [] === $group['items'] ) hidden @endif>
+                            @if ( null !== $group['label'] )
+                                <div data-scope="spotlight" data-part="item-group-label" id="{{ $groupId }}-label" role="presentation"{{ $partClass( 'itemGroupLabel' ) }} x-apui:item-group-label="{{ \Illuminate\Support\Js::from( [ 'htmlFor' => $group['id'] ] ) }}">{{ $group['label'] }}</div>
+                            @endif
+                            @foreach ( $group['items'] as $item )
+                                @php
+                                    $itemTag  = isset( $item['href'] ) ? 'a' : 'div';
+                                    $entryKeys = $itemKeys( $item['shortcut'] ?? null );
+                                @endphp
+                                <{{ $itemTag }}
+                                    data-scope="spotlight"
+                                    data-part="item"
+                                    wire:key="{{ $baseId }}-item-{{ $item['value'] }}"
+                                    id="{{ $itemId( $item['value'] ) }}"
+                                    role="option"
+                                    aria-selected="{{ $active === $item['value'] ? 'true' : 'false' }}"
+                                    @if ( $active === $item['value'] ) data-highlighted @endif
+                                    tabindex="-1"
+                                    data-value="{{ $item['value'] }}"
+                                    @if ( isset( $item['href'] ) ) href="{{ \ArtisanPack\LivewireUiComponents\Support\SafeUrl::href( $item['href'] ) }}" @if ( $navigate && \ArtisanPack\LivewireUiComponents\Support\SafeUrl::navigable( $item['href'] ) ) wire:navigate @endif @endif
+                                    @if ( isset( $item['color'] ) ) data-color="{{ $item['color'] }}" @endif
+                                    @if ( ! empty( $item['disabled'] ) ) aria-disabled="true" data-disabled @endif
+                                    {{ $partClass( 'item' ) }}
+                                    x-apui:item="{{ \Illuminate\Support\Js::from( $item ) }}"
+                                >
+                                    @if ( isset( $item['icon'] ) )
+                                        <span data-scope="spotlight" data-part="tile" aria-hidden="true"{{ $partClass( 'tile' ) }}>{{ $iconSvg( $item['icon'] ) }}</span>
+                                    @endif
+                                    <span data-scope="spotlight" data-part="item-text"{{ $partClass( 'itemText' ) }} x-apui:item-text><span data-apui-label>{{ $item['label'] }}</span>@if ( isset( $item['description'] ) )<span data-scope="spotlight" data-part="item-description"{{ $partClass( 'itemDescription' ) }}>{{ $item['description'] }}</span>@endif</span>
+                                    @if ( [] !== $entryKeys )
+                                        <span data-scope="spotlight" data-part="shortcut" aria-hidden="true"{{ $partClass( 'shortcut' ) }}>@foreach ( $entryKeys as $key )<kbd>{{ $key }}</kbd>@endforeach</span>
+                                    @endif
+                                    <span data-scope="spotlight" data-part="item-indicator" aria-hidden="true"{{ $partClass( 'itemIndicator' ) }}>{{ $iconSvg( 'corner-down-left' ) }}</span>
+                                </{{ $itemTag }}>
+                            @endforeach
+                        </div>
+                    @endforeach
+                    <div data-apui-unfiltered wire:ignore style="display: contents">
+                        @include( 'livewire-ui-components::components.partials.spotlight-client-groups', [ 'source' => 'remote' ] )
+                    </div>
+                    <div data-scope="spotlight" data-part="empty" id="{{ $partId( 'empty' ) }}"{{ $partClass( 'empty' ) }} x-apui:empty @if ( $hasItems || $loading ) hidden @endif>@if ( null !== $emptySlot ){{ $content( $emptySlot ) }}@else{{ $emptyTextValue() }}@endif</div>
+                    <div data-scope="spotlight" data-part="loading" id="{{ $partId( 'loading' ) }}"{{ $partClass( 'loading' ) }} x-apui:loading @if ( ! $loading ) hidden @endif>{{ $loadingTextValue() }}</div>
+                </div>
+                <div data-scope="spotlight" data-part="footer" id="{{ $partId( 'footer' ) }}"{{ $partClass( 'footer' ) }}>
+                    @if ( $hasFooter )
+                        {{ $content( $footerSlot ) }}
+                    @else
+                        <span><span data-scope="spotlight" data-part="shortcut" aria-hidden="true"><kbd>↑</kbd><kbd>↓</kbd></span>{{ $text( $navigateLabel, 'Navigate' ) }}</span>
+                        <span><span data-scope="spotlight" data-part="shortcut" aria-hidden="true"><kbd>↵</kbd></span>{{ $text( $selectLabel, 'Open' ) }}</span>
+                    @endif
+                </div>
             </div>
         </div>
-    </x-artisanpack-modal>
+    </div>
+    @if ( $portal )</template>@endif
 </div>

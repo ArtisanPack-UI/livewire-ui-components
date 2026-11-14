@@ -1,165 +1,25 @@
+{{--
+    Sparkline (#61). Markup contract: design-system wave 5, Sparkline.
+    An SVG image with a label stating its first and latest values. The marks
+    come from SparklineGeometry, the same coordinates React and Vue draw. The
+    plot stays LTR (D-004).
+--}}
 @php
-    $baseClasses = [
-        'inline-block',
-    ];
-
-    // Prepare JSON data for real-time updates
-    $chartOptionsJson = json_encode($chartOptions());
-    $chartSeriesJson = json_encode($chartSeries());
+    $variant    = $variantValue();
+    $geometry   = $geometry();
+    $attributes = $attributes->except( \ArtisanPack\LivewireUiComponents\View\Components\Sparkline::DEPRECATED_ATTRIBUTES );
 @endphp
-<div
-    {{ $attributes->merge(['wire:key' => $uuid])->class($baseClasses) }}
-    x-data="artisanpackSparkline({
-        initialOptions: {{ $chartOptionsJson }},
-        initialSeries: {{ $chartSeriesJson }},
-        chartId: @js($uuid)
-    })"
-    data-chart-options="{{ $chartOptionsJson }}"
-    data-chart-series="{{ $chartSeriesJson }}"
-    wire:ignore.self
-    x-on:livewire:navigating.window="destroy()"
->
-    <div x-ref="sparkline" wire:ignore></div>
-</div>
-
-@once
-<script>
-document.addEventListener('alpine:init', () => {
-    Alpine.data('artisanpackSparkline', (config) => ({
-        chart: null,
-        options: config.initialOptions,
-        series: config.initialSeries,
-        chartId: config.chartId,
-        isUpdating: false,
-        dataObserver: null,
-
-        init() {
-            this.renderChart();
-            this.watchLivewire();
-            this.setupDataAttributeObserver();
-        },
-
-        renderChart() {
-            if (this.chart) {
-                this.chart.destroy();
-            }
-
-            if (typeof ApexCharts === 'undefined') {
-                console.error('ApexCharts is not loaded. Please install it via npm: npm install apexcharts');
-                return;
-            }
-
-            const chartOptions = {
-                ...this.options,
-                series: this.series,
-            };
-
-            this.chart = new ApexCharts(this.$refs.sparkline, chartOptions);
-            this.chart.render();
-        },
-
-        updateChart(animate = true) {
-            if (this.isUpdating) return;
-            this.isUpdating = true;
-
-            if (this.chart) {
-                this.chart.updateOptions(this.options, true, animate);
-                this.chart.updateSeries(this.series, animate);
-            } else {
-                this.renderChart();
-            }
-
-            // Reset updating flag after animation completes
-            setTimeout(() => {
-                this.isUpdating = false;
-            }, 350);
-        },
-
-        watchLivewire() {
-            this.$watch('series', () => {
-                this.updateChart();
-            });
-
-            this.$watch('options', () => {
-                this.updateChart();
-            });
-        },
-
-        /**
-         * Setup MutationObserver to watch for data attribute changes.
-         * This allows Livewire polling (wire:poll) to update the sparkline
-         * by detecting changes to data-chart-options and data-chart-series attributes.
-         */
-        setupDataAttributeObserver() {
-            const observer = new MutationObserver((mutations) => {
-                let shouldUpdate = false;
-                let seriesChanged = false;
-                let optionsChanged = false;
-
-                mutations.forEach((mutation) => {
-                    if (mutation.type === 'attributes') {
-                        if (mutation.attributeName === 'data-chart-series') {
-                            const newSeries = this.$el.getAttribute('data-chart-series');
-                            if (newSeries) {
-                                try {
-                                    const parsedSeries = JSON.parse(newSeries);
-                                    if (JSON.stringify(parsedSeries) !== JSON.stringify(this.series)) {
-                                        this.series = parsedSeries;
-                                        seriesChanged = true;
-                                        shouldUpdate = true;
-                                    }
-                                } catch (e) {
-                                    console.error('Failed to parse sparkline series:', e);
-                                }
-                            }
-                        }
-
-                        if (mutation.attributeName === 'data-chart-options') {
-                            const newOptions = this.$el.getAttribute('data-chart-options');
-                            if (newOptions) {
-                                try {
-                                    const parsedOptions = JSON.parse(newOptions);
-                                    if (JSON.stringify(parsedOptions) !== JSON.stringify(this.options)) {
-                                        this.options = parsedOptions;
-                                        optionsChanged = true;
-                                        shouldUpdate = true;
-                                    }
-                                } catch (e) {
-                                    console.error('Failed to parse sparkline options:', e);
-                                }
-                            }
-                        }
-                    }
-                });
-
-                if (shouldUpdate) {
-                    this.updateChart(true);
-                }
-            });
-
-            observer.observe(this.$el, {
-                attributes: true,
-                attributeFilter: ['data-chart-series', 'data-chart-options'],
-            });
-
-            // Store observer for cleanup
-            this.dataObserver = observer;
-        },
-
-        destroy() {
-            // Disconnect data attribute observer
-            if (this.dataObserver) {
-                this.dataObserver.disconnect();
-                this.dataObserver = null;
-            }
-
-            // Destroy chart instance
-            if (this.chart) {
-                this.chart.destroy();
-                this.chart = null;
-            }
-        }
-    }));
-});
-</script>
-@endonce
+<svg
+    {{ $attributes->class( $rootClasses( 'apui-sparkline' ) ) }}
+    data-variant="{{ $variant }}"
+    width="{{ $width }}"
+    height="{{ $height }}"
+    viewBox="0 0 {{ $width }} {{ $height }}"
+    role="img"
+    aria-label="{{ $accessibleLabel() }}"
+>@if ( null !== $geometry['baseline'] )<line data-scope="sparkline" data-part="baseline"{{ $partClass( 'baseline' ) }} x1="0" x2="{{ $width }}" y1="{{ $geometry['baseline'] }}" y2="{{ $geometry['baseline'] }}" />@endif
+@if ( '' !== $geometry['area'] )<path data-scope="sparkline" data-part="area"{{ $partClass( 'area' ) }} d="{{ $geometry['area'] }}" />@endif
+@if ( '' !== $geometry['line'] )<path data-scope="sparkline" data-part="line"{{ $partClass( 'line' ) }} d="{{ $geometry['line'] }}" />@endif
+@if ( null !== $geometry['dot'] )<circle data-scope="sparkline" data-part="dot"{{ $partClass( 'dot' ) }} cx="{{ $geometry['dot']['cx'] }}" cy="{{ $geometry['dot']['cy'] }}" r="2.5" />@endif
+@foreach ( $geometry['bars'] as $bar )<rect data-scope="sparkline" data-part="bar"{{ $partClass( 'bar' ) }} x="{{ $bar['x'] }}" y="{{ $bar['y'] }}" width="{{ $bar['width'] }}" height="{{ $bar['height'] }}" rx="1" />@endforeach
+</svg>

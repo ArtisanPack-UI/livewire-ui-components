@@ -1,189 +1,187 @@
 <?php
 
-declare(strict_types=1);
 /**
- * KpiCard
+ * KpiCard Component
  *
- * This file contains the KpiCard class for the ArtisanPack UI Livewire UI Components package.
+ * The design-system KpiCard (#61): a headline metric in a Card, with its
+ * trend and progress toward a target.
  *
  * @author     Jacob Martella
- * @copyright  2023 Jacob Martella
+ * @copyright  2026 Jacob Martella
  * @license    MIT
  *
- * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
+ * @link       https://github.com/ArtisanPack-UI/livewire-ui-components
  * @since      2.0.0
  */
 
+declare(strict_types=1);
+
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
-use ArtisanPack\LivewireUiComponents\Support\GlassHelper;
-use Closure;
+use ArtisanPack\LivewireUiComponents\View\Concerns\RendersDesignSystemParts;
 use Illuminate\Contracts\View\View;
 
 /**
- * KpiCard Class
+ * KpiCard Component Class
  *
- * Provides a dedicated KPI card component optimized for dashboards.
- * Combines stat, sparkline, and trend indicator functionality in one component.
+ * Renders `.apui-card.apui-kpi-card`, built from Stat: the top row (label,
+ * period, icon), the row (summary of value and foot, beside a Sparkline) and
+ * the target (a Progress and its text). The `period` slot holds a control,
+ * such as a Select. Every attribute lands on the root.
+ *
+ * 2.x props still work: `title`, `value`, `icon`, `change` and `change-label`
+ * fill `stat`, and `sparkline-data` fills `sparkline`. The 2.x glass,
+ * sparkline type and color props and the footer slot are gone.
  *
  * @since 2.0.0
  */
 class KpiCard extends BaseComponent
 {
-    public string $uuid;
+    use RendersDesignSystemParts;
 
+    /**
+     * The 2.x props read from the attributes, then left off the root.
+     *
+     * @since 3.0.0
+     */
+    public const DEPRECATED_ATTRIBUTES = [
+        'title', 'value', 'icon', 'change', 'change-label', 'changeLabel',
+        'sparkline-data', 'sparklineData', 'sparkline-type', 'sparklineType', 'sparkline-color', 'sparklineColor',
+        'glass', 'glass-tint', 'glassTint', 'glass-tint-opacity', 'glassTintOpacity',
+    ];
+
+    /**
+     * Create a new component instance.
+     *
+     * @since 2.0.0
+     *
+     * @param  array<string, mixed>  $stat  The metric, with Stat's props.
+     * @param  array<int, float|int>  $sparkline  The recent values for the trend.
+     * @param  string|null  $sparklineLabel  The sparkline's accessible label template.
+     * @param  array{value?: float|int, max?: float|int, label?: string}  $target  Progress toward a goal.
+     * @param  string|null  $targetLabel  The target row's end text template.
+     * @param  string|null  $period  A period control. The `period` slot replaces it.
+     * @param  array<string, string>  $classes  Extra classes per part.
+     */
     public function __construct(
-        public ?string $id = null,
-        public ?string $title = null,
-        public ?string $value = null,
-        public ?string $icon = null,
-
-        // Trend indicator props
-        public ?float $change = null,
-        public ?string $changeLabel = null,
-
-        // Sparkline props
-        public ?array $sparklineData = null,
-        public string $sparklineType = 'area',
-        public ?string $sparklineColor = null,
-
-        // Glass effect props
-        public ?string $glass = null,
-        public ?string $glassTint = null,
-        public ?int $glassTintOpacity = null,
-
-        // Slots
-        public mixed $footer = null,
+        public array $stat = [],
+        public array $sparkline = [],
+        public ?string $sparklineLabel = null,
+        public array $target = [],
+        public ?string $targetLabel = null,
+        public ?string $period = null,
+        public array $classes = [],
     ) {
-        // Use a stable identifier: provided id or a unique id
-        $this->uuid = 'artisanpack-kpi-card-'.($id ?? uniqid('', true));
+        $this->sparklineLabel ??= __('Trend from {first} to {latest}');
+        $this->targetLabel ??= __('{percent}% of goal');
     }
 
     /**
-     * Get the glass effect CSS classes.
+     * The metric with the 2.x props folded in, and its derived values.
      *
-     * @since 2.0.0
+     * @since 3.0.0
      *
-     * @return string Space-separated CSS classes.
+     * @return array<string, mixed>
      */
-    public function glassClasses(): string
+    public function metric(): array
     {
-        return GlassHelper::getClasses($this->glass, $this->glassTint, $this->glassTintOpacity);
+        $legacy = array_filter([
+            'label'       => $this->attributes->get('title'),
+            'value'       => $this->attributes->get('value'),
+            'icon'        => $this->attributes->get('icon'),
+            'change'      => $this->attributes->get('change'),
+            'description' => $this->attributes->get('change-label') ?? $this->attributes->get('changeLabel'),
+        ], static fn (mixed $value): bool => null !== $value && '' !== $value);
+        $stat   = $this->stat + $legacy;
+        $change = isset($stat['change']) && is_numeric($stat['change']) ? (float) $stat['change'] : null;
+        $trend  = Stat::resolveTrend(is_string($stat['trend'] ?? null) ? $stat['trend'] : null, $change);
+        $color  = in_array($stat['color'] ?? null, Stat::COLORS, true) ? $stat['color'] : 'neutral';
+
+        return [
+            'label'       => self::text($stat['label'] ?? null),
+            'value'       => self::text($stat['value'] ?? null) ?? '',
+            'unit'        => self::text($stat['unit'] ?? null),
+            'icon'        => self::text($stat['icon'] ?? null),
+            'description' => self::text($stat['description'] ?? null),
+            'color'       => $color,
+            'delta'       => Stat::formatDelta(self::text($stat['delta'] ?? null), $change),
+            'trend'       => $trend,
+            'trendIcon'   => Stat::trendIcon($trend),
+            'trendLabel'  => match ($trend) {
+                'up'    => self::text($stat['upLabel'] ?? null) ?? __('Increase'),
+                'down'  => self::text($stat['downLabel'] ?? null) ?? __('Decrease'),
+                'flat'  => self::text($stat['flatLabel'] ?? null) ?? __('No change'),
+                default => null,
+            },
+        ];
     }
 
     /**
-     * Get the glass effect inline styles including accessible text color.
+     * The sparkline's values, with the 2.x `sparkline-data` as a fallback.
      *
-     * Combines custom tint color CSS variable with accessible text color
-     * to ensure WCAG 2.0 AA compliance on tinted glass backgrounds.
+     * @since 3.0.0
      *
-     * @since 2.0.0
-     *
-     * @return string Inline style string.
+     * @return array<int, mixed>
      */
-    public function glassStyle(): string
+    public function sparklineData(): array
     {
-        return GlassHelper::getFullInlineStyle($this->glassTint);
-    }
-
-    /**
-     * Check if sparkline should be rendered.
-     *
-     * @since 2.0.0
-     *
-     * @return bool True if sparkline data is provided and not empty.
-     */
-    public function hasSparkline(): bool
-    {
-        return null !== $this->sparklineData && count($this->sparklineData) > 0;
-    }
-
-    /**
-     * Check if trend indicator should be rendered.
-     *
-     * @since 2.0.0
-     *
-     * @return bool True if change value is provided.
-     */
-    public function hasChange(): bool
-    {
-        return null !== $this->change;
-    }
-
-    /**
-     * Check if the change is positive.
-     *
-     * @since 2.0.0
-     *
-     * @return bool True if change is positive or zero.
-     */
-    public function isPositiveChange(): bool
-    {
-        return null !== $this->change && $this->change >= 0;
-    }
-
-    /**
-     * Get the formatted change percentage string.
-     *
-     * Returns the change value with a sign prefix and percent symbol.
-     *
-     * @since 2.0.0
-     *
-     * @return string The formatted change string (e.g., "+12.5%" or "-8.3%").
-     */
-    public function formattedChange(): string
-    {
-        if (null === $this->change) {
-            return '';
+        if ([] !== $this->sparkline) {
+            return $this->sparkline;
         }
 
-        $sign = $this->change >= 0 ? '+' : '';
+        $legacy = $this->attributes->get('sparkline-data') ?? $this->attributes->get('sparklineData');
 
-        return $sign.number_format($this->change, 1).'%';
+        return is_array($legacy) ? $legacy : [];
     }
 
     /**
-     * Get the CSS color classes for the trend indicator.
+     * The target, or null without a numeric value: its value, max, percent,
+     * label and end text.
      *
-     * Returns green classes for positive changes, red for negative.
+     * @since 3.0.0
      *
-     * @since 2.0.0
-     *
-     * @return string Space-separated CSS classes.
+     * @return array{value: float, max: float, percent: int, label: string|null, text: string}|null
      */
-    public function changeColorClasses(): string
+    public function targetData(): ?array
     {
-        if (null === $this->change) {
-            return '';
+        if (! isset($this->target['value']) || ! is_numeric($this->target['value'])) {
+            return null;
         }
 
-        return $this->change >= 0
-            ? 'text-success'
-            : 'text-error';
+        $value   = (float) $this->target['value'];
+        $max     = isset($this->target['max']) && is_numeric($this->target['max']) && (float) $this->target['max'] > 0 ? (float) $this->target['max'] : 100.0;
+        $percent = (int) round(max(0, min(1, $value / $max)) * 100);
+
+        return [
+            'value'   => $value,
+            'max'     => $max,
+            'percent' => $percent,
+            'label'   => self::text($this->target['label'] ?? null),
+            'text'    => strtr((string) $this->targetLabel, [
+                '{percent}' => (string) $percent,
+                '{value}'   => self::number($value),
+                '{max}'     => self::number($max),
+            ]),
+        ];
     }
 
     /**
-     * Get the icon name for the trend indicator arrow.
-     *
-     * Returns an up arrow for positive changes, down arrow for negative.
+     * Get the view that represents the component.
      *
      * @since 2.0.0
-     *
-     * @return string The icon name.
      */
-    public function changeIcon(): string
-    {
-        if (null === $this->change) {
-            return '';
-        }
-
-        return $this->change >= 0
-            ? 'o-arrow-trending-up'
-            : 'o-arrow-trending-down';
-    }
-
-    public function render(): View|Closure|string
+    public function render(): View
     {
         return view('livewire-ui-components::components.kpi-card');
+    }
+
+    private static function text(mixed $value): ?string
+    {
+        return is_scalar($value) && '' !== (string) $value ? (string) $value : null;
+    }
+
+    private static function number(float $value): string
+    {
+        return floor($value) === $value ? (string) (int) $value : (string) $value;
     }
 }

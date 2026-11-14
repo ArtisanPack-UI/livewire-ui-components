@@ -1,46 +1,64 @@
 <?php
 
-declare(strict_types=1);
 /**
- * MenuSeparator
+ * MenuSeparator Component
  *
- * This file contains the MenuSeparator class for the ArtisanPack UI Livewire UI Components package.
+ * A rule between items of the design-system navigation Menu (#56).
  *
  * @author     Jacob Martella
- * @copyright  2023 Jacob Martella
+ * @copyright  2026 Jacob Martella
  * @license    MIT
  *
- * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
- * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
+ * @link       https://github.com/ArtisanPack-UI/livewire-ui-components
  * @since      1.0.0
  */
 
+declare(strict_types=1);
+
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
-use Closure;
+use ArtisanPack\LivewireUiComponents\View\Concerns\RendersDesignSystemParts;
 use Illuminate\Contracts\View\View;
 
 /**
- * MenuSeparator Class
+ * MenuSeparator Component Class
  *
- * Provides functionality for the MenuSeparator component.
+ * A child of `menu`: an `<li>` with the separator part, hidden from assistive technology. With the deprecated `title`, a title follows it.
  *
  * @since 1.0.0
  */
 class MenuSeparator extends BaseComponent
 {
-    public string $uuid;
+    use RendersDesignSystemParts;
 
+    /**
+     * Extra classes per part, from the Menu.
+     *
+     * @since 3.0.0
+     *
+     * @var array<string, string>
+     */
+    public array $classes = [];
+
+    /**
+     * Creates the component.
+     *
+     * @since 1.0.0
+     *
+     * @param  string|null  $title  Deprecated: use a menu-title after it.
+     */
     public function __construct(
-        public ?string $id = null,
         public ?string $title = null,
-        public ?string $icon = null,
-        public ?string $iconClasses = null,
     ) {
-        $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
+        $this->classes = Menu::current()?->classes ?? [];
     }
 
-    public function render(): View|Closure|string
+    /**
+     * Get the view that represents the component.
+     *
+     * @since 1.0.0
+     */
+    public function render(): View
     {
         return view('livewire-ui-components::components.menu-separator');
     }

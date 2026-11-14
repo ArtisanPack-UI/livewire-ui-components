@@ -1,100 +1,52 @@
 <?php
 
-declare(strict_types=1);
 /**
- * WidgetGrid
+ * Widget Grid Component
  *
- * This file contains the WidgetGrid class for the ArtisanPack UI Livewire UI Components package.
+ * The 2.x `widget-grid`, now a deprecated alias of the design-system Grid
+ * (#58).
  *
  * @author     Jacob Martella
- * @copyright  2023 Jacob Martella
+ * @copyright  2026 Jacob Martella
  * @license    MIT
  *
- * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
+ * @link       https://github.com/ArtisanPack-UI/livewire-ui-components
  * @since      2.0.0
  */
 
-namespace ArtisanPack\LivewireUiComponents\View\Components;
+declare(strict_types=1);
 
-use Closure;
-use Illuminate\Contracts\View\View;
+namespace ArtisanPack\LivewireUiComponents\View\Components;
 
 /**
  * WidgetGrid Class
  *
- * Provides a responsive grid helper for dashboard layouts.
- * Works with KPI cards, stats, and other widget components.
+ * Renders the design-system Grid from the 2.x `widget-grid` API: `cols`
+ * (default 4) is `columns`, `gap` keeps its 2.x default of 6, and the grid
+ * reflows by `minItemWidth` (default 14rem) instead of Tailwind
+ * breakpoints. An `id` still lands on the root.
  *
  * @since 2.0.0
+ * @deprecated 3.0.0 Use `<x-artisanpack-grid>`. Removed in a later major release.
  */
-class WidgetGrid extends BaseComponent
+class WidgetGrid extends Grid
 {
-    public string $uuid;
-
+    /**
+     * Creates the component.
+     *
+     * @since 2.0.0
+     *
+     * @param  string|null  $id  The root's id.
+     * @param  int|string  $cols  The most columns, 1 to 12.
+     * @param  int|string  $gap  A step of the space scale.
+     * @param  string|null  $minItemWidth  The narrowest a column may get.
+     */
     public function __construct(
         public ?string $id = null,
         public int|string $cols = 4,
-        public int|string $gap = 6,
+        int|string $gap = 6,
+        ?string $minItemWidth = '14rem',
     ) {
-        // Use a stable identifier: provided id or a unique id
-        $this->uuid = 'artisanpack-widget-grid-'.($id ?? uniqid('', true));
-
-        // Ensure cols and gap are integers
-        $this->cols = (int) $this->cols;
-        $this->gap  = (int) $this->gap;
-    }
-
-    /**
-     * Get the responsive grid column classes.
-     *
-     * Returns Tailwind CSS grid classes for responsive column layout.
-     * Mobile starts at 1 column and scales up to the specified cols value.
-     *
-     * @since 2.0.0
-     *
-     * @return string Space-separated CSS classes.
-     */
-    public function gridColsClasses(): string
-    {
-        return match ($this->cols) {
-            1       => 'grid-cols-1',
-            2       => 'grid-cols-1 sm:grid-cols-2',
-            3       => 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
-            4       => 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4',
-            5       => 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5',
-            6       => 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6',
-            default => 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4',
-        };
-    }
-
-    /**
-     * Get the gap spacing class.
-     *
-     * Returns Tailwind CSS gap class for grid spacing.
-     *
-     * @since 2.0.0
-     *
-     * @return string The gap class.
-     */
-    public function gapClass(): string
-    {
-        return match ($this->gap) {
-            0       => 'gap-0',
-            1       => 'gap-1',
-            2       => 'gap-2',
-            3       => 'gap-3',
-            4       => 'gap-4',
-            5       => 'gap-5',
-            6       => 'gap-6',
-            8       => 'gap-8',
-            10      => 'gap-10',
-            12      => 'gap-12',
-            default => 'gap-6',
-        };
-    }
-
-    public function render(): View|Closure|string
-    {
-        return view('livewire-ui-components::components.widget-grid');
+        parent::__construct(columns: $cols, minItemWidth: $minItemWidth, gap: $gap);
     }
 }

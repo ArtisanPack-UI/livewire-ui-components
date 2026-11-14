@@ -1,141 +1,208 @@
+{{-- One verbatim block: the guide is Markdown, and its tags and directives are examples, not Blade. --}}
+@verbatim
 ## ArtisanPack UI Livewire UI Components
 
-This package provides a comprehensive set of 70+ pre-built UI components for Livewire, powered by daisyUI and Tailwind CSS. It's built specifically for the TALL stack (Tailwind CSS, Alpine.js, Laravel, and Livewire) and accelerates Laravel application development with beautiful, responsive, and accessible components.
+Livewire UI Components 3.0 renders the ArtisanPack UI design system's components as Blade components, with Livewire bindings. The markup, ARIA and behavior match the design system's React and Vue packages; the styles come from the design system's CSS (`.apui-*` classes and `--apui-*` tokens). There is no DaisyUI: classes such as `btn`, `card`, `badge`, `modal` and `bg-base-200` style nothing.
 
 ### Installation
 
-After running `composer require artisanpack-ui/livewire-ui-components`, install the package with:
-
-@verbatim
 <code-snippet name="Install Livewire UI Components" lang="bash">
+composer require artisanpack-ui/livewire-ui-components
 php artisan livewire-ui-components:install
-npm run dev
 </code-snippet>
-@endverbatim
 
-### Component Naming Convention
+Without a bundler, the installer publishes the prebuilt assets. The layout's `<head>` loads them, with the theme script first, and the toaster goes once in the layout:
 
-All components use the `<x-artisanpack-{component-name}>` naming pattern. The old `<x-artisanpack-{name}>` syntax is deprecated and should not be used in new code.
+<code-snippet name="Layout" lang="blade">
+<head>
+    @apuiThemeScript
+    @artisanpackStyles
+    @artisanpackScripts
+</head>
+<body>
+    {{ $slot }}
 
-@verbatim
-<code-snippet name="Component naming syntax" lang="blade">
-<!-- Correct (use this) -->
-<x-artisanpack-button>Click Me</x-artisanpack-button>
-<x-artisanpack-input wire:model="name" />
-
-<!-- Deprecated (do not use) -->
-<x-artisanpack-button>Click Me</x-artisanpack-artisanpack-button>
+    <x-artisanpack-toaster />
+</body>
 </code-snippet>
-@endverbatim
 
-### Component Categories
+With Vite, import `@artisanpack-ui/css` in `resources/css/app.css` and register `@artisanpack-ui/behavior/alpine` on `alpine:init` in `resources/js/app.js`, and keep `@apuiThemeScript` before `@vite`.
 
-**Form Components**: input, button, checkbox, select, datepicker, file, textarea, radio, toggle, range, color-picker, rich-text-editor
+### Component naming
 
-**Layout Components**: card, modal, tabs, accordion, drawer, dropdown, collapse, divider, stack, grid
+Tags are `<x-artisanpack-{name}>`, with the name in kebab-case. Props are kebab-case attributes (`leading-icon`), PHP values bind with a colon (`:options="$countries"`), and per-part classes go in `:classes`, keyed by part (`:classes="[ 'label' => 'sr-only' ]"`).
 
-**Navigation Components**: menu, breadcrumbs, pagination, steps, navbar, sidebar, spotlight-search
+<code-snippet name="Component naming" lang="blade">
+<x-artisanpack-button>{{ __( 'Save' ) }}</x-artisanpack-button>
+<x-artisanpack-input wire:model="name" :label="__( 'Name' )" />
+<x-artisanpack-dropdown-menu :label="__( 'Options' )">…</x-artisanpack-dropdown-menu>
+</code-snippet>
 
-**Data Display Components**: table, chart, calendar, avatar, badge, progress, stat, timeline, carousel, diff
+The prefix comes from the `prefix` config key (default `artisanpack`). Use 3.0 names; the 2.x names are deprecated aliases: `dialog` not `modal`, `dropdown-menu` not `dropdown`, `combobox` not `choices`, `choices-offline` or `tags`, `page-header` not `header`, `app-shell` not `main`, `navbar` not `nav`, `radio-group` not `radio` or `group`, `validation-summary` not `errors`, `divider` not `separator`, `date-picker` not `datepicker` or `datetime`, `color-picker` not `colorpicker`, `rich-text-editor` not `editor`, `user-menu` not `profile`, `grid` not `widget-grid`. `php artisan artisanpack:upgrade-ui` rewrites 2.x Blade for you.
 
-**Feedback Components**: alert, toast, loading, skeleton, empty-state, error
+### Components
 
-**Utility Components**: icon, theme-toggle, tooltip, clipboard
+**Actions**: button, link, clipboard, swap
 
-### Common Usage Patterns
+**Forms**: form, fieldset, input, password, pin, textarea, select, combobox, checkbox, checkbox-group, radio-group, toggle, range, rating, color-picker, date-picker, file, signature, validation-summary
 
-@verbatim
+**Editors and content**: rich-text-editor, code-editor, markdown, code, kbd, diff, heading, text, divider, icon
+
+**Data display**: badge, avatar, avatar-group, stat, kpi-card, sparkline, table, chart, timeline, list and list-item, calendar (`<livewire:artisanpack-calendar>` keeps state; `<x-artisanpack-calendar>` is the stateless markup)
+
+**Feedback**: alert, toast and toaster, loading, progress, progress-radial, skeleton, streamable-content, empty-state, error-state
+
+**Overlays**: dialog, drawer, popover, tooltip, dropdown-menu, spotlight
+
+**Navigation**: navbar, menu, user-menu, tabs, steps, pagination, breadcrumbs
+
+**Layout and disclosure**: app-shell, page-header, card, grid, stack, accordion, collapse, carousel, image-gallery, image-slider, image-library
+
+**Theming**: theme-toggle, theme-preview
+
+Tabs, Menu, Steps, Breadcrumbs, Navbar and DropdownMenu take child components (`tab`, `menu-item`, `step`, …) or the same entries as data (`tabs`, `items`, `steps`, `links`). Overlays bind their open state with `wire:model` to a boolean property.
+
+### Common usage patterns
+
 <code-snippet name="Button component" lang="blade">
 <!-- Basic button -->
 <x-artisanpack-button>Click Me</x-artisanpack-button>
 
-<!-- Button with color and icon -->
-<x-artisanpack-button color="primary" icon="o-plus">
+<!-- variant: solid, soft, outline, ghost, link. color: primary, secondary, accent, neutral, success, warning, error, info. -->
+<x-artisanpack-button variant="soft" color="primary" size="sm" leading-icon="plus">
     Add Item
 </x-artisanpack-button>
 
-<!-- Livewire action button -->
-<x-artisanpack-button wire:click="save" color="success">
+<!-- Livewire action button with a loading state -->
+<x-artisanpack-button wire:click="save" color="success" :loading="$saving" type="submit">
     Save
 </x-artisanpack-button>
-</code-snippet>
-@endverbatim
 
-@verbatim
+<!-- Link styled as a button; icon-only buttons need an aria-label -->
+<x-artisanpack-button href="/reports" variant="outline" color="neutral">Reports</x-artisanpack-button>
+<x-artisanpack-button icon-only leading-icon="trash" variant="ghost" color="error" :aria-label="__( 'Delete' )" />
+</code-snippet>
+
 <code-snippet name="Card component" lang="blade">
-<x-artisanpack-card>
-    <x-slot:header>
-        <h3 class="text-lg font-bold">Card Title</h3>
-    </x-slot:header>
+<x-artisanpack-card :title="__( 'Card Title' )" :description="__( 'Updated 2 hours ago' )" surface="raised">
+    <x-slot:actions>
+        <x-artisanpack-button variant="ghost" color="neutral" size="sm">{{ __( 'Share' ) }}</x-artisanpack-button>
+    </x-slot:actions>
 
     <p>Card content goes here.</p>
 
     <x-slot:footer>
-        <x-artisanpack-button color="primary">Action</x-artisanpack-button>
+        <x-artisanpack-button>{{ __( 'Action' ) }}</x-artisanpack-button>
     </x-slot:footer>
 </x-artisanpack-card>
-</code-snippet>
-@endverbatim
 
-@verbatim
+<!-- href links the title (it needs a title) and makes the whole card clickable -->
+<x-artisanpack-card href="/reports/q3" :title="__( 'Q3 report' )" media="/images/q3.png" />
+</code-snippet>
+
 <code-snippet name="Form input component" lang="blade">
 <!-- Basic input -->
 <x-artisanpack-input
-    label="Name"
+    :label="__( 'Name' )"
     wire:model="name"
-    placeholder="Enter your name"
+    :placeholder="__( 'Enter your name' )"
 />
 
-<!-- Input with validation error -->
+<!-- The error comes from $errors for the wire:model name (or error-field) -->
 <x-artisanpack-input
-    label="Email"
+    :label="__( 'Email' )"
     wire:model="email"
     type="email"
-    error="{{ $errors->first('email') }}"
+    required
 />
 
-<!-- Input with icon and hint -->
+<!-- Leading/trailing icons, prefix/suffix and a hint -->
 <x-artisanpack-input
-    label="Search"
-    wire:model.live="search"
-    icon="o-magnifying-glass"
-    hint="Type to search..."
+    :label="__( 'Search' )"
+    wire:model.live.debounce="search"
+    leading-icon="search"
+    :hint="__( 'Type to search...' )"
 />
+<x-artisanpack-input :label="__( 'Price' )" wire:model="price" type="number" prefix="USD" suffix="/mo" />
 </code-snippet>
-@endverbatim
 
-@verbatim
 <code-snippet name="Select component" lang="blade">
+<!-- Options are strings or [ 'value' => …, 'label' => …, 'disabled' => … ] entries -->
 <x-artisanpack-select
-    label="Country"
+    :label="__( 'Country' )"
     wire:model="country"
-    :options="$countries"
-    option-value="id"
-    option-label="name"
+    :options="[
+        [ 'value' => 'us', 'label' => __( 'United States' ) ],
+        [ 'value' => 'ca', 'label' => __( 'Canada' ) ],
+    ]"
+/>
+
+<!-- Option children render after the options; placeholder="" drops the empty first option -->
+<x-artisanpack-select :label="__( 'Plan' )" wire:model="plan" placeholder="">
+    <option value="starter">{{ __( 'Starter' ) }}</option>
+    <option value="team">{{ __( 'Team' ) }}</option>
+</x-artisanpack-select>
+</code-snippet>
+
+<code-snippet name="Combobox component" lang="blade">
+<!-- One component for single and multiple choice, search and tags (replaces choices, choices-offline and tags) -->
+<x-artisanpack-combobox :label="__( 'Assignee' )" wire:model="assignee" :options="$users" />
+<x-artisanpack-combobox :label="__( 'Tags' )" wire:model="tags" :options="$tags" multiple allow-create />
+</code-snippet>
+
+<code-snippet name="Checkbox component" lang="blade">
+<x-artisanpack-checkbox wire:model="terms" :label="__( 'I agree to the terms' )" required />
+<x-artisanpack-checkbox
+    :label="__( 'Select all' )"
+    :checked="$allSelected"
+    :indeterminate="$someSelected"
+    :description="__( 'Applies to every row on this page.' )"
 />
 </code-snippet>
-@endverbatim
 
-@verbatim
-<code-snippet name="Modal component" lang="blade">
-<x-artisanpack-modal wire:model="showModal" title="Confirm Action">
-    <p>Are you sure you want to proceed?</p>
+<code-snippet name="Dialog component" lang="blade">
+<!-- wire:model binds the open state; Escape, the close button and the backdrop close it -->
+<x-artisanpack-dialog wire:model="showInvite" :trigger="__( 'Invite member' )" :title="__( 'Invite member' )" :description="__( 'They\'ll get an email with a link to join the project.' )">
+    <x-artisanpack-input type="email" :label="__( 'Email' )" wire:model="email" />
 
-    <x-slot:actions>
-        <x-artisanpack-button wire:click="$set('showModal', false)">
-            Cancel
-        </x-artisanpack-button>
-        <x-artisanpack-button wire:click="confirm" color="primary">
-            Confirm
-        </x-artisanpack-button>
-    </x-slot:actions>
-</x-artisanpack-modal>
+    <x-slot:footer>
+        <x-artisanpack-button variant="outline" color="neutral" wire:click="$set( 'showInvite', false )">{{ __( 'Cancel' ) }}</x-artisanpack-button>
+        <x-artisanpack-button wire:click="invite">{{ __( 'Send invite' ) }}</x-artisanpack-button>
+    </x-slot:footer>
+</x-artisanpack-dialog>
+
+<!-- Destructive confirmations are alertdialogs; name the action, not "OK" -->
+<x-artisanpack-dialog wire:model="confirmingDelete" role="alertdialog" size="sm" color="error" icon="trash" :title="__( 'Delete listing?' )">
+    <x-slot:footer>
+        <x-artisanpack-button variant="outline" color="neutral" wire:click="$set( 'confirmingDelete', false )">{{ __( 'Cancel' ) }}</x-artisanpack-button>
+        <x-artisanpack-button color="error" wire:click="delete">{{ __( 'Delete listing' ) }}</x-artisanpack-button>
+    </x-slot:footer>
+</x-artisanpack-dialog>
 </code-snippet>
-@endverbatim
 
-@verbatim
+<code-snippet name="DropdownMenu component" lang="blade">
+<!-- Choosing an item clicks it, so wire:click runs from the keyboard too. Pass an id when the same menu repeats (table rows). -->
+<x-artisanpack-dropdown-menu :id="'row-'.$listing->id" :label="__( 'Options' )" align="end">
+    <x-artisanpack-dropdown-menu-item value="edit" icon="pencil" shortcut="E" wire:click="edit">{{ __( 'Edit' ) }}</x-artisanpack-dropdown-menu-item>
+    <x-artisanpack-dropdown-menu-item type="checkbox" value="grid" :checked="$showGrid" wire:click="$toggle( 'showGrid' )">{{ __( 'Show grid' ) }}</x-artisanpack-dropdown-menu-item>
+    <x-artisanpack-dropdown-menu-separator />
+    <x-artisanpack-dropdown-menu-item value="delete" icon="trash" color="error" wire:click="delete">{{ __( 'Delete' ) }}</x-artisanpack-dropdown-menu-item>
+</x-artisanpack-dropdown-menu>
+</code-snippet>
+
+<code-snippet name="Toasts" lang="blade">
+<!-- Once per page, in the layout -->
+<x-artisanpack-toaster />
+
+<!-- In a Livewire action (use ArtisanPack\LivewireUiComponents\Traits\Toast): -->
+<!-- $this->toast( __( 'Listing saved' ), color: 'success' ); -->
+<!-- $this->dispatch( 'toast', title: __( 'Listing saved' ), color: 'success' ); -->
+<!-- Across a redirect: $this->toast( __( 'Listing saved' ), redirectTo: route( 'listings' ) ); or Toasts::flash( title: … ) -->
+</code-snippet>
+
 <code-snippet name="Table component" lang="blade">
-<x-artisanpack-table :headers="$headers" :rows="$users">
+<!-- Headers: [ 'key' => 'name', 'label' => __( 'Name' ), 'sortable' => true ]. Bind sort-by to a public sortBy property. -->
+<x-artisanpack-table :headers="$headers" :rows="$users" :sort-by="$sortBy" :label="__( 'Users' )">
     @scope('cell_name', $user)
         <strong>{{ $user->name }}</strong>
     @endscope
@@ -144,52 +211,49 @@ All components use the `<x-artisanpack-{component-name}>` naming pattern. The ol
         <x-artisanpack-button
             wire:click="edit({{ $user->id }})"
             size="sm"
-            icon="o-pencil"
+            variant="ghost"
+            icon-only
+            leading-icon="pencil"
+            :aria-label="__( 'Edit' )"
         />
     @endscope
 </x-artisanpack-table>
 </code-snippet>
-@endverbatim
 
 ### Theming
 
-Generate custom color themes to match your brand:
+Everything visual is a design token. Set `data-theme` (`light`, `dark`, `high-contrast`), `data-density` (`compact`, `default`, `comfortable`) or `data-preset` on any element. Container components take `surface="glass"` for glass. Let visitors choose with `<x-artisanpack-theme-toggle />`. Generate a brand preset, checked against WCAG 2.2 AA in every theme, with:
 
-@verbatim
-<code-snippet name="Generate custom theme" lang="bash">
-php artisan artisanpack:generate-theme
+<code-snippet name="Generate a brand preset" lang="bash">
+php artisan artisanpack:generate-preset acme --primary="#7c3aed"
 </code-snippet>
-@endverbatim
 
-This interactive command creates custom color schemes that work across all components.
+Then load `resources/css/presets/acme.css` after the design system's CSS and set `data-preset="acme"`. `artisanpack:generate-theme` is deprecated: it writes 2.x DaisyUI themes that nothing in 3.0 reads.
 
 ### Icons
 
-The package integrates with Heroicons and Font Awesome. Use icon names with the appropriate prefix:
-- Heroicons outline: `o-{icon-name}` (e.g., `o-user`, `o-home`)
-- Heroicons solid: `s-{icon-name}` (e.g., `s-user`, `s-home`)
-- Font Awesome: `fa-{icon-name}` (e.g., `fa-user`, `fa-home`)
+Components take icon names: `leading-icon="plus"`, `icon="house"`. Names resolve through the design system's icon registry first: Lucide names in kebab-case, such as `plus`, `search`, `trash`, `pencil`, `circle-alert`, `log-out`. Register more with the `registered_icons` config key or `IconRegistry::register()`.
 
-### Best Practices
+Names the registry doesn't know fall back to Blade Icons:
+- A name without a dot becomes a Heroicon: `o-user` renders `heroicon-o-user`, `s-home` renders `heroicon-s-home`.
+- Any other installed set needs a dot after its prefix: Font Awesome is `fas.user` or `fab.github`, not `fa-user` (a dotless `fa-user` looks up `heroicon-fa-user` and renders nothing).
 
-1. **Always use the `<x-artisanpack-{name}>` prefix** for component names (not the deprecated `artisanpack-artisanpack` double prefix)
-2. **Use wire:model for form inputs** to enable Livewire's reactive data binding
-3. **Leverage slots** (header, footer, actions) for complex component layouts
-4. **Apply daisyUI color variants** via the `color` attribute: primary, secondary, accent, success, warning, error, info
-5. **Utilize built-in validation** by passing error messages to the `error` attribute on form components
-6. **Use wire:loading** with loading components to provide user feedback during Livewire requests
+Prefer registry names: they match the React and Vue packages and mirror in right-to-left layouts.
 
-### Integration with ArtisanPack UI Ecosystem
+### Best practices
 
-This package is part of the ArtisanPack UI ecosystem and integrates seamlessly with:
-- `artisanpack-ui/accessibility` - Accessibility utilities and ARIA helpers
-- `artisanpack-ui/security` - Security features and CSRF protection
-- `artisanpack-ui/core` - Core utilities and helpers
-- `artisanpack-ui/icons` - Extended icon support
-- `artisanpack-ui/hooks` - WordPress-style hooks and filters for Laravel
+1. **Use the components, not raw markup**, and 3.0 names, not the deprecated aliases.
+2. **Style with props and tokens**: `color`, `variant`, `size`, `surface` and `:classes`, and the `--apui-*` tokens (`var(--apui-surface-sunken)`). Never DaisyUI classes.
+3. **Bind with `wire:model`**: values on fields, open state on overlays. Add `.live` only when each change must reach the server.
+4. **Validation errors show automatically**: fields read `$errors` for their `wire:model` name (or `error-field`). Pass `error` only to override it.
+5. **Give list items a `wire:key`** in every `@foreach`.
+6. **Show toasts from PHP** with the `Toast` trait (`$this->success( __( 'Saved' ) )`) or `$this->dispatch( 'toast', title: …, color: … )`, and keep one `<x-artisanpack-toaster />` in the layout.
+7. **Translate every visible string** with `__()`, including attributes: `:label="__( 'Email' )"`. Built-in strings are `*-label` props (`close-label`, `empty-label`).
+8. **Keep accessibility intact**: give icon-only buttons an `aria-label`, keep visible labels on fields, and name destructive actions ("Delete listing", not "OK").
 
 ### Resources
 
-- Documentation: https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components/-/wikis/home
-- Component Reference: https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components/-/wikis/components
-- Repository: https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
+- Documentation: https://docs.artisanpackui.dev/documentation/livewire-ui-components/home
+- Component reference: https://docs.artisanpackui.dev/documentation/design-system/components
+- Repository: https://github.com/ArtisanPack-UI/livewire-ui-components
+@endverbatim

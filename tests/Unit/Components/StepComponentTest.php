@@ -2,162 +2,48 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
+use Illuminate\Support\Facades\Blade;
 
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
-use ArtisanPack\LivewireUiComponents\View\Components\Step;
-use Error;
-use RuntimeException;
-
-/**
- * Comprehensive unit tests for the Step component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * Step (#56): one step of Steps. The Steps tests cover it inside a Steps;
+ * these cover it on its own and its slot.
  */
-class StepComponentTest extends ComponentTestCase
-{
-    protected string $componentClass = Step::class;
 
-    protected array $defaultProperties = [];
+test('renders a step part on its own with its own state', function (): void {
+    $dom  = designSystemDom(Blade::render('<x-artisanpack-step title="Basics" state="current" description="Title and type" />'));
+    $step = $dom->query('//li')->item(0);
 
-    protected array $requiredProperties = [
-        'step',
-        'text',
-    ];
+    expect($step->getAttribute('data-scope'))->toBe('steps')
+        ->and($step->getAttribute('data-part'))->toBe('step')
+        ->and($step->getAttribute('data-state'))->toBe('current')
+        ->and($step->getAttribute('aria-current'))->toBe('step')
+        ->and(trim($dom->query('//*[@data-part="marker"]')->item(0)->textContent))->toBe('1');
+});
 
-    public function test_step_string_properties(): void
-    {
-        $stringProperties = ['text', 'id', 'icon', 'stepClasses', 'dataContent'];
-        $testValues       = ComponentDataFactory::sampleTexts();
+test('an unknown state falls back to upcoming', function (): void {
+    $step = designSystemDom(Blade::render('<x-artisanpack-step title="A" state="done" />'))->query('//li')->item(0);
 
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
+    expect($step->getAttribute('data-state'))->toBe('upcoming')
+        ->and($step->hasAttribute('aria-current'))->toBeFalse();
+});
 
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
-    }
+test('the default slot overrides the title', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-steps :value="1"><x-artisanpack-step title="Plain"><strong>Rich</strong> title</x-artisanpack-step></x-artisanpack-steps>'));
 
-    public function test_step_icon_htm_l_method(): void
-    {
-        $component = $this->createComponent();
+    expect($dom->query('//*[@data-part="title"]/strong'))->toHaveCount(1)
+        ->and(trim($dom->query('//*[@data-part="title"]')->item(0)->textContent))->toBe('Rich title');
+});
 
-        if (method_exists($component, 'iconHTML')) {
-            try {
-                $result = $component->iconHTML();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
+test('attributes land on the step', function (): void {
+    $step = designSystemDom(Blade::render('<x-artisanpack-step title="A" data-testid="first" wire:key="s1" />'))->query('//li')->item(0);
 
-    public function test_step_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
+    expect($step->getAttribute('data-testid'))->toBe('first')
+        ->and($step->getAttribute('wire:key'))->toBe('s1');
+});
 
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
+test('an icon replaces the marker number', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-step title="Pay" icon="lock" />'));
 
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
-
-    public function test_step_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'Step should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
-
-    public function test_step_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
-
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
-
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_step_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'Step rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
-}
+    expect($dom->query('//*[@data-part="marker"]/svg'))->toHaveCount(1)
+        ->and(trim($dom->query('//*[@data-part="marker"]')->item(0)->textContent))->toBe('');
+});

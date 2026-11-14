@@ -2,137 +2,36 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
+use Illuminate\Support\Facades\Blade;
 
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
-use ArtisanPack\LivewireUiComponents\View\Components\Form;
-use Error;
-use RuntimeException;
-
-/**
- * Comprehensive unit tests for the Form component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * Form (#53): the native form, its attributes and the actions row. The
+ * manifest parity check is in tests/Feature/DesignSystemParityTest.php.
  */
-class FormComponentTest extends ComponentTestCase
-{
-    protected string $componentClass = Form::class;
 
-    protected array $defaultProperties = [
-        'noSeparator' => false,
-    ];
+test('it renders a native form with its attributes', function (): void {
+    $dom  = designSystemDom(Blade::render('<x-artisanpack-form wire:submit="save" aria-label="Invite" class="mt-2" novalidate>Fields</x-artisanpack-form>'));
+    $form = $dom->query('//form')->item(0);
 
-    protected array $requiredProperties = [];
+    expect($form->getAttribute('class'))->toBe('apui-form mt-2')
+        ->and($form->getAttribute('wire:submit'))->toBe('save')
+        ->and($form->getAttribute('aria-label'))->toBe('Invite')
+        ->and($form->hasAttribute('novalidate'))->toBeTrue()
+        ->and($form->hasAttribute('data-divided'))->toBeFalse()
+        ->and($dom->query('//*[@data-part="actions"]')->length)->toBe(0);
+});
 
-    public function test_form_boolean_properties(): void
-    {
-        $booleanProperties = ['noSeparator'];
+test('the actions slot renders the actions row last', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-form divided>Fields<x-slot:actions><button type="submit">Save</button></x-slot:actions></x-artisanpack-form>'));
 
-        foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
-            $this->assertTrue($component->$property);
+    $actions = $dom->query('//form/*[last()]')->item(0);
 
-            $component = $this->createComponent([$property => false]);
-            $this->assertFalse($component->$property);
-        }
-    }
+    expect($dom->query('//form')->item(0)->hasAttribute('data-divided'))->toBeTrue()
+        ->and($actions->getAttribute('data-scope'))->toBe('form')
+        ->and($actions->getAttribute('data-part'))->toBe('actions')
+        ->and($actions->textContent)->toBe('Save');
+});
 
-    public function test_form_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
-
-    public function test_form_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'Form should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
-
-    public function test_form_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
-
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
-
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_form_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'Form rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
-}
+test('the actions prop renders text', function (): void {
+    expect(Blade::render('<x-artisanpack-form actions="Save">Fields</x-artisanpack-form>'))->toContain('<div data-scope="form" data-part="actions">Save</div>');
+});

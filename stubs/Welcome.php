@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
-namespace ArtisanPack\LivewireUiComponents\Traits\Toast;
+use ArtisanPack\LivewireUiComponents\Traits\Toast;
+use Illuminate\Support\Collection;
+use Livewire\Component;
 
 class Welcome extends Component
 {
@@ -20,38 +22,37 @@ class Welcome extends Component
     public function clear(): void
     {
         $this->reset();
-        $this->success('Filters cleared.', position: 'toast-bottom');
+        $this->success(__('Filters cleared.'));
     }
 
     // Delete action
     public function delete($id): void
     {
-        $this->warning("Will delete #$id", 'It is fake.', position: 'toast-bottom');
+        $this->warning(__('Will delete #:id', ['id' => $id]), __('It is fake.'));
     }
 
     // Table headers
     public function headers(): array
     {
         return [
-            ['key' => 'id', 'label' => '#', 'class' => 'w-1'],
-            ['key' => 'name', 'label' => 'Name', 'class' => 'w-64'],
-            ['key' => 'age', 'label' => 'Age', 'class' => 'w-20'],
-            ['key' => 'email', 'label' => 'E-mail', 'sortable' => false],
+            ['key' => 'id', 'label' => '#'],
+            ['key' => 'name', 'label' => __('Name')],
+            ['key' => 'age', 'label' => __('Age'), 'numeric' => true],
+            ['key' => 'email', 'label' => __('Email'), 'sortable' => false],
         ];
     }
 
     /**
      * For demo purpose, this is a static collection.
      *
-     * On real projects you do it with Eloquent collections.
-     * Please, refer to maryUI docs to see the eloquent examples.
+     * On real projects you query an Eloquent model instead.
      */
     public function users(): Collection
     {
         return collect([
-            ['id' => 1, 'name' => 'Mary', 'email' => 'mary@mary-ui.com', 'age' => 23],
-            ['id' => 2, 'name' => 'Giovanna', 'email' => 'giovanna@mary-ui.com', 'age' => 7],
-            ['id' => 3, 'name' => 'Marina', 'email' => 'marina@mary-ui.com', 'age' => 5],
+            ['id' => 1, 'name' => 'Ada', 'email' => 'ada@example.com', 'age' => 36],
+            ['id' => 2, 'name' => 'Grace', 'email' => 'grace@example.com', 'age' => 45],
+            ['id' => 3, 'name' => 'Linus', 'email' => 'linus@example.com', 'age' => 28],
         ])
             ->sortBy([[...array_values($this->sortBy)]])
             ->when($this->search, function (Collection $collection) {

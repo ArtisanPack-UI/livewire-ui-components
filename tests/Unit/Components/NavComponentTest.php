@@ -2,138 +2,45 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
-
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
 use ArtisanPack\LivewireUiComponents\View\Components\Nav;
-use Error;
-use RuntimeException;
+use ArtisanPack\LivewireUiComponents\View\Components\Navbar;
+use Illuminate\Support\Facades\Blade;
 
-/**
- * Comprehensive unit tests for the Nav component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * nav (#145) is a deprecated alias of navbar.
  */
-class NavComponentTest extends ComponentTestCase
-{
-    protected string $componentClass = Nav::class;
 
-    protected array $defaultProperties = [
-        'sticky'    => false,
-        'fullWidth' => false,
-    ];
+test('extends Navbar', function (): void {
+    expect(is_subclass_of(Nav::class, Navbar::class))->toBeTrue();
+});
 
-    protected array $requiredProperties = [];
+test('renders the navbar with the 2.x brand and actions slots', function (): void {
+    $dom    = designSystemDom(Blade::render(<<<'BLADE'
+        <x-artisanpack-nav full-width>
+            <x-slot:brand><a href="/">Horizon</a></x-slot:brand>
+            <x-slot:actions><button>Sign in</button></x-slot:actions>
+        </x-artisanpack-nav>
+        BLADE));
+    $header = $dom->query('//header[contains(@class, "apui-navbar")]')->item(0);
 
-    public function test_nav_boolean_properties(): void
-    {
-        $booleanProperties = ['sticky', 'fullWidth'];
+    expect($header->getAttribute('data-layout'))->toBe('bar')
+        ->and($header->getAttribute('data-surface'))->toBe('default')
+        ->and($header->hasAttribute('data-sticky'))->toBeFalse()
+        ->and($dom->query('//*[@data-part="brand"]/a[@href="/"]'))->toHaveCount(1)
+        ->and(trim($dom->query('//*[@data-part="actions"]/button')->item(0)->textContent))->toBe('Sign in');
+});
 
-        foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
-            $this->assertTrue($component->$property);
+test('sticky keeps its 2.x meaning', function (): void {
+    $header = designSystemDom(Blade::render('<x-artisanpack-nav sticky brand="Horizon" />'))
+        ->query('//header[contains(@class, "apui-navbar")]')->item(0);
 
-            $component = $this->createComponent([$property => false]);
-            $this->assertFalse($component->$property);
-        }
+    expect($header->hasAttribute('data-sticky'))->toBeTrue();
+});
+
+test('the removed 2.x props do not leak as HTML attributes', function (): void {
+    $html = Blade::render('<x-artisanpack-nav sticky full-width brand="Horizon" actions="Menu" />');
+
+    foreach (['full-width', 'sticky=', 'brand=', 'actions='] as $attribute) {
+        expect($html)->not->toContain(' '.$attribute);
     }
-
-    public function test_nav_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
-
-    public function test_nav_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'Nav should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
-
-    public function test_nav_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
-
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
-
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_nav_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'Nav rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
-}
+});

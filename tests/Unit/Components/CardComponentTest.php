@@ -2,176 +2,165 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
-
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
 use ArtisanPack\LivewireUiComponents\View\Components\Card;
-use Error;
-use RuntimeException;
+use Illuminate\Support\Facades\Blade;
 
-/**
- * Comprehensive unit tests for the Card component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * Card (#48): the design-system markup contract. The manifest parity check is
+ * in tests/Feature/DesignSystemParityTest.php.
  */
-class CardComponentTest extends ComponentTestCase
-{
-    protected string $componentClass = Card::class;
 
-    protected array $defaultProperties = [
-        'separator'      => false,
-        'shadow'         => false,
-        'figurePosition' => 'top',
-    ];
+test('the fixture renders the contract markup in order', function (): void {
+    $html = Blade::render(
+        '<x-artisanpack-card title="Quarterly report" description="Updated 2 hours ago" interactive media="/q3.png" actions="Share" footer="3 comments">Revenue grew 12% this quarter.</x-artisanpack-card>',
+    );
+    $dom = designSystemDom($html);
 
-    protected array $requiredProperties = [];
-
-    public function test_card_string_properties(): void
-    {
-        $stringProperties = ['id', 'title', 'subtitle', 'progressIndicator', 'figurePosition'];
-        $testValues       = ComponentDataFactory::sampleTexts();
-
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
-
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
+    $parts = [];
+    foreach ($dom->query('//*[@data-scope="card"]') as $element) {
+        $parts[] = $element->getAttribute('data-part');
     }
 
-    public function test_card_boolean_properties(): void
-    {
-        $booleanProperties = ['separator', 'shadow'];
+    $root = $dom->query('//div[contains(@class, "apui-card")]')->item(0);
 
-        foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
-            $this->assertTrue($component->$property);
+    expect($parts)->toBe(['media', 'header', 'title', 'description', 'actions', 'body', 'footer'])
+        ->and($root->getAttribute('data-surface'))->toBe('default')
+        ->and($root->hasAttribute('data-interactive'))->toBeTrue()
+        ->and($html)->toContain('<img data-scope="card" data-part="media" src="/q3.png" alt="" />')
+        ->and($html)->toContain('<h3 data-scope="card" data-part="title">Quarterly report</h3>')
+        ->and($html)->toContain('<p data-scope="card" data-part="description">Updated 2 hours ago</p>')
+        ->and($html)->toContain('<div data-scope="card" data-part="actions">Share</div>')
+        ->and($html)->toContain('<div data-scope="card" data-part="body">Revenue grew 12% this quarter.</div>')
+        ->and($html)->toContain('<div data-scope="card" data-part="footer">3 comments</div>');
 
-            $component = $this->createComponent([$property => false]);
-            $this->assertFalse($component->$property);
-        }
-    }
+    $wrapper = $dom->query('//*[@data-part="header"]/div[not(@data-part)]')->item(0);
+    expect($wrapper)->not->toBeNull()
+        ->and($wrapper->getElementsByTagName('h3'))->toHaveCount(1);
+});
 
-    public function test_card_progress_target_method(): void
-    {
-        $component = $this->createComponent();
+test('an empty card renders only the root', function (): void {
+    $dom  = designSystemDom(Blade::render('<x-artisanpack-card />'));
+    $root = $dom->query('//div[contains(@class, "apui-card")]')->item(0);
 
-        if (method_exists($component, 'progressTarget')) {
-            try {
-                $result = $component->progressTarget();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
+    expect($dom->query('//*[@data-scope="card"]'))->toHaveCount(0)
+        ->and($root->getAttribute('data-surface'))->toBe('default')
+        ->and($root->hasAttribute('data-interactive'))->toBeFalse();
+});
 
-    public function test_card_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
+test('the header wrapper renders only with a title or description', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-card actions="Share">Body</x-artisanpack-card>'));
 
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
+    expect($dom->query('//*[@data-part="header"]/*'))->toHaveCount(1)
+        ->and($dom->query('//*[@data-part="header"]/*')->item(0)->getAttribute('data-part'))->toBe('actions');
+});
 
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
+test('href links the title and makes the card interactive', function (): void {
+    $dom  = designSystemDom(Blade::render('<x-artisanpack-card href="/reports/q3" title="Q3 report" />'));
+    $link = $dom->query('//h3[@data-part="title"]/a')->item(0);
 
-    public function test_card_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
+    expect($link->getAttribute('href'))->toBe('/reports/q3')
+        ->and($link->textContent)->toBe('Q3 report')
+        ->and($dom->query('//a'))->toHaveCount(1)
+        ->and($dom->query('//div[contains(@class, "apui-card")]')->item(0)->hasAttribute('data-interactive'))->toBeTrue();
+});
 
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
+test('href without a title is ignored', function (): void {
+    $dom  = designSystemDom(Blade::render('<x-artisanpack-card href="/reports" description="No title">Body</x-artisanpack-card>'));
+    $root = $dom->query('//div[contains(@class, "apui-card")]')->item(0);
 
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'Card should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
+    expect($dom->query('//a'))->toHaveCount(0)
+        ->and($root->hasAttribute('data-interactive'))->toBeFalse();
+});
 
-    public function test_card_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
+test('interactive alone still adds the hover edge without a title', function (): void {
+    expect(designSystemDom(Blade::render('<x-artisanpack-card href="/r" interactive>Body</x-artisanpack-card>'))
+        ->query('//div[contains(@class, "apui-card")]')->item(0)->hasAttribute('data-interactive'))->toBeTrue();
+});
 
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
+test('a title slot is enough for href', function (): void {
+    $dom = designSystemDom(Blade::render(<<<'BLADE'
+        <x-artisanpack-card href="/reports">
+            <x-slot:title>Slotted</x-slot:title>
+        </x-artisanpack-card>
+        BLADE));
 
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
+    expect($dom->query('//h3[@data-part="title"]/a')->item(0)->getAttribute('href'))->toBe('/reports')
+        ->and($dom->query('//div[contains(@class, "apui-card")]')->item(0)->hasAttribute('data-interactive'))->toBeTrue();
+});
 
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
+test('unsafe href schemes are ignored', function (string $href): void {
+    $html = Blade::render('<x-artisanpack-card :href="$href" title="T" />', ['href' => $href]);
+    $dom  = designSystemDom($html);
 
-    public function test_card_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'Card rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
-}
+    expect($dom->query('//a'))->toHaveCount(0)
+        ->and($dom->query('//div[contains(@class, "apui-card")]')->item(0)->hasAttribute('data-interactive'))->toBeFalse()
+        ->and($html)->not->toContain('alert(1)');
+})->with(['javascript:alert(1)', ' VBScript:alert(1)', 'data:text/html,alert(1)', 'ftp://example.com/alert(1)']);
+
+test('media only allows relative, http(s), blob and data:image sources', function (): void {
+    expect(Blade::render('<x-artisanpack-card media="data:text/html,x" title="T" />'))->not->toContain('data-part="media"')
+        ->and(Blade::render('<x-artisanpack-card media="ftp://example.com/a.png" title="T" />'))->not->toContain('data-part="media"')
+        ->and(Blade::render('<x-artisanpack-card media="blob:https://example.com/1" title="T" />'))->toContain('src="blob:https://example.com/1"');
+});
+
+test('media rejects javascript: and vbscript: but allows data: images', function (): void {
+    expect(Blade::render('<x-artisanpack-card media="javascript:alert(1)" title="T" />'))->not->toContain('data-part="media"')
+        ->and(Blade::render('<x-artisanpack-card media="vbscript:alert(1)" title="T" />'))->not->toContain('data-part="media"')
+        ->and(Blade::render('<x-artisanpack-card media="data:image/svg+xml,%3Csvg%3E%3C/svg%3E" title="T" />'))
+        ->toContain('<img data-scope="card" data-part="media" src="data:image/svg+xml,%3Csvg%3E%3C/svg%3E" alt="" />');
+});
+
+test('surfaces render as data-surface', function (string $surface): void {
+    expect(designSystemDom(Blade::render('<x-artisanpack-card :surface="$surface" title="T" />', ['surface' => $surface]))
+        ->query('//div[contains(@class, "apui-card")]')->item(0)->getAttribute('data-surface'))->toBe($surface);
+})->with(['default', 'raised', 'sunken', 'glass']);
+
+test('mediaAlt describes the media', function (): void {
+    expect(Blade::render('<x-artisanpack-card media="/house.jpg" media-alt="A brick townhouse" />'))
+        ->toContain('<img data-scope="card" data-part="media" src="/house.jpg" alt="A brick townhouse" />');
+});
+
+test('named slots override the props', function (): void {
+    $html = Blade::render(<<<'BLADE'
+        <x-artisanpack-card title="Plain" media="/plain.png" footer="Plain footer">
+            <x-slot:media><video src="/clip.mp4"></video></x-slot:media>
+            <x-slot:title><span>Rich</span> title</x-slot:title>
+            <x-slot:description>Rich <em>description</em></x-slot:description>
+            <x-slot:actions><x-artisanpack-button size="sm">Share</x-artisanpack-button></x-slot:actions>
+            Body
+            <x-slot:footer><strong>Rich footer</strong></x-slot:footer>
+        </x-artisanpack-card>
+        BLADE);
+    $dom = designSystemDom($html);
+
+    expect($html)->toContain('<div data-scope="card" data-part="media"><video src="/clip.mp4"></video></div>')
+        ->toContain('<h3 data-scope="card" data-part="title"><span>Rich</span> title</h3>')
+        ->toContain('<p data-scope="card" data-part="description">Rich <em>description</em></p>')
+        ->toContain('<div data-scope="card" data-part="footer"><strong>Rich footer</strong></div>')
+        ->not->toContain('/plain.png')
+        ->not->toContain('Plain footer')
+        ->and($dom->query('//*[@data-part="actions"]//button[contains(@class, "apui-button")]'))->toHaveCount(1)
+        ->and($dom->query('//*[@data-part="body"]')->item(0)->textContent)->toBe('Body');
+});
+
+test('attributes land on the root and classes per part apply', function (): void {
+    $dom  = designSystemDom(Blade::render('<x-artisanpack-card class="max-w-sm" wire:key="c1" title="T" :classes="[\'root\' => \'extra\', \'title\' => \'text-lg\']" />'));
+    $root = $dom->query('//div[contains(@class, "apui-card")]')->item(0);
+
+    expect($root->getAttribute('class'))->toBe('apui-card extra max-w-sm')
+        ->and($root->getAttribute('wire:key'))->toBe('c1')
+        ->and($dom->query('//h3')->item(0)->getAttribute('class'))->toBe('text-lg');
+});
+
+test('the title is escaped', function (): void {
+    expect(Blade::render('<x-artisanpack-card :title="$title" />', ['title' => '<script>x</script>']))->not->toContain('<script>');
+});
+
+test('the constructor declares only the manifest props', function (): void {
+    $parameters = array_map(
+        static fn (ReflectionParameter $parameter): string => $parameter->getName(),
+        (new ReflectionClass(Card::class))->getConstructor()->getParameters(),
+    );
+
+    expect($parameters)->toBe(['surface', 'interactive', 'href', 'title', 'description', 'actions', 'footer', 'media', 'mediaAlt', 'classes']);
+});

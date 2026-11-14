@@ -2,238 +2,99 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
-
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
 use ArtisanPack\LivewireUiComponents\View\Components\File;
-use Error;
-use RuntimeException;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Js;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
-/**
- * Comprehensive unit tests for the File component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * File (#53): the native input over the drop zone, the file list, remove
+ * buttons and Livewire upload support. The manifest parity check is in
+ * tests/Feature/DesignSystemParityTest.php.
  */
-class FileComponentTest extends ComponentTestCase
-{
-    protected string $componentClass = File::class;
 
-    protected array $defaultProperties = [
-        'hintClass'       => 'fieldset-label',
-        'hideProgress'    => false,
-        'cropAfterChange' => false,
-        'changeText'      => 'Change',
-        'cropTitleText'   => 'Crop image',
-        'cropCancelText'  => 'Cancel',
-        'cropSaveText'    => 'Crop',
-        'cropConfig'      => [],
-        'cropMimeType'    => 'image/png',
-        'withDragDrop'    => false,
-        'dragDropText'    => 'Drop files here',
-        'errorClass'      => 'text-error',
-        'omitError'       => false,
-        'firstErrorOnly'  => false,
-    ];
+$files = "[ [ 'name' => 'a.jpg', 'size' => 2400000 ], [ 'name' => 'b.jpg', 'size' => 1000, 'progress' => 64 ], [ 'name' => 'c.heic', 'error' => 'Not supported.' ] ]";
 
-    protected array $requiredProperties = [];
+test('the native input covers the drop zone and takes wire:model', function (): void {
+    $dom   = designSystemDom(Blade::render('<x-artisanpack-file id="f" wire:model="photos" label="Photos" hint="JPG only" multiple accept="image/*" :max-size="1000" />'));
+    $input = $dom->query('//input')->item(0);
 
-    public function test_file_string_properties(): void
-    {
-        $stringProperties = ['id', 'label', 'hint', 'hintClass', 'changeText', 'cropTitleText', 'cropCancelText', 'cropSaveText', 'cropMimeType', 'dragDropText', 'dragDropClass', 'errorField', 'errorClass'];
-        $testValues       = ComponentDataFactory::sampleTexts();
+    expect($input->getAttribute('type'))->toBe('file')
+        ->and($input->parentNode->getAttribute('data-part'))->toBe('dropzone')
+        ->and($input->getAttribute('wire:model'))->toBe('photos')
+        ->and($input->hasAttribute('multiple'))->toBeTrue()
+        ->and($input->getAttribute('accept'))->toBe('image/*')
+        ->and($input->getAttribute('aria-describedby'))->toBe('f-hint')
+        ->and($dom->query('//label[@for="f"]')->item(0)->textContent)->toBe('Photos')
+        ->and($dom->query('//*[@data-part="title"]')->item(0)->textContent)->toBe('Drop files here or browse')
+        ->and($dom->query('//div[contains(@class, "apui-file")]')->item(0)->getAttribute('data-max-size'))->toBe('1000');
+});
 
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
+test('without a label the title names the input', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-file id="f" />'));
 
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
-    }
+    expect($dom->query('//input')->item(0)->getAttribute('aria-labelledby'))->toBe('f-title');
+});
 
-    public function test_file_boolean_properties(): void
-    {
-        $booleanProperties = ['hideProgress', 'cropAfterChange', 'withDragDrop', 'omitError', 'firstErrorOnly'];
+test('the list shows sizes, progress and errors, each with a labelled remove button', function () use ($files): void {
+    $dom   = designSystemDom(Blade::render('<x-artisanpack-file :value="'.$files.'" />'));
+    $items = $dom->query('//li[@data-part="item"][not(@hidden)]');
 
-        foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
-            $this->assertTrue($component->$property);
+    expect($items->length)->toBe(3)
+        ->and($dom->query('.//*[@data-part="meta"]', $items->item(0))->item(0)->textContent)->toBe('2.4 MB')
+        ->and($dom->query('.//progress', $items->item(1))->item(0)->getAttribute('value'))->toBe('64')
+        ->and($items->item(2)->getAttribute('data-state'))->toBe('error')
+        ->and(trim($dom->query('.//*[@data-part="meta"]', $items->item(2))->item(0)->textContent))->toBe('Not supported.')
+        ->and($dom->query('.//button', $items->item(0))->item(0)->getAttribute('aria-label'))->toBe('Remove a.jpg')
+        ->and($dom->query('.//button', $items->item(0))->item(0)->getAttribute('x-on:click'))->toBe("\$dispatch('remove', { index: 0, name: 'a.jpg' })");
+});
 
-            $component = $this->createComponent([$property => false]);
-            $this->assertFalse($component->$property);
-        }
-    }
+test('temporary uploads are removed through Livewire', function (): void {
+    $upload = Mockery::mock(TemporaryUploadedFile::class);
+    $upload->shouldReceive('getClientOriginalName')->andReturn('lease.pdf');
+    $upload->shouldReceive('getSize')->andReturn(240000);
+    $upload->shouldReceive('getFilename')->andReturn('tmp-abc.pdf');
 
-    public function test_file_array_properties(): void
-    {
-        $arrayProperties = ['cropConfig'];
-        $testArrays      = ComponentDataFactory::arrayData();
+    $dom    = designSystemDom(Blade::render('<x-artisanpack-file wire:model="contract" :value="$upload" />', ['upload' => $upload]));
+    $button = $dom->query('//li[not(@hidden)]//button')->item(0);
 
-        foreach ($arrayProperties as $property) {
-            foreach ($testArrays as $array) {
-                $component = $this->createComponent([$property => $array]);
-                $this->assertEquals($array, $component->$property);
-            }
-        }
-    }
+    expect($dom->query('//li[not(@hidden)]//*[@data-part="name"]')->item(0)->textContent)->toBe('lease.pdf')
+        ->and($button->getAttribute('x-on:click'))->toBe('$wire.$removeUpload('.Js::from('contract').', '.Js::from('tmp-abc.pdf').')');
+});
 
-    public function test_file_model_name_method(): void
-    {
-        $component = $this->createComponent();
+test('an empty list stays hidden until an upload starts', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-file wire:model="photos" />'));
+    $ul  = $dom->query('//ul')->item(0);
 
-        if (method_exists($component, 'modelName')) {
-            try {
-                $result = $component->modelName();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
+    expect($ul->hasAttribute('hidden'))->toBeTrue()
+        ->and($ul->getAttribute('x-bind:hidden'))->toBe('! uploading')
+        ->and($dom->query('//div[contains(@class, "apui-file")]')->item(0)->getAttribute('x-on:livewire-upload-progress'))->toBe('progress = $event.detail.progress');
+});
 
-    public function test_file_error_field_name_method(): void
-    {
-        $component = $this->createComponent();
+test('remove labels are templates with :name', function () use ($files): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-file remove-label="Quitar :name" :value="'.$files.'" />'));
 
-        if (method_exists($component, 'errorFieldName')) {
-            try {
-                $result = $component->errorFieldName();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
+    expect($dom->query('//button')->item(0)->getAttribute('aria-label'))->toBe('Quitar a.jpg');
+});
 
-    public function test_file_crop_setup_method(): void
-    {
-        $component = $this->createComponent();
+test('variant, required and invalid render on the root and the input', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-file variant="compact" required invalid label="Doc" />'));
 
-        if (method_exists($component, 'cropSetup')) {
-            try {
-                $result = $component->cropSetup();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
+    expect($dom->query('//div[contains(@class, "apui-file")]')->item(0)->getAttribute('data-variant'))->toBe('compact')
+        ->and($dom->query('//div[@data-invalid]')->length)->toBe(1)
+        ->and($dom->query('//input')->item(0)->hasAttribute('required'))->toBeTrue()
+        ->and($dom->query('//input')->item(0)->getAttribute('aria-invalid'))->toBe('true');
+});
 
-    public function test_file_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
+test('sizes use decimal units', function (int $bytes, string $text): void {
+    expect((new File)->formatSize($bytes))->toBe($text);
+})->with([[999, '999 B'], [1000, '1 KB'], [2400000, '2.4 MB'], [1250000, '1.3 MB']]);
 
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
+test('the constructor declares only the manifest props', function (): void {
+    $parameters = array_map(
+        static fn (ReflectionParameter $parameter): string => $parameter->getName(),
+        (new ReflectionClass(File::class))->getConstructor()->getParameters(),
+    );
 
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
-
-    public function test_file_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'File should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
-
-    public function test_file_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
-
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
-
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_file_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'File rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
-}
+    expect($parameters)->toBe(['label', 'title', 'hint', 'error', 'invalid', 'disabled', 'required', 'accept', 'multiple', 'maxSize', 'variant', 'value', 'removeLabel', 'errorField', 'classes']);
+});

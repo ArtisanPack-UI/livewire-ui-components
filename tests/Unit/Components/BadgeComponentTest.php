@@ -2,159 +2,63 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
+use Illuminate\Support\Facades\Blade;
 
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
-use ArtisanPack\LivewireUiComponents\View\Components\Badge;
-use Error;
-use RuntimeException;
-
-/**
- * Comprehensive unit tests for the Badge component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * Badge (#61): the design-system markup contract. The manifest parity check is
+ * in tests/Feature/DesignSystemParityTest.php.
  */
-class BadgeComponentTest extends ComponentTestCase
-{
-    protected string $componentClass = Badge::class;
 
-    protected array $defaultProperties = [];
+test('renders a soft neutral md badge with a label part', function (): void {
+    $root = designSystemDom(Blade::render('<x-artisanpack-badge>Draft</x-artisanpack-badge>'))->query('//span[contains(@class, "apui-badge")]')->item(0);
 
-    protected array $requiredProperties = [];
+    expect($root)->not->toBeNull()
+        ->and($root->getAttribute('data-variant'))->toBe('soft')
+        ->and($root->getAttribute('data-color'))->toBe('neutral')
+        ->and($root->getAttribute('data-size'))->toBe('md')
+        ->and(trim($root->textContent))->toBe('Draft');
+});
 
-    public function test_badge_string_properties(): void
-    {
-        $stringProperties = ['id', 'value', 'color', 'colorAdjustment'];
-        $testValues       = ComponentDataFactory::sampleTexts();
+test('variant, color and size become data attributes; unknown values fall back', function (): void {
+    $set     = designSystemDom(Blade::render('<x-artisanpack-badge variant="solid" color="success" size="lg">Paid</x-artisanpack-badge>'))->query('//span')->item(0);
+    $unknown = designSystemDom(Blade::render('<x-artisanpack-badge variant="glass" color="red-500" size="xl">Paid</x-artisanpack-badge>'))->query('//span')->item(0);
 
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
+    expect($set->getAttribute('data-variant'))->toBe('solid')
+        ->and($set->getAttribute('data-color'))->toBe('success')
+        ->and($set->getAttribute('data-size'))->toBe('lg')
+        ->and($unknown->getAttribute('data-variant'))->toBe('soft')
+        ->and($unknown->getAttribute('data-color'))->toBe('neutral')
+        ->and($unknown->getAttribute('data-size'))->toBe('md');
+});
 
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
-    }
+test('the dot and the icon are decorative parts, and arrows mirror', function (): void {
+    $dom  = designSystemDom(Blade::render('<x-artisanpack-badge dot leading-icon="arrow-right">Up</x-artisanpack-badge>'));
+    $dot  = $dom->query('//*[@data-scope="badge"][@data-part="dot"]')->item(0);
+    $icon = $dom->query('//*[@data-scope="badge"][@data-part="icon"]')->item(0);
 
-    public function test_badge_get_color_classes_method(): void
-    {
-        $component = $this->createComponent();
+    expect($dot->getAttribute('aria-hidden'))->toBe('true')
+        ->and($icon->getAttribute('aria-hidden'))->toBe('true')
+        ->and($icon->hasAttribute('data-mirror'))->toBeTrue()
+        ->and($dom->query('//*[@data-part="icon"]/svg'))->toHaveCount(1);
+});
 
-        if (method_exists($component, 'getColorClasses')) {
-            try {
-                $result = $component->getColorClasses();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
+test('the icon slot overrides leading-icon', function (): void {
+    $html = Blade::render('<x-artisanpack-badge leading-icon="check"><x-slot:icon><b>!</b></x-slot:icon> New</x-artisanpack-badge>');
 
-    public function test_badge_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
+    expect(designSystemDom($html)->query('//*[@data-part="icon"]/b'))->toHaveCount(1)
+        ->and(designSystemDom($html)->query('//*[@data-part="icon"]/svg'))->toHaveCount(0);
+});
 
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
+test('the deprecated value attribute renders as the label', function (): void {
+    $root = designSystemDom(Blade::render('<x-artisanpack-badge value="New" />'))->query('//span[contains(@class, "apui-badge")]')->item(0);
 
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
+    expect(trim($root->textContent))->toBe('New')
+        ->and($root->hasAttribute('value'))->toBeFalse();
+});
 
-    public function test_badge_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
+test('classes reach the parts and attributes reach the root', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-badge id="b1" :classes="[ \'label\' => \'x-label\' ]" class="extra">Hi</x-artisanpack-badge>'));
 
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'Badge should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
-
-    public function test_badge_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
-
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
-
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_badge_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'Badge rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
-}
+    expect($dom->query('//span[@id="b1"][contains(@class, "extra")]'))->toHaveCount(1)
+        ->and($dom->query('//*[@data-part="label"][@class="x-label"]'))->toHaveCount(1);
+});

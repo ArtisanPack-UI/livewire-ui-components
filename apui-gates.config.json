@@ -1,0 +1,12 @@
+{
+  "components": ["Button", "Input", "Select", "Checkbox", "Card", "Dialog", "DropdownMenu", "Toast", "Textarea", "Password", "Pin", "Range", "Toggle", "Fieldset", "Form", "ValidationSummary", "Combobox", "RadioGroup", "CheckboxGroup", "Rating", "ColorPicker", "File", "Link", "Breadcrumbs", "Pagination", "Steps", "Spotlight", "Tabs", "Menu", "Navbar", "DatePicker", "Signature", "RichTextEditor", "CodeEditor", "Accordion", "Collapse", "AppShell", "PageHeader", "Divider", "Grid", "Stack", "Drawer", "Popover", "Tooltip", "Heading", "Text", "ListItem", "UserMenu", "Avatar", "Badge", "Alert", "Loading", "Progress", "ProgressRadial", "Skeleton", "EmptyState", "ErrorState", "StreamableContent", "Stat", "KpiCard", "Sparkline", "Timeline", "Diff", "ImageGallery", "ImageSlider", "ImageLibrary", "Table", "Chart", "Calendar", "Icon", "ThemeToggle", "ThemePreview", "Markdown", "Code", "Kbd", "Swap", "Carousel", "Clipboard"],
+  "css": ["dist/css/index.css"],
+  "stacks": {
+    "livewire": {
+      "html": "build/gates/html/livewire",
+      "scripts": ["dist/js/alpine.global.js"]
+    }
+  },
+  "baselines": "node_modules/@artisanpack-ui/testing/baselines",
+  "out": "build/gates"
+}

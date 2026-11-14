@@ -1,0 +1,20 @@
+{
+  "packages": {
+    "@artisanpack-ui/behavior": "1.0.0",
+    "@artisanpack-ui/css": "1.0.0",
+    "@artisanpack-ui/tokens": "2.0.0"
+  },
+  "styles": {
+    "default": "css/index.css",
+    "headless": "css/headless.css"
+  },
+  "scripts": {
+    "alpine": "js/alpine.global.js"
+  },
+  "files": {
+    "css/headless.css": "e7619a1779f3a4bd",
+    "css/index.css": "a2e5a056efde1e8a",
+    "js/alpine.global.js": "77d42e086c4711af",
+    "js/alpine.global.js.map": "f56e1994b124f213"
+  }
+}

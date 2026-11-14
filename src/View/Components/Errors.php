@@ -1,48 +1,63 @@
 <?php
 
-declare(strict_types=1);
 /**
- * Errors
+ * Errors Component
  *
- * This file contains the Errors class for the ArtisanPack UI Livewire UI Components package.
+ * The 2.x `errors`, now a deprecated alias of the design-system
+ * ValidationSummary (#145).
  *
  * @author     Jacob Martella
  * @copyright  2023 Jacob Martella
  * @license    MIT
  *
- * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
- * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
+ * @link       https://github.com/ArtisanPack-UI/livewire-ui-components
  * @since      1.0.0
+ * @deprecated 3.0.0 Use <x-artisanpack-validation-summary>. Removed in a later major release.
  */
 
-namespace ArtisanPack\LivewireUiComponents\View\Components;
+declare(strict_types=1);
 
-use Closure;
-use Illuminate\Contracts\View\View;
+namespace ArtisanPack\LivewireUiComponents\View\Components;
 
 /**
  * Errors Class
  *
- * Provides functionality for the Errors component.
+ * Renders `.apui-validation-summary`, the same markup as
+ * `<x-artisanpack-validation-summary>`: `title` and `only` carry over.
+ * `description` and `icon` are accepted and ignored: the summary shows only a
+ * title and the errors, and its icon follows `color`. An `id` attribute lands
+ * on the root.
  *
  * @since 1.0.0
+ * @deprecated 3.0.0 Use <x-artisanpack-validation-summary>. Removed in a later major release.
  */
-class Errors extends BaseComponent
+class Errors extends ValidationSummary
 {
-    public string $uuid;
-
+    /**
+     * Creates the component.
+     *
+     * @since 3.0.0
+     *
+     * @param  string|null  $title  The heading. Defaults to a translated count.
+     * @param  string|null  $description  Ignored.
+     * @param  string|null  $icon  Ignored: the icon follows `color`.
+     * @param  list<string>|null  $only  The fields to list, in order. Defaults to every one.
+     * @param  string  $color  error or warning.
+     * @param  array<string, string>  $classes  Extra classes per part.
+     */
     public function __construct(
-        public ?string $id = null,
-        public ?string $title = null,
-        public ?string $description = null,
-        public ?string $icon = 'o-x-circle',
-        public ?array $only = [],
+        ?string $title = null,
+        ?string $description = null,
+        ?string $icon = 'o-x-circle',
+        ?array $only = [],
+        string $color = 'error',
+        array $classes = [],
     ) {
-        $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
-    }
-
-    public function render(): View|Closure|string
-    {
-        return view('livewire-ui-components::components.errors');
+        parent::__construct(
+            only: array_values($only ?? []),
+            color: $color,
+            title: $title,
+            classes: $classes,
+        );
     }
 }

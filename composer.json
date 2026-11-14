@@ -2,7 +2,7 @@
     "name": "artisanpack-ui/livewire-ui-components",
     "description": "A Livewire UI component library for the TALL stack, forked from MaryUI and adapted for the ArtisanPack UI ecosystem.",
     "license": "MIT",
-    "version": "2.1.0",
+    "version": "3.0.0",
     "authors": [
         {
             "name": "Jacob Martella",
@@ -28,13 +28,12 @@
         "livewire packages",
         "tailwind",
         "components",
-        "daisyUI",
+        "design system",
         "alpinejs"
     ],
     "require": {
-        "php": "^8.1",
-        "illuminate/support": "^10.0|^11.0|^12.0|^13.0",
-        "jfcherng/php-diff": "^6.15",
+        "php": "^8.2",
+        "illuminate/support": "^12.0|^13.0",
         "laravel/prompts": "^0|^1",
         "blade-ui-kit/blade-heroicons": "^2.0",
         "livewire/livewire": "^3.6|^4.0",
@@ -43,21 +42,21 @@
         "owenvoke/blade-fontawesome": "^2.9|^3.0",
         "artisanpack-ui/core": "^1.0",
         "artisanpack-ui/hooks": "^1.2",
-        "artisanpack-ui/icons": "^2.0"
+        "artisanpack-ui/icons": "^2.0",
+        "league/commonmark": "^2.6"
     },
     "suggest": {
         "phpoffice/phpspreadsheet": "Required for XLSX/Excel export functionality in Table component (^2.0|^3.0)",
         "barryvdh/laravel-dompdf": "Required for PDF export functionality in Table component (^3.0)"
     },
     "require-dev": {
-        "orchestra/testbench": "^8|^9|^10|^11",
-        "pestphp/pest": "^3.5",
-        "pestphp/pest-plugin-laravel": "^3.0",
-        "pestphp/pest-plugin-type-coverage": "^3.0",
-        "pestphp/pest-plugin-watch": "^3.0",
-        "phpunit/phpunit": "^10|^11",
+        "orchestra/testbench": "^10|^11",
+        "pestphp/pest": "^3.5|^4.4",
+        "pestphp/pest-plugin-laravel": "^3.0|^4.1",
+        "pestphp/pest-plugin-type-coverage": "^3.0|^4.0",
+        "phpunit/phpunit": "^10|^11|^12",
         "mockery/mockery": "^1.6",
-        "laravel/boost": "^1.0",
+        "laravel/boost": "^1.0|^2.0",
         "laravel/dusk": "^8.0",
         "squizlabs/php_codesniffer": "^3.13",
         "dealerdirect/phpcodesniffer-composer-installer": "^1.1",
@@ -83,7 +82,9 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "ArtisanPack\\LivewireUiComponents\\Tests\\": "tests"
+            "ArtisanPack\\LivewireUiComponents\\Tests\\": "tests",
+            "ArtisanPackUI\\DesignSystem\\Manifest\\": "node_modules/@artisanpack-ui/manifest/php/",
+            "ArtisanPackUI\\DesignSystem\\Testing\\": "node_modules/@artisanpack-ui/testing/php/"
         }
     },
     "extra": {

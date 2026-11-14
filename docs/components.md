@@ -1,313 +1,182 @@
 ---
-title: Components Overview
+title: Components
+menu_order: 3
 ---
 
-# Components Overview
+# Components
 
-ArtisanPack UI Livewire Components provides a comprehensive set of UI components for Laravel applications. This page provides an overview of all available components, organized by category.
+Livewire UI Components ships the design system's 78 components as Blade components. Each one has a page in the design-system documentation with a Blade tab, live examples, and tables of its props, parts, slots and events. The links below go there.
 
-## Component Categories
+## Writing them in Blade
 
-The components are organized into the following categories:
+- **Tags** are `<x-artisanpack-{name}>`, with the name in kebab-case: `<x-artisanpack-dropdown-menu>`. The prefix comes from the [configuration](Getting-Started-Configuration).
+- **Props** are kebab-case attributes: `leadingIcon` in React and Vue is `leading-icon` in Blade. Bind PHP values with a colon: `:options="$countries"`, `:label="__( 'Country' )"`.
+- **Per-part classes** go in `:classes`, keyed by part: `:classes="[ 'label' => 'sr-only', 'control' => 'font-mono' ]"`. A plain `class` lands on the component's root (on overlays, on the panel). See [Component Markup](https://docs.artisanpackui.dev/documentation/design-system/styling/component-markup).
+- **Values and open state** bind with `wire:model`, including its modifiers. See [Livewire Integration](Livewire).
+- **Slots** are named Blade slots: `<x-slot:footer>`. Slots that receive a row or an item are scoped slots, written with `@scope`: `@scope( 'cell_name', $user )`.
+- **Events** are DOM events on the component, such as `open-change` and `value-change`. Listen with `x-on:value-change="…"`.
+- **Strings** the components render on their own (close buttons, empty states, screen-reader announcements) are props ending in `-label`, such as `close-label` and `empty-label`. Their defaults go through `__()`, so your translation files cover them.
 
-1. **Form Components** - Components for building forms and collecting user input
-2. **Layout Components** - Components for structuring and organizing content
-3. **Navigation Components** - Components for navigation and menus
-4. **Data Display Components** - Components for displaying and visualizing data
-5. **Dashboard Components** - Components for building dashboards (v2.0+)
-6. **Feedback Components** - Components for providing feedback to users
-7. **Utility Components** - Miscellaneous utility components
+## Actions
 
-## Usage Patterns
+| Component | Blade tag |
+|---|---|
+| [Button](https://docs.artisanpackui.dev/documentation/design-system/components/button) | `<x-artisanpack-button>` |
+| [Link](https://docs.artisanpackui.dev/documentation/design-system/components/link) | `<x-artisanpack-link>` |
+| [Clipboard](https://docs.artisanpackui.dev/documentation/design-system/components/clipboard) | `<x-artisanpack-clipboard>` |
+| [Swap](https://docs.artisanpackui.dev/documentation/design-system/components/swap) | `<x-artisanpack-swap>` |
 
-All ArtisanPack UI components follow consistent usage patterns:
+## Forms
 
-### Basic Component Usage
+| Component | Blade tag |
+|---|---|
+| [Form](https://docs.artisanpackui.dev/documentation/design-system/components/form) | `<x-artisanpack-form>` |
+| [Fieldset](https://docs.artisanpackui.dev/documentation/design-system/components/fieldset) | `<x-artisanpack-fieldset>` |
+| [Input](https://docs.artisanpackui.dev/documentation/design-system/components/input) | `<x-artisanpack-input>` |
+| [Password](https://docs.artisanpackui.dev/documentation/design-system/components/password) | `<x-artisanpack-password>` |
+| [Pin](https://docs.artisanpackui.dev/documentation/design-system/components/pin) | `<x-artisanpack-pin>` |
+| [Textarea](https://docs.artisanpackui.dev/documentation/design-system/components/textarea) | `<x-artisanpack-textarea>` |
+| [Select](https://docs.artisanpackui.dev/documentation/design-system/components/select) | `<x-artisanpack-select>` |
+| [Combobox](https://docs.artisanpackui.dev/documentation/design-system/components/combobox) | `<x-artisanpack-combobox>` |
+| [Checkbox](https://docs.artisanpackui.dev/documentation/design-system/components/checkbox) | `<x-artisanpack-checkbox>` |
+| [CheckboxGroup](https://docs.artisanpackui.dev/documentation/design-system/components/checkbox-group) | `<x-artisanpack-checkbox-group>` |
+| [RadioGroup](https://docs.artisanpackui.dev/documentation/design-system/components/radio-group) | `<x-artisanpack-radio-group>` |
+| [Toggle](https://docs.artisanpackui.dev/documentation/design-system/components/toggle) | `<x-artisanpack-toggle>` |
+| [Range](https://docs.artisanpackui.dev/documentation/design-system/components/range) | `<x-artisanpack-range>` |
+| [Rating](https://docs.artisanpackui.dev/documentation/design-system/components/rating) | `<x-artisanpack-rating>` |
+| [ColorPicker](https://docs.artisanpackui.dev/documentation/design-system/components/color-picker) | `<x-artisanpack-color-picker>` |
+| [DatePicker](https://docs.artisanpackui.dev/documentation/design-system/components/date-picker) | `<x-artisanpack-date-picker>` |
+| [File](https://docs.artisanpackui.dev/documentation/design-system/components/file) | `<x-artisanpack-file>` |
+| [Signature](https://docs.artisanpackui.dev/documentation/design-system/components/signature) | `<x-artisanpack-signature>` |
+| [ValidationSummary](https://docs.artisanpackui.dev/documentation/design-system/components/validation-summary) | `<x-artisanpack-validation-summary>` |
 
-```php
-<x-artisanpack-button>Click Me</x-artisanpack-button>
-```
+## Editors and content
 
-### Components with Properties
+| Component | Blade tag |
+|---|---|
+| [RichTextEditor](https://docs.artisanpackui.dev/documentation/design-system/components/rich-text-editor) | `<x-artisanpack-rich-text-editor>` |
+| [CodeEditor](https://docs.artisanpackui.dev/documentation/design-system/components/code-editor) | `<x-artisanpack-code-editor>` |
+| [Markdown](https://docs.artisanpackui.dev/documentation/design-system/components/markdown) | `<x-artisanpack-markdown>` |
+| [Code](https://docs.artisanpackui.dev/documentation/design-system/components/code) | `<x-artisanpack-code>` |
+| [Kbd](https://docs.artisanpackui.dev/documentation/design-system/components/kbd) | `<x-artisanpack-kbd>` |
+| [Diff](https://docs.artisanpackui.dev/documentation/design-system/components/diff) | `<x-artisanpack-diff>` |
+| [Heading](https://docs.artisanpackui.dev/documentation/design-system/components/heading) | `<x-artisanpack-heading>` |
+| [Text](https://docs.artisanpackui.dev/documentation/design-system/components/text) | `<x-artisanpack-text>` |
+| [Divider](https://docs.artisanpackui.dev/documentation/design-system/components/divider) | `<x-artisanpack-divider>` |
+| [Icon](https://docs.artisanpackui.dev/documentation/design-system/components/icon) | `<x-artisanpack-icon>` |
 
-```php
-<x-artisanpack-button color="primary" size="lg" outline>
-    Large Primary Outline Button
-</x-artisanpack-button>
-```
+## Data display
 
-### Components with Slots
+| Component | Blade tag |
+|---|---|
+| [Badge](https://docs.artisanpackui.dev/documentation/design-system/components/badge) | `<x-artisanpack-badge>` |
+| [Avatar](https://docs.artisanpackui.dev/documentation/design-system/components/avatar) | `<x-artisanpack-avatar>` |
+| [Stat](https://docs.artisanpackui.dev/documentation/design-system/components/stat) | `<x-artisanpack-stat>` |
+| [KpiCard](https://docs.artisanpackui.dev/documentation/design-system/components/kpi-card) | `<x-artisanpack-kpi-card>` |
+| [Sparkline](https://docs.artisanpackui.dev/documentation/design-system/components/sparkline) | `<x-artisanpack-sparkline>` |
+| [Table](https://docs.artisanpackui.dev/documentation/design-system/components/table) | `<x-artisanpack-table>` |
+| [Chart](https://docs.artisanpackui.dev/documentation/design-system/components/chart) | `<x-artisanpack-chart>` |
+| [Timeline](https://docs.artisanpackui.dev/documentation/design-system/components/timeline) | `<x-artisanpack-timeline>` |
+| [ListItem](https://docs.artisanpackui.dev/documentation/design-system/components/list-item) | `<x-artisanpack-list-item>` |
+| [Calendar](https://docs.artisanpackui.dev/documentation/design-system/components/calendar) | `<livewire:artisanpack-calendar>`, `<x-artisanpack-calendar>` |
 
-```php
-<x-artisanpack-card>
-    <x-slot:header>Card Header</x-slot:header>
-    Card Content
-    <x-slot:footer>Card Footer</x-slot:footer>
-</x-artisanpack-card>
-```
+## Feedback
 
-### Components with Events
+| Component | Blade tag |
+|---|---|
+| [Alert](https://docs.artisanpackui.dev/documentation/design-system/components/alert) | `<x-artisanpack-alert>` |
+| [Toast](https://docs.artisanpackui.dev/documentation/design-system/components/toast) | `<x-artisanpack-toast>` |
+| [Loading](https://docs.artisanpackui.dev/documentation/design-system/components/loading) | `<x-artisanpack-loading>` |
+| [Progress](https://docs.artisanpackui.dev/documentation/design-system/components/progress) | `<x-artisanpack-progress>` |
+| [ProgressRadial](https://docs.artisanpackui.dev/documentation/design-system/components/progress-radial) | `<x-artisanpack-progress-radial>` |
+| [Skeleton](https://docs.artisanpackui.dev/documentation/design-system/components/skeleton) | `<x-artisanpack-skeleton>` |
+| [StreamableContent](https://docs.artisanpackui.dev/documentation/design-system/components/streamable-content) | `<x-artisanpack-streamable-content>` |
+| [EmptyState](https://docs.artisanpackui.dev/documentation/design-system/components/empty-state) | `<x-artisanpack-empty-state>` |
+| [ErrorState](https://docs.artisanpackui.dev/documentation/design-system/components/error-state) | `<x-artisanpack-error-state>` |
 
-```php
-<x-artisanpack-button @click="alert('Button clicked!')">
-    Click Me
-</x-artisanpack-button>
-```
+## Overlays
 
-## Common Props and Slots
+| Component | Blade tag |
+|---|---|
+| [Dialog](https://docs.artisanpackui.dev/documentation/design-system/components/dialog) | `<x-artisanpack-dialog>` |
+| [Drawer](https://docs.artisanpackui.dev/documentation/design-system/components/drawer) | `<x-artisanpack-drawer>` |
+| [Popover](https://docs.artisanpackui.dev/documentation/design-system/components/popover) | `<x-artisanpack-popover>` |
+| [Tooltip](https://docs.artisanpackui.dev/documentation/design-system/components/tooltip) | `<x-artisanpack-tooltip>` |
+| [DropdownMenu](https://docs.artisanpackui.dev/documentation/design-system/components/dropdown-menu) | `<x-artisanpack-dropdown-menu>` |
+| [Spotlight](https://docs.artisanpackui.dev/documentation/design-system/components/spotlight) | `<x-artisanpack-spotlight>` |
 
-Many components share common props and slots:
+## Navigation
 
-### Common Props
+| Component | Blade tag |
+|---|---|
+| [Navbar](https://docs.artisanpackui.dev/documentation/design-system/components/navbar) | `<x-artisanpack-navbar>` |
+| [Menu](https://docs.artisanpackui.dev/documentation/design-system/components/menu) | `<x-artisanpack-menu>` |
+| [UserMenu](https://docs.artisanpackui.dev/documentation/design-system/components/user-menu) | `<x-artisanpack-user-menu>` |
+| [Tabs](https://docs.artisanpackui.dev/documentation/design-system/components/tabs) | `<x-artisanpack-tabs>` |
+| [Steps](https://docs.artisanpackui.dev/documentation/design-system/components/steps) | `<x-artisanpack-steps>` |
+| [Pagination](https://docs.artisanpackui.dev/documentation/design-system/components/pagination) | `<x-artisanpack-pagination>` |
+| [Breadcrumbs](https://docs.artisanpackui.dev/documentation/design-system/components/breadcrumbs) | `<x-artisanpack-breadcrumbs>` |
 
-- `class` - Additional CSS classes to apply to the component
-- `id` - HTML ID attribute
-- `disabled` - Whether the component is disabled
-- `color` - The color variant (primary, secondary, accent, etc.)
-- `size` - The size variant (xs, sm, md, lg, xl)
+## Disclosure
 
-### Common Slots
+| Component | Blade tag |
+|---|---|
+| [Accordion](https://docs.artisanpackui.dev/documentation/design-system/components/accordion) | `<x-artisanpack-accordion>` |
+| [Collapse](https://docs.artisanpackui.dev/documentation/design-system/components/collapse) | `<x-artisanpack-collapse>` |
 
-- `default` - The main content of the component
-- `header` - Content for the header section (for container components)
-- `footer` - Content for the footer section (for container components)
-- `icon` - Icon content for components that support icons
+## Layout
 
-## Component List
+| Component | Blade tag |
+|---|---|
+| [AppShell](https://docs.artisanpackui.dev/documentation/design-system/components/app-shell) | `<x-artisanpack-app-shell>` |
+| [PageHeader](https://docs.artisanpackui.dev/documentation/design-system/components/page-header) | `<x-artisanpack-page-header>` |
+| [Card](https://docs.artisanpackui.dev/documentation/design-system/components/card) | `<x-artisanpack-card>` |
+| [Grid](https://docs.artisanpackui.dev/documentation/design-system/components/grid) | `<x-artisanpack-grid>` |
+| [Stack](https://docs.artisanpackui.dev/documentation/design-system/components/stack) | `<x-artisanpack-stack>` |
 
-### Form Components
+## Media
 
-| Component | Description | Documentation |
-|-----------|-------------|---------------|
-| [Button](button) | Interactive button element | [Button docs](button) |
-| [Checkbox](checkbox) | Checkbox input | [Checkbox docs](checkbox) |
-| [CheckboxGroup](checkbox-group) | Group of checkbox inputs | [CheckboxGroup docs](checkbox-group) |
-| [Choices](choices) | Multi-select dropdown with search | [Choices docs](choices) |
-| [ChoicesOffline](choices-offline) | Offline version of Choices | [ChoicesOffline docs](choices-offline) |
-| [Colorpicker](colorpicker) | Color selection input | [Colorpicker docs](colorpicker) |
-| [DatePicker](date-picker) | Date selection input | [DatePicker docs](date-picker) |
-| [DateTime](date-time) | Date and time selection input | [DateTime docs](date-time) |
-| [Editor](editor) | Rich text editor | [Editor docs](editor) |
-| [Fieldset](fieldset) | Styled container for form fields | [Fieldset docs](fieldset) |
-| [File](file) | File upload input | [File docs](file) |
-| [Form](form) | Form container with validation | [Form docs](form) |
-| [Group](group) | Group of form elements | [Group docs](group) |
-| [Input](input) | Text input field | [Input docs](input) |
-| [Password](password) | Password input with toggle | [Password docs](password) |
-| [Pin](pin) | PIN code input | [Pin docs](pin) |
-| [Radio](radio) | Radio button input | [Radio docs](radio) |
-| [RadioGroup](radio-group) | Group of radio button inputs | [RadioGroup docs](radio-group) |
-| [Range](range) | Range slider input | [Range docs](range) |
-| [Rating](rating) | Star rating input | [Rating docs](rating) |
-| [Select](select) | Dropdown select input | [Select docs](select) |
-| [SelectGroup](select-group) | Grouped select input | [SelectGroup docs](select-group) |
-| [Signature](signature) | Signature pad input | [Signature docs](signature) |
-| [Tags](tags) | Tags input | [Tags docs](tags) |
-| [Textarea](textarea) | Multi-line text input | [Textarea docs](textarea) |
-| [Toggle](toggle) | Toggle switch input | [Toggle docs](toggle) |
+| Component | Blade tag |
+|---|---|
+| [ImageGallery](https://docs.artisanpackui.dev/documentation/design-system/components/image-gallery) | `<x-artisanpack-image-gallery>` |
+| [ImageLibrary](https://docs.artisanpackui.dev/documentation/design-system/components/image-library) | `<x-artisanpack-image-library>` |
+| [Carousel](https://docs.artisanpackui.dev/documentation/design-system/components/carousel) | `<x-artisanpack-carousel>` |
+| [ImageSlider](https://docs.artisanpackui.dev/documentation/design-system/components/image-slider) | `<x-artisanpack-image-slider>` |
 
-### Layout Components
+## Theme
 
-| Component | Description | Documentation |
-|-----------|-------------|---------------|
-| [Accordion](accordion) | Collapsible content panels | [Accordion docs](accordion) |
-| [Card](card) | Content container with header and footer | [Card docs](card) |
-| [Collapse](collapse) | Collapsible content | [Collapse docs](collapse) |
-| [Drawer](drawer) | Side drawer/panel | [Drawer docs](drawer) |
-| [Dropdown](dropdown) | Dropdown menu | [Dropdown docs](dropdown) |
-| [Separator](separator) | Horizontal rule with styling | [Separator docs](separator) |
-| [Main](main) | Main content container | [Main docs](main) |
-| [Modal](modal) | Modal dialog | [Modal docs](modal) |
-| [Popover](popover) | Popover tooltip | [Popover docs](popover) |
-| [Tabs](tabs) | Tabbed interface | [Tabs docs](tabs) |
-| [Tab](tab) | Individual tab for Tabs component | [Tab docs](tab) |
+| Component | Blade tag |
+|---|---|
+| [ThemeToggle](https://docs.artisanpackui.dev/documentation/design-system/components/theme-toggle) | `<x-artisanpack-theme-toggle>` |
+| [ThemePreview](https://docs.artisanpackui.dev/documentation/design-system/components/theme-preview) | `<x-artisanpack-theme-preview>` |
+## Child components
 
-### Navigation Components
+These tags only make sense inside a parent. The parent's page documents them.
 
-| Component | Description | Documentation |
-|-----------|-------------|---------------|
-| [Breadcrumbs](breadcrumbs) | Breadcrumb navigation | [Breadcrumbs docs](breadcrumbs) |
-| [Menu](menu) | Navigation menu | [Menu docs](menu) |
-| [MenuItem](menu-item) | Menu item for Menu component | [MenuItem docs](menu-item) |
-| [MenuSeparator](menu-separator) | Separator for Menu component | [MenuSeparator docs](menu-separator) |
-| [MenuSub](menu-sub) | Submenu for Menu component | [MenuSub docs](menu-sub) |
-| [MenuTitle](menu-title) | Title for Menu component | [MenuTitle docs](menu-title) |
-| [Nav](nav) | Navigation bar | [Nav docs](nav) |
-| [Pagination](pagination) | Pagination controls | [Pagination docs](pagination) |
-| [Spotlight](spotlight) | Command palette/search | [Spotlight docs](spotlight) |
+| Tag | Inside |
+|---|---|
+| `<x-artisanpack-accordion-item>` | [Accordion](https://docs.artisanpackui.dev/documentation/design-system/components/accordion) |
+| `<x-artisanpack-avatar-group>` | A row of overlapping [Avatars](https://docs.artisanpackui.dev/documentation/design-system/components/avatar) |
+| `<x-artisanpack-breadcrumbs-item>` | [Breadcrumbs](https://docs.artisanpackui.dev/documentation/design-system/components/breadcrumbs) |
+| `<x-artisanpack-dropdown-menu-item>`, `-group`, `-separator` | [DropdownMenu](https://docs.artisanpackui.dev/documentation/design-system/components/dropdown-menu) |
+| `<x-artisanpack-list>` | The container for [ListItem](https://docs.artisanpackui.dev/documentation/design-system/components/list-item) rows |
+| `<x-artisanpack-menu-item>`, `<x-artisanpack-menu-sub>`, `<x-artisanpack-menu-title>`, `<x-artisanpack-menu-separator>` | [Menu](https://docs.artisanpackui.dev/documentation/design-system/components/menu) |
+| `<x-artisanpack-navbar-item>` | [Navbar](https://docs.artisanpackui.dev/documentation/design-system/components/navbar) |
+| `<x-artisanpack-step>` | [Steps](https://docs.artisanpackui.dev/documentation/design-system/components/steps) |
+| `<x-artisanpack-tab>` | [Tabs](https://docs.artisanpackui.dev/documentation/design-system/components/tabs) |
+| `<x-artisanpack-timeline-item>` | [Timeline](https://docs.artisanpackui.dev/documentation/design-system/components/timeline) |
+| `<x-artisanpack-toaster>` | The region that shows [Toasts](https://docs.artisanpackui.dev/documentation/design-system/components/toast). Put it once in your layout |
 
-### Data Display Components
+## Livewire guides
 
-| Component | Description | Documentation |
-|-----------|-------------|---------------|
-| [Avatar](avatar) | User avatar/profile image | [Avatar docs](avatar) |
-| [Badge](badge) | Small status indicator | [Badge docs](badge) |
-| [Calendar](calendar) | Calendar display | [Calendar docs](calendar) |
-| [CalendarEnhanced](calendar-enhanced) | Enhanced calendar with events and views | [CalendarEnhanced docs](calendar-enhanced) |
-| [Chart](chart) | Data visualization charts | [Chart docs](chart) |
-| [Code](code) | Code display with syntax highlighting | [Code docs](code) |
-| [Diff](diff) | Text difference display | [Diff docs](diff) |
-| [EventModalContent](event-modal-content) | Calendar event modal content | [EventModalContent docs](event-modal-content) |
-| [Heading](heading) | Styled heading text | [Heading docs](heading) |
-| [ImageGallery](image-gallery) | Image gallery display | [ImageGallery docs](image-gallery) |
-| [ImageLibrary](image-library) | Image library/picker | [ImageLibrary docs](image-library) |
-| [ImageSlider](image-slider) | Image slider/carousel component | [ImageSlider docs](image-slider) |
-| [Kbd](kbd) | Keyboard key display | [Kbd docs](kbd) |
-| [Link component](link) | Styled link element | [Link component docs](link) |
-| [ListItem](list-item) | List item with various layouts | [ListItem docs](list-item) |
-| [Markdown](markdown) | Markdown content display | [Markdown docs](markdown) |
-| [Profile](profile) | User profile display | [Profile docs](profile) |
-| [Progress](progress) | Progress bar | [Progress docs](progress) |
-| [ProgressRadial](progress-radial) | Radial progress indicator | [ProgressRadial docs](progress-radial) |
-| [Stat](stat) | Statistics display | [Stat docs](stat) |
-| [Steps](steps) | Step indicator | [Steps docs](steps) |
-| [Step](step) | Individual step for Steps component | [Step docs](step) |
-| [Subheading](subheading) | Styled subheading text | [Subheading docs](subheading) |
-| [Sparkline](sparkline) | Inline sparkline charts | [Sparkline docs](sparkline) |
-| [Table](table) | Data table with sorting, export, and more | [Table docs](table) |
-| [Text](text) | Styled text component | [Text docs](text) |
-| [TimelineItem](timeline-item) | Timeline item display | [TimelineItem docs](timeline-item) |
+Some components lean on Livewire or Laravel in ways the component pages don't cover:
 
-### Dashboard Components (v2.0+)
+- [Toasts](Livewire-Toasts): the `Toast` trait and toasts from PHP.
+- [Spotlight](Livewire-Spotlight): where its search results come from.
+- [Calendar](Livewire-Calendar): the `<livewire:artisanpack-calendar>` component.
+- [Tables](Livewire-Tables): scoped slots, sorting, selection and exporting.
+- [Media and Uploads](Livewire-Media-And-Uploads): ImageLibrary with `WithMediaSync`, File and RichTextEditor uploads.
 
-| Component | Description | Documentation |
-|-----------|-------------|---------------|
-| [KpiCard](kpi-card) | KPI card with sparkline and trend indicator | [KpiCard docs](kpi-card) |
-| [WidgetGrid](widget-grid) | Responsive grid for dashboard layouts | [WidgetGrid docs](widget-grid) |
-| [StreamableContent](streamable-content) | Container for streaming content (AI responses) | [StreamableContent docs](streamable-content) |
+## Deprecated tags
 
-### Feedback Components
-
-| Component | Description | Documentation |
-|-----------|-------------|---------------|
-| [Alert](alert) | Alert/notification message | [Alert docs](alert) |
-| [Errors](errors) | Form validation errors display | [Errors docs](errors) |
-| [Loading](loading) | Loading indicator | [Loading docs](loading) |
-| [Toast](toast) | Toast notification | [Toast docs](toast) |
-
-### Utility Components
-
-| Component | Description | Documentation |
-|-----------|-------------|---------------|
-| [Carousel](carousel) | Image/content carousel | [Carousel docs](carousel) |
-| [Header](header) | Page header with actions | [Header docs](header) |
-| [Icon](icon) | SVG icon display | [Icon docs](icon) |
-| [Swap](swap) | Element that swaps content on interaction | [Swap docs](swap) |
-| [ThemeToggle](theme-toggle) | Light/dark theme toggle | [ThemeToggle docs](theme-toggle) |
-
-## Component Composition
-
-ArtisanPack UI components are designed to work together seamlessly. Here are some examples of component composition:
-
-### Form with Validation
-
-```php
-<x-artisanpack-form wire:submit="save">
-    <x-artisanpack-input label="Name" wire:model="name" required />
-    <x-artisanpack-input label="Email" wire:model="email" type="email" required />
-    <x-artisanpack-textarea label="Message" wire:model="message" required />
-    
-    <x-slot:actions>
-        <x-artisanpack-button type="submit">Submit</x-artisanpack-button>
-    </x-slot:actions>
-</x-artisanpack-form>
-```
-
-### Card with Tabs
-
-```php
-<x-artisanpack-card>
-    <x-slot:header>
-        <h3 class="text-lg font-bold">User Profile</h3>
-    </x-slot:header>
-    
-    <x-artisanpack-tabs>
-        <x-artisanpack-tab name="info" label="Information" active>
-            <div class="p-4">User information content</div>
-        </x-artisanpack-tab>
-        
-        <x-artisanpack-tab name="settings" label="Settings">
-            <div class="p-4">User settings content</div>
-        </x-artisanpack-tab>
-    </x-artisanpack-tabs>
-</x-artisanpack-card>
-```
-
-### Data Table with Export (v2.0+)
-
-```php
-<?php
-use ArtisanPack\LivewireUiComponents\Traits\WithTableExport;
-use Livewire\Volt\Component;
-
-new class extends Component {
-    use WithTableExport;
-
-    public function with(): array
-    {
-        return [
-            'headers' => [
-                ['key' => 'name', 'label' => 'Name'],
-                ['key' => 'email', 'label' => 'Email'],
-                ['key' => 'role', 'label' => 'Role'],
-            ],
-            'users' => User::paginate(10),
-        ];
-    }
-
-    public function getTableExportData(string $tableId = 'default'): array
-    {
-        return [
-            'headers' => $this->with()['headers'],
-            'rows' => User::all()->toArray(),
-            'filename' => 'users-export',
-        ];
-    }
-}; ?>
-
-<x-artisanpack-table
-    :headers="$headers"
-    :rows="$users"
-    exportable
-    :export-formats="['csv', 'xlsx', 'pdf']"
-    with-pagination />
-```
-
-### Dashboard with KPI Cards (v2.0+)
-
-```php
-<x-artisanpack-widget-grid :cols="4" :gap="4">
-    <x-artisanpack-kpi-card
-        title="Total Revenue"
-        value="$45,231"
-        icon="o-currency-dollar"
-        :change="12.5"
-        change-label="vs last month"
-        :sparkline-data="[1200, 1350, 1100, 1500, 1400, 1600, 1800]" />
-
-    <x-artisanpack-kpi-card
-        title="Active Users"
-        value="2,345"
-        icon="o-users"
-        :change="8.2"
-        change-label="vs last month" />
-
-    <x-artisanpack-kpi-card
-        title="Orders"
-        value="1,234"
-        icon="o-shopping-cart"
-        :change="-2.4"
-        change-label="vs last month" />
-
-    <x-artisanpack-kpi-card
-        title="Conversion"
-        value="3.24%"
-        icon="o-arrow-path"
-        :change="0.8"
-        change-label="improvement" />
-</x-artisanpack-widget-grid>
-```
-
-## Next Steps
-
-Explore the documentation for individual components to learn more about their specific features, props, slots, and usage examples.
+Most 2.x tags still render in 3.0 as aliases of their 3.0 replacements. See [Deprecated Aliases](Components-Deprecated-Aliases).

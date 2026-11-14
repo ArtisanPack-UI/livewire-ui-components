@@ -2,231 +2,120 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\MessageBag;
+use Illuminate\Support\ViewErrorBag;
 
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
-use ArtisanPack\LivewireUiComponents\View\Components\Signature;
-use Error;
-use RuntimeException;
+/*
+ * Signature (#53): the design-system markup contract, the modes, the
+ * Alpine wiring, attribute routing and the error lookup. The manifest
+ * parity check is in tests/Feature/DesignSystemParityTest.php.
+ */
 
 /**
- * Comprehensive unit tests for the Signature component.
+ * The parts a render carries, in order.
  *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+ * @return list<string>
  */
-class SignatureComponentTest extends ComponentTestCase
+function signatureParts(string $html): array
 {
-    protected string $componentClass = Signature::class;
-
-    protected array $defaultProperties = [
-        'height'         => '250',
-        'clearText'      => 'Clear',
-        'hintClass'      => 'fieldset-label text-xs pt-1',
-        'config'         => [],
-        'errorClass'     => 'text-error text-xs pt-1',
-        'omitError'      => false,
-        'firstErrorOnly' => false,
-    ];
-
-    protected array $requiredProperties = [];
-
-    public function test_signature_string_properties(): void
-    {
-        $stringProperties = ['id', 'height', 'clearText', 'hint', 'hintClass', 'clearBtnStyle', 'errorClass', 'errorField'];
-        $testValues       = ComponentDataFactory::sampleTexts();
-
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
-
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
+    $parts = [];
+    foreach (designSystemDom($html)->query('//*[@data-scope="signature"]') as $element) {
+        $parts[] = $element->getAttribute('data-part');
     }
 
-    public function test_signature_boolean_properties(): void
-    {
-        $booleanProperties = ['omitError', 'firstErrorOnly'];
-
-        foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
-            $this->assertTrue($component->$property);
-
-            $component = $this->createComponent([$property => false]);
-            $this->assertFalse($component->$property);
-        }
-    }
-
-    public function test_signature_array_properties(): void
-    {
-        $arrayProperties = ['config'];
-        $testArrays      = ComponentDataFactory::arrayData();
-
-        foreach ($arrayProperties as $property) {
-            foreach ($testArrays as $array) {
-                $component = $this->createComponent([$property => $array]);
-                $this->assertEquals($array, $component->$property);
-            }
-        }
-    }
-
-    public function test_signature_model_name_method(): void
-    {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'modelName')) {
-            try {
-                $result = $component->modelName();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_signature_error_field_name_method(): void
-    {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'errorFieldName')) {
-            try {
-                $result = $component->errorFieldName();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_signature_setup_method(): void
-    {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'setup')) {
-            try {
-                $result = $component->setup();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_signature_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
-
-    public function test_signature_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'Signature should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
-
-    public function test_signature_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
-
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
-
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_signature_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'Signature rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
+    return $parts;
 }
+
+test('the fixture renders the contract markup in order', function (): void {
+    $html = Blade::render('<x-artisanpack-signature id="sig" label="Signature" required hint="Olivia Rhye" error="Sign to accept." />');
+
+    expect(signatureParts($html))->toBe([
+        'label', 'required', 'modes', 'mode', 'mode', 'mode', 'pad', 'line', 'mark', 'ink', 'typed', 'upload', 'tools', 'undo', 'clear', 'placeholder', 'hint', 'error', 'status',
+    ]);
+
+    $dom  = designSystemDom($html);
+    $root = $dom->query('//div[contains(@class, "apui-signature")]')->item(0);
+
+    expect($root->getAttribute('id'))->toBe('sig')
+        ->and($root->getAttribute('role'))->toBe('group')
+        ->and($root->getAttribute('aria-labelledby'))->toBe('sig-label')
+        ->and($root->getAttribute('aria-describedby'))->toBe('sig-hint sig-error')
+        ->and($root->getAttribute('data-mode'))->toBe('draw')
+        ->and($root->getAttribute('data-pen-color'))->toBe('default')
+        ->and($root->hasAttribute('data-invalid'))->toBeTrue()
+        ->and($root->getAttribute('x-data'))->toStartWith('apuiSignature({ value: ')
+        ->and($dom->query('//canvas')->item(0)->getAttribute('role'))->toBe('img')
+        ->and($dom->query('//*[@data-part="typed"]')->item(0)->getAttribute('aria-required'))->toBe('true')
+        ->and($dom->query('//*[@data-part="status"]')->item(0)->getAttribute('aria-live'))->toBe('polite');
+});
+
+test('every mode button is a toggle and only the current mode shows its parts', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-signature id="s" mode="type" />'));
+
+    $pressed = [];
+    foreach ($dom->query('//*[@data-part="mode"]') as $button) {
+        $pressed[$button->getAttribute('data-value')] = $button->getAttribute('aria-pressed');
+    }
+
+    expect($pressed)->toBe(['draw' => 'false', 'type' => 'true', 'upload' => 'false'])
+        ->and($dom->query('//canvas')->item(0)->hasAttribute('hidden'))->toBeTrue()
+        ->and($dom->query('//*[@data-part="typed"]')->item(0)->hasAttribute('hidden'))->toBeFalse()
+        ->and($dom->query('//*[@data-part="tools"]')->item(0)->hasAttribute('hidden'))->toBeTrue()
+        ->and($dom->query('//*[@data-part="upload"]')->item(0)->hasAttribute('hidden'))->toBeTrue();
+});
+
+test('type mode is always offered and an unknown mode falls back', function (): void {
+    $html = Blade::render('<x-artisanpack-signature :modes="[\'draw\']" mode="upload" />');
+
+    expect(signatureParts($html))->not->toContain('upload')
+        ->and(substr_count($html, 'data-part="mode"'))->toBe(2)
+        ->and($html)->toContain('data-value="type"')
+        ->and($html)->toContain('data-mode="draw"');
+});
+
+test('wire:model entangles the value and name lands on the hidden input', function (): void {
+    $html = Blade::render('<x-artisanpack-signature wire:model.live="signature" name="signature" class="mt-4" data-test="x" />');
+    $dom  = designSystemDom($html);
+    $root = $dom->query('//div[contains(@class, "apui-signature")]')->item(0);
+
+    expect($root->getAttribute('x-data'))->toContain("\$wire.entangle('signature').live")
+        ->and($root->getAttribute('class'))->toBe('apui-signature mt-4')
+        ->and($root->getAttribute('data-test'))->toBe('x')
+        ->and($root->hasAttribute('name'))->toBeFalse()
+        ->and($html)->not->toContain('wire:model')
+        ->and($dom->query('//input[@type="hidden"]')->item(0)->getAttribute('name'))->toBe('signature');
+});
+
+test('the built-in strings are translatable and overridable', function (): void {
+    $html = Blade::render('<x-artisanpack-signature clear-label="Erase" placeholder="Sign here" />');
+
+    expect($html)->toContain('<span>Erase</span>')
+        ->and($html)->toContain('>Sign here</span>')
+        ->and($html)->toContain('aria-label="Undo stroke"')
+        ->and($html)->toContain('aria-label="Signature method"');
+});
+
+test('disabled disables every control; the clear button waits for a value', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-signature disabled />'));
+
+    expect($dom->query('//div[contains(@class, "apui-signature")]')->item(0)->hasAttribute('data-disabled'))->toBeTrue()
+        ->and($dom->query('//button[not(@disabled)]')->length)->toBe(0)
+        ->and($dom->query('//input[@type="text" and @disabled]')->length)->toBe(1);
+
+    $filled = designSystemDom(Blade::render('<x-artisanpack-signature value="data:image/png;base64,AA" />'));
+    expect($filled->query('//*[@data-part="clear"]')->item(0)->hasAttribute('disabled'))->toBeFalse();
+});
+
+test('the error comes from $errors for the wire:model key', function (): void {
+    view()->share('errors', (new ViewErrorBag)->put('default', new MessageBag(['signature' => 'Please sign.'])));
+
+    $html = Blade::render('<x-artisanpack-signature wire:model="signature" label="Signature" />');
+
+    expect($html)->toContain('Please sign.</p>')
+        ->and($html)->toContain('data-invalid');
+});
+
+test('pen colors land on the root', function (string $color): void {
+    expect(Blade::render('<x-artisanpack-signature pen-color="'.$color.'" />'))->toContain('data-pen-color="'.$color.'"');
+})->with(['default', 'primary', 'error', 'info']);

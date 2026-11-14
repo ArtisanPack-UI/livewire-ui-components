@@ -14,7 +14,6 @@ use ArtisanPackUI\Hooks\Facades\Filter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\View\ComponentAttributeBag;
 use PHPUnit\Framework\Attributes\Test;
-use Throwable;
 
 class HooksTest extends TestCase
 {
@@ -101,21 +100,26 @@ class HooksTest extends TestCase
     }
 
     #[Test]
-    public function toast_dispatched_action_fires_with_type_title_and_options(): void
+    public function toast_dispatched_action_fires_with_color_title_and_options(): void
     {
         $captured = null;
 
         Action::add(
             'ap.livewireUiComponents.toastDispatched',
-            function (string $type, string $title, array $options) use (&$captured): void {
-                $captured = compact('type', 'title', 'options');
+            function (string $color, string $title, array $options) use (&$captured): void {
+                $captured = compact('color', 'title', 'options');
             },
         );
 
         $harness = new class {
             use \ArtisanPack\LivewireUiComponents\Traits\Toast;
 
-            public function js(string $script): void {}
+            public array $dispatched = [];
+
+            public function dispatch(string $event, mixed ...$params): void
+            {
+                $this->dispatched[] = [$event, $params];
+            }
 
             public function redirect(string $url, bool $navigate = false): string
             {
@@ -123,21 +127,15 @@ class HooksTest extends TestCase
             }
         };
 
-        // The trait's Blade::render call for the icon depends on the full
-        // BladeUI\Icons manifest, which isn't wired up in the test env.
-        // The action fires before the render, so we can still verify it.
-        try {
-            $harness->toast('success', 'Saved', 'It worked', 'top-end', 'o-check-circle', 'alert-success', 5000);
-        } catch (Throwable) {
-            // Ignore rendering failure in the test environment.
-        }
+        $harness->toast('Saved', 'It worked', color: 'success', icon: 'circle-check', duration: 5000);
 
         $this->assertNotNull($captured);
-        $this->assertEquals('success', $captured['type']);
+        $this->assertEquals('success', $captured['color']);
         $this->assertEquals('Saved', $captured['title']);
         $this->assertEquals('It worked', $captured['options']['description']);
-        $this->assertEquals('o-check-circle', $captured['options']['icon']);
+        $this->assertEquals('circle-check', $captured['options']['icon']);
         $this->assertEquals(5000, $captured['options']['duration']);
+        $this->assertEquals('toast', $harness->dispatched[0][0]);
     }
 
     #[Test]
@@ -152,14 +150,13 @@ class HooksTest extends TestCase
             },
         );
 
-        $table = new Table(
+        $table = (new Table(
             headers: [['key' => 'name', 'label' => 'Name']],
             rows: [],
-            id: 'users-table',
-        );
+        ))->withAttributes(['id' => 'users-table']);
 
-        $this->assertCount(2, $table->headers);
-        $this->assertEquals('users-table', $table->headers[1]['label']);
+        $this->assertCount(2, $table->columns());
+        $this->assertEquals('users-table', $table->columns()[1]['label']);
     }
 
     #[Test]
@@ -176,7 +173,7 @@ class HooksTest extends TestCase
             },
         );
 
-        new Table(headers: [['key' => 'name']], rows: []);
+        (new Table(headers: [['key' => 'name']], rows: []))->withAttributes([])->columns();
 
         $this->assertEquals('default', $captured);
     }
@@ -187,18 +184,18 @@ class HooksTest extends TestCase
         Filter::add(
             'ap.livewireUiComponents.themeColors',
             function (array $themes) {
-                $themes['light']['label'] = 'Day';
-                $themes['dark']['theme']  = 'midnight';
+                $themes['light']['label']         = 'Day';
+                $themes['high-contrast']['label'] = 'Bold';
 
                 return $themes;
             },
         );
 
-        $toggle = new ThemeToggle;
+        $labels = (new ThemeToggle)->withAttributes([])->labels();
 
-        $this->assertEquals('Day', $toggle->light);
-        $this->assertEquals('midnight', $toggle->darkTheme);
-        $this->assertEquals('light', $toggle->lightTheme);
+        $this->assertEquals('Day', $labels['light']);
+        $this->assertEquals('Bold', $labels['high-contrast']);
+        $this->assertEquals('Dark', $labels['dark']);
     }
 
     #[Test]

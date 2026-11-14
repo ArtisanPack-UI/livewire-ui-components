@@ -1,254 +1,154 @@
 <?php
 
-declare(strict_types=1);
 /**
  * ToastException
  *
- * This file contains the ToastException class for the ArtisanPack UI Livewire UI Components package.
+ * An exception that answers a Livewire request with a design-system toast.
  *
  * @author     Jacob Martella
- * @copyright  2023 Jacob Martella
+ * @copyright  2026 Jacob Martella
  * @license    MIT
  *
- * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
- * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
+ * @link       https://github.com/ArtisanPack-UI/livewire-ui-components
  * @since      1.0.0
  */
 
+declare(strict_types=1);
+
 namespace ArtisanPack\LivewireUiComponents\Exceptions;
 
+use ArtisanPack\LivewireUiComponents\Support\Toasts;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Blade;
 use InvalidArgumentException;
 
 /**
  * ToastException Class
  *
- * Provides an exception type that can display toast notifications to users.
+ * Thrown in a Livewire action, it answers with `{ toast: { … },
+ * prevent_default: true }`, which `<x-artisanpack-toaster>` shows as a
+ * toast (the options `Support\Toasts::make()` builds).
  *
  * @since 1.0.0
  */
 class ToastException extends Exception
 {
     /**
-     * The type of toast (info, success, error, warning).
+     * The toast's options. An exception built with only a message shows
+     * that message as an error toast.
      *
-     * @since 1.0.0
+     * @since 3.0.0
+     *
+     * @var array<string, bool|int|string>
      */
-    protected string $type = 'info';
+    protected array $toast = [];
 
     /**
-     * The toast title.
-     *
-     * @since 1.0.0
-     */
-    protected ?string $title = null;
-
-    /**
-     * The toast description.
-     *
-     * @since 1.0.0
-     */
-    protected ?string $description = null;
-
-    /**
-     * The position of the toast on screen.
-     *
-     * @since 1.0.0
-     */
-    protected string $position = 'toast-top toast-end';
-
-    /**
-     * The icon to display in the toast.
-     *
-     * @since 1.0.0
-     */
-    protected string $icon = 'o-information-circle';
-
-    /**
-     * The CSS classes for styling the toast.
-     *
-     * @since 1.0.0
-     */
-    protected string $css = 'alert-info';
-
-    /**
-     * The timeout duration in milliseconds.
-     *
-     * @since 1.0.0
-     */
-    protected int $timeout = 3000;
-
-    /**
-     * Whether to prevent the default exception handling.
+     * Whether to stop Livewire's default error handling.
      *
      * @since 1.0.0
      */
     protected bool $preventDefault = true;
 
     /**
-     * Create a typed toast message exception.
+     * Creates a toast exception with a color.
      *
-     * @since 1.0.0
+     * @since 3.0.0
      *
-     * @param  string  $type  The toast type (info, success, error, warning).
-     * @param  string  $title  The toast title.
-     * @param  string|null  $description  Optional. The toast description. Default null.
-     * @param  string  $position  Optional. The toast position on screen. Default 'toast-top toast-end'.
-     * @param  string  $icon  Optional. The icon to display. Default 'o-information-circle'.
-     * @param  string  $css  Optional. The CSS classes for styling. Default 'alert-info'.
-     * @param  int  $timeout  Optional. The timeout duration in milliseconds. Default 3000.
+     * @param  string  $color  A semantic color.
+     * @param  string  $title  The message.
+     * @param  string|null  $description  Supporting text.
+     * @param  string|null  $icon  An icon name from the registry. Defaults to the color's status icon.
+     * @param  int|null  $duration  Milliseconds before it dismisses itself. 0 keeps it.
      */
     public static function typedMessage(
-        string $type,
+        string $color,
         string $title,
         ?string $description = null,
-        string $position = 'toast-top toast-end',
-        string $icon = 'o-information-circle',
-        string $css = 'alert-info',
-        int $timeout = 3000,
+        ?string $icon = null,
+        ?int $duration = null,
     ): self {
         $instance = new self(message: $title, code: 500);
 
-        $instance->type        = $type;
-        $instance->title       = $title;
-        $instance->description = $description;
-        $instance->position    = $position;
-        $instance->icon        = $icon;
-        $instance->css         = $css;
-        $instance->timeout     = $timeout;
+        try {
+            $instance->toast = Toasts::make(title: $title, description: $description, color: $color, icon: $icon, duration: $duration);
+        } catch (InvalidArgumentException) {
+            // A bad icon (such as a 2.x position passed third) or color must
+            // not turn the toast into a 500: show it plainly.
+            $instance->toast = Toasts::make(
+                title: $title,
+                description: $description,
+                color: in_array($color, Toasts::COLORS, true) ? $color : null,
+                duration: null !== $duration && $duration >= 0 ? $duration : null,
+            );
+        }
 
         return $instance;
     }
 
     /**
-     * Create an info toast message exception.
+     * Creates an info toast exception.
      *
      * @since 1.0.0
      *
-     * @param  string  $title  The toast title.
-     * @param  string|null  $description  Optional. The toast description. Default null.
-     * @param  string  $position  Optional. The toast position on screen. Default 'toast-top toast-end'.
-     * @param  string  $icon  Optional. The icon to display. Default 'o-information-circle'.
-     * @param  string  $css  Optional. The CSS classes for styling. Default 'alert-info'.
-     * @param  int  $timeout  Optional. The timeout duration in milliseconds. Default 3000.
+     * @param  string  $title  The message.
+     * @param  string|null  $description  Supporting text.
+     * @param  string|null  $icon  An icon name from the registry.
+     * @param  int|null  $duration  Milliseconds before it dismisses itself. 0 keeps it.
      */
-    public static function info(
-        string $title,
-        ?string $description = null,
-        string $position = 'toast-top toast-end',
-        string $icon = 'o-information-circle',
-        string $css = 'alert-info',
-        int $timeout = 3000,
-    ): self {
-        return self::typedMessage(
-            type: 'info',
-            title: $title,
-            description: $description,
-            position: $position,
-            icon: $icon,
-            css: $css,
-            timeout: $timeout,
-        );
+    public static function info(string $title, ?string $description = null, ?string $icon = null, ?int $duration = null): self
+    {
+        return self::typedMessage('info', $title, $description, $icon, $duration);
     }
 
     /**
-     * Create a success toast message exception.
+     * Creates a success toast exception.
      *
      * @since 1.0.0
      *
-     * @param  string  $title  The toast title.
-     * @param  string|null  $description  Optional. The toast description. Default null.
-     * @param  string  $position  Optional. The toast position on screen. Default 'toast-top toast-end'.
-     * @param  string  $icon  Optional. The icon to display. Default 'o-check-circle'.
-     * @param  string  $css  Optional. The CSS classes for styling. Default 'alert-success'.
-     * @param  int  $timeout  Optional. The timeout duration in milliseconds. Default 3000.
+     * @param  string  $title  The message.
+     * @param  string|null  $description  Supporting text.
+     * @param  string|null  $icon  An icon name from the registry.
+     * @param  int|null  $duration  Milliseconds before it dismisses itself. 0 keeps it.
      */
-    public static function success(
-        string $title,
-        ?string $description = null,
-        string $position = 'toast-top toast-end',
-        string $icon = 'o-check-circle',
-        string $css = 'alert-success',
-        int $timeout = 3000,
-    ): self {
-        return self::typedMessage(
-            type: 'success',
-            title: $title,
-            description: $description,
-            position: $position,
-            icon: $icon,
-            css: $css,
-            timeout: $timeout,
-        );
+    public static function success(string $title, ?string $description = null, ?string $icon = null, ?int $duration = null): self
+    {
+        return self::typedMessage('success', $title, $description, $icon, $duration);
     }
 
     /**
-     * Create an error toast message exception.
+     * Creates an error toast exception.
      *
      * @since 1.0.0
      *
-     * @param  string  $title  The toast title.
-     * @param  string|null  $description  Optional. The toast description. Default null.
-     * @param  string  $position  Optional. The toast position on screen. Default 'toast-top toast-end'.
-     * @param  string  $icon  Optional. The icon to display. Default 'o-x-circle'.
-     * @param  string  $css  Optional. The CSS classes for styling. Default 'alert-error'.
-     * @param  int  $timeout  Optional. The timeout duration in milliseconds. Default 3000.
+     * @param  string  $title  The message.
+     * @param  string|null  $description  Supporting text.
+     * @param  string|null  $icon  An icon name from the registry.
+     * @param  int|null  $duration  Milliseconds before it dismisses itself. 0 keeps it.
      */
-    public static function error(
-        string $title,
-        ?string $description = null,
-        string $position = 'toast-top toast-end',
-        string $icon = 'o-x-circle',
-        string $css = 'alert-error',
-        int $timeout = 3000,
-    ): self {
-        return self::typedMessage(
-            type: 'error',
-            title: $title,
-            description: $description,
-            position: $position,
-            icon: $icon,
-            css: $css,
-            timeout: $timeout,
-        );
+    public static function error(string $title, ?string $description = null, ?string $icon = null, ?int $duration = null): self
+    {
+        return self::typedMessage('error', $title, $description, $icon, $duration);
     }
 
     /**
-     * Create a warning toast message exception.
+     * Creates a warning toast exception.
      *
      * @since 1.0.0
      *
-     * @param  string  $title  The toast title.
-     * @param  string|null  $description  Optional. The toast description. Default null.
-     * @param  string  $position  Optional. The toast position on screen. Default 'toast-top toast-end'.
-     * @param  string  $icon  Optional. The icon to display. Default 'o-exclamation-triangle'.
-     * @param  string  $css  Optional. The CSS classes for styling. Default 'alert-warning'.
-     * @param  int  $timeout  Optional. The timeout duration in milliseconds. Default 3000.
+     * @param  string  $title  The message.
+     * @param  string|null  $description  Supporting text.
+     * @param  string|null  $icon  An icon name from the registry.
+     * @param  int|null  $duration  Milliseconds before it dismisses itself. 0 keeps it.
      */
-    public static function warning(
-        string $title,
-        ?string $description = null,
-        string $position = 'toast-top toast-end',
-        string $icon = 'o-exclamation-triangle',
-        string $css = 'alert-warning',
-        int $timeout = 3000,
-    ): self {
-        return self::typedMessage(
-            type: 'warning',
-            title: $title,
-            description: $description,
-            position: $position,
-            icon: $icon,
-            css: $css,
-            timeout: $timeout,
-        );
+    public static function warning(string $title, ?string $description = null, ?string $icon = null, ?int $duration = null): self
+    {
+        return self::typedMessage('warning', $title, $description, $icon, $duration);
     }
 
     /**
-     * Allow default exception handling to proceed.
+     * Lets Livewire's default error handling run too.
      *
      * @since 1.0.0
      */
@@ -260,57 +160,45 @@ class ToastException extends Exception
     }
 
     /**
-     * Render the exception as a JSON response for Livewire requests.
+     * The toast's options. An exception built with only a message shows
+     * that message as an error toast.
+     *
+     * @since 3.0.0
+     *
+     * @return array<string, bool|int|string> The options.
+     */
+    public function toast(): array
+    {
+        if ([] !== $this->toast) {
+            return $this->toast;
+        }
+
+        // Built with `new ToastException( 'message' )`: the message is the title.
+        $message = $this->getMessage();
+
+        return Toasts::make(title: '' !== $message ? $message : __('Something went wrong.'), color: 'error');
+    }
+
+    /**
+     * Renders the toast as JSON for Livewire requests.
      *
      * @since 1.0.0
      *
      * @param  Request  $request  The incoming request.
      *
-     * @return false|JsonResponse JSON response for Livewire requests, false otherwise.
+     * @return false|JsonResponse JSON for Livewire requests, false otherwise.
      */
     public function render(Request $request): JsonResponse|false
     {
-        if ($request->hasHeader('x-livewire')) {
-            $validatedIcon = $this->validateIconName($this->icon);
-
-            return response()->json([
-                'toast' => [
-                    'type'        => $this->type,
-                    'title'       => $this->title,
-                    'description' => $this->description,
-
-                    'position' => $this->position,
-                    'icon'     => Blade::render("<x-artisanpack-icon class='w-7 h-7' :name=\"\$iconName\" />", ['iconName' => $validatedIcon]),
-                    'css'      => $this->css,
-                    'timeout'  => $this->timeout,
-                ],
-                'prevent_default' => $this->preventDefault,
-            ], $this->getCode());
+        if (! $request->hasHeader('x-livewire')) {
+            return false;
         }
 
-        return false;
-    }
+        $status = $this->getCode();
 
-    /**
-     * Validate and sanitize icon name to prevent XSS.
-     *
-     * @since 1.0.0
-     *
-     * @param  string  $icon  The icon name to validate.
-     *
-     * @throws InvalidArgumentException If the icon name is invalid.
-     *
-     * @return string The validated icon name.
-     */
-    private function validateIconName(string $icon): string
-    {
-        // Allow only alphanumeric characters, hyphens, and underscores
-        if (! preg_match('/^[a-zA-Z0-9_-]+$/', $icon)) {
-            throw new InvalidArgumentException(
-                "Invalid icon name: '{$icon}'. Icon names must contain only alphanumeric characters, hyphens, and underscores.",
-            );
-        }
-
-        return $icon;
+        return response()->json([
+            'toast'           => $this->toast(),
+            'prevent_default' => $this->preventDefault,
+        ], is_int($status) && $status >= 400 && $status < 600 ? $status : 500);
     }
 }

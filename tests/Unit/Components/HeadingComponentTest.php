@@ -2,198 +2,53 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
+use Illuminate\Support\Facades\Blade;
 
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
-use ArtisanPack\LivewireUiComponents\View\Components\Heading;
-use Error;
-use RuntimeException;
-
-/**
- * Comprehensive unit tests for the Heading component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * Heading (#58): the design-system markup contract. The manifest parity check
+ * is in tests/Feature/DesignSystemParityTest.php.
  */
-class HeadingComponentTest extends ComponentTestCase
-{
-    protected string $componentClass = Heading::class;
 
-    protected array $defaultProperties = [
-        'level'     => '1',
-        'semibold'  => false,
-        'bold'      => false,
-        'extrabold' => false,
-        'center'    => false,
-        'uuid'      => '',
-    ];
+test('renders an h2 by default, with size following level', function (): void {
+    $root = designSystemDom(Blade::render('<x-artisanpack-heading>Listings</x-artisanpack-heading>'))->query('//h2[contains(@class, "apui-heading")]')->item(0);
 
-    protected array $requiredProperties = [];
+    expect($root)->not->toBeNull()
+        ->and($root->getAttribute('data-level'))->toBe('2')
+        ->and($root->getAttribute('data-size'))->toBe('2')
+        ->and(trim($root->textContent))->toBe('Listings');
+});
 
-    public function test_heading_string_properties(): void
-    {
-        $stringProperties = ['id', 'level', 'size', 'color', 'uuid'];
-        $testValues       = ComponentDataFactory::sampleTexts();
+test('level and size are set apart', function (): void {
+    $root = designSystemDom(Blade::render('<x-artisanpack-heading level="3" size="5">Recent activity</x-artisanpack-heading>'))->query('//h3')->item(0);
+    $int  = designSystemDom(Blade::render('<x-artisanpack-heading :level="1">Title</x-artisanpack-heading>'))->query('//h1')->item(0);
 
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
+    expect($root->getAttribute('data-size'))->toBe('5')
+        ->and($int)->not->toBeNull();
+});
 
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
-    }
+test('an out-of-range level falls back to 2 and size to the level', function (): void {
+    $root = designSystemDom(Blade::render('<x-artisanpack-heading level="9" size="0">Title</x-artisanpack-heading>'))->query('//h2')->item(0);
 
-    public function test_heading_boolean_properties(): void
-    {
-        $booleanProperties = ['semibold', 'bold', 'extrabold', 'center'];
+    expect($root->getAttribute('data-size'))->toBe('2');
+});
 
-        foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
-            $this->assertTrue($component->$property);
+test('the eyebrow is a paragraph just before the heading', function (): void {
+    $dom     = designSystemDom(Blade::render('<x-artisanpack-heading eyebrow="Portfolio">Every property</x-artisanpack-heading>'));
+    $eyebrow = $dom->query('//p[@data-scope="heading"][@data-part="eyebrow"]')->item(0);
 
-            $component = $this->createComponent([$property => false]);
-            $this->assertFalse($component->$property);
-        }
-    }
+    expect(trim($eyebrow->textContent))->toBe('Portfolio')
+        ->and($dom->query('//p[@data-part="eyebrow"]/following-sibling::h2'))->toHaveCount(1);
+});
 
-    public function test_heading_size_class_method(): void
-    {
-        $component = $this->createComponent();
+test('an eyebrow slot overrides the prop', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-heading eyebrow="A"><x-slot:eyebrow><em>B</em></x-slot:eyebrow> Title</x-artisanpack-heading>'));
 
-        if (method_exists($component, 'sizeClass')) {
-            try {
-                $result = $component->sizeClass();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
+    expect($dom->query('//p[@data-part="eyebrow"]/em'))->toHaveCount(1);
+});
 
-    public function test_heading_font_weight_class_method(): void
-    {
-        $component = $this->createComponent();
+test('attributes land on the heading and classes on the eyebrow', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-heading id="t" class="x" eyebrow="E" :classes="[ \'eyebrow\' => \'y\' ]">Title</x-artisanpack-heading>'));
 
-        if (method_exists($component, 'fontWeightClass')) {
-            try {
-                $result = $component->fontWeightClass();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_heading_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
-
-    public function test_heading_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'Heading should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
-
-    public function test_heading_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
-
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
-
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_heading_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'Heading rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
-}
+    expect($dom->query('//h2[@id="t"][contains(@class, "x")]'))->toHaveCount(1)
+        ->and($dom->query('//p[@data-part="eyebrow"][@class="y"]'))->toHaveCount(1);
+});

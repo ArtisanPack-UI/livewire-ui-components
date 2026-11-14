@@ -1,104 +1,86 @@
 <?php
 
-declare(strict_types=1);
 /**
- * Toggle
+ * Toggle Component
  *
- * This file contains the Toggle class for the ArtisanPack UI Livewire UI Components package.
+ * The design-system Toggle (#53): a switch for settings that take effect
+ * immediately.
  *
  * @author     Jacob Martella
- * @copyright  2023 Jacob Martella
+ * @copyright  2026 Jacob Martella
  * @license    MIT
  *
- * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
- * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
+ * @link       https://github.com/ArtisanPack-UI/livewire-ui-components
  * @since      1.0.0
  */
 
+declare(strict_types=1);
+
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
-use Closure;
+use ArtisanPack\LivewireUiComponents\View\Concerns\InteractsWithFieldControl;
+use ArtisanPack\LivewireUiComponents\View\Concerns\RendersDesignSystemParts;
 use Illuminate\Contracts\View\View;
 
 /**
- * Toggle Class
+ * Toggle Component Class
  *
- * Provides functionality for the Toggle component.
+ * Renders `.apui-toggle`: the track (native checkbox with role=switch and the
+ * thumb), the label, the description and the error. `class` lands on the
+ * root; every other attribute, `wire:model` included, lands on the native
+ * checkbox.
  *
  * @since 1.0.0
  */
 class Toggle extends BaseComponent
 {
-    /**
-     * The component's UUID.
-     *
-     * @since 1.0.0
-     */
-    public string $uuid;
+    use InteractsWithFieldControl;
+    use RendersDesignSystemParts;
 
     /**
-     * Creates a new component instance.
+     * The component name used in derived ids.
      *
-     * @param  string|null  $id  The component's ID.
-     * @param  string|null  $label  The component's label.
-     * @param  bool|null  $right  Whether to position the label on the right.
-     * @param  string|null  $hint  A hint message to display.
-     * @param  string|null  $hintClass  The CSS class for the hint.
-     * @param  string|null  $errorField  The validation error field name.
-     * @param  string|null  $errorClass  The CSS class for the error.
-     * @param  bool|null  $omitError  Whether to omit the error display.
-     * @param  bool|null  $firstErrorOnly  Whether to show only the first error.
+     * @since 3.0.0
+     */
+    protected string $fieldName = 'toggle';
+
+    /**
+     * Creates the component.
      *
-     * @return void
+     * @since 3.0.0
      *
-     * @since 1.0.0
+     * @param  bool  $checked  Whether it's on. Livewire binds it with wire:model.
+     * @param  string  $size  Track size: sm, md or lg.
+     * @param  string  $color  The track color when on.
+     * @param  string|null  $label  The visible label. A `label` slot overrides it.
+     * @param  string|null  $description  Supporting text under the label. A `description` slot overrides it.
+     * @param  string|null  $error  Validation message. Defaults to the first `$errors` message for errorField.
+     * @param  bool  $invalid  Marks it invalid without a message.
+     * @param  bool  $disabled  Disables the control.
+     * @param  bool  $required  Marks it required.
+     * @param  string|null  $errorField  The `$errors` key. Defaults to the wire:model name.
+     * @param  array<string, string>  $classes  Extra classes per part.
      */
     public function __construct(
-        public ?string $id = null,
+        public bool $checked = false,
+        public string $size = 'md',
+        public string $color = 'primary',
         public ?string $label = null,
-        public ?bool $right = false,
-        public ?string $hint = null,
-        public ?string $hintClass = 'fieldset-label',
-
-        // Validations
+        public ?string $description = null,
+        public ?string $error = null,
+        public bool $invalid = false,
+        public bool $disabled = false,
+        public bool $required = false,
         public ?string $errorField = null,
-        public ?string $errorClass = 'text-error',
-        public ?bool $omitError = false,
-        public ?bool $firstErrorOnly = false,
-    ) {
-        $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
-    }
+        public array $classes = [],
+    ) {}
 
     /**
-     * Gets the model name from attributes.
-     *
-     * @return string|null The model name.
+     * Get the view that represents the component.
      *
      * @since 1.0.0
      */
-    public function modelName(): ?string
-    {
-        return $this->attributes->whereStartsWith('wire:model')->first();
-    }
-
-    /**
-     * Gets the error field name.
-     *
-     * @return string|null The error field name.
-     *
-     * @since 1.0.0
-     */
-    public function errorFieldName(): ?string
-    {
-        return $this->errorField ?? $this->modelName();
-    }
-
-    /**
-     * Get the view / contents that represent the component.
-     *
-     * @since 1.0.0
-     */
-    public function render(): View|Closure|string
+    public function render(): View
     {
         return view('livewire-ui-components::components.toggle');
     }

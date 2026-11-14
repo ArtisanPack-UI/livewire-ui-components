@@ -2,158 +2,129 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
-
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
 use ArtisanPack\LivewireUiComponents\View\Components\Dropdown;
-use Error;
-use RuntimeException;
+use ArtisanPack\LivewireUiComponents\View\Components\DropdownMenu;
+use Illuminate\Support\Facades\Blade;
 
-/**
- * Comprehensive unit tests for the Dropdown component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * dropdown (#145) is a deprecated alias of dropdown-menu.
  */
-class DropdownComponentTest extends ComponentTestCase
-{
-    protected string $componentClass = Dropdown::class;
 
-    protected array $defaultProperties = [
-        'icon'      => 'o-chevron-down',
-        'right'     => false,
-        'top'       => false,
-        'noXAnchor' => false,
-    ];
+test('extends DropdownMenu', function (): void {
+    expect(is_subclass_of(Dropdown::class, DropdownMenu::class))->toBeTrue();
+});
 
-    protected array $requiredProperties = [];
+test('renders the dropdown menu from the 2.x props', function (): void {
+    $dom   = designSystemDom(Blade::render('<x-artisanpack-dropdown id="actions" label="Options" right glass="frosted" :portal="false"><span>Body</span></x-artisanpack-dropdown>'));
+    $panel = $dom->query('//div[contains(@class, "apui-dropdown-menu")]')->item(0);
 
-    public function test_dropdown_string_properties(): void
-    {
-        $stringProperties = ['id', 'label', 'icon'];
-        $testValues       = ComponentDataFactory::sampleTexts();
+    expect($panel->getAttribute('data-align'))->toBe('end')
+        ->and($panel->getAttribute('data-surface'))->toBe('glass')
+        ->and($panel->getAttribute('id'))->toBe('actions-content')
+        ->and(trim($dom->query('//button[@data-part="trigger"]')->item(0)->textContent))->toBe('Options')
+        ->and($dom->query('//div[contains(@class, "apui-dropdown-menu")]/span')->item(0)->textContent)->toBe('Body')
+        ->and($dom->query('//details'))->toHaveCount(0);
+});
 
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
+test('defaults to the start alignment and the overlay surface', function (): void {
+    $panel = designSystemDom(Blade::render('<x-artisanpack-dropdown label="Options" :portal="false" />'))
+        ->query('//div[contains(@class, "apui-dropdown-menu")]')->item(0);
 
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
+    expect($panel->getAttribute('data-align'))->toBe('start')
+        ->and($panel->getAttribute('data-surface'))->toBe('overlay');
+});
+
+test('a string trigger is the label when label is not set', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-dropdown trigger="More" :portal="false" />'));
+
+    expect(trim($dom->query('//button[@data-part="trigger"]')->item(0)->textContent))->toBe('More');
+});
+
+test('the 3.0 align prop overrides right', function (): void {
+    $panel = designSystemDom(Blade::render('<x-artisanpack-dropdown label="Options" right align="center" :portal="false" />'))
+        ->query('//div[contains(@class, "apui-dropdown-menu")]')->item(0);
+
+    expect($panel->getAttribute('data-align'))->toBe('center');
+});
+
+test('the removed 2.x props do not leak as HTML attributes', function (): void {
+    $html = Blade::render('<x-artisanpack-dropdown label="Options" icon="o-cog" right top no-x-anchor glass="frosted" glass-tint="#ff0000" :glass-tint-opacity="40" trigger="More" :portal="false" />');
+
+    foreach (['icon=', 'right', 'top=', 'no-x-anchor', 'glass=', 'glass-tint', 'trigger='] as $attribute) {
+        expect($html)->not->toContain(' '.$attribute);
+    }
+});
+
+test('a link inside the dropdown is not blocked by a click handler (#134)', function (): void {
+    $html = Blade::render('<x-artisanpack-dropdown label="Account" :portal="false"><a href="/settings">Settings</a></x-artisanpack-dropdown>');
+    $dom  = designSystemDom($html);
+    $link = $dom->query('//div[contains(@class, "apui-dropdown-menu")]//a[@href="/settings"]');
+
+    // 2.x wrapped the menu in a <details @click="toggleDropdown($event)"> and
+    // the menu list in @click="closeDropdown()": the first called
+    // preventDefault() on every click, so links never opened. The alias has
+    // no click handler on any ancestor of the link; the behavior engine
+    // handles item selection itself.
+    expect($link)->toHaveCount(1);
+
+    for ($node = $link->item(0)->parentNode; $node instanceof DOMElement; $node = $node->parentNode) {
+        foreach (iterator_to_array($node->attributes) as $attribute) {
+            expect($attribute->name)->not->toStartWith('@click')
+                ->and($attribute->name)->not->toStartWith('x-on:click');
         }
     }
 
-    public function test_dropdown_boolean_properties(): void
-    {
-        $booleanProperties = ['right', 'top', 'noXAnchor'];
+    expect($html)->not->toContain('preventDefault')
+        ->and($html)->not->toContain('toggleDropdown');
+});
 
-        foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
-            $this->assertTrue($component->$property);
+test('wire:model binds the open state', function (): void {
+    $host = designSystemDom(Blade::render('<x-artisanpack-dropdown label="Options" wire:model="menuOpen" :portal="false" />'))
+        ->query('//div[@x-data]')->item(0);
 
-            $component = $this->createComponent([$property => false]);
-            $this->assertFalse($component->$property);
-        }
-    }
+    expect($host->getAttribute('x-data'))->toContain("open: \$wire.entangle('menuOpen')")
+        ->and($host->hasAttribute('wire:model'))->toBeFalse();
+});
 
-    public function test_dropdown_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
+test('the 2.x trigger slot becomes the trigger without nesting buttons', function (): void {
+    $dom = designSystemDom(Blade::render(<<<'BLADE'
+        <x-artisanpack-dropdown :portal="false">
+            <x-slot:trigger><x-artisanpack-button>Settings</x-artisanpack-button></x-slot:trigger>
+            <x-artisanpack-dropdown-menu-item label="Profile" />
+        </x-artisanpack-dropdown>
+        BLADE));
 
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
+    $triggers = $dom->query('//*[@data-scope="dropdown-menu"][@data-part="trigger"]');
+    $trigger  = $triggers->item(0);
 
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
+    expect($triggers)->toHaveCount(1)
+        ->and($trigger->nodeName)->toBe('span')
+        ->and($trigger->getAttribute('aria-haspopup'))->toBe('menu')
+        ->and($trigger->getAttribute('aria-controls'))->toEndWith('-content')
+        ->and($dom->query('.//button', $trigger))->toHaveCount(1)
+        ->and(trim($trigger->textContent))->toBe('Settings')
+        ->and($dom->query('//button//button'))->toHaveCount(0);
+});
 
-    public function test_dropdown_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
+test('without a trigger slot the default trigger button is kept', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-dropdown label="Actions" :portal="false" />'));
 
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
+    $trigger = $dom->query('//*[@data-scope="dropdown-menu"][@data-part="trigger"]')->item(0);
 
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'Dropdown should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
+    expect($trigger->nodeName)->toBe('button')
+        ->and(trim($trigger->textContent))->toBe('Actions');
+});
 
-    public function test_dropdown_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
+test('a text or icon-only 2.x trigger slot goes inside the keyboard-reachable trigger button', function (string $slot, string $text): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-dropdown :portal="false"><x-slot:trigger>'.$slot.'</x-slot:trigger><x-artisanpack-dropdown-menu-item label="Profile" /></x-artisanpack-dropdown>'));
 
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
+    $trigger = $dom->query('//*[@data-scope="dropdown-menu"][@data-part="trigger"]')->item(0);
 
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_dropdown_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'Dropdown rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
-}
+    expect($trigger->nodeName)->toBe('button')
+        ->and($trigger->hasAttribute('tabindex'))->toBeFalse()
+        ->and(trim($trigger->textContent))->toBe($text)
+        ->and($dom->query('//button//button'))->toHaveCount(0);
+})->with([
+    'text'          => ['Settings', 'Settings'],
+    'icon and text' => ['<svg aria-hidden="true"></svg><span>Options</span>', 'Options'],
+]);

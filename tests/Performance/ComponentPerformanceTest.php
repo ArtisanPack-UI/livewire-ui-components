@@ -6,6 +6,7 @@ namespace ArtisanPack\LivewireUiComponents\Tests\Performance;
 
 use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
 use ArtisanPack\LivewireUiComponents\Tests\TestCase;
+use Illuminate\Support\Facades\Blade;
 use PHPUnit\Framework\Attributes\Test;
 
 /**
@@ -29,8 +30,8 @@ class ComponentPerformanceTest extends TestCase
     public function button_component_renders_quickly(): void
     {
         $component = new \ArtisanPack\LivewireUiComponents\View\Components\Button(
-            label: 'Test Button',
             color: 'primary',
+            leadingIcon: 'plus',
         );
 
         $performance = TestHelpers::measureRenderingPerformance($component, 100);
@@ -47,20 +48,18 @@ class ComponentPerformanceTest extends TestCase
     #[Test]
     public function repeated_rendering_does_not_leak_memory(): void
     {
-        $component = new \ArtisanPack\LivewireUiComponents\View\Components\Button(
-            label: 'Test Button',
-        );
+        $component = new \ArtisanPack\LivewireUiComponents\View\Components\Button;
 
         // Warm up
         for ($i = 0; $i < 10; $i++) {
-            $component->render()->render();
+            Blade::renderComponent($component);
         }
 
         $initialMemory = memory_get_usage();
 
         // Render 100 times
         for ($i = 0; $i < 100; $i++) {
-            $component->render()->render();
+            Blade::renderComponent($component);
         }
 
         $finalMemory  = memory_get_usage();

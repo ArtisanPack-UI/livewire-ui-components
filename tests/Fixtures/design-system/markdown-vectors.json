@@ -1,0 +1,281 @@
+{
+  "$comment": "Markdown → HTML vectors (#65). Generated from Livewire UI Components' MarkdownRenderer (league/commonmark); renderMarkdown in src/data/markdown.ts must write the same bytes. html is sanitize on (the default), unsanitized is sanitize off.",
+  "vectors": [
+    {
+      "name": "the fixture: checklist, task list, quote and table",
+      "source": "## Viewing checklist\n\nBring **photo ID** and proof of income.\n\n- [x] Confirm time with agent\n- [ ] Measure the living room\n- [ ] Ask about `heating costs`\n\n> Viewings run 30 minutes.\n\n| Unit | Rent |\n|---|---:|\n| 2B | $1,400 |\n| 4A | $1,650 |\n",
+      "html": "<h2>Viewing checklist</h2>\n<p>Bring <strong>photo ID</strong> and proof of income.</p>\n<ul>\n<li data-scope=\"markdown\" data-part=\"task\"><label><input checked=\"\" disabled=\"\" type=\"checkbox\"> Confirm time with agent</label></li>\n<li data-scope=\"markdown\" data-part=\"task\"><label><input disabled=\"\" type=\"checkbox\"> Measure the living room</label></li>\n<li data-scope=\"markdown\" data-part=\"task\"><label><input disabled=\"\" type=\"checkbox\"> Ask about <code>heating costs</code></label></li>\n</ul>\n<blockquote>\n<p>Viewings run 30 minutes.</p>\n</blockquote>\n<table>\n<thead>\n<tr>\n<th>Unit</th>\n<th data-align=\"end\">Rent</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>2B</td>\n<td data-align=\"end\">$1,400</td>\n</tr>\n<tr>\n<td>4A</td>\n<td data-align=\"end\">$1,650</td>\n</tr>\n</tbody>\n</table>\n",
+      "unsanitized": "<h2>Viewing checklist</h2>\n<p>Bring <strong>photo ID</strong> and proof of income.</p>\n<ul>\n<li data-scope=\"markdown\" data-part=\"task\"><label><input checked=\"\" disabled=\"\" type=\"checkbox\"> Confirm time with agent</label></li>\n<li data-scope=\"markdown\" data-part=\"task\"><label><input disabled=\"\" type=\"checkbox\"> Measure the living room</label></li>\n<li data-scope=\"markdown\" data-part=\"task\"><label><input disabled=\"\" type=\"checkbox\"> Ask about <code>heating costs</code></label></li>\n</ul>\n<blockquote>\n<p>Viewings run 30 minutes.</p>\n</blockquote>\n<table>\n<thead>\n<tr>\n<th>Unit</th>\n<th data-align=\"end\">Rent</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>2B</td>\n<td data-align=\"end\">$1,400</td>\n</tr>\n<tr>\n<td>4A</td>\n<td data-align=\"end\">$1,650</td>\n</tr>\n</tbody>\n</table>\n"
+    },
+    {
+      "name": "raw HTML",
+      "source": "<script>alert(1)</script>\n\nHello <b>bold</b> and <img src=x onerror=alert(1)>.\n",
+      "html": "&lt;script&gt;alert(1)&lt;/script&gt;\n<p>Hello &lt;b&gt;bold&lt;/b&gt; and &lt;img src=x onerror=alert(1)&gt;.</p>\n",
+      "unsanitized": "&lt;script&gt;alert(1)&lt;/script&gt;\n<p>Hello <b>bold</b> and <img src=\"x\">.</p>\n"
+    },
+    {
+      "name": "raw HTML blocks",
+      "source": "<div class=\"x\" onclick=\"y()\">\n<p>Inside <a href=\"javascript:alert(1)\" title='t'>a</a> <kbd>K</kbd></p>\n</div>\n\n<!-- note -->\n\n<details open><summary>More</summary>\n\nBody\n\n</details>\n",
+      "html": "&lt;div class=\"x\" onclick=\"y()\"&gt;\n&lt;p&gt;Inside &lt;a href=\"javascript:alert(1)\" title='t'&gt;a&lt;/a&gt; &lt;kbd&gt;K&lt;/kbd&gt;&lt;/p&gt;\n&lt;/div&gt;\n&lt;!-- note --&gt;\n&lt;details open&gt;&lt;summary&gt;More&lt;/summary&gt;\n<p>Body</p>\n&lt;/details&gt;\n",
+      "unsanitized": "<div>\n<p>Inside <a title=\"t\">a</a> <kbd>K</kbd></p>\n</div>\n\n<details open=\"\"><summary>More</summary>\n<p>Body</p>\n</details>\n"
+    },
+    {
+      "name": "links, images and autolinks",
+      "source": "[ok](https://example.com) [bad](javascript:alert(1)) [rel](/x \"T\") ![img](data:image/png;base64,AA) ![bad](javascript:x) <https://auto.example> www.example.com and me@example.com",
+      "html": "<p><a href=\"https://example.com\">ok</a> bad <a href=\"/x\" title=\"T\">rel</a> <img src=\"data:image/png;base64,AA\" alt=\"img\" /> bad <a href=\"https://auto.example\">https://auto.example</a> <a href=\"http://www.example.com\">www.example.com</a> and <a href=\"mailto:me@example.com\">me@example.com</a></p>\n",
+      "unsanitized": "<p><a href=\"https://example.com\">ok</a> bad <a href=\"/x\" title=\"T\">rel</a> <img src=\"data:image/png;base64,AA\" alt=\"img\" /> bad <a href=\"https://auto.example\">https://auto.example</a> <a href=\"http://www.example.com\">www.example.com</a> and <a href=\"mailto:me@example.com\">me@example.com</a></p>\n"
+    },
+    {
+      "name": "link destinations",
+      "source": "[a](<java\tscript:alert(1)>) [b](JavaScript:alert(1)) [c](/a b) [d](</a b>) [e](https://x.test/ä?q=1&amp;r=2) [f](ftp://x) [g](mailto:a@b.c) [h](#frag \"Ti&amp;tle\") [**bold** link](/z)",
+      "html": "<p><a href=\"java%09script:alert(1)\">a</a> b [c](/a b) <a href=\"/a%20b\">d</a> <a href=\"https://x.test/%C3%A4?q=1&amp;r=2\">e</a> f <a href=\"mailto:a@b.c\">g</a> <a href=\"#frag\" title=\"Ti&amp;tle\">h</a> <a href=\"/z\"><strong>bold</strong> link</a></p>\n",
+      "unsanitized": "<p><a href=\"java%09script:alert(1)\">a</a> b [c](/a b) <a href=\"/a%20b\">d</a> <a href=\"https://x.test/%C3%A4?q=1&amp;r=2\">e</a> f <a href=\"mailto:a@b.c\">g</a> <a href=\"#frag\" title=\"Ti&amp;tle\">h</a> <a href=\"/z\"><strong>bold</strong> link</a></p>\n"
+    },
+    {
+      "name": "reference links",
+      "source": "[ref][1] and [ref2]\n\n[1]: https://example.com/one \"One\"\n[ref2]: /two\n",
+      "html": "<p><a href=\"https://example.com/one\" title=\"One\">ref</a> and <a href=\"/two\">ref2</a></p>\n",
+      "unsanitized": "<p><a href=\"https://example.com/one\" title=\"One\">ref</a> and <a href=\"/two\">ref2</a></p>\n"
+    },
+    {
+      "name": "strikethrough and emphasis",
+      "source": "~~gone~~ and ~one~ *em* _em_ __strong__ ***both***",
+      "html": "<p><del>gone</del> and <del>one</del> <em>em</em> <em>em</em> <strong>strong</strong> <em><strong>both</strong></em></p>\n",
+      "unsanitized": "<p><del>gone</del> and <del>one</del> <em>em</em> <em>em</em> <strong>strong</strong> <em><strong>both</strong></em></p>\n"
+    },
+    {
+      "name": "code blocks and spans",
+      "source": "```php\necho '<b>';\n```\n\n    indented\n\nInline `a<b>` and `` x`y ``\n\n```\n```\n\n~~~js title\nlet a = \"q\";\n~~~\n",
+      "html": "<pre><code class=\"language-php\">echo '&lt;b&gt;';\n</code></pre>\n<pre><code>indented\n</code></pre>\n<p>Inline <code>a&lt;b&gt;</code> and <code>x`y</code></p>\n<pre><code></code></pre>\n<pre><code class=\"language-js\">let a = &quot;q&quot;;\n</code></pre>\n",
+      "unsanitized": "<pre><code class=\"language-php\">echo '&lt;b&gt;';\n</code></pre>\n<pre><code>indented\n</code></pre>\n<p>Inline <code>a&lt;b&gt;</code> and <code>x`y</code></p>\n<pre><code></code></pre>\n<pre><code class=\"language-js\">let a = &quot;q&quot;;\n</code></pre>\n"
+    },
+    {
+      "name": "ordered, loose and task lists",
+      "source": "1. one\n2. two\n\n3) x\n\n* a\n\n  para\n* b\n\n- [ ] loose task\n\n  more\n",
+      "html": "<ol>\n<li>one</li>\n<li>two</li>\n</ol>\n<ol start=\"3\">\n<li>x</li>\n</ol>\n<ul>\n<li>\n<p>a</p>\n<p>para</p>\n</li>\n<li>\n<p>b</p>\n</li>\n</ul>\n<ul>\n<li data-scope=\"markdown\" data-part=\"task\">\n<p><label><input disabled=\"\" type=\"checkbox\"> loose task</label></p>\n<p>more</p>\n</li>\n</ul>\n",
+      "unsanitized": "<ol>\n<li>one</li>\n<li>two</li>\n</ol>\n<ol start=\"3\">\n<li>x</li>\n</ol>\n<ul>\n<li>\n<p>a</p>\n<p>para</p>\n</li>\n<li>\n<p>b</p>\n</li>\n</ul>\n<ul>\n<li data-scope=\"markdown\" data-part=\"task\">\n<p><label><input disabled=\"\" type=\"checkbox\"> loose task</label></p>\n<p>more</p>\n</li>\n</ul>\n"
+    },
+    {
+      "name": "nested lists",
+      "source": "- a\n  - b\n    - [x] c\n- d\n\n1. x\n   > quote\n",
+      "html": "<ul>\n<li>a\n<ul>\n<li>b\n<ul>\n<li data-scope=\"markdown\" data-part=\"task\"><label><input checked=\"\" disabled=\"\" type=\"checkbox\"> c</label></li>\n</ul>\n</li>\n</ul>\n</li>\n<li>d</li>\n</ul>\n<ol>\n<li>x\n<blockquote>\n<p>quote</p>\n</blockquote>\n</li>\n</ol>\n",
+      "unsanitized": "<ul>\n<li>a\n<ul>\n<li>b\n<ul>\n<li data-scope=\"markdown\" data-part=\"task\"><label><input checked=\"\" disabled=\"\" type=\"checkbox\"> c</label></li>\n</ul>\n</li>\n</ul>\n</li>\n<li>d</li>\n</ul>\n<ol>\n<li>x\n<blockquote>\n<p>quote</p>\n</blockquote>\n</li>\n</ol>\n"
+    },
+    {
+      "name": "headings, rules and breaks",
+      "source": "# H1\n###### H6\nSetext\n===\n\n---\n\nhard  \nbreak\\\nend & < > \" '",
+      "html": "<h1>H1</h1>\n<h6>H6</h6>\n<h1>Setext</h1>\n<hr />\n<p>hard<br />\nbreak<br />\nend &amp; &lt; &gt; &quot; '</p>\n",
+      "unsanitized": "<h1>H1</h1>\n<h6>H6</h6>\n<h1>Setext</h1>\n<hr />\n<p>hard<br />\nbreak<br />\nend &amp; &lt; &gt; &quot; '</p>\n"
+    },
+    {
+      "name": "character references",
+      "source": "&copy; &#169; &#x41; &amp; &nbsp; &mdash; &#0; \\*not em\\*",
+      "html": "<p>© © A &amp;   — � *not em*</p>\n",
+      "unsanitized": "<p>© © A &amp;   — � *not em*</p>\n"
+    },
+    {
+      "name": "table alignment and escapes",
+      "source": "| a | b | c |\n|:-|:-:|-:|\n| 1 | 2 |\n| x \\| y | `c|d` | **z** |",
+      "html": "<table>\n<thead>\n<tr>\n<th data-align=\"start\">a</th>\n<th data-align=\"center\">b</th>\n<th data-align=\"end\">c</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td data-align=\"start\">1</td>\n<td data-align=\"center\">2</td>\n<td data-align=\"end\"></td>\n</tr>\n<tr>\n<td data-align=\"start\">x | y</td>\n<td data-align=\"center\">`c</td>\n<td data-align=\"end\">d`</td>\n</tr>\n</tbody>\n</table>\n",
+      "unsanitized": "<table>\n<thead>\n<tr>\n<th data-align=\"start\">a</th>\n<th data-align=\"center\">b</th>\n<th data-align=\"end\">c</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td data-align=\"start\">1</td>\n<td data-align=\"center\">2</td>\n<td data-align=\"end\"></td>\n</tr>\n<tr>\n<td data-align=\"start\">x | y</td>\n<td data-align=\"center\">`c</td>\n<td data-align=\"end\">d`</td>\n</tr>\n</tbody>\n</table>\n"
+    },
+    {
+      "name": "a table without rows",
+      "source": "| a | b |\n|---|---|\n",
+      "html": "<table>\n<thead>\n<tr>\n<th>a</th>\n<th>b</th>\n</tr>\n</thead>\n</table>\n",
+      "unsanitized": "<table>\n<thead>\n<tr>\n<th>a</th>\n<th>b</th>\n</tr>\n</thead>\n</table>\n"
+    },
+    {
+      "name": "block quotes",
+      "source": "> # Title\n> - item\n>\n> para\n\n>\n",
+      "html": "<blockquote>\n<h1>Title</h1>\n<ul>\n<li>item</li>\n</ul>\n<p>para</p>\n</blockquote>\n<blockquote>\n</blockquote>\n",
+      "unsanitized": "<blockquote>\n<h1>Title</h1>\n<ul>\n<li>item</li>\n</ul>\n<p>para</p>\n</blockquote>\n<blockquote>\n</blockquote>\n"
+    },
+    {
+      "name": "images",
+      "source": "![Alt *em* `c`](/i.png \"Title\") ![](https://x.test/a.png)",
+      "html": "<p><img src=\"/i.png\" alt=\"Alt em c\" title=\"Title\" /> <img src=\"https://x.test/a.png\" alt=\"\" /></p>\n",
+      "unsanitized": "<p><img src=\"/i.png\" alt=\"Alt em c\" title=\"Title\" /> <img src=\"https://x.test/a.png\" alt=\"\" /></p>\n"
+    },
+    {
+      "name": "empty source",
+      "source": "",
+      "html": "",
+      "unsanitized": ""
+    },
+    {
+      "name": "plain text",
+      "source": "Just text",
+      "html": "<p>Just text</p>\n",
+      "unsanitized": "<p>Just text</p>\n"
+    },
+    {
+      "name": "non-ASCII text and URLs",
+      "source": "Grüße — ünïcødé [link](/ü)",
+      "html": "<p>Grüße — ünïcødé <a href=\"/%C3%BC\">link</a></p>\n",
+      "unsanitized": "<p>Grüße — ünïcødé <a href=\"/%C3%BC\">link</a></p>\n"
+    },
+    {
+      "name": "autolink punctuation",
+      "source": "Visit https://example.com/path?x=1. Or (www.example.com).",
+      "html": "<p>Visit <a href=\"https://example.com/path?x=1\">https://example.com/path?x=1</a>. Or (<a href=\"http://www.example.com\">www.example.com</a>).</p>\n",
+      "unsanitized": "<p>Visit <a href=\"https://example.com/path?x=1\">https://example.com/path?x=1</a>. Or (<a href=\"http://www.example.com\">www.example.com</a>).</p>\n"
+    },
+    {
+      "name": "list starts and empty items",
+      "source": "0. zero\n1. one\n\n-\n- \n- x",
+      "html": "<ol start=\"0\">\n<li>zero</li>\n<li>one</li>\n</ol>\n<ul>\n<li></li>\n<li></li>\n<li>x</li>\n</ul>\n",
+      "unsanitized": "<ol start=\"0\">\n<li>zero</li>\n<li>one</li>\n</ol>\n<ul>\n<li></li>\n<li></li>\n<li>x</li>\n</ul>\n"
+    },
+    {
+      "name": "closed headings and intraword emphasis",
+      "source": "## Title ##\nSub\n---\n\nsnake_case_word and *a*b and **a**b",
+      "html": "<h2>Title</h2>\n<h2>Sub</h2>\n<p>snake_case_word and <em>a</em>b and <strong>a</strong>b</p>\n",
+      "unsanitized": "<h2>Title</h2>\n<h2>Sub</h2>\n<p>snake_case_word and <em>a</em>b and <strong>a</strong>b</p>\n"
+    },
+    {
+      "name": "ordered task list",
+      "source": "1. [x] ordered task\n2. [ ] two\n",
+      "html": "<ol>\n<li data-scope=\"markdown\" data-part=\"task\"><label><input checked=\"\" disabled=\"\" type=\"checkbox\"> ordered task</label></li>\n<li data-scope=\"markdown\" data-part=\"task\"><label><input disabled=\"\" type=\"checkbox\"> two</label></li>\n</ol>\n",
+      "unsanitized": "<ol>\n<li data-scope=\"markdown\" data-part=\"task\"><label><input checked=\"\" disabled=\"\" type=\"checkbox\"> ordered task</label></li>\n<li data-scope=\"markdown\" data-part=\"task\"><label><input disabled=\"\" type=\"checkbox\"> two</label></li>\n</ol>\n"
+    },
+    {
+      "name": "nested link text",
+      "source": "[link [nested] text](/u) and [![img](/i.png)](/l)",
+      "html": "<p><a href=\"/u\">link [nested] text</a> and <a href=\"/l\"><img src=\"/i.png\" alt=\"img\" /></a></p>\n",
+      "unsanitized": "<p><a href=\"/u\">link [nested] text</a> and <a href=\"/l\"><img src=\"/i.png\" alt=\"img\" /></a></p>\n"
+    },
+    {
+      "name": "inline comments and unknown tags",
+      "source": "Inline <!-- c --> comment and <span onclick=x>s</span> and <x-foo>",
+      "html": "<p>Inline &lt;!-- c --&gt; comment and &lt;span onclick=x&gt;s&lt;/span&gt; and &lt;x-foo&gt;</p>\n",
+      "unsanitized": "<p>Inline  comment and <span>s</span> and &lt;x-foo&gt;</p>\n"
+    },
+    {
+      "name": "nested quotes",
+      "source": "> > nested\n> > - a\n>\n> back",
+      "html": "<blockquote>\n<blockquote>\n<p>nested</p>\n<ul>\n<li>a</li>\n</ul>\n</blockquote>\n<p>back</p>\n</blockquote>\n",
+      "unsanitized": "<blockquote>\n<blockquote>\n<p>nested</p>\n<ul>\n<li>a</li>\n</ul>\n</blockquote>\n<p>back</p>\n</blockquote>\n"
+    },
+    {
+      "name": "HTML and unsafe links in cells",
+      "source": "| h |\n|---|\n| <b>x</b> |\n| [l](javascript:x) |",
+      "html": "<table>\n<thead>\n<tr>\n<th>h</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>&lt;b&gt;x&lt;/b&gt;</td>\n</tr>\n<tr>\n<td>l</td>\n</tr>\n</tbody>\n</table>\n",
+      "unsanitized": "<table>\n<thead>\n<tr>\n<th>h</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><b>x</b></td>\n</tr>\n<tr>\n<td>l</td>\n</tr>\n</tbody>\n</table>\n"
+    },
+    {
+      "name": "soft and hard breaks",
+      "source": "line one\nline two  \n\ntrailing\\",
+      "html": "<p>line one\nline two</p>\n<p>trailing\\</p>\n",
+      "unsanitized": "<p>line one\nline two</p>\n<p>trailing\\</p>\n"
+    },
+    {
+      "name": "blank lines between items",
+      "source": "* a\n\n\n* b",
+      "html": "<ul>\n<li>\n<p>a</p>\n</li>\n<li>\n<p>b</p>\n</li>\n</ul>\n",
+      "unsanitized": "<ul>\n<li>\n<p>a</p>\n</li>\n<li>\n<p>b</p>\n</li>\n</ul>\n"
+    },
+    {
+      "name": "nested fences",
+      "source": "~~~~\n```\ninner\n```\n~~~~",
+      "html": "<pre><code>```\ninner\n```\n</code></pre>\n",
+      "unsanitized": "<pre><code>```\ninner\n```\n</code></pre>\n"
+    },
+    {
+      "name": "angle autolinks",
+      "source": "Email <foo@bar.example> and <mailto:x@y.z> and <javascript:alert(1)>",
+      "html": "<p>Email <a href=\"mailto:foo@bar.example\">foo@bar.example</a> and <a href=\"mailto:x@y.z\">mailto:x@y.z</a> and javascript:alert(1)</p>\n",
+      "unsanitized": "<p>Email <a href=\"mailto:foo@bar.example\">foo@bar.example</a> and <a href=\"mailto:x@y.z\">mailto:x@y.z</a> and javascript:alert(1)</p>\n"
+    },
+    {
+      "name": "bare URLs",
+      "source": "https://example.com/a_b_c and https://ex.com/(x) and http://a.b/c~d.",
+      "html": "<p><a href=\"https://example.com/a_b_c\">https://example.com/a_b_c</a> and <a href=\"https://ex.com/(x)\">https://ex.com/(x)</a> and <a href=\"http://a.b/c~d\">http://a.b/c~d</a>.</p>\n",
+      "unsanitized": "<p><a href=\"https://example.com/a_b_c\">https://example.com/a_b_c</a> and <a href=\"https://ex.com/(x)\">https://ex.com/(x)</a> and <a href=\"http://a.b/c~d\">http://a.b/c~d</a>.</p>\n"
+    },
+    {
+      "name": "tabs and trailing spaces",
+      "source": "Tab\tseparated and trailing spaces   \n",
+      "html": "<p>Tab\tseparated and trailing spaces</p>\n",
+      "unsanitized": "<p>Tab\tseparated and trailing spaces</p>\n"
+    },
+    {
+      "name": "image URL schemes",
+      "source": "![x](<javascript:alert(1)> \"t\") ![y](data:image/svg+xml;base64,AA) ![z](blob:https://x/1)",
+      "html": "<p>x y <img src=\"blob:https://x/1\" alt=\"z\" /></p>\n",
+      "unsanitized": "<p>x y <img src=\"blob:https://x/1\" alt=\"z\" /></p>\n"
+    },
+    {
+      "name": "raw images",
+      "source": "<img src=\"javascript:x\" alt=\"a\"><img src='/ok.png' alt=a onerror=\"x\">\n\n<IMG SRC=/u.png>",
+      "html": "<p>&lt;img src=\"javascript:x\" alt=\"a\"&gt;&lt;img src='/ok.png' alt=a onerror=\"x\"&gt;</p>\n&lt;IMG SRC=/u.png&gt;\n",
+      "unsanitized": "<p><img alt=\"a\"><img src=\"/ok.png\" alt=\"a\"></p>\n<img src=\"/u.png\">\n"
+    },
+    {
+      "name": "encoded schemes in raw links",
+      "source": "<a href=\"&#106;avascript:alert(1)\">x</a> <a href=\"java&#x09;script:alert(1)\">y</a> <a href=\"java&Tab;script:z\">w</a>",
+      "html": "<p>&lt;a href=\"&amp;#106;avascript:alert(1)\"&gt;x&lt;/a&gt; &lt;a href=\"java&amp;#x09;script:alert(1)\"&gt;y&lt;/a&gt; &lt;a href=\"java&amp;Tab;script:z\"&gt;w&lt;/a&gt;</p>\n",
+      "unsanitized": "<p><a>x</a> <a>y</a> <a href=\"java&amp;Tab;script:z\">w</a></p>\n"
+    },
+    {
+      "name": "script, style and textarea",
+      "source": "<script\nsrc=x></script>\n\n<style>body{}</style>\n\n<textarea>x</textarea>",
+      "html": "&lt;script\nsrc=x&gt;&lt;/script&gt;\n&lt;style&gt;body{}&lt;/style&gt;\n&lt;textarea&gt;x&lt;/textarea&gt;\n",
+      "unsanitized": "&lt;script\nsrc=x&gt;&lt;/script&gt;\n&lt;style&gt;body{}&lt;/style&gt;\n&lt;textarea&gt;x&lt;/textarea&gt;\n"
+    },
+    {
+      "name": "task markers",
+      "source": "- [ ]\n- [x]  two spaces\n-   [ ] indented",
+      "html": "<ul>\n<li>[ ]</li>\n<li data-scope=\"markdown\" data-part=\"task\"><label><input checked=\"\" disabled=\"\" type=\"checkbox\">  two spaces</label></li>\n<li data-scope=\"markdown\" data-part=\"task\"><label><input disabled=\"\" type=\"checkbox\"> indented</label></li>\n</ul>\n",
+      "unsanitized": "<ul>\n<li>[ ]</li>\n<li data-scope=\"markdown\" data-part=\"task\"><label><input checked=\"\" disabled=\"\" type=\"checkbox\">  two spaces</label></li>\n<li data-scope=\"markdown\" data-part=\"task\"><label><input disabled=\"\" type=\"checkbox\"> indented</label></li>\n</ul>\n"
+    },
+    {
+      "name": "setext headings, rules and plus lists",
+      "source": "Setext with *em*\n===\n\n***\n___\n\n+ plus\n+ list",
+      "html": "<h1>Setext with <em>em</em></h1>\n<hr />\n<hr />\n<ul>\n<li>plus</li>\n<li>list</li>\n</ul>\n",
+      "unsanitized": "<h1>Setext with <em>em</em></h1>\n<hr />\n<hr />\n<ul>\n<li>plus</li>\n<li>list</li>\n</ul>\n"
+    },
+    {
+      "name": "code span spacing",
+      "source": "`` `code` `` and ` a ` and `\nmulti\nline`",
+      "html": "<p><code>`code`</code> and <code>a</code> and <code> multi line</code></p>\n",
+      "unsanitized": "<p><code>`code`</code> and <code>a</code> and <code> multi line</code></p>\n"
+    },
+    {
+      "name": "block quotes nested past the nesting limit",
+      "source": "> > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > text\n",
+      "html": "<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<p>&gt; &gt; &gt; &gt; &gt; &gt; &gt; &gt; &gt; &gt; text</p>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n",
+      "unsanitized": "<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<blockquote>\n<p>&gt; &gt; &gt; &gt; &gt; &gt; &gt; &gt; &gt; &gt; text</p>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n</blockquote>\n"
+    },
+    {
+      "name": "lists nested past the nesting limit",
+      "source": "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - text\n",
+      "html": "<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>- - - - - - - - - - text</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n",
+      "unsanitized": "<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>\n<ul>\n<li>- - - - - - - - - - text</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n</li>\n</ul>\n"
+    },
+    {
+      "name": "quotes and lists nested past the nesting limit",
+      "source": "> - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - > - text\n",
+      "html": "<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<p>- &gt; - &gt; - &gt; - &gt; - &gt; - &gt; - text</p>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n",
+      "unsanitized": "<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<ul>\n<li>\n<blockquote>\n<p>- &gt; - &gt; - &gt; - &gt; - &gt; - &gt; - text</p>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n</li>\n</ul>\n</blockquote>\n"
+    },
+    {
+      "name": "emphasis past the delimiter limit",
+      "source": "*a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* \n",
+      "html": "<p><em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a*</p>\n",
+      "unsanitized": "<p><em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> <em>a</em> *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a* *a*</p>\n"
+    },
+    {
+      "name": "strikethrough past the delimiter limit",
+      "source": "~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ \n",
+      "html": "<p><del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~</p>\n",
+      "unsanitized": "<p><del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> <del>a</del> ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~ ~~a~~</p>\n"
+    },
+    {
+      "name": "raw HTML images take only PNG, GIF, JPEG and WebP data URLs",
+      "source": "<img src=\"data:image/svg+xml;base64,PHN2Zz4=\" alt=\"x\"> <img src=\"data:image/png;base64,AAAA\" alt=\"y\">\n",
+      "html": "<p>&lt;img src=\"data:image/svg+xml;base64,PHN2Zz4=\" alt=\"x\"&gt; &lt;img src=\"data:image/png;base64,AAAA\" alt=\"y\"&gt;</p>\n",
+      "unsanitized": "<p><img alt=\"x\"> <img src=\"data:image/png;base64,AAAA\" alt=\"y\"></p>\n"
+    }
+  ]
+}

@@ -40,6 +40,17 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # The design-system packages (pinned in package.json): the PHP kit the
+      # tests autoload, and the sources the committed assets are checked against.
+      - name: Install the design-system packages
+        run: npm ci --ignore-scripts
+
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist
 

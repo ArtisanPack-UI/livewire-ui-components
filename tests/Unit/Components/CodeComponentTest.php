@@ -2,182 +2,115 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
-
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
 use ArtisanPack\LivewireUiComponents\View\Components\Code;
-use Error;
-use RuntimeException;
+use Illuminate\Support\Facades\Blade;
 
-/**
- * Comprehensive unit tests for the Code component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * Code (#65): the design-system markup contract, and lines(), the PHP port
+ * of the behavior package's codeLines. Its expectations match
+ * test/clipboard-kbd-code.test.ts in the design system, so Blade renders the
+ * lines React and Vue render. The manifest parity check is in
+ * tests/Feature/DesignSystemParityTest.php.
  */
-class CodeComponentTest extends ComponentTestCase
+
+const CODE_SNIPPET = "const a = 1;\n\n  return a;\n";
+
+function codeDom(string $props = '', ?string $code = CODE_SNIPPET): DOMXPath
 {
-    protected string $componentClass = Code::class;
-
-    protected array $defaultProperties = [
-        'hint'        => '',
-        'language'    => 'javascript',
-        'lightTheme'  => 'github_light_default',
-        'darkTheme'   => 'github_dark',
-        'lightClass'  => 'light',
-        'darkClass'   => 'dark',
-        'height'      => '200px',
-        'lineHeight'  => '2',
-        'printMargin' => false,
-    ];
-
-    protected array $requiredProperties = [];
-
-    public function test_code_string_properties(): void
-    {
-        $stringProperties = ['id', 'label', 'hint', 'language', 'lightTheme', 'darkTheme', 'lightClass', 'darkClass', 'height', 'lineHeight'];
-        $testValues       = ComponentDataFactory::sampleTexts();
-
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
-
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
-    }
-
-    public function test_code_boolean_properties(): void
-    {
-        $booleanProperties = ['printMargin'];
-
-        foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
-            $this->assertTrue($component->$property);
-
-            $component = $this->createComponent([$property => false]);
-            $this->assertFalse($component->$property);
-        }
-    }
-
-    public function test_code_model_name_method(): void
-    {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'modelName')) {
-            try {
-                $result = $component->modelName();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_code_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
-
-    public function test_code_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'Code should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
-
-    public function test_code_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
-
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
-
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_code_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'Code rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
+    return designSystemDom(Blade::render('<x-artisanpack-code :code="$code" '.$props.' />', ['code' => $code]));
 }
+
+test('lines matches the TypeScript helper', function (): void {
+    expect(Code::lines("a\r\nb\rc\nd\n"))->toBe(['a', 'b', 'c', 'd'])
+        ->and(Code::lines("a\n\n"))->toBe(['a', ''])
+        ->and(Code::lines("\tindented  "))->toBe(["\tindented  "])
+        ->and(Code::lines("\n"))->toBe([''])
+        ->and(Code::lines(''))->toBe([])
+        ->and(Code::lines(null))->toBe([]);
+});
+
+test('renders the header, a labeled LTR region and one span per line', function (): void {
+    $dom  = codeDom('file-name="a.ts" language="TypeScript" numbered :highlight="[3]"');
+    $root = $dom->query('//body/div')->item(0);
+
+    expect($root->getAttribute('class'))->toBe('apui-code')
+        ->and($root->hasAttribute('data-numbered'))->toBeTrue()
+        ->and($root->getAttribute('x-data'))->toContain('apuiClipboard({ timeout: 2000')
+        ->and($dom->query('//*[@data-part="header"]/*[@data-part="file"]')->item(0)->textContent)->toBe('a.ts');
+
+    $badge = $dom->query('//*[@data-part="language"]')->item(0);
+    expect($badge->getAttribute('class'))->toBe('apui-badge')
+        ->and($badge->getAttribute('data-variant'))->toBe('outline')
+        ->and($badge->textContent)->toBe('TypeScript');
+
+    $copy = $dom->query('//button[@data-part="copy"]')->item(0);
+    expect($copy->getAttribute('class'))->toBe('apui-button')
+        ->and($copy->getAttribute('data-size'))->toBe('xs')
+        ->and($copy->getAttribute('x-on:click'))->toBe('copy( $el.value )')
+        ->and($copy->getAttribute('value'))->toBe(CODE_SNIPPET)
+        ->and(trim($dom->query('.//*[@data-part="label"]', $copy)->item(0)->textContent))->toBe('Copy')
+        ->and($dom->query('//*[@data-part="status"][@role="status"]'))->toHaveCount(1);
+
+    $pre = $dom->query('//pre[@data-part="pre"]')->item(0);
+    expect($pre->getAttribute('role'))->toBe('region')
+        ->and($pre->getAttribute('aria-label'))->toBe('a.ts')
+        ->and($pre->getAttribute('tabindex'))->toBe('0');
+
+    $texts = $numbers = $highlights = [];
+    foreach ($dom->query('//pre/code/span[@data-part="line"]') as $line) {
+        $texts[]      = $line->textContent;
+        $numbers[]    = $line->getAttribute('data-n');
+        $highlights[] = $line->hasAttribute('data-highlight');
+    }
+    expect($texts)->toBe(['const a = 1;', '', '  return a;'])
+        ->and($numbers)->toBe(['1', '2', '3'])
+        ->and($highlights)->toBe([false, false, true]);
+});
+
+test('copies the exact source and keeps newlines between the lines in the pre', function (): void {
+    $dom = codeDom('', "a\r\nb\n\nc\n");
+
+    expect($dom->query('//button[@data-part="copy"]')->item(0)->getAttribute('value'))->toBe("a\r\nb\n\nc\n")
+        ->and($dom->query('//pre/code')->item(0)->textContent)->toBe("a\nb\n\nc");
+});
+
+test('names the region by label, file name, language, then Code', function (): void {
+    $name = static fn (string $props): string => codeDom($props, 'x')->query('//pre')->item(0)->getAttribute('aria-label');
+
+    expect($name('label="Example" file-name="a.ts"'))->toBe('Example')
+        ->and($name('language="Shell"'))->toBe('Shell')
+        ->and($name(''))->toBe('Code');
+});
+
+test('leaves the header and the copy behavior out when there is nothing to show', function (): void {
+    $dom = codeDom(':copyable="false"', 'x');
+
+    expect($dom->query('//*[@data-part="header"]'))->toHaveCount(0)
+        ->and($dom->query('//body/div')->item(0)->hasAttribute('x-data'))->toBeFalse();
+});
+
+test('renders inline code as a code element, escaping the text', function (): void {
+    $dom  = designSystemDom(Blade::render('<x-artisanpack-code inline code=\'<b>data-theme="dark"</b>\' />'));
+    $root = $dom->query('//body/code')->item(0);
+
+    expect($root->getAttribute('class'))->toBe('apui-code')
+        ->and($root->hasAttribute('data-inline'))->toBeTrue()
+        ->and($root->textContent)->toBe('<b>data-theme="dark"</b>')
+        ->and($dom->query('//b'))->toHaveCount(0);
+});
+
+test('takes the code from the slot and drops the 2.x editor props', function (): void {
+    $html = Blade::render("<x-artisanpack-code hint=\"Old\" height=\"300px\" light-theme=\"github\">\nif (a < b) {}\n</x-artisanpack-code>");
+    $dom  = designSystemDom($html);
+
+    expect($dom->query('//span[@data-part="line"]')->item(0)->textContent)->toBe('if (a < b) {}')
+        ->and($html)->not->toContain('hint=')
+        ->and($html)->not->toContain('light-theme=');
+});
+
+test('translates the copy strings', function (): void {
+    $root = codeDom('copy-label="Copiar" copied-label="Copiado" copied-message="Copiado al portapapeles"')->query('//body/div')->item(0);
+
+    expect($root->getAttribute('x-data'))->toContain('Copiado')
+        ->and($root->getAttribute('x-data'))->toContain('Copiado al portapapeles');
+});

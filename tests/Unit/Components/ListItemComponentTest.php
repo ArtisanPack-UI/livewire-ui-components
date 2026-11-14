@@ -2,201 +2,93 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
+use Illuminate\Support\Facades\Blade;
 
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
-use ArtisanPack\LivewireUiComponents\View\Components\ListItem;
-use Error;
-use RuntimeException;
-
-/**
- * Comprehensive unit tests for the ListItem component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * ListItem and its List (#58): the design-system markup contract. The
+ * manifest parity check is in tests/Feature/DesignSystemParityTest.php.
  */
-class ListItemComponentTest extends ComponentTestCase
-{
-    protected string $componentClass = ListItem::class;
 
-    protected array $defaultProperties = [
-        'avatar'      => 'avatar',
-        'value'       => 'name',
-        'subValue'    => '',
-        'noSeparator' => false,
-        'noHover'     => false,
-        'iconClass'   => 'w-4 h-4',
-        'noIcon'      => false,
-    ];
+test('renders a div row with the title and description on its own', function (): void {
+    $dom  = designSystemDom(Blade::render('<x-artisanpack-list-item title="Olivia Rhye" description="olivia@company.com" />'));
+    $root = $dom->query('//div[contains(@class, "apui-list-item")]')->item(0);
 
-    protected array $requiredProperties = [
-        'item',
-    ];
+    expect($root)->not->toBeNull()
+        ->and($root->hasAttribute('data-interactive'))->toBeFalse()
+        ->and(trim($dom->query('//span[@data-part="title"]')->item(0)->textContent))->toBe('Olivia Rhye')
+        ->and(trim($dom->query('//span[@data-part="description"]')->item(0)->textContent))->toBe('olivia@company.com');
+});
 
-    public function test_listitem_string_properties(): void
-    {
-        $stringProperties = ['id', 'avatar', 'value', 'subValue', 'link', 'icon', 'iconType', 'iconStatus', 'iconClass'];
-        $testValues       = ComponentDataFactory::sampleTexts();
+test('rows in a list render as li with the variant on the list', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-list variant="bordered"><x-artisanpack-list-item title="A" /><x-artisanpack-list-item title="B" /></x-artisanpack-list>'));
 
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
+    expect($dom->query('//ul[contains(@class, "apui-list")][@data-variant="bordered"]/li[contains(@class, "apui-list-item")]'))->toHaveCount(2);
+});
 
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
-    }
+test('a row after a list is a div again, and an unknown variant falls back', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-list variant="zebra" ordered><x-artisanpack-list-item title="A" /></x-artisanpack-list><x-artisanpack-list-item title="B" />'));
 
-    public function test_listitem_boolean_properties(): void
-    {
-        $booleanProperties = ['noSeparator', 'noHover', 'noIcon'];
+    expect($dom->query('//ol[@data-variant="plain"]/li'))->toHaveCount(1)
+        ->and($dom->query('//div[contains(@class, "apui-list-item")]'))->toHaveCount(1);
+});
 
-        foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
-            $this->assertTrue($component->$property);
+test('href makes the title a link covering the row, with wire:navigate', function (): void {
+    $dom   = designSystemDom(Blade::render('<x-artisanpack-list-item title="Olivia" href="/members/1" selected />'));
+    $root  = $dom->query('//div[contains(@class, "apui-list-item")]')->item(0);
+    $title = $dom->query('//a[@data-part="title"]')->item(0);
 
-            $component = $this->createComponent([$property => false]);
-            $this->assertFalse($component->$property);
-        }
-    }
+    expect($root->hasAttribute('data-interactive'))->toBeTrue()
+        ->and($root->hasAttribute('data-selected'))->toBeTrue()
+        ->and($title->getAttribute('href'))->toBe('/members/1')
+        ->and($title->getAttribute('aria-current'))->toBe('true')
+        ->and($title->hasAttribute('wire:navigate'))->toBeTrue();
+});
 
-    public function test_listitem_get_icon_method(): void
-    {
-        $component = $this->createComponent();
+test('navigate off and unsafe hrefs', function (): void {
+    $off    = designSystemDom(Blade::render('<x-artisanpack-list-item title="A" href="/a" :navigate="false" />'))->query('//a')->item(0);
+    $unsafe = Blade::render('<x-artisanpack-list-item title="A" href="javascript:alert(1)" />');
 
-        if (method_exists($component, 'getIcon')) {
-            try {
-                $result = $component->getIcon();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
+    expect($off->hasAttribute('wire:navigate'))->toBeFalse()
+        ->and($unsafe)->not->toContain('javascript:')
+        ->and(designSystemDom($unsafe)->query('//span[@data-part="title"]'))->toHaveCount(1);
+});
 
-    public function test_listitem_should_show_icon_method(): void
-    {
-        $component = $this->createComponent();
+test('interactive makes the title a button and keeps wire:click on the row', function (): void {
+    $dom  = designSystemDom(Blade::render('<x-artisanpack-list-item title="Offer" interactive wire:click="open( 1 )" />'));
+    $root = $dom->query('//div[contains(@class, "apui-list-item")]')->item(0);
 
-        if (method_exists($component, 'shouldShowIcon')) {
-            try {
-                $result = $component->shouldShowIcon();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
+    expect($root->getAttribute('wire:click'))->toBe('open( 1 )')
+        ->and($dom->query('//button[@data-part="title"][@type="button"]'))->toHaveCount(1);
+});
 
-    public function test_listitem_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
+test('disabled rows disable their control', function (): void {
+    $button = designSystemDom(Blade::render('<x-artisanpack-list-item title="A" interactive disabled />'));
+    $link   = designSystemDom(Blade::render('<x-artisanpack-list-item title="A" href="/a" disabled />'))->query('//a')->item(0);
 
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
+    expect($button->query('//div[@data-disabled]/button[@disabled]'))->toHaveCount(1)
+        ->and($link->hasAttribute('href'))->toBeFalse()
+        ->and($link->getAttribute('aria-disabled'))->toBe('true')
+        ->and($link->hasAttribute('wire:navigate'))->toBeFalse();
+});
 
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
+test('leading icon, trailing text and slots fill the parts', function (): void {
+    $icon  = designSystemDom(Blade::render('<x-artisanpack-list-item title="A" leading-icon="mail" trailing="2m" />'));
+    $slots = designSystemDom(Blade::render('<x-artisanpack-list-item title="A" trailing="x"><x-slot:leading><i>L</i></x-slot:leading><x-slot:trailing><b>T</b></x-slot:trailing></x-artisanpack-list-item>'));
 
-    public function test_listitem_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
+    expect($icon->query('//*[@data-part="leading"]/svg'))->toHaveCount(1)
+        ->and(trim($icon->query('//*[@data-part="trailing"]')->item(0)->textContent))->toBe('2m')
+        ->and($slots->query('//*[@data-part="leading"]/i'))->toHaveCount(1)
+        ->and($slots->query('//*[@data-part="trailing"]/b'))->toHaveCount(1);
+});
 
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
+test('the deprecated item attributes fill the row', function (): void {
+    $html = Blade::render('<x-artisanpack-list-item :item="$user" value="name" sub-value="email" />', [
+        'user' => ['name' => 'Olivia Rhye', 'email' => 'olivia@company.com', 'avatar' => '/o.png'],
+    ]);
+    $dom = designSystemDom($html);
 
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'ListItem should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
-
-    public function test_listitem_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
-
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
-
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_listitem_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'ListItem rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
-}
+    expect(trim($dom->query('//*[@data-part="title"]')->item(0)->textContent))->toBe('Olivia Rhye')
+        ->and(trim($dom->query('//*[@data-part="description"]')->item(0)->textContent))->toBe('olivia@company.com')
+        ->and($dom->query('//*[@data-part="leading"]//img[@src="/o.png"]'))->toHaveCount(1)
+        ->and($dom->query('//*[@item or @value or @sub-value]'))->toHaveCount(0);
+});

@@ -6,14 +6,18 @@ return [
      *
      * Make sure to clear view cache after renaming with `php artisan view:clear`
      *
-     *    prefix => ''
-     *              <x-button />
-     *              <x-card />
-     *
      *    prefix => 'artisanpack'
      *               <x-artisanpack-button />
-     *               <x-artisanpack-card />
+     *               <livewire:artisanpack-calendar />
      *
+     *    prefix => 'ui'
+     *               <x-ui-button />
+     *
+     *    prefix => ''
+     *               <x-button />
+     *
+     * Every component also stays registered as `artisanpack-{name}`, which the
+     * package's own views use to render nested components, so any prefix works.
      */
     'prefix' => 'artisanpack',
 
@@ -23,85 +27,88 @@ return [
      * Some Livewire UI Components make network request to its internal routes.
      *
      *      route_prefix => ''
-     *          - Spotlight: '/livewire-ui-components/spotlight'
-     *          - Editor: '/livewire-ui-components/upload'
-     *          - ...
+     *          - Spotlight: '/artisanpack/spotlight'
+     *          - RichTextEditor uploads: '/artisanpack/upload'
+     *          - AppShell sidebar state: '/artisanpack/toogle-sidebar'
      *
      *      route_prefix => 'my-components'
-     *          - Spotlight: '/my-components/livewire-ui-components/spotlight'
-     *          - Editor: '/my-components/livewire-ui-components/upload'
+     *          - Spotlight: '/my-components/artisanpack/spotlight'
+     *          - RichTextEditor uploads: '/my-components/artisanpack/upload'
      *          - ...
      */
     'route_prefix' => '',
 
     /**
+     * Image uploads from the RichTextEditor component
+     * (the `artisanpack.upload` route).
+     *
+     *      disks    - Disks a component may store on. The first is the default.
+     *      mimes    - Allowed image extensions. SVG is never allowed: it can carry script.
+     *      max_size - The largest upload, in kilobytes.
+     */
+    'uploads' => [
+        'disks' => ['public'],
+        'mimes' => ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif'],
+        'max_size' => 5120,
+    ],
+
+    /**
      * Components settings
+     *
+     *      spotlight.class - The class whose search() the Spotlight route calls.
      */
     'components' => [
         'spotlight' => [
             'class' => 'App\Support\Spotlight',
-        ]
-    ],
-    /**
-     * Icons configuration for components
-     */
-    'icons' => [
-        'list_item' => [
-            // Default list style icons
-            'bullet' => 'o-minus',
-            'checkmark' => 'o-check',
-            'arrow' => 'o-chevron-right',
-            'dot' => 'o-ellipsis-horizontal',
-            
-            // Status icons
-            'status' => [
-                'new' => 'o-sparkles',
-                'completed' => 'o-check-circle',
-                'error' => 'o-exclamation-triangle',
-                'warning' => 'o-exclamation-circle',
-                'info' => 'o-information-circle',
-            ],
-            
-            // Type icons
-            'type' => [
-                'user' => 'o-user',
-                'file' => 'o-document',
-                'folder' => 'o-folder',
-                'email' => 'o-envelope',
-                'notification' => 'o-bell',
-            ]
         ],
-        
-        'loading' => [
-            // Custom loading icons (SVG-based)
-            'spinner' => 'o-arrow-path',
-            'dots' => null, // Keep CSS-based
-            'ring' => null, // Keep CSS-based
-            'custom_svg' => null, // Allow custom SVG content
-            
-            // Default loading type
-            'default_type' => 'css', // 'css' or 'svg'
-        ]
     ],
 
 	/*
     |--------------------------------------------------------------------------
-    | Theme Generation Settings
+    | Registered Icons
     |--------------------------------------------------------------------------
     |
-    | This value specifies the default output path for the generated CSS theme
-    | file within the user's Laravel application. Developers can publish this
-    | file and modify the path to suit their project structure.
+    | Extra names for the design-system icon registry (D-017), on top of the
+    | default Lucide set. Each value is the inner markup of a 24x24 SVG drawn
+    | with stroke="currentColor"; the registry wraps it in the shared <svg>.
+    | Bodies render unescaped, so use only trusted, static SVG shapes: bodies
+    | with script, style, foreignObject, use, image, a, iframe/object/embed,
+    | on*= handlers or javascript:/vbscript:/data: URLs throw an
+    | InvalidArgumentException when the registry reads them.
+    | A name here replaces a default icon of the same name. Names the registry
+    | doesn't know fall back to blade-icons (o-plus, fas.user, ...).
+    |
+    |    'registered_icons' => [
+    |        'rocket' => '<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2" />',
+    |    ],
+    |
+    | @since 3.0.0
+    */
+	'registered_icons' => [],
+
+	/*
+    |--------------------------------------------------------------------------
+    | Theme Generation Settings (deprecated)
+    |--------------------------------------------------------------------------
+    |
+    | Deprecated in 3.0: `theme_output_path`, `glass` and `design_tokens` only
+    | configure the deprecated `artisanpack:generate-theme` command, whose 2.x
+    | output nothing in 3.0 reads. Use `artisanpack:generate-preset` instead.
+    | These keys will be removed with that command in a later major release.
+    |
+    | The default output path for the generated CSS theme file.
     |
     */
 	'theme_output_path' => resource_path('css/artisanpack-ui-theme.css'),
 
 	/*
     |--------------------------------------------------------------------------
-    | Glass Design Token Settings
+    | Glass Design Token Settings (deprecated)
     |--------------------------------------------------------------------------
     |
-    | These settings control the glassmorphism design system tokens.
+    | Deprecated in 3.0: read only by `artisanpack:generate-theme`.
+    |
+    | These settings control the 2.x glassmorphism tokens.
     | You can customize the default values for glass effects here.
     |
     | @since 2.0.0
@@ -179,8 +186,11 @@ return [
 
 	/*
     |--------------------------------------------------------------------------
-    | Design Tokens Settings
+    | Design Tokens Settings (deprecated)
     |--------------------------------------------------------------------------
+    |
+    | Deprecated in 3.0: read only by `artisanpack:generate-theme`. The 3.0
+    | design tokens come from the design system; see `artisanpack:generate-preset`.
     |
     | These settings control the comprehensive design token system including
     | typography, spacing, border radius, shadows, and animations.
@@ -222,5 +232,30 @@ return [
 			// 'duration-200' => null, // Default: 200ms
 			// 'ease-in-out' => null,  // Default: cubic-bezier(0.4, 0, 0.2, 1)
 		],
+	],
+
+	/*
+    |--------------------------------------------------------------------------
+    | Prebuilt Design System Assets
+    |--------------------------------------------------------------------------
+    |
+    | For apps without a bundler. Publish the assets with
+    | `php artisan vendor:publish --tag=artisanpack-design-system-assets`
+    | and put `@artisanpackStyles` and `@artisanpackScripts` in your layout's
+    | <head>, before Livewire's script.
+    |
+    | - stylesheet: 'default' (component CSS included) or 'headless' (reset,
+    |   tokens and utilities only). `@artisanpackStyles('headless')` overrides
+    |   it per layout.
+    | - path: where the assets are published, relative to the public directory.
+    |
+    | Apps with a bundler import `@artisanpack-ui/css` and
+    | `@artisanpack-ui/behavior/alpine` from npm instead.
+    |
+    | @since 3.0.0
+    */
+	'assets' => [
+		'stylesheet' => 'default',
+		'path'       => 'vendor/artisanpack-ui/design-system',
 	],
 ];

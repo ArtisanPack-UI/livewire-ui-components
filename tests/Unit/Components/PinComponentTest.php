@@ -2,200 +2,119 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
+use ArtisanPack\LivewireUiComponents\Support\IconRegistry;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\MessageBag;
+use Illuminate\Support\ViewErrorBag;
 
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
-use ArtisanPack\LivewireUiComponents\View\Components\Pin;
-use Error;
-use RuntimeException;
-
-/**
- * Comprehensive unit tests for the Pin component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * Pin (#53): one native input over the cells, separators, masking, the
+ * `complete` event, ids and the error lookup. The manifest parity check is
+ * in tests/Feature/DesignSystemParityTest.php.
  */
-class PinComponentTest extends ComponentTestCase
-{
-    protected string $componentClass = Pin::class;
 
-    protected array $defaultProperties = [
-        'numeric'        => false,
-        'hide'           => false,
-        'hideType'       => 'disc',
-        'errorClass'     => 'text-error text-xs pt-2',
-        'omitError'      => false,
-        'firstErrorOnly' => false,
-    ];
+test('the fixture renders the contract markup in order', function (): void {
+    $html = Blade::render('<x-artisanpack-pin id="otp" label="Verification code" required :group-size="3" hint="We sent it to your phone." error="That code has expired." />');
+    $dom  = designSystemDom($html);
 
-    protected array $requiredProperties = [
-        'size',
-    ];
-
-    public function test_pin_string_properties(): void
-    {
-        $stringProperties = ['id', 'hideType', 'errorField', 'errorClass'];
-        $testValues       = ComponentDataFactory::sampleTexts();
-
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
-
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
+    $parts = [];
+    foreach ($dom->query('//*[@data-scope="pin"]') as $element) {
+        $parts[] = $element->getAttribute('data-part');
     }
 
-    public function test_pin_boolean_properties(): void
-    {
-        $booleanProperties = ['numeric', 'hide', 'omitError', 'firstErrorOnly'];
+    $control = $dom->query('//input')->item(0);
 
-        foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
-            $this->assertTrue($component->$property);
+    expect($parts)->toBe(['label', 'required', 'cells', 'control', 'cell', 'cell', 'cell', 'separator', 'cell', 'cell', 'cell', 'hint', 'error'])
+        ->and($control->getAttribute('autocomplete'))->toBe('one-time-code')
+        ->and($control->getAttribute('inputmode'))->toBe('numeric')
+        ->and($control->getAttribute('pattern'))->toBe('[0-9]*')
+        ->and($control->getAttribute('maxlength'))->toBe('6')
+        ->and($control->getAttribute('type'))->toBe('text')
+        ->and($control->getAttribute('aria-describedby'))->toBe('otp-hint otp-error')
+        ->and($control->getAttribute('aria-invalid'))->toBe('true')
+        ->and($html)->toContain('<p data-scope="pin" data-part="error" id="otp-error">'.IconRegistry::svg('circle-alert').'That code has expired.</p>');
+});
 
-            $component = $this->createComponent([$property => false]);
-            $this->assertFalse($component->$property);
-        }
+test('the cells are aria-hidden mirrors of the value, with the next cell active', function (): void {
+    $dom   = designSystemDom(Blade::render('<x-artisanpack-pin label="Code" :length="4" value="12" />'));
+    $cells = $dom->query('//*[@data-part="cell"]');
+
+    $text = [];
+    foreach ($cells as $cell) {
+        $text[] = $cell->textContent;
+        expect($cell->getAttribute('aria-hidden'))->toBe('true');
     }
 
-    public function test_pin_model_name_method(): void
-    {
-        $component = $this->createComponent();
+    expect($text)->toBe(['1', '2', '', ''])
+        ->and($cells->item(0)->hasAttribute('data-filled'))->toBeTrue()
+        ->and($cells->item(2)->hasAttribute('data-filled'))->toBeFalse()
+        ->and($cells->item(2)->hasAttribute('data-active'))->toBeTrue()
+        ->and($cells->item(0)->hasAttribute('data-active'))->toBeFalse();
+});
 
-        if (method_exists($component, 'modelName')) {
-            try {
-                $result = $component->modelName();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
+test('a full code keeps the last cell active', function (): void {
+    $cells = designSystemDom(Blade::render('<x-artisanpack-pin label="Code" :length="3" value="123" />'))->query('//*[@data-part="cell"]');
 
-    public function test_pin_error_field_name_method(): void
-    {
-        $component = $this->createComponent();
+    expect($cells->item(2)->hasAttribute('data-active'))->toBeTrue();
+});
 
-        if (method_exists($component, 'errorFieldName')) {
-            try {
-                $result = $component->errorFieldName();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
+test('mask shows dots and makes the control a password input', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-pin label="PIN" :length="4" value="12" mask />'));
 
-    public function test_pin_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
+    expect($dom->query('//input')->item(0)->getAttribute('type'))->toBe('password')
+        ->and($dom->query('//*[@data-part="cell"]')->item(0)->textContent)->toBe('•');
+});
 
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
+test('alphanumeric drops the numeric keyboard and pattern', function (): void {
+    $control = designSystemDom(Blade::render('<x-artisanpack-pin label="Code" type="alphanumeric" />'))->query('//input')->item(0);
 
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
+    expect($control->getAttribute('inputmode'))->toBe('text')
+        ->and($control->hasAttribute('pattern'))->toBeFalse();
+});
 
-    public function test_pin_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
+test('no separator without groupSize, and none after the last cell', function (): void {
+    $none  = Blade::render('<x-artisanpack-pin label="Code" :length="4" />');
+    $pairs = designSystemDom(Blade::render('<x-artisanpack-pin label="Code" :length="4" :group-size="2" />'))->query('//*[@data-part="separator"]');
 
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
+    expect($none)->not->toContain('data-part="separator"')
+        ->and($pairs->length)->toBe(1);
+});
 
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'Pin should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
+test('the input dispatches complete and filters what people type and paste', function (): void {
+    $dom     = designSystemDom(Blade::render('<x-artisanpack-pin label="Code" />'));
+    $control = $dom->query('//input')->item(0);
+    $root    = $dom->query('//div')->item(0);
 
-    public function test_pin_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
+    expect($control->getAttribute('x-on:input'))->toBe("if (write(\$el, \$el.value)) \$dispatch('complete', value)")
+        ->and($control->hasAttribute('x-on:paste.prevent'))->toBeTrue()
+        ->and($root->getAttribute('x-data'))->toContain('/[^0-9]/g');
+});
 
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
+test('class lands on the root and every other attribute on the control', function (): void {
+    $dom     = designSystemDom(Blade::render('<x-artisanpack-pin class="mt-2" wire:model="code" wire:complete="verify" label="Code" />'));
+    $control = $dom->query('//input')->item(0);
 
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
+    expect($dom->query('//div')->item(0)->getAttribute('class'))->toBe('apui-pin mt-2')
+        ->and($control->getAttribute('wire:model'))->toBe('code')
+        ->and($control->getAttribute('wire:complete'))->toBe('verify')
+        ->and($control->getAttribute('id'))->toBe('apui-pin-code-'.substr(md5('code'), 0, 8));
+});
 
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
+test('size, disabled and the error from $errors render', function (): void {
+    view()->share('errors', (new ViewErrorBag)->put('default', new MessageBag(['code' => 'The code is wrong.'])));
 
-    public function test_pin_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'Pin rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
-}
+    $dom  = designSystemDom(Blade::render('<x-artisanpack-pin wire:model="code" label="Code" size="sm" disabled />'));
+    $root = $dom->query('//div')->item(0);
+
+    expect($root->getAttribute('data-size'))->toBe('sm')
+        ->and($root->hasAttribute('data-disabled'))->toBeTrue()
+        ->and($dom->query('//input')->item(0)->hasAttribute('disabled'))->toBeTrue()
+        ->and($dom->query('//p[@data-part="error"]')->item(0)->textContent)->toBe('The code is wrong.');
+});
+
+test('Alpine rereads the control after a form reset and unhooks on destroy', function (): void {
+    $xData = designSystemDom(Blade::render('<x-artisanpack-pin label="A" />'))->query('//div')->item(0)->getAttribute('x-data');
+
+    expect($xData)->toContain("this.form = input.form; this.onReset = () => setTimeout(read); this.form?.addEventListener('reset', this.onReset);")
+        ->and($xData)->toContain("this.form?.removeEventListener('reset', this.onReset)");
+});

@@ -1,43 +1,26 @@
-<div>
-    <!-- Last item `border cut` -->
-    <div @class(["border-s-2 border-s-base-300 h-5 -mb-5" => $last, "!border-s-primary" => !$pending])>
-    </div>
-
-    <!-- WRAPPER THAT ALSO ACTS A LINE CONNECTOR -->
-    <div @class([
-            "border-s-2 border-s-base-300 ps-8 py-3",
-            "!border-s-primary" => !$pending,
-            "pt-0" => $first,
-            "!border-s-0" => $last,
-         ])
-    >
-        <!-- BULLET -->
-        <div @class([
-                "w-4 h-4 -mb-5 -ms-[41px] rounded-full bg-base-300",
-                "bg-primary" => !$pending,
-                "!-ms-[39px]" => $last,
-                "w-8 h-8 !-ms-[48px] -mb-7" => $icon
-             ])
-        >
-            <!-- ICON -->
-            @if($icon)
-                <x-artisanpack-icon :name="$icon" @class(["ms-2 mt-1 w-4 h-4", "text-base-100" => !$pending ])  />
-            @endif
-        </div>
-
-        <!-- TITLE -->
-        <div @class(["font-bold mb-1"])>{{ $title }}</div>
-
-        <!-- SUBTITLE -->
-        @if($subtitle)
-            <div class="text-xs text-base-content/30 font-bold">{{ $subtitle }}</div>
-        @endif
-
-        <!-- DESCRIPTION -->
-        @if($description)
-            <div class="text-sm mt-3">
-                {{ $description }}
-            </div>
-        @endif
-    </div>
-</div>
+{{--
+    TimelineItem (#61). Markup contract: design-system wave 5, Timeline.
+    One event: the marker (aria-hidden, with data-color), the head (title or
+    the default slot, then the time element), the body and the card. 2.x
+    subtitle still works, as time.
+--}}
+@php
+    $time       = $filled( $time ) ? $time : $attributes->get( 'subtitle' );
+    $attributes = $attributes->except( \ArtisanPack\LivewireUiComponents\View\Components\TimelineItem::DEPRECATED_ATTRIBUTES );
+    $headHtml   = isset( $slot ) && $slot->hasActualContent() ? $content( $slot ) : $content( $title ?? '' );
+    $color      = $colorValue();
+@endphp
+<li
+    {{ $attributes->when( $partClasses( 'item' ), fn ( $bag, $classes ) => $bag->class( $classes ) ) }}
+    data-scope="timeline"
+    data-part="item"
+>
+    <span data-scope="timeline" data-part="marker"{{ $partClass( 'marker' ) }}@if ( null !== $color ) data-color="{{ $color }}"@endif aria-hidden="true">@if ( $filled( $icon ) ){{ $iconSvg( $icon ) }}@endif</span>
+    <div data-scope="timeline" data-part="head"{{ $partClass( 'head' ) }}>{{ $headHtml }}@if ( $filled( $time ) )<time data-scope="timeline" data-part="time"{{ $partClass( 'time' ) }}@if ( $filled( $datetime ) ) datetime="{{ $datetime }}"@endif>{{ $time }}</time>@endif</div>
+    @if ( $filled( $description ) )
+        <div data-scope="timeline" data-part="body"{{ $partClass( 'body' ) }}>{{ $description }}</div>
+    @endif
+    @if ( $filled( $card ) )
+        <div data-scope="timeline" data-part="card"{{ $partClass( 'card' ) }}>{{ $content( $card ) }}</div>
+    @endif
+</li>

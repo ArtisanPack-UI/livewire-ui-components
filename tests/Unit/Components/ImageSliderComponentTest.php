@@ -2,218 +2,149 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
-
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
 use ArtisanPack\LivewireUiComponents\View\Components\ImageSlider;
-use Error;
-use RuntimeException;
+use Illuminate\Support\Facades\Blade;
 
-/**
- * Comprehensive unit tests for the ImageSlider component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * ImageSlider (#61): the design-system markup contract. The manifest parity
+ * check is in tests/Feature/DesignSystemParityTest.php.
  */
-class ImageSliderComponentTest extends ComponentTestCase
+
+function sliderImages(): array
 {
-    protected string $componentClass = ImageSlider::class;
-
-    protected array $defaultProperties = [
-        'withArrows'         => true,
-        'withIndicators'     => true,
-        'autoPlay'           => false,
-        'autoPlayInterval'   => 5000,
-        'pauseOnHover'       => true,
-        'loop'               => true,
-        'transition'         => 'slide',
-        'transitionDuration' => 300,
-        'showCounter'        => false,
-        'enableLightbox'     => true,
-        'aspectRatio'        => '16:9',
+    return [
+        ['src' => '/photos/lake.jpg', 'alt' => 'Lake view from 4A', 'caption' => 'Lake view', 'description' => 'South-facing'],
+        ['src' => '/photos/ridge.jpg', 'alt' => 'Sunrise over the ridge'],
+        ['src' => '/photos/roof.jpg', 'alt' => 'Rooftop terrace', 'caption' => 'Rooftop'],
     ];
-
-    protected array $requiredProperties = [
-        'images',
-    ];
-
-    public function test_imageslider_string_properties(): void
-    {
-        $stringProperties = ['id', 'transition', 'aspectRatio'];
-        $testValues       = ComponentDataFactory::sampleTexts();
-
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
-
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
-    }
-
-    public function test_imageslider_boolean_properties(): void
-    {
-        $booleanProperties = ['withArrows', 'withIndicators', 'autoPlay', 'pauseOnHover', 'loop', 'showCounter', 'enableLightbox'];
-
-        foreach ($booleanProperties as $property) {
-            $component = $this->createComponent([$property => true]);
-            $this->assertTrue($component->$property);
-
-            $component = $this->createComponent([$property => false]);
-            $this->assertFalse($component->$property);
-        }
-    }
-
-    public function test_imageslider_array_properties(): void
-    {
-        $arrayProperties = ['images'];
-        $testArrays      = ComponentDataFactory::arrayData();
-
-        foreach ($arrayProperties as $property) {
-            foreach ($testArrays as $array) {
-                $component = $this->createComponent([$property => $array]);
-                $this->assertEquals($array, $component->$property);
-            }
-        }
-    }
-
-    public function test_imageslider_get_aspect_ratio_class_method(): void
-    {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'getAspectRatioClass')) {
-            try {
-                $result = $component->getAspectRatioClass();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_imageslider_get_transition_class_method(): void
-    {
-        $component = $this->createComponent();
-
-        if (method_exists($component, 'getTransitionClass')) {
-            try {
-                $result = $component->getTransitionClass();
-                // Add specific assertions based on expected return type
-                $this->assertNotNull($result);
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Method requires attributes or context');
-                }
-                throw $e;
-            }
-        }
-    }
-
-    public function test_imageslider_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
-
-    public function test_imageslider_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
-
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'ImageSlider should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
-
-    public function test_imageslider_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
-
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
-
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_imageslider_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'ImageSlider rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
 }
+
+function sliderDom(string $props = '', ?array $images = null): DOMXPath
+{
+    return designSystemDom(Blade::render(
+        '<x-artisanpack-image-slider :images="$images" '.$props.' />',
+        ['images' => $images ?? sliderImages()],
+    ));
+}
+
+test('renders a named carousel region with one slide per image', function (): void {
+    $dom  = sliderDom();
+    $root = $dom->query('//div[@data-part="root"]')->item(0);
+
+    expect($root->getAttribute('class'))->toBe('apui-image-slider')
+        ->and($root->getAttribute('role'))->toBe('region')
+        ->and($root->getAttribute('aria-roledescription'))->toBe('carousel')
+        ->and($root->getAttribute('aria-label'))->toBe('Photos')
+        ->and($root->getAttribute('style'))->toStartWith('--apui-_image-slider-ratio: 21 / 9; --slides-per-page: 1;')
+        ->and($dom->query('//div[@data-part="item-group"][@tabindex="0"]')->item(0)->getAttribute('style'))->toContain('scroll-snap-type: x mandatory')
+        ->and($root->getAttribute('x-data'))->toContain('apuiCarousel(')
+        ->and($root->getAttribute('x-data'))->toContain("scope: 'image-slider', slideCount: 3")
+        ->and($dom->query('//div[@data-part="viewport"]/div[@data-part="item-group"]/div[@data-part="item"]'))->toHaveCount(3);
+});
+
+test('slides are named groups; only the shown one is exposed', function (): void {
+    $items = sliderDom()->query('//div[@data-part="item"]');
+
+    expect($items->item(0)->getAttribute('role'))->toBe('group')
+        ->and($items->item(0)->getAttribute('aria-roledescription'))->toBe('slide')
+        ->and($items->item(1)->getAttribute('aria-label'))->toBe('2 of 3')
+        ->and($items->item(0)->hasAttribute('aria-hidden'))->toBeFalse()
+        ->and($items->item(1)->getAttribute('aria-hidden'))->toBe('true');
+});
+
+test('images keep their alt text; captions are a title and a description', function (): void {
+    $dom = sliderDom();
+
+    expect($dom->query('//img[@data-part="image"]')->item(0)->getAttribute('alt'))->toBe('Lake view from 4A')
+        ->and($dom->query('//img[@data-part="image"]')->item(0)->hasAttribute('loading'))->toBeFalse()
+        ->and($dom->query('//img[@data-part="image"]')->item(1)->getAttribute('loading'))->toBe('lazy')
+        ->and($dom->query('//div[@data-part="caption"]'))->toHaveCount(2)
+        ->and(trim($dom->query('//p[@data-part="title"]')->item(0)->textContent))->toBe('Lake view')
+        ->and(trim($dom->query('//p[@data-part="description"]')->item(0)->textContent))->toBe('South-facing');
+});
+
+test('the counter, arrows and dots show the current slide', function (): void {
+    $dom = sliderDom(':index="1"');
+
+    expect(trim($dom->query('//span[@data-part="progress-text"]')->item(0)->textContent))->toBe('2 / 3')
+        ->and($dom->query('//*[@data-part="prev-trigger"]')->item(0)->getAttribute('aria-label'))->toBe('Previous photo')
+        ->and($dom->query('//*[@data-part="next-trigger"]/span[@data-part="icon"][@data-mirror]'))->toHaveCount(1)
+        ->and($dom->query('//button[@data-part="indicator"]'))->toHaveCount(3)
+        ->and($dom->query('//button[@data-part="indicator"]')->item(2)->getAttribute('aria-label'))->toBe('Photo 3')
+        ->and($dom->query('//button[@data-part="indicator"][@aria-current="true"]')->item(0)->getAttribute('id'))->toEndWith('indicator-1');
+});
+
+test('thumbnails and autoplay render their parts', function (): void {
+    $dom = sliderDom('thumbnails autoplay :interval="7000"');
+
+    expect($dom->query('//div[@data-part="thumbs"]/button[@data-part="thumb"]'))->toHaveCount(3)
+        ->and($dom->query('//button[@data-part="thumb"]')->item(0)->getAttribute('aria-current'))->toBe('true')
+        ->and($dom->query('//button[@data-part="autoplay-trigger"]')->item(0)->getAttribute('aria-label'))->toBe('Stop slide rotation')
+        ->and($dom->query('//div[@data-part="item-group"]')->item(0)->getAttribute('aria-live'))->toBe('off')
+        ->and($dom->query('//div[@data-part="root"]')->item(0)->getAttribute('x-data'))->toContain('autoplay: true, interval: 7000');
+});
+
+test('labels are props, with :index and :count in the translated defaults', function (): void {
+    $dom = sliderDom('label="Tour" previous-label="Anterior" indicator-label="Foto {index}" counter-label="{index} de {count}"');
+
+    expect($dom->query('//div[@data-part="root"]')->item(0)->getAttribute('aria-label'))->toBe('Tour')
+        ->and($dom->query('//*[@data-part="prev-trigger"]')->item(0)->getAttribute('aria-label'))->toBe('Anterior')
+        ->and($dom->query('//button[@data-part="indicator"]')->item(0)->getAttribute('aria-label'))->toBe('Foto 1')
+        ->and(trim($dom->query('//span[@data-part="progress-text"]')->item(0)->textContent))->toBe('1 de 3');
+});
+
+test('accepts the 2.x props and image shapes', function (): void {
+    $dom  = sliderDom('aspect-ratio="16:9" :auto-play="true" :auto-play-interval="3000" :with-arrows="false" show-counter', [
+        ['url' => '/photos/a.jpg', 'title' => 'A'],
+        '/photos/b.jpg',
+    ]);
+    $root = $dom->query('//div[@data-part="root"]')->item(0);
+
+    expect($root->getAttribute('style'))->toStartWith('--apui-_image-slider-ratio: 16 / 9;')
+        ->and($root->hasAttribute('with-arrows'))->toBeFalse()
+        ->and($root->hasAttribute('show-counter'))->toBeFalse()
+        ->and($root->getAttribute('x-data'))->toContain('autoplay: true, interval: 3000')
+        ->and($dom->query('//img[@data-part="image"]')->item(0)->getAttribute('src'))->toBe('/photos/a.jpg')
+        ->and(trim($dom->query('//p[@data-part="title"]')->item(0)->textContent))->toBe('A');
+});
+
+test('every part has a stable id from the id attribute', function (): void {
+    $dom = sliderDom('id="tour" thumbnails autoplay');
+
+    foreach ($dom->query('//*[@data-scope="image-slider"][not(self::img)][not(self::p)][not(@data-part="caption")]') as $part) {
+        expect($part->getAttribute('id'))->toStartWith('tour');
+    }
+
+    expect($dom->query('//*[@id="tour-item-2"]'))->toHaveCount(1)
+        ->and($dom->query('//*[@id="tour-indicator-0"]'))->toHaveCount(1);
+});
+
+test('the class normalizes its props', function (): void {
+    $slider = new ImageSlider(images: sliderImages(), aspectRatio: 'square', index: 7, interval: 10);
+
+    expect($slider->aspectRatio)->toBe('1 / 1')
+        ->and($slider->interval)->toBe(1000)
+        ->and($slider->currentIndex())->toBe(2);
+});
+
+test('drops image sources with a script scheme, so the client never sees them', function (): void {
+    $component = new ImageSlider(images: [
+        ['src' => '/photos/ridge.jpg', 'alt' => 'Ridge'],
+        ['src' => "java\tscript:alert(1)", 'alt' => 'Bad'],
+        'JavaScript:alert(2)',
+        ['url' => 'data:image/png;base64,AAAA', 'alt' => 'Inline'],
+    ]);
+
+    expect(array_column($component->entries(), 'src'))
+        ->toBe(['/photos/ridge.jpg', '', '', 'data:image/png;base64,AAAA']);
+});
+
+test('merges an author style into the carousel layout style', function (): void {
+    $html = Blade::render('<x-artisanpack-image-slider :images="$images" style="max-width:40rem" />', ['images' => sliderImages()]);
+    preg_match('/<div\b[^>]*>/', $html, $root);
+    $style = designSystemDom($html)->query('//div[@data-part="root"]')->item(0)->getAttribute('style');
+
+    expect(substr_count($root[0], ' style="'))->toBe(1)
+        ->and($style)->toStartWith('--apui-_image-slider-ratio: 21 / 9;')
+        ->and($style)->toEndWith('; max-width:40rem');
+});

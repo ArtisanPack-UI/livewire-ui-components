@@ -1,101 +1,72 @@
-<div>
-    <fieldset class="fieldset py-0">
-        {{-- GROUP LABEL --}}
-        @if($label)
-            <legend class="fieldset-legend mb-2">
-                {{ $label }}
-
-                @if($attributes->get('required'))
-                    <span class="text-error">*</span>
+{{--
+    RadioGroup (#53). Markup contract: design-system RadioGroup.
+    `class` lands on the root; every other attribute (wire:model, name) lands on every
+    native radio, so wire:model binds natively. The radios share one name, so the
+    platform supplies roving focus and arrow keys (which follow the text direction).
+--}}
+@php
+    $groupId     = $controlId();
+    $message     = $errorMessage( $errors ?? null );
+    $isInvalid   = $invalid || null !== $message;
+    $hasLabel    = $filled( $label );
+    $hasHint     = $filled( $hint );
+    $name        = $groupName();
+    $describedBy = $describedBy( array_values( array_filter( [
+        $hasHint ? $groupId . '-hint' : null,
+        null !== $message ? $groupId . '-error' : null,
+    ] ) ) );
+@endphp
+<fieldset
+    {{ $attributes->only( 'class' )->class( $rootClasses( 'apui-radio-group' ) ) }}
+    id="{{ $groupId }}"
+    data-orientation="{{ $orientation }}"
+    data-variant="{{ $variant }}"
+    @if ( $isInvalid ) data-invalid @endif
+    @if ( $disabled ) data-disabled disabled @endif
+    @if ( null !== $describedBy ) aria-describedby="{{ $describedBy }}" @endif
+>
+    @if ( $hasLabel )
+        <legend data-scope="radio-group" data-part="label"{{ $partClass( 'label' ) }}>{{ $content( $label ) }}@if ( $required )<span data-scope="radio-group" data-part="required" aria-hidden="true"{{ $partClass( 'required' ) }}>*</span>@endif</legend>
+    @endif
+    <div data-scope="radio-group" data-part="items"{{ $partClass( 'items' ) }}>
+        @foreach ( $normalizedOptions() as $index => $option )
+            @php
+                $itemId         = $groupId . '-' . $index;
+                $itemDisabled   = $disabled || $option['disabled'];
+                $segmented      = 'segmented' === $variant;
+                $hasDescription = null !== $option['description'] && ! $segmented;
+            @endphp
+            <label data-scope="radio-group" data-part="item" wire:key="{{ $itemId }}"{{ $partClass( 'item' ) }} @if ( $itemDisabled ) data-disabled @endif>
+                <span data-scope="radio-group" data-part="box"{{ $partClass( 'box' ) }}>
+                    <input {{ $attributes->except( [ 'class', 'id', 'name', 'value', 'aria-describedby' ] ) }}
+                        type="radio"
+                        data-scope="radio-group"
+                        data-part="control"
+                        id="{{ $itemId }}"
+                        name="{{ $name }}"
+                        value="{{ $option['value'] }}"{{ $partClass( 'control' ) }}
+                        @if ( $isSelected( $option['value'] ) ) checked @endif
+                        @if ( $itemDisabled ) disabled @endif
+                        @if ( $required ) required @endif
+                        @if ( $isInvalid ) aria-invalid="true" @endif
+                        @if ( $hasDescription ) aria-describedby="{{ $itemId }}-description" @endif
+                    />
+                    <span data-scope="radio-group" data-part="indicator" aria-hidden="true"{{ $partClass( 'indicator' ) }}></span>
+                </span>
+                <span data-scope="radio-group" data-part="item-text"{{ $partClass( 'itemText' ) }}>{{ $option['label'] }}</span>
+                @if ( $hasDescription )
+                    <span data-scope="radio-group" data-part="item-description" id="{{ $itemId }}-description"{{ $partClass( 'itemDescription' ) }}>{{ $option['description'] }}</span>
                 @endif
-            </legend>
-        @endif
-
-        <div @class(["gap-4 grid", "sm:flex sm:gap-6" => $horizontal])>
-            @foreach ($options as $option)
-                @if($card)
-                    <label class="relative">
-                        <input
-                            type="radio"
-                            name="{{ $modelName() }}"
-                            value="{{ data_get($option, $optionValue) }}"
-                            @if(data_get($option, 'disabled')) disabled @endif
-                            class="sr-only peer"
-                            {{ $attributes->whereStartsWith('wire:model') }}
-                        />
-                        <div class="{{ $cardClass }} peer-checked:border-primary peer-checked:bg-primary/10 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed">
-                            <div class="card-body">
-                                <div class="flex items-start justify-between">
-                                    <div class="flex-1">
-                                        {{-- NAME --}}
-                                        <h3 class="text-sm font-medium text-base-content">
-                                            {{ data_get($option, $optionLabel) }}
-                                        </h3>
-
-                                        {{-- HINT --}}
-                                        @if(data_get($option, $optionHint))
-                                            <p class="{{ $hintClass }} mt-1 text-secondary" x-classes="fieldset-label">
-                                                {{ data_get($option, $optionHint) }}
-                                            </p>
-                                        @endif
-                                    </div>
-                                    <div class="ml-3 flex h-5 items-center">
-                                        {{-- Placeholder for visual alignment --}}
-                                        <div class="h-4 w-4"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {{-- Radio indicator positioned as peer sibling --}}
-                        <div class="absolute top-4 right-4 h-4 w-4 rounded-full border-2 border-base-300 bg-base-100 peer-checked:border-primary peer-checked:bg-primary transition-colors flex items-center justify-center pointer-events-none">
-                            <div class="w-2 h-2 rounded-full bg-primary-content opacity-0 peer-checked:opacity-100 transition-opacity"></div>
-                        </div>
-                    </label>
-                @else
-                    <label>
-                        <div @class(["flex items-center gap-3 cursor-pointer", "!items-start" => data_get($option, $optionHint)])>
-                            <input
-                                type="radio"
-                                name="{{ $modelName() }}"
-                                value="{{ data_get($option, $optionValue) }}"
-                                @if(data_get($option, 'disabled')) disabled @endif
-                                {{ $attributes->whereStartsWith('wire:model') }}
-                                {{ $attributes->class(["radio"]) }}
-                            />
-
-                            <div>
-                                {{-- NAME --}}
-                                <div class="text-sm font-medium">
-                                    {{ data_get($option, $optionLabel) }}
-                                </div>
-
-                                {{-- HINT --}}
-                                @if(data_get($option, $optionHint))
-                                    <div class="{{ $hintClass }} mt-1" x-classes="fieldset-label">
-                                        {{ data_get($option, $optionHint) }}
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-                    </label>
+                @if ( null !== $option['meta'] && ! $segmented )
+                    <span data-scope="radio-group" data-part="item-meta"{{ $partClass( 'itemMeta' ) }}>{{ $option['meta'] }}</span>
                 @endif
-            @endforeach
-        </div>
-
-        {{-- ERROR --}}
-        @if(!$omitError && $errors->has($errorFieldName()))
-            @foreach($errors->get($errorFieldName()) as $message)
-                @foreach(Arr::wrap($message) as $line)
-                    <div class="{{ $errorClass }}" x-class="text-error">{{ $line }}</div>
-                    @break($firstErrorOnly)
-                @endforeach
-                @break($firstErrorOnly)
-            @endforeach
-        @endif
-
-        {{-- HINT --}}
-        @if($hint)
-            <div class="{{ $hintClass }}" x-classes="fieldset-label">{{ $hint }}</div>
-        @endif
-    </fieldset>
-</div>
+            </label>
+        @endforeach
+    </div>
+    @if ( $hasHint )
+        <p data-scope="radio-group" data-part="hint" id="{{ $groupId }}-hint"{{ $partClass( 'hint' ) }}>{{ $content( $hint ) }}</p>
+    @endif
+    @if ( null !== $message )
+        <p data-scope="radio-group" data-part="error" id="{{ $groupId }}-error"{{ $partClass( 'error' ) }}>{{ $iconSvg( 'circle-alert' ) }}{{ $message }}</p>
+    @endif
+</fieldset>

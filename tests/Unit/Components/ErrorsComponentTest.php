@@ -2,156 +2,56 @@
 
 declare(strict_types=1);
 
-namespace ArtisanPack\LivewireUiComponents\Tests\Unit\Components;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\MessageBag;
+use Illuminate\Support\ViewErrorBag;
 
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentDataFactory;
-use ArtisanPack\LivewireUiComponents\Tests\Support\ComponentTestCase;
-use ArtisanPack\LivewireUiComponents\Tests\Support\TestHelpers;
-use ArtisanPack\LivewireUiComponents\View\Components\Errors;
-use Error;
-use RuntimeException;
-
-/**
- * Comprehensive unit tests for the Errors component.
- *
- * Auto-generated test class that extends ComponentTestCase to inherit
- * common testing patterns and implements component-specific tests.
+/*
+ * errors (#145) is a deprecated alias of validation-summary.
  */
-class ErrorsComponentTest extends ComponentTestCase
-{
-    protected string $componentClass = Errors::class;
 
-    protected array $defaultProperties = [
-        'icon' => 'o-x-circle',
-        'only' => [],
-    ];
+beforeEach(function (): void {
+    view()->share('errors', (new ViewErrorBag)->put('default', new MessageBag([
+        'email'    => ['Enter an email.', 'Second message.'],
+        'password' => 'Enter a password.',
+    ])));
+});
 
-    protected array $requiredProperties = [];
+test('renders the validation summary markup from $errors', function (): void {
+    $dom  = designSystemDom(Blade::render('<x-artisanpack-errors id="summary" title="Fix these" />'));
+    $root = $dom->query('//div')->item(0);
 
-    public function test_errors_string_properties(): void
-    {
-        $stringProperties = ['id', 'title', 'description', 'icon'];
-        $testValues       = ComponentDataFactory::sampleTexts();
-
-        foreach ($stringProperties as $property) {
-            foreach ($testValues as $value) {
-                if (empty($value)) {
-                    continue;
-                } // Skip empty values for some properties
-
-                $component = $this->createComponent([$property => $value]);
-                $this->assertEquals($value, $component->$property);
-            }
-        }
+    $links = [];
+    foreach ($dom->query('//a[@data-part="link"]') as $link) {
+        $links[$link->getAttribute('href')] = trim($link->textContent);
     }
 
-    public function test_errors_array_properties(): void
-    {
-        $arrayProperties = ['only'];
-        $testArrays      = ComponentDataFactory::arrayData();
+    expect($root->getAttribute('class'))->toBe('apui-validation-summary')
+        ->and($root->getAttribute('id'))->toBe('summary')
+        ->and($root->getAttribute('role'))->toBe('alert')
+        ->and($root->getAttribute('data-color'))->toBe('error')
+        ->and(trim($dom->query('//*[@data-part="title"]')->item(0)->textContent))->toBe('Fix these')
+        ->and($links)->toBe(['#email' => 'Enter an email.', '#password' => 'Enter a password.']);
+});
 
-        foreach ($arrayProperties as $property) {
-            foreach ($testArrays as $array) {
-                $component = $this->createComponent([$property => $array]);
-                $this->assertEquals($array, $component->$property);
-            }
-        }
-    }
+test('only limits the listed fields', function (): void {
+    $dom = designSystemDom(Blade::render('<x-artisanpack-errors :only="[ \'password\' ]" />'));
 
-    public function test_errors_renders_successfully(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
+    expect($dom->query('//a[@data-part="link"]'))->toHaveCount(1)
+        ->and($dom->query('//a[@data-part="link"]')->item(0)->getAttribute('href'))->toBe('#password')
+        ->and(trim($dom->query('//*[@data-part="title"]')->item(0)->textContent))->toBe('Fix 1 field');
+});
 
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
+test('renders nothing without errors', function (): void {
+    view()->share('errors', new ViewErrorBag);
 
-        $this->assertNotEmpty($html);
-        $this->assertTrue(TestHelpers::assertValidHtml($html));
-    }
+    expect(trim(Blade::render('<x-artisanpack-errors />')))->toBe('');
+});
 
-    public function test_errors_accessibility_compliance(): void
-    {
-        $component = $this->createComponent();
-        $view      = $component->render();
+test('removed 2.x props do not leak as HTML attributes', function (): void {
+    $html = Blade::render('<x-artisanpack-errors description="Please fix the following." icon="o-bolt" />');
 
-        try {
-            $html = $view->render();
-        } catch (\Illuminate\View\ViewException $e) {
-            if (str_contains($e->getMessage(), 'Undefined variable') ||
-                str_contains($e->getMessage(), 'Undefined array key')) {
-                $this->markTestSkipped('Component requires slots or additional data for rendering');
-            }
-            throw $e;
-        } catch (Error $e) {
-            if (str_contains($e->getMessage(), 'Call to a member function') &&
-                str_contains($e->getMessage(), 'on null')) {
-                $this->markTestSkipped('Component requires attributes or context for rendering');
-            }
-            throw $e;
-        }
-
-        $validation = TestHelpers::validateHtmlStructure($html);
-        $this->assertTrue($validation['is_valid'],
-            'Errors should have valid HTML structure. Issues: '.implode(', ', $validation['issues']),
-        );
-    }
-
-    public function test_errors_security_against_xss(): void
-    {
-        $xssPayloads = TestHelpers::securityTestPayloads();
-
-        foreach ($xssPayloads as $payload) {
-            $component = $this->createComponent(['label' => $payload]);
-            $view      = $component->render();
-
-            try {
-                $html = $view->render();
-            } catch (\Illuminate\View\ViewException $e) {
-                if (str_contains($e->getMessage(), 'Undefined variable') ||
-                    str_contains($e->getMessage(), 'Undefined array key')) {
-                    $this->markTestSkipped('Component requires slots or additional data for rendering');
-                }
-                throw $e;
-            } catch (Error $e) {
-                if (str_contains($e->getMessage(), 'Call to a member function') &&
-                    str_contains($e->getMessage(), 'on null')) {
-                    $this->markTestSkipped('Component requires attributes or context for rendering');
-                }
-                throw $e;
-            }
-
-            $this->assertStringNotContainsString('<script', $html);
-            $this->assertStringNotContainsString('javascript:', $html);
-        }
-    }
-
-    public function test_errors_performance(): void
-    {
-        try {
-            $performance = TestHelpers::measureRenderingPerformance($this->createComponent(), 10);
-            $this->assertLessThan(100, $performance['average_time'],
-                'Errors rendering should be under 100ms on average',
-            );
-        } catch (RuntimeException $e) {
-            if (str_contains($e->getMessage(), 'requires slots') ||
-                str_contains($e->getMessage(), 'requires additional context')) {
-                $this->markTestSkipped($e->getMessage());
-            }
-            throw $e;
-        }
-    }
-}
+    expect($html)->not->toContain('description')
+        ->and($html)->not->toContain('Please fix the following.')
+        ->and($html)->not->toContain('o-bolt');
+});

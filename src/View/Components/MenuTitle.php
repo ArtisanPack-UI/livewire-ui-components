@@ -1,46 +1,66 @@
 <?php
 
-declare(strict_types=1);
 /**
- * MenuTitle
+ * MenuTitle Component
  *
- * This file contains the MenuTitle class for the ArtisanPack UI Livewire UI Components package.
+ * A section title between items of the design-system navigation Menu (#56).
  *
  * @author     Jacob Martella
- * @copyright  2023 Jacob Martella
+ * @copyright  2026 Jacob Martella
  * @license    MIT
  *
- * @link       https://github.com/robsontenorio/mary Original MaryUI Repository
- * @link       https://gitlab.com/jacob-martella-web-design/artisanpack-ui/livewire-ui-components
+ * @link       https://github.com/ArtisanPack-UI/livewire-ui-components
  * @since      1.0.0
  */
 
+declare(strict_types=1);
+
 namespace ArtisanPack\LivewireUiComponents\View\Components;
 
-use Closure;
+use ArtisanPack\LivewireUiComponents\View\Concerns\RendersDesignSystemParts;
 use Illuminate\Contracts\View\View;
 
 /**
- * MenuTitle Class
+ * MenuTitle Component Class
  *
- * Provides functionality for the MenuTitle component.
+ * A child of `menu`: an `<li>` with the title part, from the slot or `label`. Every attribute lands on it.
  *
  * @since 1.0.0
  */
 class MenuTitle extends BaseComponent
 {
-    public string $uuid;
+    use RendersDesignSystemParts;
 
+    /**
+     * Extra classes per part, from the Menu.
+     *
+     * @since 3.0.0
+     *
+     * @var array<string, string>
+     */
+    public array $classes = [];
+
+    /**
+     * Creates the component.
+     *
+     * @since 1.0.0
+     *
+     * @param  string|null  $label  The title's text. The slot overrides it.
+     * @param  string|null  $title  Deprecated: use `label` or the slot.
+     */
     public function __construct(
-        public ?string $id = null,
+        public ?string $label = null,
         public ?string $title = null,
-        public ?string $icon = null,
-        public ?string $iconClasses = null,
     ) {
-        $this->uuid = 'artisanpack'.md5(serialize($this)).$id;
+        $this->classes = Menu::current()?->classes ?? [];
     }
 
-    public function render(): View|Closure|string
+    /**
+     * Get the view that represents the component.
+     *
+     * @since 1.0.0
+     */
+    public function render(): View
     {
         return view('livewire-ui-components::components.menu-title');
     }

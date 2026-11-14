@@ -1,127 +1,147 @@
 ---
 title: Extension Hooks
+menu_order: 1
 ---
 
 # Extension Hooks
 
-_Added in version 2.1.0._
+The package fires a small set of hooks, powered by [`artisanpack-ui/hooks`](https://github.com/ArtisanPack-UI/hooks), that let applications and other packages change rendered UI without editing components. Hook names follow the ecosystem convention: `ap.` plus camelCase segments joined by periods.
 
-This package fires a small set of cross-cutting hooks — powered by [`artisanpack-ui/hooks`](https://github.com/ArtisanPack-UI/hooks) — that let applications and other packages extend rendered UI without editing individual components. All hook names follow the ecosystem convention: `ap.` + camelCase segments joined by periods.
+## Available hooks
 
-## Available Hooks
+| Hook | Type | Fires from | Arguments |
+|---|---|---|---|
+| `ap.livewireUiComponents.componentAttributes` | filter | Every component render | `(ComponentAttributeBag $attributes, string $componentName)` |
+| `ap.livewireUiComponents.componentClasses` | filter | Every component's root classes, a child component's own classes, and your components that call `getClasses()` | `(array $classes, string $componentName, ComponentAttributeBag $attributes)` |
+| `ap.livewireUiComponents.iconAlias` | filter | An icon name the registry doesn't know, before the Blade Icons fallback | `(string $iconName)` |
+| `ap.livewireUiComponents.tableColumns` | filter | Table, when it resolves its columns | `(array $columns, string $context)`: the context is the table's `id`, or `'default'` |
+| `ap.livewireUiComponents.themeColors` | filter | ThemeToggle, when it builds its choices | `(array $themes)`: `[ 'light' => [ 'label' => … ], 'dark' => […], 'high-contrast' => […], 'system' => […] ]` |
+| `ap.livewireUiComponents.spotlightCommands` | filter | The `artisanpack.spotlight` route | `(array $commands, ?Authenticatable $user)` |
+| `ap.livewireUiComponents.toastDispatched` | action | The `Toast` trait's `toast()` (and so `success()`, `error()` and the rest) and `flashToast()` | `(string $color, string $title, array $toast)`: the toast's options |
+| `ap.livewireUiComponents.modalWillOpen` | action | `ModalBridge::willOpen()` | `(string $modalId)` |
+| `ap.livewireUiComponents.modalWillClose` | action | `ModalBridge::willClose()` | `(string $modalId)` |
 
-| Hook | Type | Fires from | Payload |
-| --- | --- | --- | --- |
-| `ap.livewireUiComponents.componentClasses` | filter | `BaseComponent::getClasses()` (opt-in per component) | `(array $classes, string $componentName, ComponentAttributeBag $attributes)` |
-| `ap.livewireUiComponents.componentAttributes` | filter | `BaseComponent::withAttributes()` — every render | `(ComponentAttributeBag $attributes, string $componentName)` |
-| `ap.livewireUiComponents.iconAlias` | filter | `Icon::icon()` | `(string $iconName)` |
-| `ap.livewireUiComponents.toastDispatched` | action | `Toast` trait `toast()` method | `(string $type, string $title, array $options)` |
-| `ap.livewireUiComponents.tableColumns` | filter | `Table::__construct()` | `(array $columns, string $context)` — context is the table's `id` or `'default'` |
-| `ap.livewireUiComponents.themeColors` | filter | `ThemeToggle::__construct()` | `(array $themes)` — `['light' => ['label','theme','class'], 'dark' => [...]]` |
-| `ap.livewireUiComponents.modalWillOpen` | action | `Support\ModalBridge::willOpen()` | `(string $modalId)` |
-| `ap.livewireUiComponents.modalWillClose` | action | `Support\ModalBridge::willClose()` | `(string $modalId)` |
-| `ap.livewireUiComponents.spotlightCommands` | filter | `artisanpack.spotlight` route handler | `(array $commands, ?\Illuminate\Contracts\Auth\Authenticatable $user)` |
+`$componentName` is the short name of the component's PHP class: `Button`, `Dialog`, `Table`. The deprecated aliases have their own classes, so `<x-artisanpack-modal>` reports `Modal`.
 
-## Registering Callbacks
+`componentClasses` receives each component's root classes: its `.apui-*` class, then `classes.root`. The `class` attribute merges after the filter. Child components, such as menu items, tabs, steps and dropdown-menu items, pass the classes for their own element. Your own components fire it through `getClasses()`; see [Custom Components](Advanced-Custom-Components).
 
-Register hook callbacks anywhere you would register other side effects — typically in a service provider's `boot()` method:
+Three components don't fire it:
+- Toaster draws its toasts in the browser.
+- Breadcrumbs renders BreadcrumbsItem's markup itself.
+- Icon.
+
+## Registering callbacks
+
+Register callbacks where you register other side effects, usually in a service provider's `boot()` method:
 
 ```php
 use ArtisanPackUI\Hooks\Facades\Action;
 use ArtisanPackUI\Hooks\Facades\Filter;
+use Illuminate\View\ComponentAttributeBag;
 
-// Add a class to every rendered button
-Filter::add('ap.livewireUiComponents.componentClasses', function (array $classes, string $name) {
-    if ('Button' === $name) {
-        $classes[] = 'analytics-hook';
+// Tag every button for your analytics.
+Filter::add( 'ap.livewireUiComponents.componentAttributes', function ( ComponentAttributeBag $attributes, string $name ) {
+    if ( 'Button' === $name ) {
+        return $attributes->merge( [ 'data-analytics' => 'button' ] );
     }
 
-    return $classes;
-});
+    return $attributes;
+} );
 
-// Swap Font Awesome names for Heroicon names package-wide
-Filter::add('ap.livewireUiComponents.iconAlias', function (string $name) {
-    return match ($name) {
-        'fa-home' => 'o-home',
-        'fa-user' => 'o-user',
-        default   => $name,
+// Draw Font Awesome's house as a Heroicon.
+Filter::add( 'ap.livewireUiComponents.iconAlias', function ( string $name ) {
+    return match ( $name ) {
+        'fas.house' => 'o-home',
+        default     => $name,
     };
-});
+} );
 
-// Log toasts to your analytics pipeline
-Action::add('ap.livewireUiComponents.toastDispatched', function (string $type, string $title) {
-    analytics()->track('toast_shown', ['type' => $type, 'title' => $title]);
-});
+// Log toasts.
+Action::add( 'ap.livewireUiComponents.toastDispatched', function ( string $color, string $title ) {
+    logger()->info( 'Toast shown', [ 'color' => $color, 'title' => $title ] );
+} );
 ```
 
-## Extending Table Columns
+`componentAttributes` runs on every render, so keep its callbacks cheap.
 
-Use `tableColumns` to add or reshape columns for a specific table without editing the caller. The context string is the table's `id` attribute, or `'default'` when the table has no id:
+## Extending table columns
+
+Use `tableColumns` to add or reshape columns of one table without editing the view that renders it. The context is the table's `id` attribute, or `'default'` when it has none:
 
 ```php
-Filter::add('ap.livewireUiComponents.tableColumns', function (array $columns, string $context) {
-    if ('users-table' === $context) {
-        $columns[] = ['key' => 'last_login', 'label' => 'Last Login'];
+Filter::add( 'ap.livewireUiComponents.tableColumns', function ( array $columns, string $context ) {
+    if ( 'users-table' === $context ) {
+        $columns[] = [ 'key' => 'last_login', 'label' => __( 'Last login' ) ];
     }
 
     return $columns;
-});
+} );
 ```
 
-## Customizing the Theme Toggle
+Columns without a `key` are dropped after the filter runs.
 
-Use `themeColors` to change the labels, daisyUI theme keys, or CSS classes exposed by `<x-artisanpack-theme-toggle>`:
+## Renaming the theme choices
+
+Use `themeColors` to rename the choices every `<x-artisanpack-theme-toggle>` offers. The themes themselves are the design system's `light`, `dark` and `high-contrast`, plus `system`:
 
 ```php
-Filter::add('ap.livewireUiComponents.themeColors', function (array $themes) {
-    $themes['dark']['theme'] = 'midnight';
+Filter::add( 'ap.livewireUiComponents.themeColors', function ( array $themes ) {
+    $themes['dark']['label'] = __( 'Night' );
 
     return $themes;
-});
+} );
 ```
 
-## Firing Modal Lifecycle Hooks
+## Adding Spotlight commands
 
-Modals open through Alpine on the client, so the server has no automatic signal. Call the bridge from your Livewire actions when you open or close a modal to invoke the `modalWillOpen` / `modalWillClose` hooks:
-
-```php
-use ArtisanPack\LivewireUiComponents\Support\ModalBridge;
-
-public function openConfirmDialog(): void
-{
-    ModalBridge::willOpen('confirm-delete');
-    $this->dispatch('open-modal', id: 'confirm-delete');
-}
-
-public function closeConfirmDialog(): void
-{
-    ModalBridge::willClose('confirm-delete');
-    $this->dispatch('close-modal', id: 'confirm-delete');
-}
-```
-
-## Extending Spotlight Commands
-
-Add commands to the spotlight search from any package or application code:
+Add commands to the results of the package's Spotlight route from any package or app. Each command is an item (`label`, `href`, `description`, `icon`); the filter receives the items your Spotlight search class returned, and the current user:
 
 ```php
-Filter::add('ap.livewireUiComponents.spotlightCommands', function (array $commands, ?\Illuminate\Contracts\Auth\Authenticatable $user) {
-    if ($user && $user->can('view-reports')) {
+use Illuminate\Contracts\Auth\Authenticatable;
+
+Filter::add( 'ap.livewireUiComponents.spotlightCommands', function ( array $commands, ?Authenticatable $user ) {
+    if ( $user?->can( 'view-reports' ) ) {
         $commands[] = [
-            'label' => 'Open Reports',
-            'route' => route('reports.index'),
+            'label' => __( 'Open reports' ),
+            'href'  => route( 'reports.index' ),
+            'icon'  => 'file-text',
         ];
     }
 
     return $commands;
-});
+} );
 ```
+
+This only applies when Spotlight uses the package's route. See [Spotlight](Livewire-Spotlight).
+
+## Dialog lifecycle hooks
+
+Dialogs open and close in the browser, so the server gets no automatic signal. To run the `modalWillOpen` and `modalWillClose` actions, call the bridge from the Livewire action that opens or closes the dialog:
+
+```php
+use ArtisanPack\LivewireUiComponents\Support\ModalBridge;
+
+public function confirmDelete(): void
+{
+    ModalBridge::willOpen( 'confirm-delete' );
+    $this->confirmingDelete = true;
+}
+
+public function cancelDelete(): void
+{
+    ModalBridge::willClose( 'confirm-delete' );
+    $this->confirmingDelete = false;
+}
+```
+
+```blade
+<x-artisanpack-dialog id="confirm-delete" wire:model="confirmingDelete" :title="__( 'Delete this order?' )">
+    …
+</x-artisanpack-dialog>
+```
+
+The id you pass is up to you; using the dialog's `id` keeps them easy to match. A dialog closed on the client (Escape, the close button, the backdrop) doesn't call the bridge.
 
 ## Performance
 
-Filters short-circuit inside `applyFilters()` when no callback is registered, so idle hooks add only a facade dispatch plus a hash-map lookup per render. `componentClasses` is opt-in per component (route class lists through `$this->getClasses($classes)`); `componentAttributes` fires on every render but is cheap when nothing is subscribed. The base component name is cached per subclass so it is not recomputed each render.
-
-## Related Reading
-
-- [`artisanpack-ui/hooks` documentation](https://github.com/ArtisanPack-UI/hooks) — full API for `Action` and `Filter` facades, priorities, and callback removal.
-- [Custom Components](Custom-Components) — build your own components on top of `BaseComponent` and inherit the same extension seams.
+When nothing is registered for a filter, `applyFilters()` returns the value straight away, so idle hooks cost a lookup per call.
