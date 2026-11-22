@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use ArtisanPack\LivewireUiComponents\Support\Toasts;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Vite;
 
 /*
  * Toaster (#51): the region that shows toasts from data (D-019).
@@ -113,4 +114,20 @@ test('the ToastException handler script renders once per page', function (): voi
     $html = Blade::render('<x-artisanpack-toaster /><x-artisanpack-toaster id="second" />');
 
     expect(substr_count($html, 'window.apuiToastExceptionHook = true'))->toBe(1);
+});
+
+test('the ToastException handler script carries the Vite CSP nonce when one is set', function (): void {
+    Vite::useCspNonce('apui-nonce');
+
+    $html = Blade::render('<x-artisanpack-toaster /><x-artisanpack-toaster id="second" />');
+
+    expect(substr_count($html, '<script nonce="apui-nonce">'))->toBe(1)
+        ->and(substr_count($html, ' nonce='))->toBe(1);
+});
+
+test('the ToastException handler script has no nonce attribute without a Vite CSP nonce', function (): void {
+    $html = Blade::render('<x-artisanpack-toaster />');
+
+    expect($html)->toContain('<script>')
+        ->and(substr_count($html, ' nonce='))->toBe(0);
 });

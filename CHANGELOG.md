@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Fixed
+- `<x-artisanpack-toaster>`: the inline script now carries Vite's CSP nonce (`Vite::cspNonce()`), the way `@apuiThemeScript` does, so flashed toasts and ToastException toasts still show on hosts with a nonce-based `script-src` policy. (#163)
+
 ## [3.0.0] - 2026-11-14
 
 ### Added
