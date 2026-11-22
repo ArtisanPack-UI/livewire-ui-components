@@ -48,7 +48,17 @@
             </template>
         </div>
         @once
-            <script>
+            {{-- The nonce ThemeScript uses: without it, a nonce-only script-src policy blocks this script, so flashed toasts and ToastException toasts never show. --}}
+            @php
+                $cspNonce = null;
+                try {
+                    $cspNonce = \Illuminate\Support\Facades\Vite::cspNonce();
+                } catch (Throwable) {
+                    $cspNonce = null;
+                }
+                $cspNonce = is_string( $cspNonce ) && '' !== $cspNonce ? $cspNonce : null;
+            @endphp
+            <script{!! null !== $cspNonce ? ' nonce="'.e( $cspNonce ).'"' : '' !!}>
                 ( () => {
                     {{-- Shows the toasts a page flashed, once: the script is removed after reading. --}}
                     window.apuiTakeFlashedToasts = window.apuiTakeFlashedToasts || ( ( toaster, el ) => {
